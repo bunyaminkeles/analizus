@@ -50,6 +50,11 @@ def analyze(df, col1: str, col2: str) -> dict:
     else:
         fisher_result = None
 
+    # Beklenen frekans düşük 2×2 tablolarda ki-kare güvenilmez; seo_content.py
+    # zaten "Fisher's Exact Test otomatik devreye girer" diye vaat ediyor —
+    # ana sonuç/APA artık bu durumda ki-kare yerine Fisher'a dayanıyor
+    fisher_is_primary = bool(r == 2 and c == 2 and low_expected > 0 and fisher_result is not None)
+
     if v < 0.10:
         effect_label = gettext('Çok küçük etki')
         effect_color = 'secondary'
@@ -63,15 +68,30 @@ def analyze(df, col1: str, col2: str) -> dict:
         effect_label = gettext('Büyük etki')
         effect_color = 'danger'
 
-    is_significant = bool(p_val < 0.05)
-    if is_significant:
-        conclusion = (
-            gettext("%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki bulunmuştur (p < .05). Cramér's V = %(v)s (%(v2)s).") % {'col1': col1, 'col2': col2, 'v': f'{v:.3f}', 'v2': effect_label.lower()}
-        )
+    if fisher_is_primary:
+        is_significant = fisher_result['is_significant']
+        if is_significant:
+            conclusion = (
+                gettext("Beklenen hücre frekansları düşük olduğundan Fisher's Exact Test esas alınmıştır: "
+                        "%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki bulunmuştur "
+                        "(p < .05). Cramér's V = %(v)s (%(v2)s).") % {'col1': col1, 'col2': col2, 'v': f'{v:.3f}', 'v2': effect_label.lower()}
+            )
+        else:
+            conclusion = (
+                gettext("Beklenen hücre frekansları düşük olduğundan Fisher's Exact Test esas alınmıştır: "
+                        "%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki bulunmamıştır "
+                        "(p ≥ .05).") % {'col1': col1, 'col2': col2}
+            )
     else:
-        conclusion = (
-            gettext('%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki bulunmamıştır (p ≥ .05).') % {'col1': col1, 'col2': col2}
-        )
+        is_significant = bool(p_val < 0.05)
+        if is_significant:
+            conclusion = (
+                gettext("%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki bulunmuştur (p < .05). Cramér's V = %(v)s (%(v2)s).") % {'col1': col1, 'col2': col2, 'v': f'{v:.3f}', 'v2': effect_label.lower()}
+            )
+        else:
+            conclusion = (
+                gettext('%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki bulunmamıştır (p ≥ .05).') % {'col1': col1, 'col2': col2}
+            )
 
     ct_index = [str(i) for i in ct.index]
     ct_cols = [str(c_) for c_ in ct.columns]
@@ -103,6 +123,7 @@ def analyze(df, col1: str, col2: str) -> dict:
         'total_cells': total_cells,
         'low_expected_warning': low_expected > 0,
         'fisher': fisher_result,
+        'fisher_is_primary': fisher_is_primary,
         'yates_applied': yates_applied,
     }
 
@@ -253,17 +274,32 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.5*cm))
     story.append(Paragraph(gettext('APA Formatında Raporlama'), h2))
     # 'p < .001' / 'p = 0.123'; anlamlı/anlamsız ayrı tam cümle — şablon JS ile ortak msgid
-    v = dict(c1=result['col1'], c2=result['col2'], dof=result['dof'], n=result['n'], chi2=f"{result['chi2']:.3f}",
-             p='p < .001' if result['p_value'] < 0.001 else f"p = {result['p_value']:.3f}",
-             v=f"{result['cramers_v']:.3f}", effect=result['effect_label'].lower())
-    if result['is_significant']:
-        apa_text = gettext('Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında istatistiksel olarak anlamlı '
-                           'bir ilişki bulunmuştur, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect}).').format(**v)
+    if result['fisher_is_primary']:
+        fp = result['fisher']['p_value']
+        vf = dict(c1=result['col1'], c2=result['col2'], n=result['n'],
+                  p='p < .001' if fp < 0.001 else f"p = {fp:.3f}",
+                  orr=f"{result['fisher']['odds_ratio']:.3f}",
+                  v=f"{result['cramers_v']:.3f}", effect=result['effect_label'].lower())
+        if result['is_significant']:
+            apa_text = gettext("Beklenen hücre frekansları düşük olduğundan Fisher's Exact Test kullanılmıştır: "
+                               '{c1} ile {c2} arasında istatistiksel olarak anlamlı bir ilişki bulunmuştur, '
+                               '{p}, OR = {orr}, V = {v} ({effect}) (N = {n}).').format(**vf)
+        else:
+            apa_text = gettext("Beklenen hücre frekansları düşük olduğundan Fisher's Exact Test kullanılmıştır: "
+                               '{c1} ile {c2} arasında anlamlı bir ilişki bulunmamıştır, '
+                               '{p}, OR = {orr}, V = {v} ({effect}) (N = {n}).').format(**vf)
     else:
-        apa_text = gettext('Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında anlamlı bir ilişki '
-                           'bulunmamıştır, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect}).').format(**v)
-    if result['yates_applied']:
-        apa_text += ' ' + gettext("2×2 tablo olduğu için χ² hesaplamasında Yates süreklilik düzeltmesi uygulanmıştır.")
+        v = dict(c1=result['col1'], c2=result['col2'], dof=result['dof'], n=result['n'], chi2=f"{result['chi2']:.3f}",
+                 p='p < .001' if result['p_value'] < 0.001 else f"p = {result['p_value']:.3f}",
+                 v=f"{result['cramers_v']:.3f}", effect=result['effect_label'].lower())
+        if result['is_significant']:
+            apa_text = gettext('Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında istatistiksel olarak anlamlı '
+                               'bir ilişki bulunmuştur, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect}).').format(**v)
+        else:
+            apa_text = gettext('Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında anlamlı bir ilişki '
+                               'bulunmamıştır, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect}).').format(**v)
+        if result['yates_applied']:
+            apa_text += ' ' + gettext("2×2 tablo olduğu için χ² hesaplamasında Yates süreklilik düzeltmesi uygulanmıştır.")
     apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f5f0ff')),

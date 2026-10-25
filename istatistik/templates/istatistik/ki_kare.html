@@ -239,6 +239,8 @@ const T = {
   apaSig: '{% trans "Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında istatistiksel olarak anlamlı bir ilişki bulunmuştur, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect})." as t %}{{ t|escapejs }}',
   apaNs: '{% trans "Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında anlamlı bir ilişki bulunmamıştır, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect})." as t %}{{ t|escapejs }}',
   apaYates: '{% trans "2×2 tablo olduğu için χ² hesaplamasında Yates süreklilik düzeltmesi uygulanmıştır." as t %}{{ t|escapejs }}',
+  apaFisherSig: '{% trans "Beklenen hücre frekansları düşük olduğundan Fisher's Exact Test kullanılmıştır: {c1} ile {c2} arasında istatistiksel olarak anlamlı bir ilişki bulunmuştur, {p}, OR = {orr}, V = {v} ({effect}) (N = {n})." as t %}{{ t|escapejs }}',
+  apaFisherNs: '{% trans "Beklenen hücre frekansları düşük olduğundan Fisher's Exact Test kullanılmıştır: {c1} ile {c2} arasında anlamlı bir ilişki bulunmamıştır, {p}, OR = {orr}, V = {v} ({effect}) (N = {n})." as t %}{{ t|escapejs }}',
 };
 const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
@@ -363,8 +365,13 @@ function onCompleted(data) {
   body += '</tbody>';
   document.getElementById('ct-table').innerHTML = head + body;
 
-  let apa = fmt(r.is_significant ? T.apaSig : T.apaNs, {c1: r.col1, c2: r.col2, dof: r.dof, n: r.n, chi2: r.chi2.toFixed(3), p: pStr(r.p_value), v: r.cramers_v.toFixed(3), effect: r.effect_label.toLowerCase()});
-  if (r.yates_applied) { apa += ' ' + T.apaYates; }
+  let apa;
+  if (r.fisher_is_primary) {
+    apa = fmt(r.is_significant ? T.apaFisherSig : T.apaFisherNs, {c1: r.col1, c2: r.col2, n: r.n, p: pStr(r.fisher.p_value), orr: r.fisher.odds_ratio.toFixed(3), v: r.cramers_v.toFixed(3), effect: r.effect_label.toLowerCase()});
+  } else {
+    apa = fmt(r.is_significant ? T.apaSig : T.apaNs, {c1: r.col1, c2: r.col2, dof: r.dof, n: r.n, chi2: r.chi2.toFixed(3), p: pStr(r.p_value), v: r.cramers_v.toFixed(3), effect: r.effect_label.toLowerCase()});
+    if (r.yates_applied) { apa += ' ' + T.apaYates; }
+  }
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;
 

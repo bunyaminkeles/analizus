@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 20:17+0300\n"
+"POT-Creation-Date: 2026-10-25 20:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12817,7 +12817,7 @@ msgstr "Exploratory Factor Analysis Report"
 #: istatistik/services/afa.py:259 istatistik/services/anova.py:168
 #: istatistik/services/betimsel.py:127 istatistik/services/cronbach.py:132
 #: istatistik/services/friedman.py:119 istatistik/services/karar_agaci.py:154
-#: istatistik/services/ki_kare.py:136 istatistik/services/korelasyon.py:162
+#: istatistik/services/ki_kare.py:157 istatistik/services/korelasyon.py:162
 #: istatistik/services/kruskal_wallis.py:151
 #: istatistik/services/lineer_regresyon.py:149
 #: istatistik/services/lojistik_regresyon.py:176
@@ -12894,7 +12894,7 @@ msgstr "Cumulative %"
 #: istatistik/services/afa.py:369 istatistik/services/anova.py:254
 #: istatistik/services/betimsel.py:203 istatistik/services/cronbach.py:186
 #: istatistik/services/friedman.py:201 istatistik/services/karar_agaci.py:244
-#: istatistik/services/ki_kare.py:254 istatistik/services/korelasyon.py:256
+#: istatistik/services/ki_kare.py:275 istatistik/services/korelasyon.py:256
 #: istatistik/services/kruskal_wallis.py:235
 #: istatistik/services/lineer_regresyon.py:224
 #: istatistik/services/lojistik_regresyon.py:285
@@ -13163,7 +13163,7 @@ msgstr "p (adjusted)"
 msgid "Anlamlı"
 msgstr "Significant"
 
-#: istatistik/services/anova.py:228 istatistik/services/ki_kare.py:191
+#: istatistik/services/anova.py:228 istatistik/services/ki_kare.py:212
 #: istatistik/services/kruskal_wallis.py:209
 #: istatistik/services/normallik.py:150
 #: istatistik/templates/istatistik/friedman.html:444
@@ -13172,7 +13172,7 @@ msgid "Evet"
 msgstr "Yes"
 
 #: istatistik/services/anova.py:228 istatistik/services/friedman.py:179
-#: istatistik/services/ki_kare.py:191 istatistik/services/kruskal_wallis.py:209
+#: istatistik/services/ki_kare.py:212 istatistik/services/kruskal_wallis.py:209
 #: istatistik/services/normallik.py:150
 #: istatistik/services/tekrarli_anova.py:229
 #: istatistik/templates/istatistik/friedman.html:444
@@ -13183,7 +13183,7 @@ msgstr "No"
 
 #: istatistik/services/anova.py:250 istatistik/services/betimsel.py:159
 #: istatistik/services/cronbach.py:141 istatistik/services/friedman.py:197
-#: istatistik/services/ki_kare.py:173 istatistik/services/kruskal_wallis.py:231
+#: istatistik/services/ki_kare.py:194 istatistik/services/kruskal_wallis.py:231
 #: istatistik/services/mann_whitney.py:174
 #: istatistik/services/tekrarli_anova.py:247 istatistik/services/ttesti.py:339
 #: istatistik/services/wilcoxon.py:187
@@ -13540,7 +13540,7 @@ msgstr "Measurement"
 msgid "Med."
 msgstr "Med."
 
-#: istatistik/services/friedman.py:147 istatistik/services/ki_kare.py:140
+#: istatistik/services/friedman.py:147 istatistik/services/ki_kare.py:161
 #: istatistik/services/kruskal_wallis.py:178
 #: istatistik/services/mann_whitney.py:150 istatistik/services/ttesti.py:335
 #: istatistik/services/wilcoxon.py:163
@@ -13868,30 +13868,53 @@ msgstr "At least 5 valid rows are required."
 msgid "Her değişkenin en az 2 farklı kategorisi olmalıdır."
 msgstr "Each variable must have at least 2 different categories."
 
-#: istatistik/services/ki_kare.py:54 istatistik/services/orneklem.py:139
+#: istatistik/services/ki_kare.py:59 istatistik/services/orneklem.py:139
 #: istatistik/services/orneklem.py:148 istatistik/services/orneklem.py:157
 msgid "Çok küçük etki"
 msgstr "Very small effect"
 
-#: istatistik/services/ki_kare.py:57
+#: istatistik/services/ki_kare.py:62
 #: istatistik/templates/istatistik/friedman.html:211
 #: istatistik/templates/istatistik/tekrarli_anova.html:211
 #: istatistik/templates/istatistik/wilcoxon.html:190
 msgid "Küçük etki"
 msgstr "Small effect"
 
-#: istatistik/services/ki_kare.py:60
+#: istatistik/services/ki_kare.py:65
 msgid "Orta etki"
 msgstr "Medium effect"
 
-#: istatistik/services/ki_kare.py:63
+#: istatistik/services/ki_kare.py:68
 #: istatistik/templates/istatistik/friedman.html:213
 #: istatistik/templates/istatistik/tekrarli_anova.html:213
 #: istatistik/templates/istatistik/wilcoxon.html:192
 msgid "Büyük etki"
 msgstr "Large effect"
 
-#: istatistik/services/ki_kare.py:69
+#: istatistik/services/ki_kare.py:75
+#, python-format
+msgid ""
+"Beklenen hücre frekansları düşük olduğundan Fisher's Exact Test esas "
+"alınmıştır: %(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir "
+"ilişki bulunmuştur (p < .05). Cramér's V = %(v)s (%(v2)s)."
+msgstr ""
+"Because the expected cell frequencies are low, Fisher's Exact Test was "
+"used as the primary test: a statistically significant association was "
+"found between %(col1)s and %(col2)s (p < .05). Cramér's V = %(v)s "
+"(%(v2)s)."
+
+#: istatistik/services/ki_kare.py:81
+#, python-format
+msgid ""
+"Beklenen hücre frekansları düşük olduğundan Fisher's Exact Test esas "
+"alınmıştır: %(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir "
+"ilişki bulunmamıştır (p ≥ .05)."
+msgstr ""
+"Because the expected cell frequencies are low, Fisher's Exact Test was "
+"used as the primary test: no statistically significant association was "
+"found between %(col1)s and %(col2)s (p ≥ .05)."
+
+#: istatistik/services/ki_kare.py:89
 #, python-format
 msgid ""
 "%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki "
@@ -13900,7 +13923,7 @@ msgstr ""
 "A statistically significant association was found between %(col1)s and "
 "%(col2)s (p < .05). Cramér's V = %(v)s (%(v2)s)."
 
-#: istatistik/services/ki_kare.py:73
+#: istatistik/services/ki_kare.py:93
 #, python-format
 msgid ""
 "%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki "
@@ -13909,27 +13932,27 @@ msgstr ""
 "No statistically significant association was found between %(col1)s and "
 "%(col2)s (p ≥ .05)."
 
-#: istatistik/services/ki_kare.py:135
+#: istatistik/services/ki_kare.py:156
 msgid "Ki-Kare Bağımsızlık Testi Raporu"
 msgstr "Chi-Square Test of Independence Report"
 
-#: istatistik/services/ki_kare.py:142
+#: istatistik/services/ki_kare.py:163
 msgid "Değişken 1"
 msgstr "Variable 1"
 
-#: istatistik/services/ki_kare.py:142
+#: istatistik/services/ki_kare.py:163
 msgid "Değişken 2"
 msgstr "Variable 2"
 
-#: istatistik/services/ki_kare.py:142 istatistik/views.py:575
+#: istatistik/services/ki_kare.py:163 istatistik/views.py:575
 msgid "Cramér's V"
 msgstr "Cramér's V"
 
-#: istatistik/services/ki_kare.py:142
+#: istatistik/services/ki_kare.py:163
 msgid "Etki"
 msgstr "Effect"
 
-#: istatistik/services/ki_kare.py:179
+#: istatistik/services/ki_kare.py:200
 #, python-format
 msgid ""
 "⚠ Uyarı: %(low_expected_count)s hücrede beklenen frekans 5'in altındadır "
@@ -13940,49 +13963,73 @@ msgstr ""
 "(out of %(total_cells)s). The chi-square test may be unreliable in this "
 "case; consider Fisher's exact test."
 
-#: istatistik/services/ki_kare.py:187
+#: istatistik/services/ki_kare.py:208
 msgid "anlamlı"
 msgstr "significant"
 
-#: istatistik/services/ki_kare.py:187
+#: istatistik/services/ki_kare.py:208
 msgid "anlamlı değil"
 msgstr "not significant"
 
-#: istatistik/services/ki_kare.py:188
+#: istatistik/services/ki_kare.py:209
 msgid "Fisher's Exact Test (2×2 tablo)"
 msgstr "Fisher's Exact Test (2×2 table)"
 
-#: istatistik/services/ki_kare.py:190 istatistik/views.py:636
+#: istatistik/services/ki_kare.py:211 istatistik/views.py:636
 msgid "Odds Ratio"
 msgstr "Odds Ratio"
 
-#: istatistik/services/ki_kare.py:190
+#: istatistik/services/ki_kare.py:211
 msgid "p (Fisher)"
 msgstr "p (Fisher)"
 
-#: istatistik/services/ki_kare.py:190 istatistik/services/tekrarli_anova.py:226
+#: istatistik/services/ki_kare.py:211 istatistik/services/tekrarli_anova.py:226
 #: istatistik/templates/istatistik/friedman.html:174
 #: istatistik/templates/istatistik/tekrarli_anova.html:174
 msgid "Anlamlı?"
 msgstr "Significant?"
 
-#: istatistik/services/ki_kare.py:210
+#: istatistik/services/ki_kare.py:231
 #: istatistik/templates/istatistik/ki_kare.html:153
 msgid "Çapraz Tablo (Gözlenen Frekanslar)"
 msgstr "Cross-Tabulation (Observed Frequencies)"
 
-#: istatistik/services/ki_kare.py:211
+#: istatistik/services/ki_kare.py:232
 #, python-format
 msgid "Sütunlar: %(col2)s"
 msgstr "Columns: %(col2)s"
 
-#: istatistik/services/ki_kare.py:214 istatistik/services/ki_kare.py:219
+#: istatistik/services/ki_kare.py:235 istatistik/services/ki_kare.py:240
 #: istatistik/templates/istatistik/ki_kare.html:238
 msgctxt "tablo"
 msgid "Toplam"
 msgstr "Total"
 
-#: istatistik/services/ki_kare.py:260
+#: istatistik/services/ki_kare.py:284
+#: istatistik/templates/istatistik/ki_kare.html:242
+#, python-brace-format
+msgid ""
+"Beklenen hücre frekansları düşük olduğundan Fisher's Exact Test "
+"kullanılmıştır: {c1} ile {c2} arasında istatistiksel olarak anlamlı bir "
+"ilişki bulunmuştur, {p}, OR = {orr}, V = {v} ({effect}) (N = {n})."
+msgstr ""
+"Because the expected cell frequencies are low, Fisher's Exact Test was "
+"used: a statistically significant association was found between {c1} and "
+"{c2}, {p}, OR = {orr}, V = {v} ({effect}) (N = {n})."
+
+#: istatistik/services/ki_kare.py:288
+#: istatistik/templates/istatistik/ki_kare.html:243
+#, python-brace-format
+msgid ""
+"Beklenen hücre frekansları düşük olduğundan Fisher's Exact Test "
+"kullanılmıştır: {c1} ile {c2} arasında anlamlı bir ilişki bulunmamıştır, "
+"{p}, OR = {orr}, V = {v} ({effect}) (N = {n})."
+msgstr ""
+"Because the expected cell frequencies are low, Fisher's Exact Test was "
+"used: no significant association was found between {c1} and {c2}, {p}, "
+"OR = {orr}, V = {v} ({effect}) (N = {n})."
+
+#: istatistik/services/ki_kare.py:296
 #: istatistik/templates/istatistik/ki_kare.html:239
 #, python-brace-format
 msgid ""
@@ -13994,7 +14041,7 @@ msgstr ""
 "association between {c1} and {c2}, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} "
 "({effect})."
 
-#: istatistik/services/ki_kare.py:263
+#: istatistik/services/ki_kare.py:299
 #: istatistik/templates/istatistik/ki_kare.html:240
 #, python-brace-format
 msgid ""
@@ -14004,7 +14051,7 @@ msgstr ""
 "A chi-square test of independence revealed no significant association "
 "between {c1} and {c2}, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect})."
 
-#: istatistik/services/ki_kare.py:266
+#: istatistik/services/ki_kare.py:302
 #: istatistik/templates/istatistik/ki_kare.html:241
 msgid ""
 "2×2 tablo olduğu için χ² hesaplamasında Yates süreklilik düzeltmesi "
@@ -17008,14 +17055,14 @@ msgid "✗ İki değişken arasında anlamlı ilişki yok (p ≥ .05)"
 msgstr ""
 "✗ There is no significant relationship between the two variables (p ≥ .05)"
 
-#: istatistik/templates/istatistik/ki_kare.html:338
+#: istatistik/templates/istatistik/ki_kare.html:340
 msgid ""
 "hücrede beklenen frekans 5'in altında. Ki-kare güvenilirliği azalabilir."
 msgstr ""
 "cells have an expected frequency below 5. The reliability of the chi-square "
 "test may be reduced."
 
-#: istatistik/templates/istatistik/ki_kare.html:356
+#: istatistik/templates/istatistik/ki_kare.html:358
 msgid "Sütunlar:"
 msgstr "Columns:"
 

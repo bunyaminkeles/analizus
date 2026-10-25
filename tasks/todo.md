@@ -10,6 +10,27 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(25 Ekim 2026) Yeni Ücretsiz İstatistik Araçları Fikirleri — henüz
+  başlanmadı, öncelik sırasıyla:**
+  1. [ ] **Aracılık/Düzenleyici Değişken Analizi (Mediation/Moderation)** —
+     SPSS Process/Hayes'e karşılık; TR sosyal bilimler/işletme tezlerinde en
+     çok talep edilen, bizde hiç karşılığı yok.
+  2. [ ] **Kümeleme Analizi (K-means / Hiyerarşik Cluster)** — pazarlama/
+     işletme/eğitim tezlerinde yaygın; mevcut sklearn altyapısına (karar_agaci,
+     svm) yakın, görece düşük efor.
+  3. [ ] **MANOVA (Çok Değişkenli Varyans Analizi)** — mevcut ANOVA
+     altyapısının doğal uzantısı.
+  4. [ ] **Sağkalım Analizi (Kaplan-Meier / Cox Regresyon)** — sağlık bilimleri
+     tezlerinde çok aranıyor; `survival-analizi-101-kaplan-meier-cox-regresyon-...`
+     blog yazısı zaten iyi SEO alıyor (bkz. aşağıda ~satır 2197) ama karşılığında
+     araç yok.
+  5. [ ] **ROC Eğrisi / Tanısal Tarama Analizi** — lojistik regresyon FAQ'ı
+     zaten AUC-ROC'tan bahsediyor ama hesaplayan araç yok (bu tutarsızlık
+     aşağıda ~satır 134-135'te zaten not edilmiş).
+  - Düşük öncelik / sonra değerlendirilebilir: diskriminant analizi, ordinal/
+    multinomial lojistik regresyon, basit path analizi/SEM, güç analizi
+    (post-hoc power).
+
 - [ ] **(25 Ekim 2026) İstatistik Araçları Denetimi — 18 aracın tamamı (hesaplama +
   rapor kalitesi) 7 paralel subagent ile salt-okunur incelendi. Hiçbir dosya
   değiştirilmedi. Bulgular şiddete göre (en kritik üstte):**
@@ -308,9 +329,22 @@ maddelerde.
       gösterilmiyor (yalnız PDF'te var), JS değişikliği gerekmedi. Docker'da
       2 maddelik (çökme yok, `None` + JSON serialize + PDF OK) ve 4 maddelik
       (regresyon yok) senaryolar test edildi, 104/104 pytest yeşil.
-  24. [ ] `ki_kare.py` — Beklenen frekans düşük 2×2 durumlarda bile ana
-      sonuç/APA cümlesi her zaman ki-kare p-değerine dayanıyor, Fisher
-      sonucu ayrıca gösterilse de öncelenmiyor.
+  24. [x] **(25 Ekim 2026 düzeltildi)** `ki_kare.py` — Beklenen frekans
+      düşük 2×2 durumlarda bile ana sonuç/APA cümlesi her zaman ki-kare
+      p-değerine dayanıyordu, Fisher sonucu ayrıca gösterilse de
+      öncelenmiyordu — oysa `seo_content.py` (intro + FAQ) zaten "küçük
+      örneklemlerde Fisher's Exact Test otomatik devreye girer... Analizus
+      bunu otomatik kontrol eder" diye vaat ediyordu. **Düzeltme:** 2×2 +
+      en az 1 hücrede beklenen frekans <5 olunca `fisher_is_primary=True`
+      hesaplanıyor; `is_significant`, `conclusion` (PDF) ve APA cümlesi
+      (hem PDF hem ekran JS, ortak msgid) artık bu durumda ki-kare yerine
+      Fisher p-değerine dayanıyor — ham ki-kare/Fisher değerleri tabloda
+      hâlâ ayrı ayrı görünüyor, yalnızca "nihai karar" değişti. Gerçek bir
+      ayrışma senaryosuyla (`[[0,2],[6,0]]`: ki-kare p=.059 "anlamsız" vs
+      Fisher p=.036 "anlamlı") doğrulandı — düzeltme öncesi bu durumda
+      yanlış sonuç raporlanıyordu. EN/DE çevirileri eklendi, Docker'da
+      düşük/normal frekans senaryoları + PDF üretimi + render test edildi,
+      104/104 pytest yeşil.
   25. [ ] `requirements.txt` — `scipy` sürümü sabitlenmemiş; mann_whitney/
       kruskal_wallis/wilcoxon/friedman doğrudan `scipy.stats`'a bağlı
       (CLAUDE.md kuralı: API'ye doğrudan bağlı paketler sabitlenmeli).
