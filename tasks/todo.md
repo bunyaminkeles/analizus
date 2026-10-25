@@ -3694,8 +3694,8 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
-**Durum (12 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 12 dosya
-migre edildi, **54 dosyada hâlâ gerçek Bootstrap component class'ı var**
+**Durum (25 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 14 dosya
+migre edildi, **53 dosyada hâlâ gerçek Bootstrap component class'ı var**
 (bkz. "Güncel envanter" altı). Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
@@ -3733,10 +3733,17 @@ toplam ~760 gerçek Bootstrap component class eşleşmesi** (`btn`, `card`,
 `form-select`) kaldı. Yoğunluğa göre (düşükten yükseğe, Faz 3'ün kendi
 önceliklendirme kuralına uygun):
 
-**Düşük (4-10 class, ~23 dosya) — sıradaki adaylar:**
+**Not (25 Ekim 2026) — "Düşük" grubun gerçek sayıları bu aralıktan yüksek
+çıktı:** 11 Ekim'deki "4-10 class" tahmini yine iyimserdi (bkz.
+[[feedback_verify_inventory_counts]]); bugünkü tam token eşleşmesiyle
+yeniden sayımda grup aslında 8-19 class arasında. İki dosya (aşağıda
+işaretli) bu turda migre edildi, grup 21 dosyaya indi.
+
+**Düşük (~8-19 class, ~21 dosya) — sıradaki adaylar:**
 `forum_index.html`, `footer.html` (partials),
-`edit_job.html`, `post_job.html`, `search_results.html`,
-`verification_pending.html`, `my_payments.html`, `section_detail.html`,
+`edit_job.html`, `post_job.html`,
+~~`search_results.html`~~ (✅ 25 Ekim), ~~`verification_pending.html`~~
+(✅ 25 Ekim), `my_payments.html`, `section_detail.html`,
 `bibliometrics/order.html`, `my_jobs.html`, `new_topic.html`,
 `studyroom_edit.html`, `category_topics.html`, `_review_section.html`,
 `promote_job_iban.html`, `success_stories.html` (modal JS Faz 2'de taşındı,
@@ -4102,6 +4109,73 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
     (yalnızca ilgisiz PWA service-worker scope uyarısı, bu dosyadan bağımsız).
     `forum/tests.py` 90/90 yeşil.
 
+- [x] `forum/templates/forum/search_results.html` (13. dosya, 25 Ekim 2026) —
+  gerçek envanter: 3× `btn` + 1× `card`/`card-body`.
+  - 23: `btn btn-outline-info rounded-pill px-4` → `ax-btn ax-btn--outline-info
+    px-4`. **Kullanıcı kararıyla yeni `.ax-btn--outline-info` eklendi**
+    (`base.css`, `outline-primary` formülüyle aynı: şeffaf zemin + camgöbeği
+    metin/kenarlık, hover'da `color-mix` ile %10 dolgu) — solid `ax-btn--info`
+    (12 Ekim) zaten vardı ama outline hali yoktu, bu dosyada 3 kez aynı
+    semantik renk kullanıldığı için ghost'a düşmek yerine kalıcı varyant
+    tercih edildi.
+  - 92 + 104: `btn btn-info rounded-pill px-4 mt-3` → `ax-btn ax-btn--info
+    px-4 mt-3` (birebir karşılık, zaten vardı).
+  - 68-70: kullanıcı kartı (`card h-100 text-decoration-none user-result` +
+    `card-body d-flex align-items-center gap-3`) — `.ax-card` kullanılmadı
+    (job_list.html'deki ilan kartı kararıyla aynı gerekçe: `.ax-card`'ın
+    kendi padding/hover-transform'u `.user-result`'ın bespoke inline
+    arka plan/kenarlık + hover stiliyle çakışır, ayrıca statik bir kart
+    olmasına rağmen istenmeyen bir "tıklanabilir" hover efekti eklerdi).
+    Düz `div`/`a`'ya indirildi: `<a>`'ya kaybolan `.card`'ın `display:flex`
+    davranışı elle eklendi (yoksa `h-100` ve grid hizası bozulurdu),
+    `border-radius:var(--ax-radius-sm)` (founder-card kararındaki gibi
+    Bootstrap'ın gerçek 6px varsayılanına sadık), `card-body`'nin kaybettiği
+    `width:100%`/`padding:1rem`'i manuel eklendi.
+  - `base.css`→`bundle.css` yeniden üretildi (`.ax-btn--outline-info` için),
+    `collectstatic` + `web`/`nginx` restart edildi, `base.html`'deki
+    `bundle.css?v=0014`→`?v=0015`. **Not:** 27 Eylül'den beri whitenoise
+    manifest hash'li dosya adı ürettiği için `?v=` artık zorunlu değil
+    (zararsız alışkanlık, analizus.md §26).
+  - Görsel doğrulama: gerçek seed'li kullanıcılarla (`?q=fatma` eşleşen
+    kullanıcı, `?q=zzz...` sonuç yok, boş sorgu min-karakter uyarısı — 3
+    farklı buton dalı) Playwright 375px/1280px, konsol hatası yok.
+    `forum/tests.py` 104/104 yeşil.
+- [x] `forum/templates/forum/verification_pending.html` (14. dosya,
+  25 Ekim 2026) — gerçek envanter: 2× `btn` + 1× `card`/`card-body` +
+  1× `alert`. Yeni CSS gerekmedi (tüm hedef ax- class'lar zaten vardı).
+  - `card border-0 shadow-lg` (tamamen inline bg/border/radius 16px ile
+    boyalı) → `card` kaldırıldı, `border-0 shadow-lg` (utility, kapsam
+    dışı) + mevcut inline stil aynen kaldı; `.ax-card` kullanılmadı (statik,
+    tıklanamayan bir kart, `.ax-card`'ın hover transform'u anlamsız olurdu).
+  - `card-body p-5 text-center` → `card-body` kaldırıldı, `p-5` zaten
+    Bootstrap'ın card-body padding'ine eşdeğer boşluğu sağlıyordu
+    (donation_success.html'deki aynı desen).
+  - `alert border-0 rounded-3` (inline `rgba(99,102,241,.1)` bg) →
+    `ax-alert ax-alert--info` (renk tonu birebir eşleşiyor, yeni varyant
+    gerekmedi); ikon `ax-alert__icon` + metin `ax-alert__body`'e sarıldı
+    (order_payment.html'deki flex-kayması bug'ının tekrarını önlemek için);
+    ikonun özgün camgöbeği rengi inline `color:var(--ax-accent-info)` ile
+    korundu (ax-alert'in varsayılan gövde rengi `--ax-text-primary`, ikonu
+    da aynı renge düşürürdü).
+  - `btn btn-primary btn-lg rounded-pill` → `ax-btn ax-btn--primary
+    ax-btn--lg`; `btn btn-outline-secondary rounded-pill` → `ax-btn
+    ax-btn--ghost` (ikisi de birebir kurulu karşılık, `rounded-pill`
+    önceki dosyalarda olduğu gibi düşürüldü).
+  - Görsel doğrulama: view `@login_required` + e-posta doğrulanmamış
+    profil gerektiriyor — geçici bir test kullanıcısı (`Client.force_login`
+    + `Profile(email_verified=False)`) ile gerçek URL render edilip
+    `staticfiles/` altına yazıldı, nginx üzerinden (`https://localhost/
+    static/preview_verification.html`, self-signed sertifika) Playwright
+    375px/1280px ile kontrol edildi, sonra hem test kullanıcısı hem önizleme
+    dosyası silindi (DB'ye kalıcı iz bırakılmadı). Kart/alert/butonlar
+    birebir orijinal görünümde, konsol hatası yok. `forum/tests.py`
+    104/104 yeşil.
+  - **Yan not (araç/ortam):** localhost:8000'de bağımsız bir
+    `manage.py runserver` sürecinin (Docker dışı) çalıştığı görüldü —
+    §26'daki "hangi süreç hangi DB'yi kullanıyor" tuzağına girmemek için
+    tüm doğrulama `docker compose` + nginx'in gerçek portu (443, self-signed
+    https) üzerinden yapıldı, o bağımsız sürece dokunulmadı.
+
 **11 Ekim 2026 oturumu kapandı — `main`'e alındı:** Yukarıdaki 7 commit
 (`87c8e26`..`58f52d7`) `dev`'den `main`'e `--no-ff` merge edildi (merge
 commit `1e54739`), `origin/main`'e push edildi — GitHub Actions otomatik
@@ -4151,16 +4225,18 @@ Kullanılmayan geçiş dönemi shim'leri varsa kaldır.
 - 100+ dosyalık migration tek PR'da değil, birden fazla oturuma yayılmalı
 
 ## Sıradaki adım
-Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 12 dosya migre edildi (yukarı bkz.
-"Dosya bazlı ilerleme"). **Güncel envanter yukarıda** ("Güncel envanter —
-11 Ekim 2026 taraması") — 54 dosya, ~756 eşleşme kaldı. Sıradaki adaylar
-düşük yoğunluklu grup (`forum_index.html`, `footer.html` partial'ı,
-`edit_job.html`/`post_job.html` vb., 4-10 class). Her dosya için: gerçek
-Bootstrap class'larını
+Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 14 dosya migre edildi (yukarı bkz.
+"Dosya bazlı ilerleme"; son ikisi 25 Ekim 2026: `search_results.html`,
+`verification_pending.html`). **Güncel envanter yukarıda** ("Güncel
+envanter — 11 Ekim 2026 taraması", 25 Ekim notuyla güncellendi) — düşük
+grup 21 dosyaya indi. Sıradaki adaylar aynı düşük yoğunluklu grup
+(`forum_index.html`, `footer.html` partial'ı, `edit_job.html`/`post_job.html`
+vb., gerçek ~8-19 class). Her dosya için: gerçek Bootstrap class'larını
 oku → ax- karşılığı yoksa (yeni renk/varyant vb.) kullanıcıya sor → uygula
-→ `bundle.css` gerekiyorsa yeniden üret + versiyon artır → Playwright ile
-mobil+masaüstü görsel doğrula → pytest çalıştır → `todo.md` güncelle →
-commit. Faz 4 (CDN kaldırma) için önce (1) bu 56 dosya bitmeli, (2) hiç
+→ `bundle.css` gerekiyorsa yeniden üret (whitenoise hash'li ad ürettiği
+için `?v=` artırmak artık kozmetik, ama alışkanlık korunuyor) → Playwright
+ile mobil+masaüstü görsel doğrula → pytest çalıştır → `todo.md` güncelle →
+commit. Faz 4 (CDN kaldırma) için önce (1) bu dosyalar bitmeli, (2) hiç
 başlanmamış Bootstrap **utility class** envanteri çıkarılıp ayrı ele
 alınmalı.
 
