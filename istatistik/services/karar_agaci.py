@@ -38,6 +38,16 @@ def analyze(df, target_col: str, feature_cols: list,
     if n_classes > 20:
         raise ValueError(gettext('Hedef sütunda %(n_classes)s farklı değer var. Karar ağacı en fazla 20 sınıfla çalışır.') % {'n_classes': n_classes})
 
+    # Sınıf dengesizliği (en büyük/en küçük sınıf oranı) — accuracy yanıltıcı olabilir
+    class_counts = sub[target_col].astype(str).value_counts()
+    imbalance_ratio = float(class_counts.max() / class_counts.min())
+    class_imbalance_warning = (
+        gettext('Sınıflar dengesiz dağılmış (en büyük/en küçük sınıf oranı = %(ratio)s). '
+                'Doğruluk (accuracy) tek başına yanıltıcı olabilir; kesinlik, duyarlılık ve '
+                'F1 skorlarına da bakın.') % {'ratio': f'{imbalance_ratio:.1f}'}
+        if imbalance_ratio >= 3 else ''
+    )
+
     le = LabelEncoder()
     y = le.fit_transform(sub[target_col].astype(str))
 
@@ -96,6 +106,8 @@ def analyze(df, target_col: str, feature_cols: list,
         'n': n,
         'n_train': len(X_train),
         'n_test': len(X_test),
+        'class_imbalance_ratio': round(imbalance_ratio, 2),
+        'class_imbalance_warning': class_imbalance_warning,
         'max_depth_param': max_depth,
         'max_depth_actual': int(clf.get_depth()),
         'n_leaves': int(clf.get_n_leaves()),
@@ -170,6 +182,13 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     ]))
     story.append(sum_tbl)
     story.append(Spacer(1, 0.5*cm))
+
+    if result['class_imbalance_warning']:
+        story.append(Paragraph(
+            '<font color="#b45309"><b>⚠ ' + gettext('Uyarı:') + '</b> ' + result['class_imbalance_warning'] + '</font>',
+            norm_s
+        ))
+        story.append(Spacer(1, 0.4*cm))
 
     story.append(Paragraph(gettext('Karmaşıklık Matrisi (Confusion Matrix)'), h2_s))
     cm_arr = np.array(result['confusion_matrix'])

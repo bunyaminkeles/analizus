@@ -282,9 +282,20 @@ maddelerde.
   21b. [ ] **(25 Ekim 2026, madde 21 sırasında bulundu)**
       `static/css/profiles.css:690` — madde 21'de düzeltilen aynı tanımsız
       `var(--ax-primary)` token'ı burada da kullanılıyor, henüz düzeltilmedi.
-  22. [ ] `svm.py:34-36` — n>5000'de iddia edilen/beklenen stratified
-      örnekleme aslında düz rastgele (`sample()`'da `stratify` yok); ayrıca
-      hem karar_agaci hem svm'de class imbalance uyarısı hiç yok.
+  22. [x] **(25 Ekim 2026 düzeltildi)** `svm.py:34-36` — n>5000'de beklenen
+      stratified örnekleme aslında düz rastgele idi (`sample()`'da `stratify`
+      yok); ayrıca hem karar_agaci hem svm'de class imbalance uyarısı hiç
+      yoktu. **Düzeltme:** `svm.py`'de n>5000 durumunda artık
+      `train_test_split(..., stratify=...)` ile sınıf oranlarını koruyan
+      örnekleme yapılıyor (nadir sınıf stratified'ı imkansız kılarsa düz
+      rastgele örneklemeye düşülüyor, `try/except`); örnekleme sonrası sınıf
+      sayısı yeniden hesaplanıyor. Her iki dosyaya da (`svm.py`,
+      `karar_agaci.py`) sınıf dengesizliği oranı (en büyük/en küçük sınıf)
+      hesabı eklendi; oran ≥3 olunca ekranda (`alert-warning`) ve PDF'te
+      turuncu uyarı metni gösteriliyor — "Doğruluk tek başına yanıltıcı
+      olabilir, precision/recall/F1'e de bakın." EN/DE çevirileri eklendi,
+      Docker'da stratified örnekleme oran koruması + dengeli/dengesiz veri
+      senaryoları + PDF üretimi test edildi, 104/104 pytest yeşil.
   23. [ ] `cronbach.py:58` — 2 maddelik ölçekte "madde silinince alfa"
       hesabı ZeroDivisionError ile çöküyor (genel except belirsiz hata
       mesajı veriyor).
