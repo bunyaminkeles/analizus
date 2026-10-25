@@ -3694,8 +3694,8 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
-**Durum (25 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 17 dosya
-migre edildi, **50 dosyada hâlâ gerçek Bootstrap component class'ı var**
+**Durum (25 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 19 dosya
+migre edildi, **48 dosyada hâlâ gerçek Bootstrap component class'ı var**
 (bkz. "Güncel envanter" altı). Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
@@ -3746,15 +3746,15 @@ hiç render edilmiyor — `views.section_detail` artık yalnızca
 çağrısında kullanılmıyor. Migrasyon kapsamından çıkarıldı (zaman kaybı,
 dosya hiç kullanıcıya görünmüyor), silinmedi — ayrı bir karar.
 
-**Düşük (~8-19 class, ~18 dosya) — sıradaki adaylar:**
+**Düşük (~8-19 class, ~16 dosya) — sıradaki adaylar:**
 `forum_index.html`, `footer.html` (partials),
 ~~`edit_job.html`~~ (✅ 25 Ekim), ~~`post_job.html`~~ (✅ 25 Ekim),
 ~~`search_results.html`~~ (✅ 25 Ekim), ~~`verification_pending.html`~~
-(✅ 25 Ekim), `my_payments.html`, ~~`section_detail.html`~~ (yetim dosya,
-kapsam dışı — yukarı bkz.),
+(✅ 25 Ekim), ~~`my_payments.html`~~ (✅ 25 Ekim), ~~`section_detail.html`~~
+(yetim dosya, kapsam dışı — yukarı bkz.),
 `bibliometrics/order.html`, `my_jobs.html`, `new_topic.html`,
 `studyroom_edit.html`, ~~`category_topics.html`~~ (✅ 25 Ekim),
-`_review_section.html`,
+~~`_review_section.html`~~ (✅ 25 Ekim),
 `promote_job_iban.html`, `success_stories.html` (modal JS Faz 2'de taşındı,
 component class'ları kaldı), `oaipmh/order.html`, `semanticscholar/order.html`,
 `service_promo.html`, `trdizin/order.html`, `how_it_works.html`,
@@ -4291,6 +4291,42 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
   en ağır dosya), o dosyaya geçilince düzeltilecek; o zamana kadar canlıda
   stilsiz kalmaya devam edecek (düşük önemli, görünür ama kritik değil).
 
+- [x] `forum/templates/forum/my_payments.html` +
+  `forum/templates/forum/market/_review_section.html` (18-19. dosyalar,
+  25 Ekim 2026) — yeni CSS gerekmedi.
+  - `my_payments.html`: `card bg-dark border-secondary shadow-sm` → `card`
+    kaldırıldı (`bg-dark`/`border-secondary`/`shadow-sm` utility, kapsam
+    dışı, aynen kaldı), kaybolan radius `border-radius:var(--ax-radius-sm)`
+    ile eklendi. `card-header border-secondary bg-transparent py-3` →
+    `card-header` kaldırıldı — **bulgu:** `.border-secondary` yalnız
+    border-color verir, `card-header`'ın sağladığı border-width olmadan
+    görünmez kalırdı (founder-card'daki aynı tuzak), elle
+    `border-bottom-width:1px;border-bottom-style:solid` eklendi.
+    `card-body p-0` → kaldırıldı (zaten sıfır dolgu, kayıp yok). 3 durum
+    rozeti (`badge bg-success/warning/danger bg-opacity-25 text-* border
+    border-* border-opacity-25`) → `ax-badge ax-badge--success/warning/
+    danger` + **`border border-* border-opacity-25` utility'leri bilerek
+    korundu** (ax-badge--* kendi border'ını tanımlamıyor, Bootstrap utility
+    hâlâ yüklü olduğu için halka aynen kaldı, yeni CSS gerekmedi).
+    `btn btn-sm btn-outline-light` → `ax-btn ax-btn--sm ax-btn--outline-light`.
+  - `_review_section.html`: 3 kart (`card border-0 shadow-sm`, tamamı
+    inline bg'li) → `card` kaldırıldı + `border-radius:var(--ax-radius-sm)`
+    eklendi; ikisi `card-body py-2 px-3` (utility zaten vardı, kayıpsız
+    kaldırıldı), biri çıplak `card-body` (hiç padding utility'si yoktu) →
+    kaldırılıp yerine `padding:1rem` eklendi (search_results.html'deki
+    kullanıcı kartı kararıyla aynı mantık). `form-control bg-dark text-white
+    border-secondary` → `ax-form-control ...`. `btn btn-warning btn-sm` →
+    `ax-btn ax-btn--warning ax-btn--sm`.
+  - Görsel doğrulama: `my_payments.html` için geçici kullanıcı + 3 durumlu
+    (başarılı/bekliyor/başarısız) `JobPayment` ile gerçek URL (`/my-payments/`)
+    render edildi; `_review_section.html` `job_detail.html`'in include'u
+    olduğu ve o dosya henüz migre edilmediği için `render_to_string` ile
+    bağımsız (Bootstrap CDN + bundle.css bağlı) önizleme sayfasında iki
+    senaryo (onaylı değerlendirme listesi + değerlendirme formu) kontrol
+    edildi. Playwright 375px/1280px, konsol hatası yok, sonra tüm geçici
+    kullanıcı/ilan/ödeme/değerlendirme kayıtları silindi. `forum/tests.py`
+    104/104 yeşil.
+
 **11 Ekim 2026 oturumu kapandı — `main`'e alındı:** Yukarıdaki 7 commit
 (`87c8e26`..`58f52d7`) `dev`'den `main`'e `--no-ff` merge edildi (merge
 commit `1e54739`), `origin/main`'e push edildi — GitHub Actions otomatik
@@ -4340,18 +4376,18 @@ Kullanılmayan geçiş dönemi shim'leri varsa kaldır.
 - 100+ dosyalık migration tek PR'da değil, birden fazla oturuma yayılmalı
 
 ## Sıradaki adım
-Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 17 dosya migre edildi (yukarı bkz.
-"Dosya bazlı ilerleme"; son beşi 25 Ekim 2026: `search_results.html`,
+Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 19 dosya migre edildi (yukarı bkz.
+"Dosya bazlı ilerleme"; son yedisi 25 Ekim 2026: `search_results.html`,
 `verification_pending.html`, `category_topics.html`, `edit_job.html`,
-`post_job.html`). **Güncel envanter yukarıda** ("Güncel envanter —
-11 Ekim 2026 taraması", 25 Ekim notuyla güncellendi) — düşük grup 18
-dosyaya indi (1'i, `section_detail.html`, yetim/render edilmeyen dosya
-olduğu için kapsam dışına alındı). Sıradaki adaylar aynı düşük yoğunluklu
-grup (`forum_index.html`, `footer.html` partial'ı, `my_payments.html` vb.,
-gerçek ~8-19 class). **Dikkat:** `my_jobs.html` ve `referral_dashboard.html`
-(orta grup) aynı camgöbeği `alert-info` kalıbını taşıyor — oraya
-geçildiğinde bugün eklenen `.ax-alert--cyan` kullanılacak. Her dosya için:
-gerçek Bootstrap class'larını
+`post_job.html`, `my_payments.html`, `_review_section.html`). **Güncel
+envanter yukarıda** ("Güncel envanter — 11 Ekim 2026 taraması", 25 Ekim
+notuyla güncellendi) — düşük grup 16 dosyaya indi (1'i, `section_detail.html`,
+yetim/render edilmeyen dosya olduğu için kapsam dışına alındı). Sıradaki
+adaylar aynı düşük yoğunluklu grup (`forum_index.html`, `footer.html`
+partial'ı, `bibliometrics/order.html` vb., gerçek ~8-19 class). **Dikkat:**
+`my_jobs.html` ve `referral_dashboard.html` (orta grup) aynı camgöbeği
+`alert-info` kalıbını taşıyor — oraya geçildiğinde bugün eklenen
+`.ax-alert--cyan` kullanılacak. Her dosya için: gerçek Bootstrap class'larını
 oku → ax- karşılığı yoksa (yeni renk/varyant vb.) kullanıcıya sor → uygula
 → `bundle.css` gerekiyorsa yeniden üret (whitenoise hash'li ad ürettiği
 için `?v=` artırmak artık kozmetik, ama alışkanlık korunuyor) → Playwright
