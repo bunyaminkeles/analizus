@@ -1773,7 +1773,9 @@ analizus-files/
 │   ├── full/
 │   └── orders/
 ├── yoktez/
-│   └── demo/
+│   ├── demo/
+│   └── full/, orders/     # eski "analiz" özelliğinden kalma (23 Mayıs 2026'da kaldırıldı),
+│                          # artık yazılmıyor ama 25 Ekim 2026'dan beri cron'da taranıyor
 ├── semanticscholar/
 │   ├── demo/
 │   └── full/
@@ -1796,17 +1798,33 @@ analizus-files/
 |---|---|---|
 | openalex / trdizin / oaipmh | demo/, full/, orders/ | 7 |
 | pubmed | (tek prefix, alt klasörsüz) | 7 |
-| yoktez | demo/ | 3 |
+| yoktez | demo/, full/, orders/ | 3 |
 | bibliometrics / semanticscholar | demo/, full/ | 7 |
 | makaleanaliz / tezanaliz | pdf/ | 7 |
+| istatistik | (tek prefix `istatistik/`, tüm araçlar ortak — 18 araç) | 7 |
 
 Her aracın `services/job_runner.py`'sindeki `cleanup_expired_<araç>_s3_files(days=N)` fonksiyonu yukarıdaki
 `cleanup_s3_prefix()`'i (prefix başına bağımsız try/except — bir prefix hata verirse diğerleri yine de taranır)
 çağırır + kendi modelindeki URL alanlarını (`demo_file_url` vb.) temizler. Tek merkezi tetikleyici:
-`forum/api_views.cron_cleanup_s3_files` (bkz. §23) — 9 aracın hepsini, her birini kendi try/except'inde çağırır.
-**Kasıtlı kapsam dışı:** `avatars/`, `covers/` (profil/kapak fotoğrafları, kalıcı), `istatistik/` (ayrı/bellek-içi
-mekanizma), `team/` (TeamMember fotoğrafları, kalıcı), `chat_attachments/` (ayrı haftalık `cleanup-attachments`
-cron'u).
+`forum/api_views.cron_cleanup_s3_files` (bkz. §23) — 10 aracın hepsini, her birini kendi try/except'inde çağırır.
+**Kasıtlı kapsam dışı:** `avatars/`, `covers/` (profil/kapak fotoğrafları, kalıcı), `team/` (TeamMember
+fotoğrafları, kalıcı), `chat_attachments/` (ayrı haftalık `cleanup-attachments` cron'u).
+
+**25 Ekim 2026 denetimi (iki gerçek bug bulundu, düzeltildi, main'de canlı):**
+1. `istatistik/` hiçbir zaman bu cron'a dahil değildi — yukarıdaki "Kasıtlı kapsam dışı" notu yanıltıcıydı,
+   orada kastedilen aslında `istatistik/services/job_runner.py`'deki `cleanup_expired_session_datasets()`
+   (bellekteki ham CSV/Excel yüklemesini 2 saatte temizleyen ayrı mekanizma, §12) — PDF çıktılarıyla hiç
+   ilgisi yok. PDF'ler S3'te süresiz birikiyordu (bazı dosyalar 8+ aydır duruyordu). `cleanup_expired_istatistik_s3_files(days=7)`
+   eklenip cron'a bağlandı.
+2. `yoktez` yalnızca `demo/`'yu tarıyordu; `full/`/`orders/` (eski "analiz" özelliğinden kalma, 23 Mayıs
+   2026'da kaldırıldı) hiç kapsanmıyordu — bu yüzden o özellikten kalan dosyalar 8+ ay S3'te kaldı. Üçü de
+   taranacak şekilde düzeltildi.
+
+**Ayrıca bulunan ama henüz düzeltilmemiş eksik (bkz. `tasks/todo.md` "S3 Dosya Saklama Süresi"):** 9/10
+aracın sonuç sayfası/e-postası kullanıcıya dosyanın ne zaman silineceğini hiç söylemiyor (yalnız `yoktez`
+söylüyor); bibliometrics/makaleanaliz/tezanaliz e-postaları "3 gün geçerlidir" diyor ama kod 7 gün
+saklıyor (metin hatası); gizlilik politikası (§19) bibliometrics/makaleanaliz/tezanaliz/istatistik için
+hiç saklama süresi taahhüdü vermiyor.
 
 ### AWS Hesap Durumu (Fatura/Bütçe)
 - Hesap: `analizus` (ID: 909489253044), `eu-north-1`
@@ -2391,6 +2409,26 @@ with connection.cursor() as c:
     ham Bootstrap bileşen sınıfı) — bu sonuç, §27'deki ayrı "Bootstrap Kaldırma — Kademeli Migration Planı"
     bölümünün "Güncel envanter (11 Ekim 2026)" kısmıyla birebir örtüşüyor (o zaten doğruydu), henüz
     uygulanmadı.
+  - **Tur 6 — "DÜŞÜK" toplu not, 7 madde (26 Ekim 2026, main'de canlı, merge commit `cd9fc2f` civarı,
+    migration YOK):** `ttesti.py`'de bağımsız örneklem güven aralığı (`se_diff`) her zaman unpooled (Welch)
+    varyans formülünü kullanıyordu, `used_welch=False` iken pooled t-istatistiğiyle tutarsızdı — artık
+    `used_welch`'e göre pooled/unpooled SE seçiliyor (doğrulama: `diff/t_stat` ile `(CI genişliği/2)/
+    implied_SE` oranı t-kritik değerine eşitleniyor). `anova.py` anlamsız sonuçta F değerini her zaman
+    "—" yazıyordu (hesaplı olmasına rağmen) → gerçek `f_stat` geçiriliyor. `afa.py`'de eğik (promax/oblimin)
+    rotasyonda varyans tablosu hiçbir uyarı olmadan ortogonal mantıkla raporlanıyordu → yeni
+    `oblique_variance_note` (ekran+PDF, yalnız promax/oblimin'de görünür); ayrıca `afa.html`'deki statik
+    KMO yorum tablosu ".50–.60" bandı için "Zayıf" diyordu, kod `_interpret_kmo()` "Düşük" döndürüyordu →
+    tabloya kodun birebir aynı etiketi yazıldı (`cronbach.html`'deki aynı sınıf hatanın tekrarı). `korelasyon.html`'de
+    Kendall açıklaması iki ayrı yerde farklı (ve biri istatistiksel olarak anlamsız: "çok sayıda eşik")
+    terim kullanıyordu → doğru terim "bağlı (eşit) gözlem" (tied observations) ile her iki yerde tutarlı
+    hale getirildi. `kruskal_wallis` tam 2 grupla da çalışmaya izin veriyordu, Mann-Whitney'e yönlendirme
+    yoktu → yeni `two_group_note` (k=2 olunca ekran+PDF'te öneri gösteriliyor, analiz engellenmiyor).
+    `karar_agaci.py`'de `export_text(max_depth=5)` hardcoded idi — kullanıcı daha derin bir ağaç seçse bile
+    metin çıktısı sessizce 5 seviyede kesiliyordu → gerçek `max_depth` parametresi kullanılıyor (ayrı var
+    olan 40 satırlık genel sınır güvenlik ağı olarak kalıyor, PDF/ekranda zaten vardı). `seo_content.py`'deki
+    "Essensiyal" yazım hatası "Esansiyel" ile düzeltildi (EN/DE çevirileri zaten doğruydu, yalnız TR kaynak
+    metin hatalıydı). Tüm yeni metinler için EN/DE çevirileri eklendi, Docker'da her madde ayrı test edildi,
+    104/104 pytest yeşil.
 
 #### Pazaryeri / Freelance / Bağış
 
@@ -2768,6 +2806,12 @@ with connection.cursor() as c:
   - DM WebSocket: `@ . + -` içeren kullanıcı adları (ba9560b). §11.
   - 500 hata e-postası + sel koruması (8393eec). §16.
   - Sunucu: Docker log sınırı (daemon.json), disk temizliği (%65→%45), yerel yedek indirme betiği + cron (95c35d0). §3.
+- **S3 temizlik cron'u genişletildi** (25 Ekim 2026, main'de canlı, commit `4233aeb`, bu oturumdan bağımsız
+  kullanıcı tarafından yapıldı) — `istatistik/` (betimsel dahil tüm araçlar) için hiç S3 temizlik fonksiyonu
+  yoktu; `yoktez/services/job_runner.py` yalnızca `demo/` klasörünü tarıyordu, `full/` ve `orders/` (23 Mayıs
+  2026'da kaldırılan "analiz" özelliğinden kalan dosyalar) hiç kapsanmıyordu — bu yüzden bazı PDF/txt
+  dosyaları S3'te 8+ ay birikmişti. `istatistik/services/job_runner.py`'ye temizlik fonksiyonu eklendi,
+  `yoktez/services/job_runner.py` genişletildi, `forum/api_views.py`'de ilgili cron endpoint'i güncellendi.
 
 #### CSS / Frontend / Navbar / Ana Sayfa Tasarımı
 

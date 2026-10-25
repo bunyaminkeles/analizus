@@ -74,6 +74,7 @@
     <p id="pm-status" class="pm-status"></p>
     <div id="pm-ai-box" class="pm-ai-box pm-hidden"><p id="pm-ai-text" class="pm-ai-text"></p></div>
     <div id="pm-results" class="pm-results"></div>
+    {% include "partials/_s3_retention_notice.html" %}
     <div id="pm-result-actions" class="pm-actions pm-hidden">
       <button type="button" id="pm-send-email" class="ax-btn ax-btn--primary"><i class="bi bi-envelope" aria-hidden="true"></i> <span>{% trans "Demo Sonuçları E-posta Gönder" %}</span></button>
       <a id="pm-download-txt" href="#" class="ax-btn ax-btn--ghost"><i class="bi bi-file-earmark-text" aria-hidden="true"></i> {% trans "TXT İndir" %}</a>

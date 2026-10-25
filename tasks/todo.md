@@ -10,6 +10,73 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(25 Ekim 2026) EN/DE Ödeme Sistemleri Altında Adres Değişikliği** —
+  kullanıcı talebi: EN ve DE sayfalarında ödeme sistemleri bölümünde yer alan
+  adres güncellenmeli. Detay/hangi adres henüz belirtilmedi — sonraki
+  oturumda kullanıcıdan netleştirilecek, sonra uygulanacak.
+
+- [x] **(25 Ekim 2026 TAMAMLANDI) S3 Dosya Saklama Süresi — Kullanıcı Bildirimi Eksik
+  (S3 cron denetimi sırasında bulundu, bkz. sohbet). 9/10 araçta kullanıcı
+  dosyasının ne zaman silineceğini hiç bilmiyor, 3 aracın e-postası yanlış
+  süre söylüyor, gizlilik politikası 4 aracı hiç kapsamıyor. Ayrı onay
+  gereken 3 iş (KIRMIZI ÇİZGİ ilkesi — tek tek uygulanacak):**
+  1. [x] **(25 Ekim 2026 düzeltildi) Metin hatası düzeltmesi:**
+     `bibliometrics/services/job_runner.py:366,424`, `makaleanaliz/services/
+     job_runner.py:166`, `tezanaliz/services/job_runner.py:175` e-postalarındaki
+     "indirme linki 3 gün geçerlidir" metni "7 gün" olarak düzeltildi (kod
+     gerçekte `cleanup_expired_*_s3_files(days=7)` ile 7 gün saklıyor).
+     bibliometrics/makaleanaliz `gettext()` ile sarılıydı — EN/DE `locale/*/
+     LC_MESSAGES/django.po` msgid+msgstr güncellendi, `compilemessages`
+     hatasız derlendi (`docker compose exec web`). tezanaliz dosyasında bu
+     e-posta hiç `gettext` kullanmıyor (dosyada başka hiçbir yerde de yok) —
+     bu maddenin kapsamı dışında bırakıldı, yalnız sayı düzeltildi.
+  2. [x] **(25 Ekim 2026 düzeltildi) Eksik UI/e-posta uyarısı.** Ortak
+     `templates/partials/_s3_retention_notice.html` (ax-alert--info, `{%
+     blocktrans %}` ile "7 gün" metni) oluşturuldu; 9 ana araç (trdizin,
+     openalex, oaipmh, pubmed, semanticscholar, bibliometrics — 2 yer,
+     makaleanaliz, tezanaliz — 2 yer) sonuç/indirme paneline eklendi.
+     istatistik'in 17 aracına (afa, anova, betimsel, cronbach, friedman,
+     karar_agaci, ki_kare, korelasyon, kruskal_wallis, lineer_regresyon,
+     lojistik_regresyon, mann_whitney, normallik, svm, tekrarli_anova,
+     ttesti, wilcoxon) PDF panelinin yanına aynı include eklendi —
+     `analiz_console_base.html` ortak bir sonuç paneli tanımlamadığı için
+     (her araç kendi şablonunda ayrı panel) tek tek yapıldı; flex buton
+     satırının (`d-flex gap-2 flex-wrap`) İÇİNE değil hemen dışına
+     yerleştirilmesine dikkat edildi (ilk denemede pubmed.html'de bu hata
+     yapılıp fark edilip düzeltildi). `orneklem.html` (S3 kullanmıyor, salt
+     hesap makinesi), `analiz_hub.html`, `analiz_console_base.html` kapsam
+     dışı bırakıldı. E-posta tarafında trdizin/oaipmh/openalex/
+     semanticscholar'ın sipariş/sonuç e-postalarına "Not: İndirme linki/
+     bağlantısı 7 gün geçerlidir." eklendi (openalex/semanticscholar zaten
+     `gettext` kullanıyordu, mevcut msgid'i tekrar kullandı; trdizin/oaipmh
+     hiç i18n kullanmıyordu — kapsam dışı, madde 1'deki tezanaliz
+     emsaliyle tutarlı düz metin bırakıldı); pubmed'de dosya e-postayla
+     gitmiyor, ek yapılmadı (yalnız "proje talebi" linki var).
+     `makemessages` ile yeni msgid toplanıp EN/DE çevirileri girildi,
+     `compilemessages` hatasız derlendi. **Dikkat (ders):** ilk
+     `makemessages` denemesinde yanlışlıkla `--no-location` kullanılıp
+     ardından `git checkout` ile geri alınırken madde 1'in .po
+     düzeltmeleri de kazayla silinmiş, hemen fark edilip yeniden
+     uygulandı. Tüm 17+9 şablon `get_template()` ile sözdizimi
+     doğrulandı, 104/104 pytest yeşil, `docker compose restart web`
+     yapıldı.
+  3. [x] **(25 Ekim 2026 düzeltildi) Gizlilik politikası güncellemesi.**
+     `forum/templates/forum/gizlilik_politikasi.html` §4 "Veri Saklama
+     Süreleri" (satır 93) ve §7 GDPR madde listesindeki "Saklama süreleri"
+     bendine (satır 135) bibliometrics/makaleanaliz/tezanaliz/istatistik
+     eklendi. **Ek bulgu:** aynı cümlede Semantic Scholar da hiç
+     geçmiyormuş — todo'nun "zaten kapsanıyor" notu yanlıştı, o da aynı
+     düzeltmeyle eklendi. Yeni liste: OpenAlex, TR Dizin, OAI-PMH, PubMed,
+     Semantic Scholar, Bibliometrik Analiz, Makale Analizi, Tez Analizi,
+     İstatistik Araçları → 7 gün; YÖK Tez → 3 gün (değişmedi). EN/DE
+     çevirileri güncellendi (`makemessages` ile fuzzy eşleşme çıktı,
+     elle düzeltilip fuzzy işareti kaldırıldı), `compilemessages` hatasız
+     derlendi, "Son güncelleme" tarihi 25.10.2026 yapıldı. Şablon
+     `get_template()` ile doğrulandı, 104/104 pytest yeşil, `docker
+     compose restart web` yapıldı.
+
+**→ S3 Dosya Saklama Süresi görevinin 3 maddesi de tamamlandı.**
+
 - [ ] **(25 Ekim 2026) Çalışma Odaları — Kötüye Kullanım Tespiti + KVKK Uyumu
   (kullanıcı talebi: kötü niyetli yazışmaların tespiti, adli makamlara
   verilebilmesi; "admin görünmeden girsin mi" soruldu → KARAR: hayır, ayrıntı
