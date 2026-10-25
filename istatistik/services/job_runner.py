@@ -121,6 +121,7 @@ def _execute_job_in_language(job_id: str):
                 dep_col=opts.get('dep_col'),
                 col1=opts.get('col1'),
                 col2=opts.get('col2'),
+                test_value=opts.get('test_value'),
             )
         elif job.tool == 'anova':
             from .anova import analyze, build_pdf

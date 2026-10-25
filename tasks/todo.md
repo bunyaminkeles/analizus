@@ -10,6 +10,182 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(25 Ekim 2026) İstatistik Araçları Denetimi — 18 aracın tamamı (hesaplama +
+  rapor kalitesi) 7 paralel subagent ile salt-okunur incelendi. Hiçbir dosya
+  değiştirilmedi. Bulgular şiddete göre (en kritik üstte):**
+
+  **YÜKSEK — bilimsel doğruluk/güven kırıcı:**
+  1. [x] **(25 Ekim 2026 düzeltildi)** `istatistik/services/normallik.py` —
+     n>5000 olduğunda kod aslında `scipy.stats.normaltest` (D'Agostino K²)
+     çalıştırıyor ama sonucu `shapiro_stat`/`shapiro_p` adıyla saklıyor; hem
+     PDF hem ekran APA metni koşulsuz "Shapiro-Wilk testi ile incelenmiştir"
+     diyor. Ayrıca sayfa başlığı/meta "Kolmogorov-Smirnov" testini vaat
+     ediyor ama kodda KS testi hiç yok. Üstüne üstlük şablonda normallik
+     eşiği için üç farklı yerde üç farklı sayı var (n<50 / n<2000 / kodda
+     n<=5000), hiçbiri tutmuyor. **Düzeltme:** `test_name`/`test_stat_label`
+     alanları eklendi (n≤5000 → Shapiro-Wilk/W, n>5000 → D'Agostino K²/K²),
+     PDF tablosu+APA metni ve ekran JS'i artık gerçek test adını dinamik
+     gösteriyor; title/meta/metodoloji/SSS'ten KS iddiası kaldırılıp D'Agostino
+     K² ile değiştirildi, üç farklı eşik n≤5000/n>5000'e birleştirildi;
+     `seo_content.py` aynı şekilde düzeltildi. EN/DE çevirileri eklenip
+     `compilemessages` hatasız derlendi; Docker'da küçük (Shapiro) + büyük
+     (D'Agostino) örneklem senaryoları ve EN/DE aktivasyonu test edildi.
+  2. [x] **(25 Ekim 2026 düzeltildi)** `istatistik/templates/istatistik/betimsel.html:177-196`
+     — "Hesaplanan İstatistikler" listesi Mod, Varyans, Çarpıklık (Skewness),
+     Basıklık (Kurtosis) hesaplandığını iddia ediyor + yorum eşik tablosu
+     gösteriyor; ama `betimsel.py` bunların hiçbirini hesaplamıyor (sadece
+     n/mean/std/min/max/median/q1/q3). Kullanıcı ekranda/PDF'te bu değerleri
+     bulamaz. **Düzeltme:** `betimsel.py`'ye Mod/Varyans/Çarpıklık/Basıklık
+     gerçekten eklendi (mod, tüm değerler tekilse `None` döner), PDF'e
+     "Dağılım Şekli ve Ek Ölçüler" tablosu eklendi (A4'e uyan genişlik);
+     `betimsel.html`'e dokunulmadı çünkü ekranda zaten detaylı tablo yok,
+     metodoloji metni artık doğru. Docker'da tekil/tekrarlı veri senaryoları
+     test edildi, PDF başarıyla üretildi.
+  3. [x] **(25 Ekim 2026 düzeltildi)** `istatistik/templates/istatistik/ttesti.html`
+     + SEO metni — "Tek Örneklem t-Testi" üçüncü bir özellik olarak
+     tanıtılıyordu (başlık, "Nedir?" kartı) ama `ttesti.py` yalnızca bağımsız/
+     bağımlı örneklemi destekliyordu; arayüzde de seçenek yoktu. **Düzeltme
+     (kullanıcı kararı: metinden çıkarma değil, gerçekten eklendi):**
+     `ttesti.py`'ye `_one_sample()` dalı (scipy `ttest_1samp`, Cohen's d,
+     %95 GA) + `_conclusion_one_sample()` eklendi; `analyze()` dispatcher ve
+     `build_pdf()` (grup tablosu + APA metni) üç test tipini de kapsıyor;
+     `ttesti.html`'e "Tek Örneklem" toggle butonu + değişken/test değeri
+     seçimi + istemci tarafı doğrulama eklendi; `views.py`/`job_runner.py`
+     `test_value` parametresini taşıyor. EN/DE çevirileri eklenip
+     `compilemessages` hatasız derlendi. Docker'da: bağımsız/bağımlı
+     regresyon testi (bozulmadı), tek örneklem hata senaryoları (değer yok/
+     sayısal değil/sütun yok), TR/EN/DE APA çıktısı ve gerçek `IstatistikJob`
+     üzerinden uçtan uca job_runner akışı test edildi.
+  4. [ ] `istatistik/services/tekrarli_anova.py` — Küresellik (Mauchly) testi
+     hiç uygulanmıyor; kod bunu `sphericity_note` ile PDF'e yazıyor ama ekran
+     şablonunda bu not hiçbir yerde render edilmiyor. PDF indirmeyen kullanıcı
+     bu kritik varsayımın (Tip-I hata riski) test edilmediğinden habersiz kalır.
+  5. [x] **(25 Ekim 2026 düzeltildi)** `istatistik/templates/istatistik/cronbach.html:186-191`
+     vs `cronbach.py:78-88` — Ekrandaki statik "Yorum Eşikleri" tablosu
+     (.50-.70 = "Düşük") ile gerçek hesaplanan `interpretation` (.60-.70 =
+     "Kabul Edilebilir") farklı eşik/etiket kullanıyor; α=0.65 çıkan kullanıcı
+     aynı sayfada çelişen iki yorum görüyor. **Düzeltme:** Tablo koddaki 6
+     banda (<.50/.50-.60/.60-.70/.70-.80/.80-.90/≥.90) birebir uyacak şekilde
+     güncellendi, EN/DE çevirileri eklendi.
+  6. [x] **(25 Ekim 2026, ayrıca yapıldı — kullanıcı talebi)** AI Yorumu artık
+     17 aracın tamamının PDF raporuna da ekleniyor (önceden yalnız ekranda
+     görünüyordu) — ayrıntı §12 ve bu dosyanın ilerisindeki ilgili madde.
+  6. [ ] `istatistik/services/afa.py` — `eigen_table` (özdeğer tablosu)
+     hesaplanıp hiç kullanılmıyor; SSS içeriği kullanıcıya "scree plot kırılma
+     noktası" kriterini öneriyor ama araç scree plot/özdeğer tablosu hiç
+     sunmuyor. Ayrıca faktör yük matrisi + varyans tablosu PDF'e yazılıyor
+     ama ekranda yalnız 5 özet sayı var — AFA'nın asıl çıktısı tarayıcıda
+     görünmüyor.
+  7. [ ] `istatistik/services/korelasyon.py:105` — Isı haritası hücre metin
+     rengi mantığı TERS: `'black' if 0.3<=|r|<=0.7 else 'white'`. RdYlGn
+     skalasında en sık görülen zayıf korelasyonlar (|r|<0.3) açık/krem renkte
+     ama bunlara beyaz metin atanıyor → sayılar neredeyse görünmez (gerçek
+     render ile doğrulanmış).
+  8. [ ] `istatistik/services/ki_kare.py:216-217` (build_pdf, çapraz tablo) —
+     Sabit sütun genişliği (`[3cm]+[2cm]*(n_cols-1)`), A4'te kullanılabilir
+     alan 17cm. 2. değişkenin kategori sayısı 7'yi aşınca (şehir/bölüm/fakülte
+     gibi sık rastlanan değişkenler) fazla sütunlar ve "Toplam" sütunu
+     sayfadan taşıp PDF'te TAMAMEN KAYBOLUYOR (hata vermeden, gerçek render
+     ile doğrulandı) — sessiz veri kaybı.
+  9. [ ] `istatistik/services/ki_kare.py:30` — `chi2_contingency(ct)`
+     parametresiz çağrılıyor → scipy varsayılanı 2×2 tabloda Yates süreklilik
+     düzeltmesini otomatik uyguluyor, ama ne ekranda ne PDF'te ne APA
+     cümlesinde bu düzeltmenin uygulandığı belirtiliyor.
+  10. [ ] `karar_agaci.html` + `svm.html` — Sayfa açıklaması "confusion
+      matrix"/"ağaç yapısı" gösterileceğini vaat ediyor ama ekran JS'i
+      (`showResults()`) bunları hiç render etmiyor, yalnızca PDF'te var.
+      Ayrıca `istatistik/seo_content.py`'deki örnek APA cümleleri
+      ("AUC = .88/.91") bu iki aracın hiç hesaplamadığı bir metriğe atıf
+      yapıyor (ne karar_agaci ne svm AUC/ROC hesaplıyor).
+
+  **ORTA — doğruluk nüansı / tutarsızlık:**
+  11. [ ] `lineer_regresyon.html` + `lojistik_regresyon.html` — kullanıcı
+      dosyasından gelen sütun/kategori adları (`c.name`, `cl.cat0/cat1`)
+      escape'siz `innerHTML`'e yazılıyor → CLAUDE.md güvenlik kuralına aykırı
+      self-XSS riski (kötü niyetli sütun adıyla `<img onerror=...>` vb.).
+  12. [ ] `normallik.py` — çoklu sütun seçiminde satır-bazlı (listwise)
+      `dropna()` kullanılıyor; bir sütundaki eksik veri diğer dolu sütunların
+      satırlarını da siliyor (betimsel.py'deki sütun-bazlı yaklaşımla
+      tutarsız), N'i gereksiz düşürebilir.
+  13. [ ] `normallik.py` — skewness/kurtosis için ±1.96 eşiği ham değere
+      uygulanıyor; bu z-kritik değeridir, ham çarpıklık/basıklığa değil
+      SE'ye bölünmüş z-skoruna uygulanması gerekir — iki farklı yöntem
+      karışmış.
+  14. [ ] `orneklem.py` — korelasyon testi için r≥1 girilirse
+      `math.atanh` "math domain error" ile çöküyor, kullanıcıya ham Python
+      hata metni gösteriliyor; ayrıca t-testi gücü noncentral-t yerine normal
+      yaklaşımla (Laubscher) hesaplanıyor ama sayfa "G*Power alternatifi"
+      vaat ediyor, bu yaklaşıklık belirtilmiyor.
+  15. [ ] `anova.py` — Levene testi hesaplanıp gösteriliyor ama (ttesti.py'nin
+      aksine) varyans homojen değilse Welch düzeltmesine otomatik geçiş yok;
+      ayrıca "Tukey" post-hoc'u aslında Bonferroni ile aynı formülü kullanıyor
+      (kodda dürüstçe "Tukey (Bonferroni yaklaşımı)" etiketli ve sonuç
+      ekranında bu şekilde görünüyor — TEMİZ), ama analiz ÖNCESİ sayfa
+      metni/buton/SEO açıklaması gerçek Tukey HSD izlenimi veriyor.
+  16. [ ] `anova.html:220` — "Tukey HSD"/"Bonferroni"/"Games-Howell" terimleri
+      ayrı `{% trans %}` parçalarına bölünmüş — CLAUDE.md'nin "parça
+      birleştirme yok, tam cümle msgid" i18n kuralına aykırı.
+  17. [ ] `kruskal_wallis.py:21` — Grup etiketleri `sorted(..., key=str)` ile
+      STRING olarak sıralanıyor (1,10,2,20 gibi görünebilir); post-hoc
+      gerçek Dunn testi değil, Bonferroni+ikili Mann-Whitney (dokümante
+      edilmiş ama farklı yöntem).
+  18. [ ] `mann_whitney.html` + `kruskal_wallis.html` — `views.py`
+      `active_job_id`'yi context'e koyuyor ama şablonlar
+      wilcoxon.html/friedman.html'deki gibi bunu okuyup `startPolling()`
+      çağırmıyor; analiz sürerken sayfa yenilenirse job takibi kopuyor.
+  19. [ ] `lojistik_regresyon.py` — VIF/çoklu bağlantı kontrolü hiç yok ama
+      SEO metni ve "Nedir?" kartı VIF'den bahsediyor; hedef kategori
+      (y=1) otomatik alfabetik sıralamayla seçiliyor, kullanıcı seçemiyor —
+      Exp(B) yönü beklenenin tersi okunabilir.
+  20. [ ] `lineer_regresyon.html`/`lojistik_regresyon.html` — ekranda
+      Bootstrap'ın varsayılan mavisi kullanılıyor, PDF'te ise marka rengi
+      (navy/teal) — ekran/PDF renk tutarsızlığı.
+  21. [ ] `static/css/analiz_console.css` (254, 273, 318 satırları) —
+      `var(--ax-primary)` token'ı projede HİÇ tanımlanmamış (CLAUDE.md'deki
+      bilinen `--ax-color-primary` hatasından farklı, ayrı bir eksik token);
+      SSS accordion oku, "İlgili Araçlar" çip rengi, APA kutusu kenarlığı
+      tarayıcıda varsayılana düşüyor.
+  22. [ ] `svm.py:34-36` — n>5000'de iddia edilen/beklenen stratified
+      örnekleme aslında düz rastgele (`sample()`'da `stratify` yok); ayrıca
+      hem karar_agaci hem svm'de class imbalance uyarısı hiç yok.
+  23. [ ] `cronbach.py:58` — 2 maddelik ölçekte "madde silinince alfa"
+      hesabı ZeroDivisionError ile çöküyor (genel except belirsiz hata
+      mesajı veriyor).
+  24. [ ] `ki_kare.py` — Beklenen frekans düşük 2×2 durumlarda bile ana
+      sonuç/APA cümlesi her zaman ki-kare p-değerine dayanıyor, Fisher
+      sonucu ayrıca gösterilse de öncelenmiyor.
+  25. [ ] `requirements.txt` — `scipy` sürümü sabitlenmemiş; mann_whitney/
+      kruskal_wallis/wilcoxon/friedman doğrudan `scipy.stats`'a bağlı
+      (CLAUDE.md kuralı: API'ye doğrudan bağlı paketler sabitlenmeli).
+
+  **DÜŞÜK (toplu not, tek tek takip gerekmez ama bilinsin):** ttesti.py'de
+  bağımsız örneklem CI formülü ile t-istatistiği tutarsız (SE pooled/unpooled
+  karışık); anova.py anlamsız sonuçta F değerini "—" yazıyor (hesaplı olmasına
+  rağmen); afa.py'de eğik rotasyonda varyans tablosu varimax mantığıyla
+  raporlanıyor + KMO terimi "Düşük"/"Zayıf" tutarsız; korelasyon.html'de
+  Kendall açıklaması iki yerde farklı terim kullanıyor; kruskal_wallis 2
+  grupla da çalışmaya izin veriyor (Mann-Whitney'e yönlendirme yok);
+  karar_agaci.py'de `export_text(max_depth=5)` hardcoded; seo_content.py'de
+  "Essensiyal" yazım hatası (doğrusu "Esansiyel").
+
+  **TASARIM (ax- sistemi) — geniş çaplı, bilinen Bootstrap Kaldırma
+  Migrasyonu Faz 3 borcu, yeni/izole hata değil ama envantere eklendi:**
+  ax- sistemine HİÇ geçmemiş şablonlar: `orneklem.html`, `ki_kare.html`,
+  `mann_whitney.html`, `kruskal_wallis.html`, `lineer_regresyon.html`,
+  `lojistik_regresyon.html`, `ttesti.html`, `anova.html`, `tekrarli_anova.html`,
+  `karar_agaci.html`, `svm.html` — hepsinde ham Bootstrap bileşenleri
+  (`card`/`btn`/`badge`/`alert`/`form-select`/`table table-dark`) + hardcode
+  hex/rgba renkler. `korelasyon.html`/`cronbach.html`/`afa.html`/
+  `wilcoxon.html`/`friedman.html` büyük ölçüde ax-'e geçmiş ama hâlâ
+  Bootstrap utility sınıfı (`d-flex`, `fw-bold`, `g-4` vb.) veya birkaç
+  hardcode renk kalıntısı taşıyor. `ki_kare.html` özellikle göze batıyor çünkü
+  aynı kategorideki `korelasyon.html` zaten geçmiş durumda.
+
+  **Düzeltme sırası kullanıcı onayına bağlı** — CLAUDE.md kırmızı çizgisi
+  gereği hiçbir madde otomatik uygulanmadı; kullanıcı hangilerini
+  önceliklendireceğini seçtikten sonra değişecek dosyalar listelenip onay
+  alınacak, sonra tek tek uygulanacak.
+
 - [ ] **(22 Ekim 2026) `onboarding.html` ax- tasarım sistemine aykırı:**
   Bootstrap UI bileşenleri (`card`, `btn btn-primary/outline-secondary/
   success/link`, `text-muted`, `text-danger`) doğrudan kullanılıyor
@@ -1237,10 +1413,13 @@ maddelerde.
   admin'den açıldı. **Render (dev/staging) henüz yapılmadı** — tamamen ayrı bir ortam, `.env` dosyası okumuyor,
   `ANTHROPIC_API_KEY` Render dashboard'undan ayrıca girilmeli + orada da (muhtemelen ayrı DB) flag açılmalı;
   kullanıcı isterse ayrı görev.
-  - [ ] **(11 Ekim 2026, kullanıcı: "todo'ya yaz") AI Yorumu PDF raporuna eklenmedi** — yalnız web ekranında
-    görünüyor, `build_pdf()` fonksiyonlarına dokunulmadı (kapsam dışı kaldı, bilinçli bir hariç tutma değildi).
-    İstenirse 17 `istatistik/services/<tool>.py`'deki `build_pdf()`'in her birine, APA bölümünün altına benzer
-    bir "AI Yorumu" paragrafı eklenecek (`result_data['ai_comment']` zaten mevcut, sadece PDF'e yazdırılmıyor).
+  - [x] **(11 Ekim 2026 açıldı → 25 Ekim 2026 tamamlandı) AI Yorumu artık PDF raporuna da ekleniyor.**
+    `istatistik/services/pdf_fonts.py`'ye ortak `append_ai_comment(story, result, style, bg_hex, box_color)`
+    yardımcı fonksiyonu eklendi (APA kutusunun hemen altına, ekrandaki gibi ayrı kutu/ikon olmadan ince bir üst
+    çizgiyle, aracın kendi marka rengiyle — bkz. §12 "UI" notu). 17 `istatistik/services/<tool>.py` dosyasının
+    her birinin `build_pdf()`'ine 2 satır eklendi (import + çağrı, `apa_tbl` eklendikten hemen sonra). Docker
+    içinde 17 aracın tamamı sentetik veriyle `analyze()`+`build_pdf()` çalıştırılıp hem `ai_comment` YOK hem VAR
+    senaryosu doğrulandı (hata yok, PDF boyutu arttı) — `orneklem` kapsam dışı kaldı (zaten AI yorumu çalışmıyor).
   **Faz C tamamlandı (13 Ekim 2026) — yukarıdaki "AÇIK İŞLER" listesinin başında ayrıntılı kayıt var,
   `main`'de canlı. Sırada Faz D:** Bibliometrics (migration + `analyzer.py` ham veri yakalama — en karmaşık faz).
 - [x] **(9 Ekim 2026 → tamamlandı, main'de canlı) `/hakkimizda/` sayfası sadeleştirildi.** Tek blok olduğu

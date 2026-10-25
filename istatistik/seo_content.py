@@ -418,10 +418,12 @@ SEO_CONTENT = {
         ),
         'when_to_use': (
             gettext_lazy('Parametrik bir test uygulamadan önce varsayım kontrolü olarak kullanın. '
-            'Shapiro-Wilk n ≤ 2000 için en güçlü testtir. Büyük örneklemlerde '
-            '(n > 200) küçük sapmalar bile anlamlı çıkabileceğinden histogram ve '
-            'Q-Q grafiğine de bakın. n ≥ 30 olduğunda merkezi limit teoremi gereği '
-            'hafif sapmaları görmezden gelmek genellikle kabul edilebilir.')
+            'Shapiro-Wilk testi n ≤ 5000 için uygulanır; n > 5000 olan örneklemlerde '
+            'Shapiro-Wilk güvenilirliğini yitirdiğinden otomatik olarak D\'Agostino K² '
+            'testine geçilir. Büyük örneklemlerde (n > 200) küçük sapmalar bile anlamlı '
+            'çıkabileceğinden histogram ve Q-Q grafiğine de bakın. n ≥ 30 olduğunda '
+            'merkezi limit teoremi gereği hafif sapmaları görmezden gelmek genellikle '
+            'kabul edilebilir.')
         ),
         'assumptions': (
             gettext_lazy('Bağımsızlık: Gözlemler birbirinden bağımsız olmalıdır. '

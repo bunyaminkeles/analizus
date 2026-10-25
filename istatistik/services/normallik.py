@@ -32,9 +32,13 @@ def analyze(df, columns=None) -> dict:
 
         if n <= 5000:
             stat, p = sp_stats.shapiro(data)
+            test_name = gettext('Shapiro-Wilk')
+            test_stat_label = 'W'
         else:
-            # Shapiro-Wilk 5000+ için güvenilmez; normal test kullan
+            # Shapiro-Wilk 5000+ için güvenilmez; D'Agostino K² kullan
             stat, p = sp_stats.normaltest(data)
+            test_name = gettext("D'Agostino K²")
+            test_stat_label = 'K²'
 
         is_normal = bool(p >= 0.05)
 
@@ -60,6 +64,8 @@ def analyze(df, columns=None) -> dict:
             'kurtosis': round(kurt, 3),
             'shapiro_stat': round(float(stat), 4),
             'shapiro_p': round(float(p), 4),
+            'test_name': test_name,
+            'test_stat_label': test_stat_label,
             'is_normal': is_normal,
             'recommendation': recommendation,
             'rec_color': rec_color,
@@ -97,6 +103,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
 
     # Türkçe karakter desteği için DejaVu fontlarını kaydet
     _register_fonts()
+    from .pdf_fonts import append_ai_comment
 
     buf = io.BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=A4,
@@ -119,7 +126,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
 
     # Özet tablo
     story.append(Paragraph(gettext('Normallik Test Sonuçları'), h2_style))
-    headers = [gettext('Değişken'), 'N', gettext('Ort.'), gettext('SS'), gettext('Çarpıklık'), gettext('Basıklık'), 'W/stat', 'p', gettext('Normal?')]
+    headers = [gettext('Değişken'), 'N', gettext('Ort.'), gettext('SS'), gettext('Çarpıklık'), gettext('Basıklık'), gettext('Test'), gettext('İstatistik'), 'p', gettext('Normal?')]
     rows = [headers]
     for r in result['variables']:
         rows.append([
@@ -129,19 +136,20 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
             f"{r['std']:.3f}",
             f"{r['skewness']:.3f}",
             f"{r['kurtosis']:.3f}",
-            f"{r['shapiro_stat']:.4f}",
+            r['test_name'],
+            f"{r['test_stat_label']} = {r['shapiro_stat']:.4f}",
             f"{r['shapiro_p']:.4f}",
             gettext('Evet') if r['is_normal'] else gettext('Hayır'),
         ])
 
-    col_w = [3.5*cm, 1.2*cm, 1.8*cm, 1.8*cm, 2*cm, 2*cm, 2*cm, 1.8*cm, 1.8*cm]
+    col_w = [2.6*cm, 0.8*cm, 1.5*cm, 1.5*cm, 1.7*cm, 1.7*cm, 2.2*cm, 2.2*cm, 1.4*cm, 1.3*cm]
     tbl = Table(rows, colWidths=col_w)
     tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e3a5f')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('FONTNAME', (0, 0), (-1, 0), 'DejaVuSans-Bold'),
         ('FONTNAME', (0, 1), (-1, -1), 'DejaVuSans'),
-        ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ('FONTSIZE', (0, 0), (-1, -1), 7),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.whitesmoke, colors.white]),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('PADDING', (0, 0), (-1, -1), 4),
@@ -174,15 +182,15 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     for r in result['variables']:
         # APA: 'p < .001' ya da 'p = 0.11' (önceden 'p = < .001' yazıyordu)
         p_s = 'p < .001' if r['shapiro_p'] < 0.001 else f"p = {r['shapiro_p']}"
-        # Tam cümle msgid — dillerde kelime sırası farklı
+        # Tam cümle msgid — dillerde kelime sırası farklı; {test}/{stat} gerçekte
+        # uygulanan yönteme göre değişir (n<=5000 Shapiro-Wilk, n>5000 D'Agostino K²)
         # {süslü} yer tutucu: şablondaki {% trans %} %-işaretini kaçışladığından
         # Python ve JS ancak bu biçimde AYNI msgid'i paylaşır
-        tmpl = (gettext('{var} değişkeninin normal dağılım gösterdiği belirlenmiştir (W = {w}, {p}).')
+        tmpl = (gettext('{var} değişkeni {test} testi ile incelenmiş ve normal dağılım gösterdiği belirlenmiştir ({stat} = {w}, {p}).')
                 if r['is_normal'] else
-                gettext('{var} değişkeninin normal dağılım göstermediği belirlenmiştir (W = {w}, {p}).'))
-        apa_lines.append(tmpl.format(var=r['variable'], w=r['shapiro_stat'], p=p_s))
-    apa_text = (gettext('Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile incelenmiştir.')
-                + ' ' + ' '.join(apa_lines))
+                gettext('{var} değişkeni {test} testi ile incelenmiş ve normal dağılım göstermediği belirlenmiştir ({stat} = {w}, {p}).'))
+        apa_lines.append(tmpl.format(var=r['variable'], test=r['test_name'], stat=r['test_stat_label'], w=r['shapiro_stat'], p=p_s))
+    apa_text = ' '.join(apa_lines)
     apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
@@ -190,6 +198,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('PADDING', (0, 0), (-1, -1), 8),
     ]))
     story.append(apa_tbl)
+    append_ai_comment(story, result, normal, '#f0f4ff', '#1e3a5f')
 
     doc.build(story)
     return buf.getvalue()

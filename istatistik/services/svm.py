@@ -129,7 +129,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import cm
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
-    from .pdf_fonts import register_fonts
+    from .pdf_fonts import register_fonts, append_ai_comment
     register_fonts()
 
     buf = _io.BytesIO()
@@ -244,6 +244,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('PADDING', (0, 0), (-1, -1), 8),
     ]))
     story.append(apa_tbl)
+    append_ai_comment(story, result, norm_s, '#f0fdfa', TEAL)
 
     doc.build(story)
     return buf.getvalue()

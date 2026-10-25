@@ -9,16 +9,20 @@ from scipy import stats
 
 
 def analyze(df, test_type: str, group_col: str = None,
-            dep_col: str = None, col1: str = None, col2: str = None) -> dict:
+            dep_col: str = None, col1: str = None, col2: str = None,
+            test_value=None) -> dict:
     """
-    test_type: 'independent' veya 'paired'
-    Bağımsız: group_col (kategorik, 2 grup) + dep_col (sayısal)
-    Bağımlı:  col1, col2 (her biri sayısal)
+    test_type: 'independent', 'paired' veya 'one_sample'
+    Bağımsız:     group_col (kategorik, 2 grup) + dep_col (sayısal)
+    Bağımlı:      col1, col2 (her biri sayısal)
+    Tek Örneklem: dep_col (sayısal) + test_value (teorik/referans ortalama)
     """
     if test_type == 'independent':
         return _independent(df, group_col, dep_col)
     elif test_type == 'paired':
         return _paired(df, col1, col2)
+    elif test_type == 'one_sample':
+        return _one_sample(df, dep_col, test_value)
     else:
         raise ValueError(gettext('Bilinmeyen test tipi: %(test_type)s') % {'test_type': test_type})
 
@@ -141,6 +145,53 @@ def _paired(df, col1: str, col2: str) -> dict:
     }
 
 
+def _one_sample(df, dep_col: str, test_value) -> dict:
+    if not dep_col or dep_col not in df.columns:
+        raise ValueError(gettext('"%(dep_col)s" sütunu bulunamadı.') % {'dep_col': dep_col})
+    if test_value is None or str(test_value).strip() == '':
+        raise ValueError(gettext('Karşılaştırılacak teorik/referans değer (test değeri) girilmelidir.'))
+    try:
+        test_value = float(test_value)
+    except (TypeError, ValueError):
+        raise ValueError(gettext('Test değeri sayısal olmalıdır.'))
+
+    data = df[dep_col].dropna().values.astype(float)
+    n = len(data)
+    if n < 5:
+        raise ValueError(gettext('En az 5 gözlem gereklidir.'))
+
+    t_stat, p_val = stats.ttest_1samp(data, test_value)
+    mean = float(data.mean())
+    std = float(data.std(ddof=1))
+    df_val = n - 1
+
+    cohens_d = (mean - test_value) / std if std > 0 else 0.0
+
+    se = std / np.sqrt(n)
+    t_crit = stats.t.ppf(0.975, df=df_val)
+    ci_low = mean - t_crit * se
+    ci_high = mean + t_crit * se
+
+    return {
+        'test_type': 'one_sample',
+        'test_label': gettext('Tek Örneklem t-Testi'),
+        'dep_col': dep_col,
+        'test_value': round(test_value, 3),
+        'n': n,
+        'mean': round(mean, 3),
+        'std': round(std, 3),
+        't_stat': round(float(t_stat), 3),
+        'p_value': round(float(p_val), 4),
+        'df': df_val,
+        'cohens_d': round(float(cohens_d), 3),
+        'effect_interpretation': _interpret_d(abs(cohens_d)),
+        'ci_low': round(float(ci_low), 3),
+        'ci_high': round(float(ci_high), 3),
+        'significant': float(p_val) < 0.05,
+        'conclusion': _conclusion_one_sample(p_val, dep_col, test_value, mean),
+    }
+
+
 def _welch_df(g1, g2) -> float:
     v1, v2 = g1.var(ddof=1), g2.var(ddof=1)
     n1, n2 = len(g1), len(g2)
@@ -188,13 +239,26 @@ def _conclusion_paired(p, c1, c2, diff_mean) -> str:
     return gettext('{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlı değildir ({p}).').format(**v)
 
 
+def _conclusion_one_sample(p, dep_col, test_value, mean) -> str:
+    v = {'dep': dep_col, 'value': f'{test_value:.3f}', 'mean': f'{mean:.3f}',
+         'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}')}
+    if p < 0.05:
+        if mean > test_value:
+            return gettext('{dep} değişkeninin ortalaması ({mean}), test değerinden ({value}) istatistiksel '
+                           'olarak anlamlı şekilde yüksektir ({p}).').format(**v)
+        return gettext('{dep} değişkeninin ortalaması ({mean}), test değerinden ({value}) istatistiksel '
+                       'olarak anlamlı şekilde düşüktür ({p}).').format(**v)
+    return gettext('{dep} değişkeninin ortalaması ({mean}) ile test değeri ({value}) arasında istatistiksel '
+                   'olarak anlamlı bir fark bulunmamaktadır ({p}).').format(**v)
+
+
 def build_pdf(result: dict, filename: str, df=None) -> bytes:
     from reportlab.lib.pagesizes import A4
     from reportlab.lib import colors
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import cm
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-    from .pdf_fonts import register_fonts
+    from .pdf_fonts import register_fonts, append_ai_comment
     register_fonts()
 
     buf = io.BytesIO()
@@ -218,11 +282,18 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
             [gettext('Ortalama'), f"{result['g1_mean']:.3f}", f"{result['g2_mean']:.3f}"],
             ['SS', f"{result['g1_std']:.3f}", f"{result['g2_std']:.3f}"],
         ]
-    else:
+    elif result['test_type'] == 'paired':
         rows = [
             ['', result['col1'], result['col2']],
             [gettext('Ortalama'), f"{result['col1_mean']:.3f}", f"{result['col2_mean']:.3f}"],
             ['SS', f"{result['col1_std']:.3f}", f"{result['col2_std']:.3f}"],
+        ]
+    else:  # one_sample
+        rows = [
+            ['', result['dep_col'], gettext('Test Değeri')],
+            ['n', str(result['n']), ''],
+            [gettext('Ortalama'), f"{result['mean']:.3f}", f"{result['test_value']:.3f}"],
+            ['SS', f"{result['std']:.3f}", ''],
         ]
 
     grp_tbl = Table(rows, colWidths=[6*cm, 5*cm, 5*cm])
@@ -279,10 +350,16 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
             test=result['test_label'], df=result['df'], t=f"{result['t_stat']:.3f}", p=p_str,
             d=f"{result['cohens_d']:.3f}", m1=f"{result['g1_mean']:.3f}", s1=f"{result['g1_std']:.3f}",
             m2=f"{result['g2_mean']:.3f}", s2=f"{result['g2_std']:.3f}")
-    else:
+    elif result['test_type'] == 'paired':
         apa_text = gettext('{c1} ve {c2} arasındaki fark {test} ile test edilmiştir: t({df}) = {t}, {p}, d = {d}.').format(
             c1=result['col1'], c2=result['col2'], test=result['test_label'], df=result['df'],
             t=f"{result['t_stat']:.3f}", p=p_str, d=f"{result['cohens_d']:.3f}")
+    else:  # one_sample
+        apa_text = gettext('{dep} değişkeninin ortalaması, test değeri olan {value} ile {test} kullanılarak '
+                           'karşılaştırılmıştır: t({df}) = {t}, {p}, d = {d} (M = {mean}, SS = {sd}).').format(
+            dep=result['dep_col'], value=f"{result['test_value']:.3f}", test=result['test_label'],
+            df=result['df'], t=f"{result['t_stat']:.3f}", p=p_str, d=f"{result['cohens_d']:.3f}",
+            mean=f"{result['mean']:.3f}", sd=f"{result['std']:.3f}")
     apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
@@ -290,6 +367,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('PADDING', (0, 0), (-1, -1), 8),
     ]))
     story.append(apa_tbl)
+    append_ai_comment(story, result, norm_s, '#f0f4ff', '#1e3a5f')
 
     doc.build(story)
     return buf.getvalue()
