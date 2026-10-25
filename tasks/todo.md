@@ -296,9 +296,18 @@ maddelerde.
       olabilir, precision/recall/F1'e de bakın." EN/DE çevirileri eklendi,
       Docker'da stratified örnekleme oran koruması + dengeli/dengesiz veri
       senaryoları + PDF üretimi test edildi, 104/104 pytest yeşil.
-  23. [ ] `cronbach.py:58` — 2 maddelik ölçekte "madde silinince alfa"
-      hesabı ZeroDivisionError ile çöküyor (genel except belirsiz hata
-      mesajı veriyor).
+  23. [x] **(25 Ekim 2026 düzeltildi)** `cronbach.py:58` — 2 maddelik
+      ölçekte "madde silinince alfa" hesabı ZeroDivisionError ile
+      çöküyordu (k2=1 olunca Spearman-Brown düzeltme katsayısı
+      `k2/(k2-1)` = `1/0`; genel except belirsiz hata mesajı veriyordu).
+      **Düzeltme:** `k2 < 2` (2 maddelik ölçekte kaçınılmaz) veya `tv2 <= 0`
+      durumunda `alpha_if_deleted` artık `None` dönüyor (önceki `float('nan')`
+      sentinel'i JSON'da geçersiz `NaN` token'ı üretip polling response'unu
+      sessizce bozabilirdi — bu potansiyel ikinci hata da önlendi); PDF
+      tablosu `None` için `'—'` gösteriyor. Ekranda bu alan zaten
+      gösterilmiyor (yalnız PDF'te var), JS değişikliği gerekmedi. Docker'da
+      2 maddelik (çökme yok, `None` + JSON serialize + PDF OK) ve 4 maddelik
+      (regresyon yok) senaryolar test edildi, 104/104 pytest yeşil.
   24. [ ] `ki_kare.py` — Beklenen frekans düşük 2×2 durumlarda bile ana
       sonuç/APA cümlesi her zaman ki-kare p-değerine dayanıyor, Fisher
       sonucu ayrıca gösterilse de öncelenmiyor.

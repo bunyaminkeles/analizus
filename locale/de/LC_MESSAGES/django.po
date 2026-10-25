@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 20:10+0300\n"
+"POT-Creation-Date: 2026-10-25 20:17+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4143,7 +4143,7 @@ msgid "Seviye"
 msgstr "Niveau"
 
 #: forum/templates/forum/egitim_talebi.html:124 istatistik/services/afa.py:266
-#: istatistik/services/cronbach.py:135
+#: istatistik/services/cronbach.py:139
 msgid "Katılımcı Sayısı"
 msgstr "Teilnehmerzahl"
 
@@ -13038,7 +13038,7 @@ msgid "Açıklayıcı Faktör Analizi Raporu"
 msgstr "Bericht zur explorativen Faktorenanalyse"
 
 #: istatistik/services/afa.py:259 istatistik/services/anova.py:168
-#: istatistik/services/betimsel.py:127 istatistik/services/cronbach.py:128
+#: istatistik/services/betimsel.py:127 istatistik/services/cronbach.py:132
 #: istatistik/services/friedman.py:119 istatistik/services/karar_agaci.py:154
 #: istatistik/services/ki_kare.py:136 istatistik/services/korelasyon.py:162
 #: istatistik/services/kruskal_wallis.py:151
@@ -13051,7 +13051,7 @@ msgstr "Bericht zur explorativen Faktorenanalyse"
 msgid "Dosya: %(filename)s"
 msgstr "Datei: %(filename)s"
 
-#: istatistik/services/afa.py:265 istatistik/services/cronbach.py:134
+#: istatistik/services/afa.py:265 istatistik/services/cronbach.py:138
 msgid "Madde Sayısı"
 msgstr "Anzahl der Items"
 
@@ -13092,7 +13092,7 @@ msgstr "% Varianz"
 msgid "Faktör Yük Matrisi (Rotasyonlu)"
 msgstr "Faktorladungsmatrix (rotiert)"
 
-#: istatistik/services/afa.py:320 istatistik/services/cronbach.py:155
+#: istatistik/services/afa.py:320 istatistik/services/cronbach.py:159
 #: istatistik/templates/istatistik/afa.html:458
 msgid "Madde"
 msgstr "Item"
@@ -13115,7 +13115,7 @@ msgid "Kümülatif %"
 msgstr "Kumulativ %"
 
 #: istatistik/services/afa.py:369 istatistik/services/anova.py:254
-#: istatistik/services/betimsel.py:203 istatistik/services/cronbach.py:182
+#: istatistik/services/betimsel.py:203 istatistik/services/cronbach.py:186
 #: istatistik/services/friedman.py:201 istatistik/services/karar_agaci.py:244
 #: istatistik/services/ki_kare.py:254 istatistik/services/korelasyon.py:256
 #: istatistik/services/kruskal_wallis.py:235
@@ -13244,7 +13244,7 @@ msgid "Grup"
 msgstr "Gruppe"
 
 #: istatistik/services/anova.py:173 istatistik/services/betimsel.py:136
-#: istatistik/services/cronbach.py:155 istatistik/services/friedman.py:124
+#: istatistik/services/cronbach.py:159 istatistik/services/friedman.py:124
 #: istatistik/services/kruskal_wallis.py:156
 #: istatistik/services/mann_whitney.py:128 istatistik/services/normallik.py:137
 #: istatistik/services/tekrarli_anova.py:154
@@ -13405,7 +13405,7 @@ msgid "Hayır"
 msgstr "Nein"
 
 #: istatistik/services/anova.py:250 istatistik/services/betimsel.py:159
-#: istatistik/services/cronbach.py:137 istatistik/services/friedman.py:197
+#: istatistik/services/cronbach.py:141 istatistik/services/friedman.py:197
 #: istatistik/services/ki_kare.py:173 istatistik/services/kruskal_wallis.py:231
 #: istatistik/services/mann_whitney.py:174
 #: istatistik/services/tekrarli_anova.py:247 istatistik/services/ttesti.py:339
@@ -13488,7 +13488,7 @@ msgstr "Stetige Variablen"
 msgid "Değişken"
 msgstr "Variable"
 
-#: istatistik/services/betimsel.py:136 istatistik/services/cronbach.py:155
+#: istatistik/services/betimsel.py:136 istatistik/services/cronbach.py:159
 #: istatistik/services/normallik.py:137
 #: istatistik/templates/istatistik/anova.html:243
 #: istatistik/templates/istatistik/kruskal_wallis.html:330
@@ -13589,47 +13589,47 @@ msgstr "Mindestens 5 gültige Zeilen (Teilnehmende) sind erforderlich."
 msgid "Toplam varyans sıfır — tüm satırlar aynı değere sahip."
 msgstr "Die Gesamtvarianz ist null — alle Zeilen haben denselben Wert."
 
-#: istatistik/services/cronbach.py:79
+#: istatistik/services/cronbach.py:83
 msgid "Kabul Edilemez (α < 0.50)"
 msgstr "Inakzeptabel (α < 0.50)"
 
-#: istatistik/services/cronbach.py:81
+#: istatistik/services/cronbach.py:85
 msgid "Düşük (0.50 ≤ α < 0.60)"
 msgstr "Schwach (0.50 ≤ α < 0.60)"
 
-#: istatistik/services/cronbach.py:83
+#: istatistik/services/cronbach.py:87
 msgid "Kabul Edilebilir (0.60 ≤ α < 0.70)"
 msgstr "Akzeptabel (0.60 ≤ α < 0.70)"
 
-#: istatistik/services/cronbach.py:85
+#: istatistik/services/cronbach.py:89
 msgid "İyi (0.70 ≤ α < 0.80)"
 msgstr "Gut (0.70 ≤ α < 0.80)"
 
-#: istatistik/services/cronbach.py:87
+#: istatistik/services/cronbach.py:91
 msgid "Çok İyi (0.80 ≤ α < 0.90)"
 msgstr "Sehr gut (0.80 ≤ α < 0.90)"
 
-#: istatistik/services/cronbach.py:88
+#: istatistik/services/cronbach.py:92
 msgid "Mükemmel (α ≥ 0.90)"
 msgstr "Exzellent (α ≥ 0.90)"
 
-#: istatistik/services/cronbach.py:127
+#: istatistik/services/cronbach.py:131
 msgid "Güvenilirlik Analizi Raporu"
 msgstr "Bericht zur Reliabilitätsanalyse"
 
-#: istatistik/services/cronbach.py:154 istatistik/views.py:110
+#: istatistik/services/cronbach.py:158 istatistik/views.py:110
 msgid "Madde İstatistikleri"
 msgstr "Itemstatistiken"
 
-#: istatistik/services/cronbach.py:155
+#: istatistik/services/cronbach.py:159
 msgid "Düz. M-T Kor."
 msgstr "Korr. Item-Skala"
 
-#: istatistik/services/cronbach.py:155
+#: istatistik/services/cronbach.py:159
 msgid "Silinince α"
 msgstr "α bei Ausschluss"
 
-#: istatistik/services/cronbach.py:184
+#: istatistik/services/cronbach.py:188
 #: istatistik/templates/istatistik/cronbach.html:252
 #, python-brace-format
 msgid ""
@@ -13921,9 +13921,9 @@ msgid ""
 "Doğruluk (accuracy) tek başına yanıltıcı olabilir; kesinlik, duyarlılık ve "
 "F1 skorlarına da bakın."
 msgstr ""
-"Die Klassen sind unausgeglichen verteilt (Verhältnis größte/kleinste "
-"Klasse = %(ratio)s). Die Genauigkeit (Accuracy) allein kann irreführend "
-"sein; prüfen Sie auch Präzision, Sensitivität und den F1-Wert."
+"Die Klassen sind unausgeglichen verteilt (Verhältnis größte/kleinste Klasse "
+"= %(ratio)s). Die Genauigkeit (Accuracy) allein kann irreführend sein; "
+"prüfen Sie auch Präzision, Sensitivität und den F1-Wert."
 
 #: istatistik/services/karar_agaci.py:153
 msgid "Karar Ağacı Sınıflandırma Raporu"
