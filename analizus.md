@@ -939,13 +939,35 @@ session çerezi; bkz. §26).
 tam ekran olmayan pencere) masaüstü menüsü erken açılıp Giriş/Kayıt/kullanıcı adı ekranın sağından taşıyordu.
 Kırılım tasarım sisteminin kendi `--ax-container-max`/`ax-xl` sınırı olan 1280px'e çekildi (detay §27 CSS/Frontend).
 
-### Bootstrap Kaldırma Migrasyonu (Faz 3 sürüyor — 12 Ekim 2026)
+### Bootstrap Kaldırma Migrasyonu (Faz 3 sürüyor — 25 Ekim 2026)
 Kademeli plan: Faz 1 (eksik `ax-*` CSS bileşenlerini inşa et) ve Faz 2
 (vanilla JS modal/dropdown controller — `ax-modal.js`/`ax-dropdown.js`)
 TAMAMLANDI. Faz 3 (template template Bootstrap component class'larını
-`ax-*`'e taşıma) sürüyor — 11 dosya migre edildi, ilerleme ve dosya bazlı
+`ax-*`'e taşıma) sürüyor — 19 dosya migre edildi, ilerleme ve dosya bazlı
 detay `tasks/todo.md` içinde "Bootstrap Kaldırma — Kademeli Migration Planı"
 başlığı altında.
+
+**25 Ekim 2026 turunda eklenen:** `.ax-btn--outline-info` (`search_results.html`'de
+camgöbeği "Yeni Arama" CTA'sı için — `.ax-btn--info` solid hâli 12 Ekim'de
+vardı, outline hali yoktu; `.ax-btn--outline-primary` deseniyle inşa edildi)
+ve `.ax-alert--cyan` (`post_job.html`'deki ilan süresi bilgi kutusu için —
+**dikkat:** `.ax-alert--info` adına rağmen MOR/`--ax-accent-primary` renkli,
+gerçek Bootstrap camgöbeği `alert-info`'ya karşılık gelmiyor; aynı camgöbeği
+kalıbı `my_jobs.html`/`referral_dashboard.html`'de de var, oralarda da bu
+yeni varyant kullanılacak). Ayrıca `JobPostForm` (`forum/forms.py`) widget
+`class` attribute'ları da bu turda `form-control`/`form-select` →
+`ax-form-control`/`ax-form-select`'e taşındı — Bootstrap class'ları her
+zaman template'te olmuyor, bazı formlarda Python tarafında tanımlı.
+
+**Yan bulgular (25 Ekim 2026):**
+- `forum/templates/forum/market/_job_rules.html` ve aynı kalıbı taşıyan
+  `job_detail.html:83` (ikincisi henüz düzeltilmedi, "Ağır" migrasyon
+  grubunda) `ax-alert ax-alert--warn` kullanıyordu — doğrusu
+  `ax-alert--warning`, `--warn` hiç tanımlı değil, kutu tamamen stilsiz
+  render oluyordu.
+- `forum/templates/forum/section_detail.html` migrasyon kapsamından
+  çıkarıldı — `views.section_detail` artık yalnızca `forum_index`'e kalıcı
+  yönlendirme yapıyor, template hiç render edilmiyor (yetim dosya).
 
 **12 Ekim 2026 turunda eklenen:** `.ax-btn--outline-light` (`about.html`'in
 11. dosya olarak migrasyonunda eklendi — Bootstrap'ın `btn-outline-light`'ı
@@ -2860,6 +2882,30 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 #### Geçmiş Turlar (Kronoloji)
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
+
+- **25 Ekim 2026 — Bootstrap Kaldırma Migrasyonu Faz 3 turu (main'de canlı,
+  `dev`→`main` tek `--no-ff` merge).** Düşük yoğunluklu gruptan 7 dosya +
+  `forum/forms.py`'deki `JobPostForm` migre edildi: `search_results.html`,
+  `verification_pending.html`, `category_topics.html`, `edit_job.html`,
+  `post_job.html`, `my_payments.html`, `_review_section.html`. Kullanıcı
+  onayıyla iki yeni kalıcı tasarım sistemi parçası eklendi: `.ax-btn--outline-info`
+  (`base.css`, `outline-primary` formülüyle) ve `.ax-alert--cyan`
+  (`--ax-accent-info` token'ı — mevcut `.ax-alert--info` adına rağmen
+  mor/primary renkli olduğu için gerçek Bootstrap camgöbeği `alert-info`
+  karşılığı olarak ayrı varyant gerekti; `my_jobs.html`/`referral_dashboard.html`'de
+  de kullanılacak). **İki gerçek bug bulunup düzeltildi:** `_job_rules.html`'de
+  tanımsız `ax-alert--warn` → `ax-alert--warning` yazım hatası (aynı hata
+  `job_detail.html:83`'te hâlâ duruyor, "Ağır" migrasyon grubunda düzeltilecek);
+  `edit_job.html`/`post_job.html`'deki `card-header` kaldırılırken
+  `.border-secondary` utility'sinin border-width olmadan görünmez kalması
+  (daha önce de görülmüş bir tuzak, bkz. yukarı "Migrasyon sırasında ortaya
+  çıkan gerçek tuzaklar"). `section_detail.html` migrasyon kapsamından
+  çıkarıldı (`views.section_detail` artık yalnızca kalıcı yönlendirme
+  yapıyor, template hiç render edilmiyor — yetim dosya). Faz 3 toplamda
+  19 dosyaya ulaştı, düşük grup 16 dosyaya indi. Migration yok (yalnız
+  template/CSS/Python widget class değişikliği), 104/104 pytest yeşil,
+  her dosya Playwright ile 375px/1280px ayrı ayrı doğrulandı. Ayrıntı:
+  `tasks/todo.md` "Bootstrap Kaldırma — Kademeli Migration Planı".
 
 - **23 Ekim 2026 — GSC "Neden indekslenmiyor" raporu taraması + uzman profili SEO düzeltmesi (main'de
   canlı).** Kullanıcı Google Search Console'un indekslenmeme raporundan sırayla ekran görüntüleri
