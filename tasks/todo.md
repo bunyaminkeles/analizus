@@ -398,17 +398,39 @@ başlıklar (Bootstrap Kaldırma Migrasyonu'na bağlı, ayrı iş).
   "Essensiyal" yazım hatası (doğrusu "Esansiyel").
 
   **TASARIM (ax- sistemi) — geniş çaplı, bilinen Bootstrap Kaldırma
-  Migrasyonu Faz 3 borcu, yeni/izole hata değil ama envantere eklendi:**
-  ax- sistemine HİÇ geçmemiş şablonlar: `orneklem.html`, `ki_kare.html`,
-  `mann_whitney.html`, `kruskal_wallis.html`, `lineer_regresyon.html`,
-  `lojistik_regresyon.html`, `ttesti.html`, `anova.html`, `tekrarli_anova.html`,
-  `karar_agaci.html`, `svm.html` — hepsinde ham Bootstrap bileşenleri
-  (`card`/`btn`/`badge`/`alert`/`form-select`/`table table-dark`) + hardcode
-  hex/rgba renkler. `korelasyon.html`/`cronbach.html`/`afa.html`/
-  `wilcoxon.html`/`friedman.html` büyük ölçüde ax-'e geçmiş ama hâlâ
-  Bootstrap utility sınıfı (`d-flex`, `fw-bold`, `g-4` vb.) veya birkaç
-  hardcode renk kalıntısı taşıyor. `ki_kare.html` özellikle göze batıyor çünkü
-  aynı kategorideki `korelasyon.html` zaten geçmiş durumda.
+  Migrasyonu Faz 3 borcu, yeni/izole hata değil ama envantere eklendi.**
+  **(26 Ekim 2026 DÜZELTME — bu envanter 25 Ekim'de hatalıydı, kullanıcı
+  sorusu üzerine gerçek dosyalar `class="..."` token bazında kontrol
+  edildi, raw substring arama `ax-btn` gibi isimlerde yanlış pozitif/
+  negatif veriyordu):**
+  - **ax- sistemine HİÇ geçmemiş (gerçekten doğrulandı, 8 dosya):**
+    `orneklem.html`, `ki_kare.html`, `mann_whitney.html`,
+    `kruskal_wallis.html`, `lineer_regresyon.html`, `lojistik_regresyon.html`,
+    `karar_agaci.html`, `svm.html` — her birinde yalnızca ~8 `ax-` sınıfına
+    karşılık 59-79 ham Bootstrap bileşen sınıfı (`btn` 7-11, `card` 2,
+    `badge` 0-1, `alert` 1-5, `form-select` 1-3, `table-dark` 1-3,
+    `text-white`/`text-white-50` 8-29) + hardcode hex/rgba renkler.
+  - **Önceki envanterde "hiç geçmemiş" denilen ama ASLINDA ZATEN GEÇMİŞ
+    olduğu doğrulanan 3 dosya (düzeltme):** `ttesti.html` (118 ax- sınıfı),
+    `anova.html` (135 ax- sınıfı), `tekrarli_anova.html` (139 ax- sınıfı)
+    — bunlarda kalan Bootstrap sınıfları yalnızca izin verilen grid/utility
+    türünden (`d-flex`, `d-none`, `row`, `container` — CLAUDE.md'nin
+    "Bootstrap yalnızca grid" kuralına uygun), UI bileşenleri (`btn`/`card`/
+    `badge`/`alert`) zaten `ax-` prefix'li. Bu üçü migrasyon kapsamından
+    çıkarılabilir.
+  - **Büyük ölçüde ax-'e geçmiş (doğrulandı, 5 dosya):** `korelasyon.html`
+    (141 ax-), `cronbach.html` (124 ax-), `afa.html` (155 ax-),
+    `wilcoxon.html` (123 ax-), `friedman.html` (137 ax-) — kalan Bootstrap
+    sınıfları da yalnızca grid/utility türünden (~23-29 adet, `d-flex`/
+    `d-none`/`row`/`container`), gerçek migrasyon sorunu yok.
+  - **Sonuç: gerçek migrasyon işi yalnız 8 dosyada kalmış** (önceki
+    envanterdeki 11 değil), bu 8'i Bootstrap Kaldırma Migrasyonu Faz 3'ün
+    güncel hedef listesi olarak kullan. **Çapraz kontrol:** aşağıdaki
+    "Bootstrap Kaldırma — Kademeli Migration Planı" başlığının "Güncel
+    envanter (11 Ekim 2026 taraması)" bölümü bu 8 dosyayı zaten doğru
+    şekilde "Orta (10-20 class)" grubunda listeliyor — bugünkü bağımsız
+    doğrulama o envanterle birebir örtüşüyor, 25 Ekim denetiminin kendi
+    notu (bu bölümün başı) ise hatalıydı.
 
   **Düzeltme sırası kullanıcı onayına bağlı** — CLAUDE.md kırmızı çizgisi
   gereği hiçbir madde otomatik uygulanmadı; kullanıcı hangilerini
