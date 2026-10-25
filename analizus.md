@@ -1773,7 +1773,9 @@ analizus-files/
 │   ├── full/
 │   └── orders/
 ├── yoktez/
-│   └── demo/
+│   ├── demo/
+│   └── full/, orders/     # eski "analiz" özelliğinden kalma (23 Mayıs 2026'da kaldırıldı),
+│                          # artık yazılmıyor ama 25 Ekim 2026'dan beri cron'da taranıyor
 ├── semanticscholar/
 │   ├── demo/
 │   └── full/
@@ -1796,17 +1798,33 @@ analizus-files/
 |---|---|---|
 | openalex / trdizin / oaipmh | demo/, full/, orders/ | 7 |
 | pubmed | (tek prefix, alt klasörsüz) | 7 |
-| yoktez | demo/ | 3 |
+| yoktez | demo/, full/, orders/ | 3 |
 | bibliometrics / semanticscholar | demo/, full/ | 7 |
 | makaleanaliz / tezanaliz | pdf/ | 7 |
+| istatistik | (tek prefix `istatistik/`, tüm araçlar ortak — 18 araç) | 7 |
 
 Her aracın `services/job_runner.py`'sindeki `cleanup_expired_<araç>_s3_files(days=N)` fonksiyonu yukarıdaki
 `cleanup_s3_prefix()`'i (prefix başına bağımsız try/except — bir prefix hata verirse diğerleri yine de taranır)
 çağırır + kendi modelindeki URL alanlarını (`demo_file_url` vb.) temizler. Tek merkezi tetikleyici:
-`forum/api_views.cron_cleanup_s3_files` (bkz. §23) — 9 aracın hepsini, her birini kendi try/except'inde çağırır.
-**Kasıtlı kapsam dışı:** `avatars/`, `covers/` (profil/kapak fotoğrafları, kalıcı), `istatistik/` (ayrı/bellek-içi
-mekanizma), `team/` (TeamMember fotoğrafları, kalıcı), `chat_attachments/` (ayrı haftalık `cleanup-attachments`
-cron'u).
+`forum/api_views.cron_cleanup_s3_files` (bkz. §23) — 10 aracın hepsini, her birini kendi try/except'inde çağırır.
+**Kasıtlı kapsam dışı:** `avatars/`, `covers/` (profil/kapak fotoğrafları, kalıcı), `team/` (TeamMember
+fotoğrafları, kalıcı), `chat_attachments/` (ayrı haftalık `cleanup-attachments` cron'u).
+
+**25 Ekim 2026 denetimi (iki gerçek bug bulundu, düzeltildi, main'de canlı):**
+1. `istatistik/` hiçbir zaman bu cron'a dahil değildi — yukarıdaki "Kasıtlı kapsam dışı" notu yanıltıcıydı,
+   orada kastedilen aslında `istatistik/services/job_runner.py`'deki `cleanup_expired_session_datasets()`
+   (bellekteki ham CSV/Excel yüklemesini 2 saatte temizleyen ayrı mekanizma, §12) — PDF çıktılarıyla hiç
+   ilgisi yok. PDF'ler S3'te süresiz birikiyordu (bazı dosyalar 8+ aydır duruyordu). `cleanup_expired_istatistik_s3_files(days=7)`
+   eklenip cron'a bağlandı.
+2. `yoktez` yalnızca `demo/`'yu tarıyordu; `full/`/`orders/` (eski "analiz" özelliğinden kalma, 23 Mayıs
+   2026'da kaldırıldı) hiç kapsanmıyordu — bu yüzden o özellikten kalan dosyalar 8+ ay S3'te kaldı. Üçü de
+   taranacak şekilde düzeltildi.
+
+**Ayrıca bulunan ama henüz düzeltilmemiş eksik (bkz. `tasks/todo.md` "S3 Dosya Saklama Süresi"):** 9/10
+aracın sonuç sayfası/e-postası kullanıcıya dosyanın ne zaman silineceğini hiç söylemiyor (yalnız `yoktez`
+söylüyor); bibliometrics/makaleanaliz/tezanaliz e-postaları "3 gün geçerlidir" diyor ama kod 7 gün
+saklıyor (metin hatası); gizlilik politikası (§19) bibliometrics/makaleanaliz/tezanaliz/istatistik için
+hiç saklama süresi taahhüdü vermiyor.
 
 ### AWS Hesap Durumu (Fatura/Bütçe)
 - Hesap: `analizus` (ID: 909489253044), `eu-north-1`
