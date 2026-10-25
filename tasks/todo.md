@@ -308,9 +308,13 @@ maddelerde.
       token). **Not (ayrı, çözülmedi — todo'ya eklendi):**
       `static/css/profiles.css:690`'da da aynı tanımsız `--ax-primary`
       kullanımı var, bu maddenin kapsamı dışında bırakıldı.
-  21b. [ ] **(25 Ekim 2026, madde 21 sırasında bulundu)**
-      `static/css/profiles.css:690` — madde 21'de düzeltilen aynı tanımsız
-      `var(--ax-primary)` token'ı burada da kullanılıyor, henüz düzeltilmedi.
+  21b. [x] **(25 Ekim 2026 düzeltildi)** `static/css/profiles.css:690` —
+      madde 21'de düzeltilen aynı tanımsız `var(--ax-primary)` token'ı
+      burada da kullanılıyordu (portfolyo kartı hover kenarlığı; hemen
+      yanındaki `box-shadow` zaten `rgba(99,102,241,...)` — `--ax-accent-
+      primary`'nin hex karşılığı — kullanıyordu, bu da doğru tokenı
+      doğruladı). **Düzeltme:** `var(--ax-accent-primary)` ile değiştirildi.
+      Proje genelinde artık hiçbir yerde tanımsız `--ax-primary` kalmadı.
   22. [x] **(25 Ekim 2026 düzeltildi)** `svm.py:34-36` — n>5000'de beklenen
       stratified örnekleme aslında düz rastgele idi (`sample()`'da `stratify`
       yok); ayrıca hem karar_agaci hem svm'de class imbalance uyarısı hiç
