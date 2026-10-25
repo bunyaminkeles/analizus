@@ -1,6 +1,6 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~3734 satır; offset'ler 25 Ekim 2026'da doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~3780 satır; offset'ler 26 Ekim 2026'da doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
@@ -15,8 +15,8 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~3734 satır; offset
 | §20–23 | 1856 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları, bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği, `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"), pazar akışı (pending → open), session, cron |
 | §24–25 | 2016 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
 | §26 | 2103 | Sık yapılan hatalar ve çözümleri — konuya göre 11 alt başlığa gruplandı (Sunucu/Docker/Deploy, Veritabanı/Migration, S3/Depolama, E-posta, Çeviri, CSS/Frontend/JS, AI Asistan, Admin Paneli, Tarama/Analiz Araçları, Güvenlik/Bot, Genel Süreç) |
-| §27 | 2283 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 25 Ekim 2026, Bootstrap Kaldırma Migrasyonu Faz 3 turu — 7 dosya + `JobPostForm` migre edildi, `dev`→`main` merge ile push edildi**) |
-| §28 | 3620 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §27 | 2283 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 25-26 Ekim 2026, İstatistik Araçları Denetimi Tur 4-5 — madde 12-25 + 4 ek bulgu (17b/18b/21b/25b) düzeltildi, `dev`→`main` iki merge ile push edildi; ayrıca ax- tasarım migrasyonu envanteri düzeltildi (11 değil 8 dosya gerçek hedef)**) |
+| §28 | 3666 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
