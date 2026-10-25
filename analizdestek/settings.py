@@ -341,6 +341,11 @@ UNFOLD = {
                     "link": reverse_lazy("admin:forum_studyroom_changelist"),
                 },
                 {
+                    "title": "Oda Mesajları (İşaretli)",
+                    "icon": "flag",
+                    "link": reverse_lazy("admin:forum_studyroompost_changelist"),
+                },
+                {
                     "title": "Freelance İşler",
                     "icon": "work",
                     "link": reverse_lazy("admin:forum_freelancejob_changelist"),

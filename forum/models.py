@@ -2061,11 +2061,37 @@ class StudyRoomWaitlist(models.Model):
         return f"{self.user.username} bekliyor @ {self.room.title}"
 
 
+def _studyroom_post_abuse_signal(text):
+    """Faz 1 — kötüye kullanım tespiti: platform dışına çekme / tehdit sinyali var mı.
+
+    Canlı engelleme değil, yalnızca sonradan admin incelemesi için işaretleme.
+    """
+    import re
+
+    if not text:
+        return False
+
+    patterns = (
+        re.compile(r'(?:\+90|0)?\s*5\d{2}[\s.-]?\d{3}[\s.-]?\d{2}[\s.-]?\d{2}\b'),  # telefon
+        re.compile(r'[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}'),  # e-posta
+        re.compile(r'\b(whatsapp|whats\s*app|telegram|instagram|insta|signal)\b', re.I),  # dış platform
+        re.compile(r'\bTR\d{2}\s?(?:\d{4}\s?){5}\d{2}\b', re.I),  # IBAN
+        re.compile(r'\b0x[a-fA-F0-9]{40}\b|\bbc1[a-z0-9]{25,39}\b'),  # kripto cüzdan
+    )
+    if any(p.search(text) for p in patterns):
+        return True
+
+    threat_words = ('öldür', 'geber', 'tehdit ediyorum', 'ifşa ederim', 'hesabını keserim')
+    lowered = text.lower()
+    return any(word in lowered for word in threat_words)
+
+
 class StudyRoomPost(models.Model):
     room = models.ForeignKey(StudyRoom, on_delete=models.CASCADE, related_name='room_posts')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='room_posts')
     message = models.TextField(verbose_name="Mesaj")
     file = models.FileField(upload_to='studyrooms/', storage=get_attachment_storage, null=True, blank=True, verbose_name="Dosya")
+    flagged = models.BooleanField(default=False, verbose_name="Şüpheli (Otomatik İşaretli)")
     created_at = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(null=True, blank=True, verbose_name="Düzenleme Zamanı")
 
@@ -2080,6 +2106,13 @@ class StudyRoomPost(models.Model):
 
     def __str__(self):
         return f"{self.author.username}: {self.message[:60]}"
+
+    def save(self, *args, **kwargs):
+        self.flagged = _studyroom_post_abuse_signal(self.message)
+        update_fields = kwargs.get('update_fields')
+        if update_fields is not None and 'flagged' not in update_fields:
+            kwargs['update_fields'] = list(update_fields) + ['flagged']
+        super().save(*args, **kwargs)
 
 
 class TeamMember(models.Model):

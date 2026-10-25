@@ -82,12 +82,24 @@ maddelerde.
   verilebilmesi; "admin görünmeden girsin mi" soruldu → KARAR: hayır, ayrıntı
   için bkz. sohbet notu). Henüz başlanmadı, faz faz (her faz önce onay bekler,
   KIRMIZI ÇİZGİ ilkesi):**
-  1. [ ] **Faz 1 — Otomatik işaretleme (flagged):** `StudyRoomPost`'a
-     `FreelanceJob.flagged` deseninde bir `flagged` alanı; telefon/e-posta/
-     dış platform (WhatsApp/Instagram handle)/IBAN-kripto cüzdan/hakaret-
-     tehdit kelime listesi regex taraması `save()` veya sinyalde çalışır,
-     eşleşirse işaretler. Admin panelinde ayrı filtre. Canlı izleme değil,
-     sonradan inceleme.
+  1. [x] **(25 Ekim 2026 TAMAMLANDI) Faz 1 — Otomatik işaretleme (flagged):**
+     `StudyRoomPost.flagged` alanı eklendi (`forum/models.py`,
+     migration `0186_studyroompost_flagged`) — gerçek desen `FreelanceJob`'da
+     değil `ReferralUse.flagged`'da bulundu, aynı mantık uygulandı. Telefon,
+     e-posta, WhatsApp/Telegram/Instagram/Signal geçen metin, IBAN, kripto
+     cüzdan adresi (0x.../bc1...) ve kısa bir tehdit-kelime listesi regex ile
+     `save()` içinde taranıyor; `_studyroom_post_abuse_signal()` yardımcı
+     fonksiyonu. **Dikkat (ders):** mesaj düzenleme view'ı (`api_edit_room_post`)
+     `save(update_fields=['message','edited_at'])` kullanıyor — `flagged`
+     update_fields listesine dahil edilmezse DB'ye yazılmaz; `save()` override
+     bunu otomatik `update_fields`'e ekliyor. `forum/admin.py`'ye
+     `StudyRoomPostAdmin` (list_filter=flagged) eklendi, Unfold sidebar'a
+     "Oda Mesajları (İşaretli)" girdisi eklendi (üç yerde birlikte kuralı).
+     Canlı engelleme yok, yalnız sonradan admin filtresi. Docker'da
+     transaction.atomic()+rollback ile telefon/whatsapp/IBAN/tehdit kelimesi/
+     normal mesaj senaryoları ve update_fields ile düzenleme testi yapıldı,
+     104/104 pytest yeşil, `manage.py check` temiz, `docker compose restart web`
+     yapıldı.
   2. [ ] **Faz 2 — Kullanıcı "bildir" özelliği:** yeni `StudyRoomPostReport`
      modeli (reporter, post, reason, created_at); oda arayüzünde mesaj
      altına "Bildir" aksiyonu; admin paneline düşen ayrı kuyruk.
@@ -1479,7 +1491,7 @@ başlıklar (Bootstrap Kaldırma Migrasyonu'na bağlı, ayrı iş).
   compose restart web`) doğrulandı. `dev`'den `main`'e merge edilip push
   edildi, Hetzner'e otomatik deploy tetiklendi (12 Ekim 2026).
 
-- [ ] **AÇIK (12 Ekim 2026, kullanıcı bulgusu) — Çalışma odası admin onayı
+- [x] **TAMAMLANDI (25 Ekim 2026, kullanıcı onayı) — Çalışma odası admin onayı
   bildirim olarak hiçbir yerde görünmüyor.** Kullanıcı yeni oda açtığında
   "Admin onayı bekleniyor" mesajı gösteriliyor ama admin tarafında (navbar
   bildirim zili / dashboard "BİLDİRİMLER" paneli — İlan Onayı, Ödemeler,
