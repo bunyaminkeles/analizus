@@ -286,8 +286,9 @@ def _upload_pdf(pdf_bytes: bytes, job) -> str:
 
 
 _AI_PROMPT_EXCLUDE_KEYS = {
-    'tree_text',     # karar_agaci: uzun ASCII ağaç çıktısı, yorum için gereksiz
-    'heatmap_b64',   # korelasyon: base64 PNG, metin yoruma hiç katkı sağlamıyor
+    'tree_text',       # karar_agaci: uzun ASCII ağaç çıktısı, yorum için gereksiz
+    'heatmap_b64',     # korelasyon: base64 PNG, metin yoruma hiç katkı sağlamıyor
+    'scree_plot_b64',  # afa: base64 PNG, metin yoruma hiç katkı sağlamıyor
 }
 
 

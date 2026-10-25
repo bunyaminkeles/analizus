@@ -70,12 +70,19 @@ maddelerde.
   6. [x] **(25 Ekim 2026, ayrıca yapıldı — kullanıcı talebi)** AI Yorumu artık
      17 aracın tamamının PDF raporuna da ekleniyor (önceden yalnız ekranda
      görünüyordu) — ayrıntı §12 ve bu dosyanın ilerisindeki ilgili madde.
-  6. [ ] `istatistik/services/afa.py` — `eigen_table` (özdeğer tablosu)
-     hesaplanıp hiç kullanılmıyor; SSS içeriği kullanıcıya "scree plot kırılma
-     noktası" kriterini öneriyor ama araç scree plot/özdeğer tablosu hiç
-     sunmuyor. Ayrıca faktör yük matrisi + varyans tablosu PDF'e yazılıyor
-     ama ekranda yalnız 5 özet sayı var — AFA'nın asıl çıktısı tarayıcıda
-     görünmüyor.
+  6. [x] **(25 Ekim 2026 düzeltildi)** `istatistik/services/afa.py` —
+     `eigen_table` (özdeğer tablosu) hesaplanıp hiç kullanılmıyordu; SSS
+     içeriği kullanıcıya "scree plot kırılma noktası" kriterini öneriyordu
+     ama araç scree plot/özdeğer tablosu hiç sunmuyordu. Ayrıca faktör yük
+     matrisi + varyans tablosu PDF'e yazılıyordu ama ekranda yalnız 5 özet
+     sayı vardı. **Düzeltme:** `afa.py`'ye matplotlib ile scree plot (Kaiser
+     kriteri çizgili, base64 PNG) eklendi, PDF'e özdeğer tablosu + scree plot
+     eklendi; `afa.html` ekranına scree plot görseli + faktör yük matrisi
+     tablosu + açıklanan varyans tablosu eklendi (`_esc()` ile kaçışlı, ek
+     bir XSS noktası — checkbox listesi — de aynı dosyada düzeltildi).
+     `job_runner.py`'nin AI prompt hariç tutma listesine `scree_plot_b64`
+     eklendi. EN/DE çevirileri eklendi, `compilemessages` hatasız derlendi;
+     TR/EN/DE üç dilde `analyze()`+`build_pdf()` test edildi.
   7. [x] **(25 Ekim 2026 düzeltildi)** `istatistik/services/korelasyon.py:105`
      — Isı haritası hücre metin rengi mantığı TERS: `'black' if
      0.3<=|r|<=0.7 else 'white'`. RdYlGn skalasında en sık görülen zayıf
@@ -114,12 +121,21 @@ maddelerde.
       `_esc()` deseni (openalex/tezanaliz/trdizin vb. landing şablonlarında
       kullanılan) bu üç şablona da eklendi, tüm ilgili interpolasyonlar
       kaçışlandı.
-  10. [ ] `karar_agaci.html` + `svm.html` — Sayfa açıklaması "confusion
-      matrix"/"ağaç yapısı" gösterileceğini vaat ediyor ama ekran JS'i
-      (`showResults()`) bunları hiç render etmiyor, yalnızca PDF'te var.
-      Ayrıca `istatistik/seo_content.py`'deki örnek APA cümleleri
-      ("AUC = .88/.91") bu iki aracın hiç hesaplamadığı bir metriğe atıf
-      yapıyor (ne karar_agaci ne svm AUC/ROC hesaplıyor).
+  10. [x] **(25 Ekim 2026 düzeltildi)** `karar_agaci.html` + `svm.html` —
+      Sayfa açıklaması "confusion matrix"/"ağaç yapısı" gösterileceğini vaat
+      ediyordu ama ekran JS'i (`showResults()`) bunları hiç render etmiyordu,
+      yalnızca PDF'te vardı. Ayrıca `istatistik/seo_content.py`'deki örnek
+      APA cümleleri ("AUC = .88/.91") bu iki aracın hiç hesaplamadığı bir
+      metriğe atıf yapıyordu (ne karar_agaci ne svm AUC/ROC hesaplıyor;
+      lojistik_regresyon'un FAQ'ındaki AUC-ROC referansı da aynı şekilde
+      yanlıştı). **Düzeltme:** Her iki şablonun ekranına confusion matrix
+      tablosu eklendi (karar_agaci'ye ayrıca ağaç yapısı metni, PDF ile aynı
+      ilk-5-seviye/ilk-40-satır sınırıyla); aynı dosyalarda bulunan ek
+      XSS noktaları (`f.name`, `r.classes.join`) `_esc()` ile düzeltildi;
+      `seo_content.py`'deki 4 yanlış AUC referansı gerçekte hesaplanan
+      metriklerle (precision/recall/accuracy/F1) değiştirildi. EN/DE
+      çevirileri eklendi, Docker'da gerçek sayfa render + JS sözdizimi
+      (node --check) + 104 testlik pytest paketiyle doğrulandı.
 
   **ORTA — doğruluk nüansı / tutarsızlık:**
   11. [x] **(25 Ekim 2026 düzeltildi — bkz. madde 9b)** `lineer_regresyon.html`

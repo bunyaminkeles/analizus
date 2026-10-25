@@ -192,6 +192,24 @@
             <span id="n-items">—</span> {% trans "madde &nbsp;·&nbsp;" %} <span id="n-cases">—</span> {% trans "katılımcı" %}
           </p>
 
+          <!-- Scree Plot -->
+          <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Scree Plot (Özdeğer Grafiği)" %}</h6>
+          <div class="text-center mb-3">
+            <img id="scree-plot-img" src="" alt="Scree Plot" style="max-width:100%; border-radius:8px;">
+          </div>
+
+          <!-- Faktör Yük Matrisi -->
+          <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Faktör Yük Matrisi (Rotasyonlu)" %}</h6>
+          <div class="table-responsive mb-3" style="max-height:300px; overflow-y:auto;">
+            <table class="ax-table mb-0" style="font-size:0.8rem;" id="loading-table"></table>
+          </div>
+
+          <!-- Açıklanan Varyans -->
+          <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Açıklanan Varyans" %}</h6>
+          <div class="table-responsive mb-3">
+            <table class="ax-table mb-0" id="variance-table"></table>
+          </div>
+
           <div class="d-flex gap-2 flex-wrap">
             <a id="pdf-download-btn" href="#" target="_blank" class="ax-btn ax-btn-danger fw-semibold ax-btn-sm">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>{% trans "PDF İndir" %}
@@ -298,6 +316,7 @@ const T = {
 };
 const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const STATUS_BASE = '{% url "istatistik:afa_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null;
 
@@ -348,8 +367,8 @@ function buildColumnCheckboxes(cols) {
   const list = document.getElementById('col-checkbox-list');
   list.innerHTML = cols.map(c => `
     <div class="d-flex align-items-center gap-2 py-1 px-3" style="border-bottom: 1px solid var(--ax-border-default);">
-      <input type="checkbox" class="col-cb" id="col_${CSS.escape(c)}" value="${c}" checked style="cursor:pointer; width:15px; height:15px; flex-shrink:0;">
-      <label for="col_${CSS.escape(c)}" class="ax-text-secondary ax-text-sm mb-0 w-100" style="cursor:pointer;">${c}</label>
+      <input type="checkbox" class="col-cb" id="col_${CSS.escape(c)}" value="${_esc(c)}" checked style="cursor:pointer; width:15px; height:15px; flex-shrink:0;">
+      <label for="col_${CSS.escape(c)}" class="ax-text-secondary ax-text-sm mb-0 w-100" style="cursor:pointer;">${_esc(c)}</label>
     </div>
   `).join('');
   document.querySelectorAll('.col-cb').forEach(cb => cb.addEventListener('change', updateColCount));
@@ -428,6 +447,33 @@ function onCompleted(data) {
     document.getElementById('bartlett-val').textContent = r.bartlett_p !== undefined ? (r.bartlett_p < .001 ? '< .001' : r.bartlett_p.toFixed(3)) : '—';
     document.getElementById('n-items').textContent = fmt(T.items, {n: r.n_items || '—'});
     document.getElementById('n-cases').textContent = (r.n_cases || '—') + T.s8;
+
+    // Scree plot
+    if (r.scree_plot_b64) {
+      document.getElementById('scree-plot-img').src = 'data:image/png;base64,' + r.scree_plot_b64;
+    }
+
+    // Faktör yük matrisi
+    const factorNames = r.factor_names || [];
+    const ltHead = '<thead><tr><th>{% filter escapejs %}{% trans "Madde" %}{% endfilter %}</th>' +
+      factorNames.map(f => `<th>${_esc(f)}</th>`).join('') +
+      '<th>Communality</th></tr></thead>';
+    const ltBody = '<tbody>' + (r.loading_table || []).map(row => {
+      const cells = factorNames.map(f => `<td>${row[f].toFixed(3)}</td>`).join('');
+      return `<tr><td class="fw-semibold">${_esc(row.item)}</td>${cells}<td>${row.communality.toFixed(3)}</td></tr>`;
+    }).join('') + '</tbody>';
+    document.getElementById('loading-table').innerHTML = ltHead + ltBody;
+
+    // Açıklanan varyans tablosu
+    const vtHead = '<thead><tr><th>{% filter escapejs %}{% trans "Faktör" %}{% endfilter %}</th>' +
+      '<th>{% filter escapejs %}{% trans "SS Yüklemeler" %}{% endfilter %}</th>' +
+      '<th>% {% filter escapejs %}{% trans "Varyans" %}{% endfilter %}</th>' +
+      '<th>{% filter escapejs %}{% trans "Kümülatif %" %}{% endfilter %}</th></tr></thead>';
+    const vtBody = '<tbody>' + (r.variance_table || []).map(v =>
+      `<tr><td class="fw-semibold">${_esc(v.factor)}</td><td>${v.ss_loadings.toFixed(3)}</td>` +
+      `<td>${fmt(T.pct, {value: v.pct_variance.toFixed(2)})}</td><td>${fmt(T.pct, {value: v.cumulative_pct.toFixed(2)})}</td></tr>`
+    ).join('') + '</tbody>';
+    document.getElementById('variance-table').innerHTML = vtHead + vtBody;
 
     const rotation = document.getElementById('rotation-select').value;
     const rotationLabel = {'varimax': 'Varimax', 'promax': 'Promax', 'oblimin': 'Oblimin'}[rotation] || rotation;
