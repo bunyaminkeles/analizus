@@ -531,7 +531,7 @@ def kruskal_wallis_landing(request):
             'promo_description': gettext('Üç veya daha fazla bağımsız grubun dağılımını non-parametrik olarak karşılaştırın. Bonferroni düzeltmeli post-hoc testleri ve η² etki büyüklüğü ile PDF raporu alın.'),
             'promo_features': [
                 {'icon': 'bi-bar-chart-fill', 'title': gettext('3+ Grup'), 'desc': gettext('ANOVA\'nın parametrik olmayan alternatifi. Normallik gerekmez.')},
-                {'icon': 'bi-search', 'color': 'warning', 'title': gettext('Post-Hoc'), 'desc': gettext('Anlamlı fark bulunursa çiftli Mann-Whitney U + Bonferroni düzeltmesi uygulanır.')},
+                {'icon': 'bi-search', 'color': 'warning', 'title': gettext('Post-Hoc'), 'desc': gettext('Anlamlı fark bulunursa Dunn testi + Bonferroni düzeltmesi uygulanır.')},
                 {'icon': 'bi-rulers', 'title': gettext('Etki Büyüklüğü'), 'desc': gettext('Eta-kare (η²) ile etki büyüklüğü raporlanır.')},
                 {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Grup istatistikleri ve post-hoc sonuçları PDF\'e aktarılır.')},
             ],

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 18:55+0300\n"
+"POT-Creation-Date: 2026-10-25 19:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17461,11 +17461,9 @@ msgstr ""
 "enthalten."
 
 #: istatistik/templates/istatistik/kruskal_wallis.html:89
-msgid ""
-"p &lt; .05 ise post-hoc testler (Mann-Whitney + Bonferroni) otomatik "
-"uygulanır."
+msgid "p &lt; .05 ise post-hoc testler (Dunn + Bonferroni) otomatik uygulanır."
 msgstr ""
-"Bei p &lt; .05 werden Post-hoc-Tests (Mann-Whitney + Bonferroni) automatisch "
+"Bei p &lt; .05 werden Post-hoc-Tests (Dunn + Bonferroni) automatisch "
 "durchgeführt."
 
 #: istatistik/templates/istatistik/kruskal_wallis.html:90
@@ -19311,12 +19309,10 @@ msgid "Post-Hoc"
 msgstr "Post-hoc"
 
 #: istatistik/views.py:534
-msgid ""
-"Anlamlı fark bulunursa çiftli Mann-Whitney U + Bonferroni düzeltmesi "
-"uygulanır."
+msgid "Anlamlı fark bulunursa Dunn testi + Bonferroni düzeltmesi uygulanır."
 msgstr ""
-"Bei signifikantem Unterschied werden paarweise Mann-Whitney-U-Tests mit "
-"Bonferroni-Korrektur durchgeführt."
+"Bei signifikantem Unterschied wird der Dunn-Test mit Bonferroni-Korrektur "
+"durchgeführt."
 
 #: istatistik/views.py:536
 msgid "Grup istatistikleri ve post-hoc sonuçları PDF'e aktarılır."

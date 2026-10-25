@@ -218,10 +218,26 @@ maddelerde.
       `sorted(..., key=str)` grup/kategori etiketi sıralama sorunu (numerik
       etiketler 1,10,2,20 gibi yanlış sıralanır) bu iki dosyada da var,
       henüz düzeltilmedi.
-  18. [ ] `mann_whitney.html` + `kruskal_wallis.html` — `views.py`
-      `active_job_id`'yi context'e koyuyor ama şablonlar
+  18. [x] **(25 Ekim 2026 düzeltildi)** `mann_whitney.html` + `kruskal_wallis.html`
+      — `views.py` `active_job_id`'yi context'e koyuyordu ama şablonlar
       wilcoxon.html/friedman.html'deki gibi bunu okuyup `startPolling()`
-      çağırmıyor; analiz sürerken sayfa yenilenirse job takibi kopuyor.
+      çağırmıyordu; analiz sürerken sayfa yenilenirse job takibi kopuyordu.
+      **Düzeltme:** her iki şablonun script sonuna `{% if active_job_id %}`
+      bloğu eklendi (`showPanel('loading')` + `startPolling('{{ active_job_id }}')`
+      — bu iki araçta `startPolling(jobId)` parametre alıyor, wilcoxon'daki
+      gibi ayrı bir `currentJobId` değişkenine gerek yok). **Ayrıca madde
+      17'den kalan iki unutulan metin de düzeltildi:** `views.py:534`
+      (kruskal-wallis promo "Post-Hoc" özelliği) ve `kruskal_wallis.html:89`
+      hâlâ "Mann-Whitney + Bonferroni" diyordu, "Dunn + Bonferroni" ile
+      güncellendi. EN/DE çevirileri eklendi, Docker'da template render +
+      104/104 pytest doğrulandı. **Not (ayrı, çözülmedi — todo'ya eklendi):**
+      `anova.html` ve `ttesti.html` de aynı `active_job_id` okumama sorununu
+      taşıyor.
+  18b. [ ] **(25 Ekim 2026, madde 18 sırasında bulundu)** `anova.html` ve
+      `ttesti.html` — `views.py` bu iki araç için de `active_job_id`'yi
+      context'e koyuyor ama şablonlar bunu okuyup sayfa yenilenince
+      `startPolling()`'i devam ettirmiyor (madde 18'deki ile aynı sorun),
+      henüz düzeltilmedi.
   19. [ ] `lojistik_regresyon.py` — VIF/çoklu bağlantı kontrolü hiç yok ama
       SEO metni ve "Nedir?" kartı VIF'den bahsediyor; hedef kategori
       (y=1) otomatik alfabetik sıralamayla seçiliyor, kullanıcı seçemiyor —
