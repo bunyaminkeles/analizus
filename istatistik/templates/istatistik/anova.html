@@ -2,8 +2,8 @@
 {% load static i18n %}
 {% block canonical %}{% url 'analiz_console' 'anova' %}{% endblock %}
 
-{% block title %}{% trans "Tek Yönlü ANOVA (Tukey, Bonferroni Post-Hoc)" %} - Analizus{% endblock %}
-{% block meta_description %}{% trans "Tek yönlü ANOVA analizi ile 3 veya daha fazla grup arasındaki farkı test edin. Tukey ve Bonferroni post-hoc testleri, eta kare, PDF rapor dahil." %}{% endblock %}
+{% block title %}{% trans "Tek Yönlü ANOVA (Tukey Yaklaşımı, Bonferroni Post-Hoc)" %} - Analizus{% endblock %}
+{% block meta_description %}{% trans "Tek yönlü ANOVA analizi ile 3 veya daha fazla grup arasındaki farkı test edin. Tukey yaklaşımı ve Bonferroni post-hoc testleri, eta kare, PDF rapor dahil." %}{% endblock %}
 
 {% block tool_area %}
 <div class="container py-4">
@@ -73,6 +73,7 @@
                 <button type="button" class="ax-btn ax-btn--sm ax-btn--outline-secondary" data-ph="bonferroni">Bonferroni</button>
               </div>
               <input type="hidden" id="posthoc-val" value="tukey">
+              <p class="ax-text-muted ax-text-sm mt-1 mb-0">{% trans "Not: Buradaki 'Tukey' etiketi, Bonferroni düzeltmesiyle hesaplanan muhafazakâr bir yaklaşımdır — gerçek Tukey HSD (studentized range dağılımı) değildir." %}</p>
             </div>
 
             <button id="run-btn" class="ax-btn ax-btn--danger ax-w-full fw-semibold">
@@ -113,7 +114,7 @@
           <div id="panel-done" class="d-none">
             <div class="d-flex align-items-center gap-2 mb-3">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              <h5 class="ax-text-primary mb-0">{% trans "Tek Yönlü ANOVA" %}</h5>
+              <h5 class="ax-text-primary mb-0" id="res-label">{% trans "Tek Yönlü ANOVA" %}</h5>
             </div>
 
             <div class="row g-3 mb-3">
@@ -217,7 +218,7 @@
   <div class="ax-card mt-4 p-4">
     <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Tek Yönlü ANOVA Nedir?" %}</h5>
     <p class="ax-text-muted ax-text-sm mb-3">{% trans "Tek Yönlü ANOVA (Analysis of Variance), üç veya daha fazla bağımsız grubun ortalamalarını eş zamanlı olarak karşılaştıran parametrik bir testtir. Birden fazla t-testi yapmanın tip-I hata riskini artırdığı durumlarda tek bir testle çoklu grup karşılaştırması yapılmasını sağlar." %}</p>
-    <p class="ax-text-muted ax-text-sm mb-3">{% trans "ANOVA anlamlı bir sonuç verdiğinde hangi grupların birbirinden farklı olduğunu bulmak için post-hoc testlerine ihtiyaç duyulur." %} <strong class="ax-text-secondary">Tukey HSD</strong> {% trans "en yaygın kullanılan post-hoc testidir;" %} <strong class="ax-text-secondary">Bonferroni</strong> {% trans "daha muhafazakâr," %} <strong class="ax-text-secondary">Games-Howell</strong> {% trans "ise varyansların homojen olmadığı durumlarda tercih edilir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "ANOVA anlamlı bir sonuç verdiğinde hangi grupların birbirinden farklı olduğunu bulmak için post-hoc testlerine ihtiyaç duyulur." %} {% blocktrans %}<strong class="ax-text-secondary">Tukey HSD</strong> en yaygın kullanılan post-hoc testidir; <strong class="ax-text-secondary">Bonferroni</strong> daha muhafazakâr, <strong class="ax-text-secondary">Games-Howell</strong> ise varyansların homojen olmadığı durumlarda tercih edilir.{% endblocktrans %}</p>
     <p class="ax-text-muted ax-text-sm mb-0">{% trans "Normallik ve varyans homojenliği (Levene testi) varsayımları karşılanmadığında Kruskal-Wallis H Testi'ne geçilmesi önerilir. Etki büyüklüğü için η² (eta kare) hesaplanmalı ve raporlanmalıdır." %}</p>
   </div>
 
@@ -326,6 +327,7 @@ function startPolling(jobId) {
 
 function onCompleted(data) {
   const r = data.result_data;
+  document.getElementById('res-label').textContent = r.test_label;
   document.getElementById('res-f').textContent = r.f_stat.toFixed(3);
   const pEl = document.getElementById('res-p');
   pEl.textContent = r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(4);

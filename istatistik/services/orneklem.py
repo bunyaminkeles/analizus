@@ -18,6 +18,8 @@ def calculate(test_type: str, effect_size: float, alpha: float,
         raise ValueError(gettext('Güç 0 ile 1 arasında olmalıdır.'))
     if effect_size <= 0:
         raise ValueError(gettext("Etki büyüklüğü 0'dan büyük olmalıdır."))
+    if test_type == 'correlation' and effect_size >= 1:
+        raise ValueError(gettext("Korelasyon katsayısı (r) 1'den küçük olmalıdır."))
 
     if test_type == 'ttest_independent':
         n, achieved = _ttest_independent(effect_size, alpha, power)

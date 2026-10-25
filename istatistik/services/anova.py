@@ -29,6 +29,8 @@ def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
             raise ValueError(gettext('"%(lbl)s" grubunda en az 3 gözlem olmalıdır.') % {'lbl': lbl})
 
     f_stat, p_val = stats.f_oneway(*groups)
+    df_between = len(group_labels) - 1
+    df_within = len(sub) - len(group_labels)
 
     # Eta-kare (η²) etki büyüklüğü
     grand_mean = np.concatenate(groups).mean()
@@ -38,6 +40,12 @@ def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
 
     # Levene varyans homojenliği
     levene_stat, levene_p = stats.levene(*groups)
+
+    # Varyans homojen değilse Welch ANOVA'ya geç (seo_content.py'de zaten vaat
+    # edilen davranış — klasik F varyans eşitliği varsayar, ihlalde güvenilmez)
+    used_welch = bool(levene_p < 0.05)
+    if used_welch:
+        f_stat, p_val, df_between, df_within = _welch_anova(groups)
 
     # Grup istatistikleri
     group_stats = []
@@ -57,7 +65,7 @@ def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
         pairs = list(combinations(range(len(group_labels)), 2))
         n_comparisons = len(pairs)
         for i, j in pairs:
-            t_s, p_pair = stats.ttest_ind(groups[i], groups[j])
+            t_s, p_pair = stats.ttest_ind(groups[i], groups[j], equal_var=not used_welch)
             if posthoc == 'bonferroni':
                 p_adj = min(p_pair * n_comparisons, 1.0)
                 method = 'Bonferroni'
@@ -76,23 +84,45 @@ def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
             })
 
     return {
-        'test_label': gettext('Tek Yönlü ANOVA'),
+        'test_label': gettext('Tek Yönlü ANOVA') + (gettext(' (Welch)') if used_welch else ''),
         'group_col': group_col,
         'dep_col': dep_col,
         'k_groups': len(group_labels),
         'f_stat': round(float(f_stat), 3),
         'p_value': round(float(p_val), 4),
-        'df_between': len(group_labels) - 1,
-        'df_within': len(sub) - len(group_labels),
+        'df_between': df_between,
+        'df_within': round(float(df_within), 1) if used_welch else df_within,
         'eta_sq': round(float(eta_sq), 3),
         'effect_interpretation': _interpret_eta(eta_sq),
         'levene_p': round(float(levene_p), 4),
+        'used_welch': used_welch,
         'significant': float(p_val) < 0.05,
         'group_stats': group_stats,
         'posthoc': posthoc_results,
         'posthoc_method': method if float(p_val) < 0.05 else '—',
         'conclusion': _conclusion(p_val, group_col, dep_col, posthoc_results),
     }
+
+
+def _welch_anova(groups):
+    """Welch'in varyans homojenliği varsaymayan ANOVA'sı (F, p, df1, df2)."""
+    k = len(groups)
+    ns = np.array([len(g) for g in groups], dtype=float)
+    means = np.array([g.mean() for g in groups])
+    variances = np.array([g.var(ddof=1) for g in groups])
+    weights = ns / variances
+    w_sum = weights.sum()
+    grand_mean = (weights * means).sum() / w_sum
+
+    numerator = (weights * (means - grand_mean) ** 2).sum() / (k - 1)
+    lambda_term = (((1 - weights / w_sum) ** 2) / (ns - 1)).sum()
+    denominator = 1 + (2 * (k - 2) / (k ** 2 - 1)) * lambda_term
+
+    f_welch = numerator / denominator
+    df1 = k - 1
+    df2 = (k ** 2 - 1) / (3 * lambda_term)
+    p_val = float(stats.f.sf(f_welch, df1, df2))
+    return float(f_welch), p_val, df1, df2
 
 
 def _interpret_eta(eta: float) -> str:
@@ -134,7 +164,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     norm_s = ParagraphStyle('N', parent=styles['Normal'], fontName='DejaVuSans', fontSize=9)
 
     story = []
-    story.append(Paragraph(gettext('Tek Yönlü ANOVA Raporu'), title_s))
+    story.append(Paragraph(gettext('%(test)s Raporu') % {'test': result['test_label']}, title_s))
     story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, norm_s))
     story.append(Spacer(1, 0.4*cm))
 

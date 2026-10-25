@@ -125,8 +125,10 @@ SEO_CONTENT = {
             },
             {
                 'q': gettext_lazy('Tukey mu, Bonferroni mu seçmeliyim?'),
-                'a': (gettext_lazy('Tukey HSD, eşit örneklem büyüklüklerinde tercih edilir ve daha güçlüdür. '
-                      'Bonferroni, az sayıda karşılaştırma ve dengesiz gruplar için uygundur.')),
+                'a': (gettext_lazy('Bu araçta "Tukey" seçeneği, gerçek Tukey HSD (studentized range dağılımı) '
+                      'yerine Bonferroni düzeltmesiyle hesaplanan muhafazakâr bir yaklaşımdır; iki seçenek de '
+                      'aynı formülü kullanır, yalnızca raporlama etiketi farklıdır. Varyans homojenliği ihlal '
+                      'edildiğinde (Levene p < .05) araç otomatik olarak Welch ANOVA\'ya geçer.')),
             },
         ],
         'related_tools': [
