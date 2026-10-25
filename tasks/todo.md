@@ -56,10 +56,15 @@ maddelerde.
      regresyon testi (bozulmadı), tek örneklem hata senaryoları (değer yok/
      sayısal değil/sütun yok), TR/EN/DE APA çıktısı ve gerçek `IstatistikJob`
      üzerinden uçtan uca job_runner akışı test edildi.
-  4. [ ] `istatistik/services/tekrarli_anova.py` — Küresellik (Mauchly) testi
-     hiç uygulanmıyor; kod bunu `sphericity_note` ile PDF'e yazıyor ama ekran
-     şablonunda bu not hiçbir yerde render edilmiyor. PDF indirmeyen kullanıcı
-     bu kritik varsayımın (Tip-I hata riski) test edilmediğinden habersiz kalır.
+  4. [x] **(25 Ekim 2026 düzeltildi)** `istatistik/services/tekrarli_anova.py`
+     — Küresellik (Mauchly) testi hiç uygulanmıyor; kod bunu `sphericity_note`
+     ile PDF'e yazıyordu ama ekran şablonunda bu not hiçbir yerde render
+     edilmiyordu. PDF indirmeyen kullanıcı bu kritik varsayımın (Tip-I hata
+     riski) test edilmediğinden habersiz kalıyordu. **Karar (kullanıcı,
+     25 Ekim 2026):** gerçek Mauchly testi eklenmedi (kapsam büyük) — mevcut
+     `sphericity_note` ekrana da taşındı (`ax-alert-warning` kutusu).
+     Aynı şablondaki post-hoc tablosunda bulunan ek bir XSS noktası
+     (`ph.col1`/`ph.col2`) da `_esc()` ile düzeltildi.
   5. [x] **(25 Ekim 2026 düzeltildi)** `istatistik/templates/istatistik/cronbach.html:186-191`
      vs `cronbach.py:78-88` — Ekrandaki statik "Yorum Eşikleri" tablosu
      (.50-.70 = "Düşük") ile gerçek hesaplanan `interpretation` (.60-.70 =

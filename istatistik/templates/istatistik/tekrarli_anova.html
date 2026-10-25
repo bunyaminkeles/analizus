@@ -164,6 +164,8 @@
 
           <div id="sig-badge" class="d-none mb-3"></div>
 
+          <div class="ax-alert-warning mb-3 ax-text-sm" id="sphericity-note"></div>
+
           <!-- Post-hoc tablosu -->
           <div id="posthoc-section" class="d-none mb-3">
             <h6 class="ax-text-secondary fw-semibold mb-2 ax-text-sm">{% trans "Post-Hoc Karşılaştırmalar (Bağımlı t-testi — Bonferroni)" %}</h6>
@@ -271,6 +273,7 @@ const T = {
 };
 const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const STATUS_BASE = '{% url "istatistik:tekrarli_anova_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null, _lastCols = [];
 
@@ -422,6 +425,10 @@ function onCompleted(data) {
     document.getElementById('df-error').textContent = r.df_error;
     document.getElementById('n-cases').textContent = r.n;
 
+    if (r.sphericity_note) {
+      document.getElementById('sphericity-note').textContent = r.sphericity_note;
+    }
+
     const sigBadge = document.getElementById('sig-badge');
     sigBadge.classList.remove('d-none');
     if (r.significant) {
@@ -434,7 +441,7 @@ function onCompleted(data) {
       const tbody = document.getElementById('posthoc-tbody');
       tbody.innerHTML = r.posthoc.map(ph =>
         `<tr>
-          <td>${ph.col1} vs ${ph.col2}</td>
+          <td>${_esc(ph.col1)} vs ${_esc(ph.col2)}</td>
           <td>${ph.t.toFixed(3)}</td>
           <td>${ph.p.toFixed(4)}</td>
           <td>${ph.p_adj.toFixed(4)}</td>
