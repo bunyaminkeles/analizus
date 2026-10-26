@@ -119,10 +119,23 @@ maddelerde.
      kendi-mesajını-bildirme senaryoları `Client` ile uçtan uca test edildi,
      104/104 pytest yeşil, `docker compose restart web` + `restart nginx`
      yapıldı.
-  3. [ ] **Faz 3 — Saklama süresi + "legal hold":** oda arşivlendikten N ay
-     sonra otomatik silme politikası tanımla (N için kullanıcıya sor);
-     flagged/report edilmiş kayıtlar bu otomatik silmeden muaf (olası adli
-     talep için ayrı tutulur).
+  3. [x] **(26 Ekim 2026 TAMAMLANDI) Faz 3 — Saklama süresi + "legal hold".**
+     Kullanıcı kararları: N=6 ay (180 gün), kapsam yalnız mesajlar (oda kaydı
+     kalır), tetikleme günlük cron/management komut deseni (mevcut
+     `CRON_SECRET_KEY` korumalı `/api/cron/...` deseni). `StudyRoom.archived_at`
+     eklendi (migration `0188_studyroom_archived_at`), `auto_archive_if_expired()`
+     bu alanı da set ediyor. Yeni `cron_cleanup_archived_room_posts`
+     (`forum/api_views.py`, route `/api/cron/cleanup-archived-room-posts/`):
+     `archived_at` 180 günden eski odalardaki mesajları siler (önce varsa ekli
+     dosya S3'ten temizlenir); `flagged=True` veya en az bir
+     `StudyRoomPostReport`'u olan mesajlar muaf (legal hold). **Not:** bu yeni
+     URL'in dış cron servisine (cron-job.org vb., diğer `/api/cron/...`
+     uçlarıyla aynı yerde) eklenmesi kullanıcının kendisi tarafından
+     yapılmalı — kod yalnız endpoint'i oluşturur, dış tetikleyiciye erişimim
+     yok. Docker'da `transaction.atomic()+rollback` ile 5 senaryo
+     (eski/temiz mesaj silindi; flagged/bildirilen/180 günden yeni
+     arşiv/aktif oda mesajları korundu; yanlış secret 403) doğrulandı,
+     104/104 pytest yeşil, `docker compose restart web` yapıldı.
   4. [ ] **Faz 4 — Adli makam talebi / export audit log:** mahkeme kararı/
      savcılık yazısı geldiğinde kullanılacak export akışı; hangi admin, ne
      zaman, hangi kaydı export etti bilgisi loglanır (chain of custody).

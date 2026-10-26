@@ -1976,6 +1976,7 @@ class StudyRoom(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    archived_at = models.DateTimeField(null=True, blank=True, verbose_name="Arşivlenme Zamanı")
 
     class Meta:
         verbose_name = "Çalışma Odası"
@@ -2006,7 +2007,8 @@ class StudyRoom(models.Model):
         from django.utils import timezone
         if self.status == 'active' and timezone.now() > self.ends_at:
             self.status = 'archived'
-            self.save(update_fields=['status'])
+            self.archived_at = timezone.now()
+            self.save(update_fields=['status', 'archived_at'])
             return True
         return False
 
