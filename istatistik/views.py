@@ -47,6 +47,7 @@ TOOL_CATEGORIES = [
     (gettext_lazy('Regresyon Analizleri'), [
         ('lineer_regresyon',  gettext_lazy('Çoklu Doğrusal Regresyon'), 'bi-graph-up-arrow',  'primary',  'lineer-regresyon'),
         ('lojistik_regresyon',gettext_lazy('Lojistik Regresyon'),        'bi-bezier2',         'success',  'lojistik-regresyon'),
+        ('mediation',         gettext_lazy('Aracılık Analizi (Mediation)'), 'bi-diagram-3-fill', 'purple', 'mediation'),
     ]),
     (gettext_lazy('Makine Öğrenmesi'), [
         ('karar_agaci', gettext_lazy('Karar Ağacı'), 'bi-diagram-2', 'purple', 'karar-agaci'),
@@ -452,6 +453,12 @@ def _handle_group_tool_post(request, tool):
             }
             if tool == 'lojistik_regresyon':
                 options['target_category'] = request.POST.get('target_category', '')
+        elif tool == 'mediation':
+            options = {
+                'x_col': request.POST.get('x_col', ''),
+                'm_col': request.POST.get('m_col', ''),
+                'y_col': request.POST.get('y_col', ''),
+            }
         elif tool == 'afa':
             cols = request.POST.getlist('columns')
             n_factors_raw = request.POST.get('n_factors', '').strip()
@@ -648,6 +655,44 @@ def lojistik_regresyon_landing(request):
         'tool_icon': 'bi-diagram-3',
         'tool_color': 'success',
         **_console_ctx('lojistik_regresyon', request),
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def mediation_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('mediation'),
+            'promo_title': gettext('Aracılık Analizi (Mediation)'),
+            'promo_icon': 'bi-diagram-3-fill',
+            'promo_color': 'purple',
+            'promo_description': gettext('Bir bağımsız değişkenin bağımlı değişken üzerindeki etkisinin bir aracı (mediator) değişken üzerinden ne kadar ilettiğini test edin. Bootstrap güven aralığı ve Sobel testi ile SPSS Process/Hayes\'e karşılık gelen tam bir aracılık raporu.'),
+            'promo_features': [
+                {'icon': 'bi-diagram-3', 'title': gettext('a, b, c, c\' Yolları'), 'desc': gettext('Toplam etki, dolaylı yol ve M kontrol edildiğinde kalan direkt etki ayrı ayrı hesaplanır.')},
+                {'icon': 'bi-arrow-repeat', 'color': 'info', 'title': gettext('Bootstrap Güven Aralığı'), 'desc': gettext('Dolaylı etkinin (a×b) anlamlılığı 5000 yeniden örneklemeli bootstrap %95 GA ile test edilir — Hayes/Process yöntemiyle aynı mantık.')},
+                {'icon': 'bi-rulers', 'color': 'warning', 'title': gettext('Sobel Testi'), 'desc': gettext('Klasik Sobel z testi ek doğrulama olarak raporlanır.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Tam/kısmi aracılık sonucu ve APA formatında raporlama cümlesi PDF olarak indirilir.')},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'mediation')
+    active_job = _get_active_job(request.user, 'mediation')
+    return render(request, 'istatistik/mediation.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': gettext('Aracılık Analizi (Mediation)'),
+        'tool_icon': 'bi-diagram-3-fill',
+        'tool_color': 'purple',
+        'tool_description': gettext('X\'in Y üzerindeki etkisinin M aracı değişkeni üzerinden ne kadarının iletildiğini test edin.'),
+        'tool_hints': [
+            gettext('Bağımsız değişken (X) sayısal veya 2 kategorili olabilir.'),
+            gettext('Aracı (M) ve bağımlı (Y) değişkenler sayısal/sürekli olmalıdır.'),
+            gettext('En az 20 gözlem (satır) önerilir.'),
+            gettext('Dolaylı etkinin anlamlılığı bootstrap %95 güven aralığı ile test edilir.'),
+        ],
+        **_console_ctx('mediation', request),
     })
 
 
@@ -931,6 +976,7 @@ def analiz_console(request, tool_slug):
         'tekrarli-anova': tekrarli_anova_landing,
         'lineer-regresyon': lineer_regresyon_landing,
         'lojistik-regresyon': lojistik_regresyon_landing,
+        'mediation': mediation_landing,
         'karar-agaci': karar_agaci_landing,
         'svm': svm_landing,
     }

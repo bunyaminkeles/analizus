@@ -21,6 +21,7 @@ _TOOLS = [
     ('ki-kare', views.ki_kare_landing, 'ki_kare', True),
     ('lineer-regresyon', views.lineer_regresyon_landing, 'lineer_regresyon', True),
     ('lojistik-regresyon', views.lojistik_regresyon_landing, 'lojistik_regresyon', True),
+    ('mediation', views.mediation_landing, 'mediation', True),
     ('afa', views.afa_landing, 'afa', True),
     ('wilcoxon', views.wilcoxon_landing, 'wilcoxon', True),
     ('friedman', views.friedman_landing, 'friedman', True),

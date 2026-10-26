@@ -217,6 +217,15 @@ def _execute_job_in_language(job_id: str):
                 test_size=float(t_size) if t_size else 0.2,
                 criterion=opts.get('criterion', 'gini'),
             )
+        elif job.tool == 'mediation':
+            from .mediation import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                x_col=opts.get('x_col', ''),
+                m_col=opts.get('m_col', ''),
+                y_col=opts.get('y_col', ''),
+            )
         elif job.tool == 'svm':
             from .svm import analyze, build_pdf
             opts = job.options or {}
