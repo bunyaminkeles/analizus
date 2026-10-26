@@ -258,8 +258,10 @@ maddelerde.
      `transaction.atomic()+rollback` ile doğrulandı; TR/EN/DE üç dilde
      anonim+girişli sayfa render edildi, sitemap üç dilde URL'i içeriyor,
      104/104 pytest yeşil, `docker compose restart web` + nginx yapıldı.
-     Henüz yalnız `dev`'de — migration içerdiği için `main`'e push öncesi
-     kullanıcı onayı + yedek gerekiyor.
+     Kullanıcı onayıyla `dev`→`main` merge + push edildi, GitHub Actions
+     otomatik Hetzner deploy'u tetikledi, migration production'da
+     uygulandı, canlı doğrulandı (`https://www.analizus.com/analiz/
+     moderation/` 200). `dev` de origin'e push edildi (Render staging).
   2. [ ] **Kümeleme Analizi (K-means / Hiyerarşik Cluster)** — pazarlama/
      işletme/eğitim tezlerinde yaygın; mevcut sklearn altyapısına (karar_agaci,
      svm) yakın, görece düşük efor.

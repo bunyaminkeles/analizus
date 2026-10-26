@@ -1834,7 +1834,7 @@ analizus-files/
 | yoktez | demo/, full/, orders/ | 3 |
 | bibliometrics / semanticscholar | demo/, full/ | 7 |
 | makaleanaliz / tezanaliz | pdf/ | 7 |
-| istatistik | (tek prefix `istatistik/`, tüm araçlar ortak — 18 araç) | 7 |
+| istatistik | (tek prefix `istatistik/`, tüm araçlar ortak — 20 araç) | 7 |
 
 Her aracın `services/job_runner.py`'sindeki `cleanup_expired_<araç>_s3_files(days=N)` fonksiyonu yukarıdaki
 `cleanup_s3_prefix()`'i (prefix başına bağımsız try/except — bir prefix hata verirse diğerleri yine de taranır)
@@ -2358,6 +2358,8 @@ with connection.cursor() as c:
 - **İstatistik Rehberi eksik linkler** — `hangi_test.html`'de `r_tekrarli_anova` ve `r_friedman` düğümlerine `tool_url` eklendi
 - **Karar Ağacı (ML)** (mayıs 2026) — Unified konsolda "Makine Öğrenmesi" kategorisi altında; `karar_agaci.py`; sklearn DecisionTreeClassifier; feature_importances_ ile önem sıralaması; PDF çıktısı
 - **Destek Vektör Makinesi (SVM)** (mayıs 2026) — `svm.py`; SVC + StandardScaler; RBF/Linear/Poly kernel; C parametresi 0.1–10; permutation_importance (model-agnostik); büyük dataset otomatik örnekleme (5000 satır); PDF çıktısı
+- **Aracılık Analizi (Mediation)** (26 Ekim 2026, main'de canlı) — `mediation.py`; c/a/b/c' yolları (statsmodels OLS); dolaylı etki (a×b) bootstrap %95 GA (5000 yeniden örnekleme) + Sobel testi; tam/kısmi/aracılık-yok sınıflandırması; APA raporu
+- **Düzenleyici Değişken Analizi (Moderation)** (26 Ekim 2026, main'de canlı) — `moderation.py`; Y~Xc+Wc+Xc×Wc modeli (Aiken & West 1991 merkezleme); etkileşim katsayısı (b3) + ΔR² + basit eğimler (simple slopes) + matplotlib etkileşim grafiği; APA raporu
 - **Claude AI Yorumu — Faz A+B** (11 Ekim 2026, main'de canlı, Hetzner'de gerçek API çağrısıyla doğrulandı) —
   17 istatistik aracına (`orneklem` hariç) Claude ile üretilen ücretsiz akademik yorum eklendi; APA Formatında
   Raporlama kutusunun içine, APA cümlesinin altına yerleştirildi (ayrı kutu değil — kullanıcı isteğiyle revize
@@ -3014,6 +3016,33 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 #### Geçmiş Turlar (Kronoloji)
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
+
+- **26 Ekim 2026 — Aracılık (Mediation) + Düzenleyici Değişken (Moderation)
+  Analizi araçları eklendi (main'de canlı, iki ayrı `dev`→`main` `--no-ff`
+  merge).** `tasks/todo.md`'deki "Yeni Ücretsiz İstatistik Araçları
+  Fikirleri" listesinin 1. maddesi — SPSS Process/Hayes'e karşılık, TR
+  sosyal bilimler/işletme tezlerinde en çok talep edilen, şimdiye kadar
+  hiç karşılığı yoktu. Kullanıcı kararıyla iki ayrı tur halinde yapıldı
+  (KIRMIZI ÇİZGİ "tek seferde tek görev" ilkesi). **Mediation**
+  (`istatistik/services/mediation.py`): üç statsmodels OLS modeli (c, a,
+  b+c' yolları), dolaylı etki (a×b) bootstrap %95 GA (5000 yeniden
+  örnekleme) + Sobel testi ile raporlanıyor, tam/kısmi/aracılık-yok
+  sınıflandırması otomatik. **Moderation** (`istatistik/services/
+  moderation.py`): Y~Xc+Wc+Xc×Wc modeli (Aiken & West 1991 merkezleme),
+  etkileşim katsayısı (b3) + ΔR² + basit eğimler (simple slopes, W'nin
+  düşük/orta/yüksek düzeylerinde X'in koşullu etkisi) + matplotlib
+  etkileşim grafiği (base64 PNG, AFA'daki scree plot deseniyle aynı).
+  İkisi de mevcut 18 araçla birebir aynı iskelet (model/migration,
+  `job_runner.py` dispatch, `views.py` landing view + `TOOL_CATEGORIES`
+  "Regresyon Analizleri" grubu, `urls.py`, yeni template, `seo_content.py`,
+  `forum/sitemaps.py`); toplam 139 yeni msgid EN/DE'ye çevrildi
+  (`makemessages`'ın yanlış fuzzy eşleştirdiği stringler tek tek doğru
+  çeviriyle düzeltildi). Docker'da her ikisi için senaryo testleri +
+  tam job pipeline (`_upload_pdf` mock'lanarak gerçek S3'e yazmadan —
+  CLAUDE.md'deki "lokal/prod aynı S3 bucket" uyarısı gereği) +
+  TR/EN/DE üç dilde render + 104/104 pytest ile doğrulandı. Her merge
+  öncesi production'da aktif kullanıcı kontrolü yapıldı (ikisinde de
+  boş). Ayrıntı: `tasks/todo.md` madde 1/1b.
 
 - **25 Ekim 2026 — Bootstrap Kaldırma Migrasyonu Faz 3 turu (main'de canlı,
   `dev`→`main` tek `--no-ff` merge).** Düşük yoğunluklu gruptan 7 dosya +
