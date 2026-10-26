@@ -351,6 +351,11 @@ UNFOLD = {
                     "link": reverse_lazy("admin:forum_studyroompostreport_changelist"),
                 },
                 {
+                    "title": "Oda Export Kayıtları",
+                    "icon": "folder_zip",
+                    "link": reverse_lazy("admin:forum_roomexportauditlog_changelist"),
+                },
+                {
                     "title": "Freelance İşler",
                     "icon": "work",
                     "link": reverse_lazy("admin:forum_freelancejob_changelist"),

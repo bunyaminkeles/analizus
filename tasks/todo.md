@@ -136,9 +136,24 @@ maddelerde.
      (eski/temiz mesaj silindi; flagged/bildirilen/180 günden yeni
      arşiv/aktif oda mesajları korundu; yanlış secret 403) doğrulandı,
      104/104 pytest yeşil, `docker compose restart web` yapıldı.
-  4. [ ] **Faz 4 — Adli makam talebi / export audit log:** mahkeme kararı/
-     savcılık yazısı geldiğinde kullanılacak export akışı; hangi admin, ne
-     zaman, hangi kaydı export etti bilgisi loglanır (chain of custody).
+  4. [x] **(26 Ekim 2026 TAMAMLANDI) Faz 4 — Adli makam talebi / export audit
+     log.** Kullanıcı kararları: format PDF, kapsam seçilen odanın TÜM
+     mesajları, yetki yalnızca superuser. `RoomExportAuditLog` modeli
+     (room, exported_by, exported_at, message_count — migration
+     `0189_roomexportauditlog`, admin'de değiştirilemez/silinemez salt
+     okunur). `forum/services/room_export.py` — ReportLab/Platypus ile PDF
+     (oda başlığı, dışa aktaran admin + zaman PDF üzerinde de yazılı, tüm
+     mesajlar tarih/yazar/içerik tablosu; `istatistik.services.pdf_fonts.
+     register_fonts()` ile Türkçe karakter desteği; mesaj içeriği
+     `xml.sax.saxutils.escape()` ile kaçışlı — bibliometrics/pdf_builder.py
+     ile aynı desen). `StudyRoomAdmin.export_room_messages` aksiyonu
+     (`TrainingRequestAdmin.generate_certificate` deseniyle aynı): staff
+     ama superuser olmayan reddedilir, birden fazla oda seçilirse reddedilir,
+     başarılı olursa PDF indirilir + audit log kaydı oluşur. Sidebar'a
+     "Oda Export Kayıtları" girdisi. Docker'da: staff/superuser/çoklu-seçim
+     senaryoları + üretilen PDF'in boyutu ve özel karakter (`<b>`, `&`)
+     içeren mesajın bozmadığı `transaction.atomic()+rollback` ile doğrulandı,
+     104/104 pytest yeşil, `docker compose restart web` yapıldı.
   5. [ ] **Faz 5 — Aydınlatma metni güncellemesi:** Gizlilik Politikası/
      Kullanım Şartları'na "mesajlarınız kötüye kullanımın önlenmesi ve yasal
      yükümlülükler çerçevesinde saklanır, gerektiğinde yetkili makamlarla
