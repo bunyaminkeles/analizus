@@ -25,6 +25,7 @@ TOOL_CHOICES = [
     ('mediation', 'Aracılık Analizi (Mediation)'),
     ('moderation', 'Düzenleyici Değişken Analizi (Moderation)'),
     ('kumeleme', 'Kümeleme Analizi (K-means / Hiyerarşik)'),
+    ('manova', 'Çok Değişkenli Varyans Analizi (MANOVA)'),
 ]
 
 STATUS_CHOICES = [

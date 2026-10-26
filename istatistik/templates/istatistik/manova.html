@@ -1,0 +1,550 @@
+{% extends "istatistik/analiz_console_base.html" %}
+{% load static i18n %}
+{% block canonical %}{% url 'analiz_console' 'manova' %}{% endblock %}
+
+{% block title %}{% trans "Çok Değişkenli Varyans Analizi (MANOVA)" %} - Analizus{% endblock %}
+{% block meta_description %}{% trans "MANOVA ile bir grup değişkeninin 2 veya daha fazla bağımlı değişken üzerindeki ortak etkisini test edin. Wilks' Lambda, Box's M testi, takip ANOVA'ları ve APA formatında rapor." %}{% endblock %}
+
+{% block tool_area %}
+<div class="container py-4">
+
+  <div class="row mb-4 align-items-center">
+    <div class="col">
+      <h2 class="fw-bold ax-text-primary mb-1 d-flex align-items-center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        {% trans "Çok Değişkenli Varyans Analizi (MANOVA)" %}
+      </h2>
+      <p class="ax-text-muted mb-0">{% trans "Bir grup değişkeninin 2+ bağımlı değişken üzerindeki ortak etkisini tek testle inceleyin." %}</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="col-auto">
+      <span class="ax-badge ax-badge-secondary">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Sol: Yükleme -->
+    <div class="col-lg-5">
+      <div class="ax-card p-4">
+
+        <!-- Adım 1: Yükleme -->
+        <div id="step-upload">
+          <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            {% trans "Dosya Yükle" %}
+          </h5>
+          <p class="ax-text-muted ax-text-sm mb-3">{% trans "CSV veya Excel (.xlsx/.xls) dosyanızı yükleyin." %}</p>
+
+          {% if not user.is_authenticated %}
+          <div class="ax-alert-info mb-3 ax-text-sm">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">{% trans "Giriş yapın" %}</a> {% trans "veya" %} <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">{% trans "kayıt olun" %}</a> {% trans "— geçmişiniz kaydedilsin." %}</span>
+          </div>
+          {% endif %}
+
+          <div id="upload-area" class="ax-upload-area mb-3" onclick="document.getElementById('file-input').click()">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-2 mx-auto d-block"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 16 4-4 4 4"/></svg>
+            <p class="ax-text-muted ax-text-sm mb-1">{% trans "Dosyayı buraya sürükleyin veya tıklayın" %}</p>
+            <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">{% blocktrans with mb=max_upload_mb %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}</p>
+          </div>
+          <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
+
+          <button id="analyze-btn" class="ax-btn ax-btn-accent w-100 fw-semibold" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M4 6h16"/><path d="M8 12h8"/><path d="M11 18h2"/></svg>
+            {% trans "Sütunları Getir" %}
+          </button>
+
+          <div id="error-msg" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
+        </div>
+
+        <!-- Adım 2: Değişken seçimi -->
+        <div id="step-config" class="d-none">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="ax-text-primary fw-semibold mb-0 d-flex align-items-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M4 6h16"/><path d="M8 12h8"/><path d="M11 18h2"/></svg>
+              {% trans "Değişken Seçimi" %}
+            </h5>
+            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>{% trans "Geri" %}
+            </button>
+          </div>
+          <p class="ax-text-muted ax-text-sm mb-3" id="config-file-info">—</p>
+
+          <div class="mb-3">
+            <label class="ax-text-muted ax-text-sm mb-1 d-block">{% trans "Grup Değişkeni (kategorik)" %}</label>
+            <select id="group-col" class="ax-select w-100">
+              <option value="">{% trans "— Seçiniz —" %}</option>
+            </select>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="ax-text-muted ax-text-sm" id="col-count-label">{% trans "0 bağımlı değişken seçili" %}</span>
+            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" id="toggle-all-btn">{% trans "Tümünü Seç" %}</button>
+          </div>
+
+          <div id="col-checkbox-list" class="mb-3 ax-rounded-md" style="max-height: 180px; overflow-y: auto; border: 1px solid var(--ax-border-default); background: rgba(0,0,0,0.12);">
+          </div>
+          <p class="ax-text-muted ax-text-sm mb-3">{% trans "Bağımlı değişkenler listesi, grup değişkeni hariç sayısal sütunlardan oluşur." %}</p>
+
+          <button id="run-analysis-btn" class="ax-btn ax-btn-accent w-100 fw-semibold" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            {% trans "Analizi Başlat" %}
+          </button>
+          <div id="run-error" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sağ: Sonuç -->
+    <div class="col-lg-7">
+      <div class="ax-card p-4 h-100">
+
+        <div id="panel-idle">
+          <h5 class="ax-text-muted fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
+          <ul class="ax-text-muted ax-text-sm ps-3">
+            <li class="mb-1">{% trans "Her satır bir gözlem (kişi/ölçüm) olmalıdır." %}</li>
+            <li class="mb-1">{% trans "Grup sütunu kategorik değerler içermelidir (ör. A/B/C)." %}</li>
+            <li class="mb-1">{% trans "En az 2, en fazla 8 bağımlı değişken seçilmelidir." %}</li>
+            <li class="mb-1">{% trans "En az 2, en fazla 10 grup desteklenir." %}</li>
+            <li class="mb-1">{% trans "MANOVA anlamlıysa takip ANOVA'ları otomatik hesaplanır." %}</li>
+          </ul>
+        </div>
+
+        <div id="panel-loading" class="text-center d-none py-4">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-3 mx-auto d-block" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <p class="ax-text-muted">{% trans "MANOVA analizi yapılıyor, lütfen bekleyin…" %}</p>
+        </div>
+
+        <div id="panel-error" class="d-none">
+          <div class="ax-alert-danger mb-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span id="panel-error-msg" class="ax-text-sm"></span>
+          </div>
+          <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">{% trans "Tekrar Dene" %}</button>
+        </div>
+
+        <div id="panel-done" class="d-none">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <h5 class="ax-text-primary mb-0">{% trans "MANOVA Sonucu" %}</h5>
+          </div>
+
+          <div id="sig-box" class="ax-rounded-md p-3 mb-3">
+            <p class="ax-text-sm mb-0 fw-semibold" id="sig-text">—</p>
+          </div>
+
+          <!-- Çok değişkenli testler -->
+          <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Çok Değişkenli Testler" %}</h6>
+          <div class="table-responsive mb-2">
+            <table class="ax-table mb-0" style="font-size:0.8rem;" id="mv-table"></table>
+          </div>
+          <p class="ax-text-muted ax-text-sm mb-3" id="eta-text">—</p>
+
+          <!-- Box's M -->
+          <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Box's M Testi (Kovaryans Homojenliği)" %}</h6>
+          <p class="ax-text-muted ax-text-sm mb-3" id="boxm-text">—</p>
+
+          <!-- Profil grafiği -->
+          <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Profil Grafiği" %}</h6>
+          <div class="text-center mb-3">
+            <img id="profile-plot-img" src="" alt="" style="max-width:100%; border-radius:8px;">
+          </div>
+
+          <!-- Takip ANOVA'ları -->
+          <div id="followup-section" class="d-none mb-3">
+            <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Takip (Follow-up) ANOVA Sonuçları" %}</h6>
+            <p class="ax-text-muted ax-text-sm mb-2" id="followup-alpha-text">—</p>
+            <div class="table-responsive mb-2">
+              <table class="ax-table mb-0" style="font-size:0.78rem;" id="followup-table"></table>
+            </div>
+          </div>
+
+          <div class="ax-rounded-md p-3 mb-3" style="background:rgba(0,0,0,0.2); border:1px solid var(--ax-border-default);">
+            <p class="ax-text-muted ax-text-sm fw-semibold mb-1">{% trans "Sonuç" %}</p>
+            <p class="ax-text-primary ax-text-sm mb-0" id="res-conclusion">—</p>
+          </div>
+
+          <!-- APA -->
+          <div class="ax-rounded-md p-3 mb-2" style="background:rgba(109,40,217,0.08); border:1px solid rgba(109,40,217,0.2);">
+            <p class="ax-text-muted ax-text-sm fw-semibold mb-2">{% trans "APA Formatında Raporlama" %}</p>
+            <p class="ax-text-primary ax-text-sm mb-2" id="res-apa" style="font-style:italic;"></p>
+
+            <div id="ai-yorum-box" class="d-none" style="border-top:1px solid var(--ax-border-default); margin:.5rem 0; padding-top:.5rem;">
+              <p class="ax-text-primary ax-text-sm mb-0" id="ai-yorum-text"></p>
+            </div>
+
+            {% include "partials/_s3_retention_notice.html" %}
+            <div class="d-flex gap-2 flex-wrap">
+              <a id="pdf-btn" href="#" target="_blank" class="ax-btn ax-btn-danger fw-semibold ax-btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>{% trans "PDF İndir" %}
+              </a>
+              <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="copyApa(this)">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>{% trans "Kopyala" %}
+              </button>
+              <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>{% trans "Yeni Analiz" %}
+              </button>
+            </div>
+          </div>
+        </div><!-- panel-done -->
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Metodoloji -->
+  <div class="ax-card mt-4 p-4">
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Metodoloji" %}</h5>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Varsayımlar" %}</h6>
+        <ul class="ax-text-muted ax-text-sm ps-3 mb-0">
+          <li>{% trans "Bağımsız gözlemler" %}</li>
+          <li>{% trans "Bağımlı değişkenler sürekli/sayısal, çok değişkenli normal dağılım" %}</li>
+          <li>{% trans "Kovaryans matrisi homojenliği (Box's M testi ile raporlanır)" %}</li>
+          <li>{% trans "Her grupta gözlem sayısı bağımlı değişken sayısından fazla olmalı" %}</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Kısmi η² Yorumu" %}</h6>
+        <table class="ax-table">
+          <tbody>
+            <tr><td>η² &lt; .01</td><td class="ax-text-muted">{% trans "İhmal edilebilir" %}</td></tr>
+            <tr><td>.01 – .06</td><td class="ax-text-warning">{% trans "Küçük" %}</td></tr>
+            <tr><td>.06 – .14</td><td class="ax-text-info">{% trans "Orta" context "etki büyüklüğü" %}</td></tr>
+            <tr><td>&gt; .14</td><td class="ax-text-success fw-bold">{% trans "Büyük" %}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEO: Bu Test Nedir? -->
+  <div class="ax-card mt-4 p-4">
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "MANOVA Nedir?" %}</h5>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Çok Değişkenli Varyans Analizi (MANOVA), tek yönlü ANOVA'nın birden fazla bağımlı değişkeni aynı anda test edebilen genişletilmiş halidir. Bir grup değişkeninin, birbiriyle ilişkili birden fazla sürekli bağımlı değişken üzerindeki ortak etkisini tek bir testle sınar." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-0">{% trans "Wilks' Lambda en yaygın raporlanan çok değişkenli test istatistiğidir. MANOVA anlamlı çıktığında hangi bağımlı değişken(ler)in farka kaynaklık ettiğini belirlemek için Bonferroni düzeltmeli takip (follow-up) ANOVA'larına bakılır." %}</p>
+  </div>
+
+</div>
+
+<script>
+{% blocktrans with mb=max_upload_mb asvar t_max_size %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}
+const T = {
+  maxSize: '{{ t_max_size|escapejs }}',
+  s1: '{% trans " satır, " as t %}{{ t|escapejs }}',
+  s2: '{% trans " sütun" as t %}{{ t|escapejs }}',
+  s3: '{% trans "Sunucu hatası." as t %}{{ t|escapejs }}',
+  s4: '{% trans "Grup değişkeni seçilmedi." as t %}{{ t|escapejs }}',
+  s5: '{% trans "En az 2 bağımlı değişken seçilmelidir." as t %}{{ t|escapejs }}',
+  s6: '{% trans "Analiz başarısız." as t %}{{ t|escapejs }}',
+  s7: '{% trans "Durum sorgulanamadı: " as t %}{{ t|escapejs }}',
+  s8: '{% trans "Sonuç gösterilirken hata: " as t %}{{ t|escapejs }}',
+  s9: '{% trans "Tümünü Kaldır" as t %}{{ t|escapejs }}',
+  s10: '{% trans "Tümünü Seç" as t %}{{ t|escapejs }}',
+  s11: '{% trans " bağımlı değişken seçili" as t %}{{ t|escapejs }}',
+  s12: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  sigYes: '{% trans "✓ Grup değişkeninin anlamlı bir ortak etkisi var (p < .05)" as t %}{{ t|escapejs }}',
+  sigNo: '{% trans "✗ Grup değişkeninin anlamlı bir ortak etkisi yok (p ≥ .05)" as t %}{{ t|escapejs }}',
+  etaText: '{% trans "Kısmi η² (Wilks' Λ'dan): {eta} — {interp}" as t %}{{ t|escapejs }}',
+  boxmText: '{% trans "χ² = {chi2}, df = {df}, {p} — {concl}" as t %}{{ t|escapejs }}',
+  boxmHomog: '{% trans "kovaryans matrisleri homojen (p ≥ .05)" as t %}{{ t|escapejs }}',
+  boxmNotHomog: '{% trans "kovaryans matrisleri homojen değil (p < .05)" as t %}{{ t|escapejs }}',
+  boxmFailed: '{% trans "Hesaplanamadı (tekil/singular kovaryans matrisi)." as t %}{{ t|escapejs }}',
+  followupAlpha: '{% trans "Düzeltilmiş anlamlılık eşiği (Bonferroni, α / {m} değişken): α = {alpha}" as t %}{{ t|escapejs }}',
+  thTest: '{% trans "Test" as t %}{{ t|escapejs }}',
+  thValue: '{% trans "Değer" as t %}{{ t|escapejs }}',
+  thVar: '{% trans "Değişken" as t %}{{ t|escapejs }}',
+  thYes: '{% trans "Evet" as t %}{{ t|escapejs }}',
+  thNo: '{% trans "Hayır" as t %}{{ t|escapejs }}',
+  apaSig: '{% trans "Çok değişkenli varyans analizi (MANOVA) sonucunda {group} gruplarının {dep} değişkenlerinin bileşimi üzerinde anlamlı bir etkisi bulunmuştur, Wilks' Λ = {lam}, F({df1}, {df2}) = {f}, {p}, kısmi η² = {eta}." as t %}{{ t|escapejs }}',
+  apaNs: '{% trans "Çok değişkenli varyans analizi (MANOVA) sonucunda {group} gruplarının {dep} değişkenlerinin bileşimi üzerinde anlamlı bir etkisi bulunmamıştır, Wilks' Λ = {lam}, F({df1}, {df2}) = {f}, {p}, kısmi η² = {eta}." as t %}{{ t|escapejs }}',
+};
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(4);
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const TOOL_URL = '{% url "istatistik:manova" %}';
+const STATUS_TEMPLATE = '{% url "istatistik:manova_status" "00000000-0000-0000-0000-000000000000" %}';
+
+let previewId = null, previewFilename = null, allNumericCols = [], allCols = [], pollInterval = null;
+
+const fileInput = document.getElementById('file-input');
+const analyzeBtn = document.getElementById('analyze-btn');
+const runAnalysisBtn = document.getElementById('run-analysis-btn');
+const toggleAllBtn = document.getElementById('toggle-all-btn');
+
+fileInput.addEventListener('change', () => {
+  const f = fileInput.files[0];
+  if (!f) return;
+  if (f.size > {{ max_upload_mb }} * 1024 * 1024) {
+    document.getElementById('error-msg').textContent = '{% filter escapejs %}{% blocktrans with mb=max_upload_mb %}Dosya boyutu {{ mb }} MB sınırını aşıyor.{% endblocktrans %}{% endfilter %}';
+    document.getElementById('error-msg').classList.remove('d-none');
+    fileInput.value = '';
+    return;
+  }
+  document.getElementById('file-name-display').textContent = f.name + ' (' + (f.size / 1024).toFixed(0) + ' KB)';
+  analyzeBtn.disabled = false;
+  document.getElementById('error-msg').classList.add('d-none');
+});
+
+analyzeBtn.addEventListener('click', previewFile);
+toggleAllBtn.addEventListener('click', toggleAllColumns);
+runAnalysisBtn.addEventListener('click', runAnalysis);
+document.getElementById('group-col').addEventListener('change', updateDepCheckboxes);
+
+function previewFile() {
+  const f = fileInput.files[0];
+  if (!f) return;
+  analyzeBtn.disabled = true;
+  const fd = new FormData();
+  fd.append('file', f); fd.append('step', 'preview');
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      analyzeBtn.disabled = false;
+      if (!data.success) { showUploadError(data.error || 'Hata'); return; }
+      previewId = data.preview_id; previewFilename = data.filename;
+      allNumericCols = data.numeric_cols || []; allCols = data.columns || [];
+      document.getElementById('config-file-info').textContent = data.filename + ' — ' + data.n_rows + T.s1 + data.columns.length + T.s2;
+      buildGroupSelect(allCols);
+      updateDepCheckboxes();
+      document.getElementById('step-upload').classList.add('d-none');
+      document.getElementById('step-config').classList.remove('d-none');
+    })
+    .catch(() => { analyzeBtn.disabled = false; showUploadError(T.s3); });
+}
+
+function buildGroupSelect(cols) {
+  const sel = document.getElementById('group-col');
+  sel.innerHTML = '<option value="">— {% filter escapejs %}{% trans "Seçiniz" %}{% endfilter %} —</option>';
+  cols.forEach(c => { sel.innerHTML += `<option value="${_esc(c)}">${_esc(c)}</option>`; });
+}
+
+function updateDepCheckboxes() {
+  const groupVal = document.getElementById('group-col').value;
+  const cols = allNumericCols.filter(c => c !== groupVal);
+  const list = document.getElementById('col-checkbox-list');
+  list.innerHTML = cols.map(c => `
+    <div class="d-flex align-items-center gap-2 py-1 px-3" style="border-bottom: 1px solid var(--ax-border-default);">
+      <input type="checkbox" class="col-cb" id="col_${CSS.escape(c)}" value="${_esc(c)}" checked style="cursor:pointer; width:15px; height:15px; flex-shrink:0;">
+      <label for="col_${CSS.escape(c)}" class="ax-text-secondary ax-text-sm mb-0 w-100" style="cursor:pointer;">${_esc(c)}</label>
+    </div>
+  `).join('');
+  document.querySelectorAll('.col-cb').forEach(cb => cb.addEventListener('change', updateColCount));
+  updateColCount();
+}
+
+function updateColCount() {
+  const cbs = document.querySelectorAll('.col-cb');
+  const selected = [...cbs].filter(cb => cb.checked).length;
+  document.getElementById('col-count-label').textContent = selected + T.s11;
+  const groupVal = document.getElementById('group-col').value;
+  runAnalysisBtn.disabled = !(groupVal && selected >= 2 && selected <= 8);
+  toggleAllBtn.textContent = (cbs.length > 0 && selected === cbs.length) ? T.s9 : T.s10;
+}
+
+function toggleAllColumns() {
+  const cbs = document.querySelectorAll('.col-cb');
+  const allChecked = [...cbs].every(cb => cb.checked);
+  cbs.forEach(cb => { cb.checked = !allChecked; });
+  updateColCount();
+}
+
+function runAnalysis() {
+  const groupVal = document.getElementById('group-col').value;
+  const selectedCols = [...document.querySelectorAll('.col-cb:checked')].map(cb => cb.value);
+  if (!groupVal) { showRunError(T.s4); return; }
+  if (selectedCols.length < 2) { showRunError(T.s5); return; }
+
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('loading');
+
+  const fd = new FormData();
+  fd.append('step', 'run');
+  fd.append('preview_id', previewId);
+  fd.append('filename', previewFilename);
+  fd.append('group_col', groupVal);
+  selectedCols.forEach(c => fd.append('dep_cols', c));
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) { showPanel('idle'); showRunError(data.error || 'Hata'); return; }
+      startPolling(data.job_id);
+    })
+    .catch(() => { showPanel('idle'); showRunError(T.s3); });
+}
+
+function startPolling(jobId) {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(() => {
+    fetch(STATUS_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', jobId), {headers:{'X-Requested-With':'XMLHttpRequest'}})
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(data => {
+        if (data.status === 'completed') {
+          clearInterval(pollInterval);
+          showResults(data);
+        } else if (data.status === 'failed') {
+          clearInterval(pollInterval);
+          showPanel('error');
+          document.getElementById('panel-error-msg').textContent = data.error || T.s6;
+        }
+      })
+      .catch(err => {
+        clearInterval(pollInterval);
+        showPanel('error');
+        document.getElementById('panel-error-msg').textContent = T.s7 + err.message;
+      });
+  }, 2000);
+}
+
+function showResults(data) {
+  try { _showResults(data); } catch(e) {
+    showPanel('error');
+    document.getElementById('panel-error-msg').textContent = T.s8 + e.message;
+  }
+}
+
+function _showResults(data) {
+  const r = data.result_data;
+  const sigBox = document.getElementById('sig-box');
+  const sigText = document.getElementById('sig-text');
+  if (r.significant) {
+    sigBox.style.background = 'rgba(74,222,128,0.08)'; sigBox.style.border = '1px solid rgba(74,222,128,0.2)';
+    sigText.innerHTML = `<span style="color:#4ade80;">${T.sigYes}</span>`;
+  } else {
+    sigBox.style.background = 'rgba(248,113,113,0.08)'; sigBox.style.border = '1px solid rgba(248,113,113,0.2)';
+    sigText.innerHTML = `<span style="color:#f87171;">${T.sigNo}</span>`;
+  }
+
+  const mvHead = `<thead><tr><th>${T.thTest}</th><th>${T.thValue}</th><th>F</th><th>df1</th><th>df2</th><th>p</th></tr></thead>`;
+  const mvBody = '<tbody>' + r.multivariate_tests.map(t => {
+    const hl = t.name === r.wilks.name ? ' style="font-weight:700;color:var(--ax-accent-primary);"' : '';
+    return `<tr><td${hl}>${_esc(t.name)}</td><td${hl}>${t.value.toFixed(4)}</td><td${hl}>${t.f.toFixed(3)}</td><td${hl}>${t.df1.toFixed(1)}</td><td${hl}>${t.df2.toFixed(1)}</td><td${hl}>${pStr(t.p)}</td></tr>`;
+  }).join('') + '</tbody>';
+  document.getElementById('mv-table').innerHTML = mvHead + mvBody;
+  document.getElementById('eta-text').textContent = fmt(T.etaText, {eta: r.partial_eta_sq.toFixed(3), interp: r.effect_interpretation});
+
+  if (r.box_m) {
+    document.getElementById('boxm-text').textContent = fmt(T.boxmText, {
+      chi2: r.box_m.chi2.toFixed(3), df: r.box_m.df.toFixed(1), p: pStr(r.box_m.p),
+      concl: r.box_m.homogeneous ? T.boxmHomog : T.boxmNotHomog,
+    });
+  } else {
+    document.getElementById('boxm-text').textContent = T.boxmFailed;
+  }
+
+  if (r.profile_plot_b64) {
+    document.getElementById('profile-plot-img').src = 'data:image/png;base64,' + r.profile_plot_b64;
+  }
+
+  const fuSection = document.getElementById('followup-section');
+  if (r.followup_anovas && r.followup_anovas.length > 0) {
+    fuSection.classList.remove('d-none');
+    document.getElementById('followup-alpha-text').textContent = fmt(T.followupAlpha, {m: r.dep_cols.length, alpha: r.alpha_corrected});
+    const fuHead = `<thead><tr><th>${T.thVar}</th><th>F</th><th>df1</th><th>df2</th><th>p</th><th>${T.thTest}</th></tr></thead>`;
+    const fuBody = '<tbody>' + r.followup_anovas.map(f => {
+      const hl = f.significant_corrected ? ' style="color:#4ade80;font-weight:700;"' : '';
+      return `<tr><td>${_esc(f.dep_col)}</td><td>${f.f_stat.toFixed(3)}</td><td>${f.df_between}</td><td>${f.df_within}</td><td>${pStr(f.p_value)}</td><td${hl}>${f.significant_corrected ? T.thYes : T.thNo}</td></tr>`;
+    }).join('') + '</tbody>';
+    document.getElementById('followup-table').innerHTML = fuHead + fuBody;
+  } else {
+    fuSection.classList.add('d-none');
+  }
+
+  document.getElementById('res-conclusion').textContent = r.conclusion;
+
+  const apaTemplate = r.significant ? T.apaSig : T.apaNs;
+  const apa = fmt(apaTemplate, {
+    group: r.group_col, dep: r.dep_cols.join(', '),
+    lam: r.wilks.value.toFixed(3), df1: r.wilks.df1.toFixed(1), df2: r.wilks.df2.toFixed(1),
+    f: r.wilks.f.toFixed(3), p: pStr(r.wilks.p), eta: r.partial_eta_sq.toFixed(3),
+  });
+  document.getElementById('res-apa').textContent = apa;
+  document.getElementById('pdf-btn').href = data.pdf_url;
+
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (r.ai_comment) {
+    document.getElementById('ai-yorum-text').textContent = r.ai_comment;
+    aiBox.classList.remove('d-none');
+  } else {
+    aiBox.classList.add('d-none');
+  }
+
+  showPanel('done');
+}
+
+function copyApa(btn) {
+  let copyText = document.getElementById('res-apa').textContent;
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (aiBox && !aiBox.classList.contains('d-none')) {
+    copyText += '\n\n' + document.getElementById('ai-yorum-text').textContent;
+  }
+  navigator.clipboard.writeText(copyText).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' + T.s12;
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  });
+}
+
+function showPanel(name) {
+  ['idle','loading','error','done'].forEach(n => {
+    document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
+  });
+}
+function showUploadError(msg) { const el = document.getElementById('error-msg'); el.textContent = msg; el.classList.remove('d-none'); }
+function showRunError(msg) { const el = document.getElementById('run-error'); el.textContent = msg; el.classList.remove('d-none'); }
+function resetUI() {
+  if (pollInterval) clearInterval(pollInterval);
+  document.getElementById('step-config').classList.add('d-none');
+  document.getElementById('step-upload').classList.remove('d-none');
+  previewId = null; previewFilename = null;
+  fileInput.value = ''; analyzeBtn.disabled = true;
+  document.getElementById('file-name-display').textContent = T.maxSize;
+  document.getElementById('error-msg').classList.add('d-none');
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('idle');
+}
+
+{% if active_job_id %}
+showPanel('loading');
+startPolling('{{ active_job_id }}');
+{% endif %}
+</script>
+
+<style>
+  .ax-upload-area { border: 2px dashed var(--ax-border-hover); border-radius: var(--ax-radius-md); background: rgba(0,0,0,0.1); padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+  .ax-upload-area:hover { border-color: var(--ax-accent-primary); }
+  .ax-btn-accent { background: var(--ax-accent-primary); color: #fff; border: 1px solid transparent; }
+  .ax-btn-accent:hover { background: var(--ax-accent-primary-hover); color: #fff; }
+  .ax-btn-accent:disabled { opacity: 0.45; cursor: not-allowed; }
+  .ax-btn-danger { background: var(--ax-accent-danger); color: #fff; border: 1px solid transparent; }
+  .ax-btn-danger:hover { opacity: 0.9; color: #fff; }
+  .ax-btn-outline-secondary { border: 1px solid var(--ax-border-hover); color: var(--ax-text-secondary); background: transparent; }
+  .ax-btn-outline-secondary:hover { background: rgba(255,255,255,0.05); color: var(--ax-text-primary); }
+  .ax-alert-danger, .ax-alert-info { display: flex; align-items: flex-start; padding: 12px 16px; border-radius: var(--ax-radius-md); }
+  .ax-alert-danger  { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.25);  color: var(--ax-accent-danger); }
+  .ax-alert-info    { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); color: var(--ax-text-secondary); }
+  .ax-link { color: var(--ax-accent-primary); text-decoration: none; }
+  .ax-link:hover { text-decoration: underline; }
+  .ax-badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
+  .ax-badge-secondary { background: rgba(71,85,105,0.25); color: var(--ax-text-secondary); }
+  .ax-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--ax-text-primary); }
+  .ax-table th, .ax-table td { padding: 8px 12px; border-bottom: 1px solid var(--ax-border-default); }
+  .ax-table thead th { color: var(--ax-text-secondary); font-weight: 600; background: rgba(0,0,0,0.2); }
+  .ax-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .ax-text-accent  { color: var(--ax-accent-primary) !important; }
+  .ax-text-success { color: var(--ax-accent-secondary) !important; }
+  .ax-text-warning { color: var(--ax-accent-warning) !important; }
+  .ax-text-danger  { color: var(--ax-accent-danger) !important; }
+  .ax-select { background: rgba(0,0,0,0.2); border: 1px solid var(--ax-border-default); border-radius: var(--ax-radius-sm); color: var(--ax-text-primary); padding: 6px 10px; font-size: 0.85rem; }
+  .ax-select:focus { outline: none; border-color: var(--ax-accent-primary); }
+  @keyframes ax-spin { 100% { transform: rotate(360deg); } }
+  #col-checkbox-list > div:last-child { border-bottom: none !important; }
+  #col-checkbox-list > div:hover { background: rgba(255,255,255,0.04); }
+</style>
+{% endblock %}

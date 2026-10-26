@@ -326,9 +326,49 @@ maddelerde.
      rollback` ile, `_upload_pdf`/`upload_bytes_to_s3` mock'lanarak) test
      edildi; TR/EN/DE anonim (promo) sayfa 200, sitemap üç dilde URL'i
      içeriyor, 104/104 pytest yeşil, `docker compose restart web` + nginx
+     yapıldı. Kullanıcı onayıyla `dev`→`main` merge + push edildi, GitHub
+     Actions otomatik Hetzner deploy'u tetikledi (24 sn), migration
+     production'da uygulandı, canlı doğrulandı (`https://www.analizus.com/
+     analiz/kumeleme/` TR/EN/DE 200). Aynı deploy'la svm/mediation/moderation
+     job_queue düzeltmesi de canlıya alındı.
+  3. [x] **(26 Ekim 2026 TAMAMLANDI) MANOVA (Çok Değişkenli Varyans Analizi)**
+     — kullanıcı kararıyla: (1) MANOVA anlamlıysa Bonferroni düzeltmeli
+     (α/değişken sayısı) takip ANOVA'ları eklendi, (2) Box's M testi
+     (kovaryans matrisi homojenliği) eklendi. Yeni `istatistik/services/
+     manova.py`: `statsmodels.multivariate.manova.MANOVA` ile SPSS'in
+     "Multivariate Tests" tablosuyla birebir aynı dört istatistik (Wilks'
+     Lambda, Pillai's Trace, Hotelling-Lawley Trace, Roy's Largest Root);
+     birincil anlamlılık Wilks' Lambda'ya göre, kısmi η² Cohen'in 1 − Λ^(1/s)
+     yaklaşımıyla hesaplanıyor. Box's M testi elle implemente edildi (Box,
+     1949 — pooled/grup kovaryans matrisleri, log-determinant, ki-kare
+     yaklaşımı; tekil/singular matriste `None` dönüp PDF'te "hesaplanamadı"
+     notu gösteriyor). MANOVA anlamlıysa her bağımlı değişken için mevcut
+     `anova.py`'nin `analyze()` fonksiyonu yeniden kullanılarak (Welch/Levene/
+     eta-kare/post-hoc dahil) takip ANOVA'ları + α/m düzeltmeli anlamlılık
+     eşiği hesaplanıyor. Profil grafiği (grup ortalamaları × bağımlı
+     değişkenler, SPSS MANOVA raporlamasındaki standart görsel) matplotlib
+     ile üretiliyor. Mevcut 21 araçla aynı iskelet: `TOOL_CHOICES` + migration
+     `0015_add_manova_tool`, `job_runner.py` dispatch dalı +
+     `_AI_PROMPT_EXCLUDE_KEYS`, `views.py` ("Fark Analizleri" grubuna 7.
+     satır, `manova_landing`, `_handle_group_tool_post` options dalı,
+     `_SLUG_MAP`), `urls.py`, `job_queue.py` whitelist, yeni `istatistik/
+     templates/istatistik/manova.html` (kumeleme.html'in ax- deseniyle; grup
+     değişkeni dropdown + bağımlı değişkenler checkbox-listesi — anova.html'in
+     grup+tek bağımlı değişken desenine MANOVA'nın çoklu bağımlı değişken
+     ihtiyacı için afa/kumeleme'nin checkbox-list deseni eklendi), `seo_content.py`,
+     `forum/sitemaps.py`. 71 yeni msgid EN/DE'ye çevrildi (**ders:** şablonda
+     `{% trans "...Wilks\' Λ..." %}` içinde gereksiz ters eğik çizgi kaçışı
+     (`\'`) kullanmak Django trans tag'inde literal karakter olarak kalıp
+     farklı/kopuk bir msgid üretiyor — `apaSig`/`apaNs`/`etaText` JS
+     sabitlerinde bulunup düzeltildi, `makemessages` tekrar çalıştırılıp
+     doğrulandı). Docker'da: `analyze()` doğrudan (anlamlı/anlamsız × 2-3
+     grup × 2-3 bağımlı değişken × geçersiz girdi — tek değişken/eksik sütun/
+     grup içi çakışma/yetersiz gözlem/çok fazla grup senaryoları) ve tam
+     uçtan uca akış (preview→run→job kuyruğu→analiz→PDF, gerçek async
+     `enqueue` senkron çalıştırılarak, `upload_bytes_to_s3` mock'lanarak) test
+     edildi; TR/EN/DE anonim (promo) sayfa 200, sitemap üç dilde URL'i
+     içeriyor, 104/104 pytest yeşil, `docker compose restart web` + nginx
      yapıldı. Henüz `dev`→`main` merge edilmedi (kullanıcı onayı bekliyor).
-  3. [ ] **MANOVA (Çok Değişkenli Varyans Analizi)** — mevcut ANOVA
-     altyapısının doğal uzantısı.
   4. [ ] **Sağkalım Analizi (Kaplan-Meier / Cox Regresyon)** — sağlık bilimleri
      tezlerinde çok aranıyor; `survival-analizi-101-kaplan-meier-cox-regresyon-...`
      blog yazısı zaten iyi SEO alıyor (bkz. aşağıda ~satır 2197) ama karşılığında
