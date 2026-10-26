@@ -1976,6 +1976,7 @@ class StudyRoom(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    archived_at = models.DateTimeField(null=True, blank=True, verbose_name="Arşivlenme Zamanı")
 
     class Meta:
         verbose_name = "Çalışma Odası"
@@ -2006,7 +2007,8 @@ class StudyRoom(models.Model):
         from django.utils import timezone
         if self.status == 'active' and timezone.now() > self.ends_at:
             self.status = 'archived'
-            self.save(update_fields=['status'])
+            self.archived_at = timezone.now()
+            self.save(update_fields=['status', 'archived_at'])
             return True
         return False
 
@@ -2136,6 +2138,22 @@ class StudyRoomPostReport(models.Model):
 
     def __str__(self):
         return f"{self.reporter.username} → post #{self.post_id} ({self.reason})"
+
+
+class RoomExportAuditLog(models.Model):
+    """Faz 4 — bir admin'in adli talep için oda mesaj dökümünü export ettiği her an kaydedilir (chain of custody)."""
+    room = models.ForeignKey(StudyRoom, on_delete=models.CASCADE, related_name='export_logs')
+    exported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='room_exports')
+    exported_at = models.DateTimeField(auto_now_add=True)
+    message_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['-exported_at']
+        verbose_name = 'Oda Export Kaydı'
+        verbose_name_plural = 'Oda Export Kayıtları'
+
+    def __str__(self):
+        return f"{self.exported_by} → {self.room.title} ({self.exported_at:%Y-%m-%d %H:%M})"
 
 
 class TeamMember(models.Model):

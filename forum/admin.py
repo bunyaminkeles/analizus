@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.utils.html import format_html, strip_tags
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from broadcast.models import EmailBroadcast
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, StudyRoomPost, StudyRoomPostReport, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest, ServicePage, ServicePageSection, ServicePageFAQ, ServicePageTranslation, ServicePageSectionTranslation, ServicePageFAQTranslation
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, StudyRoomPost, StudyRoomPostReport, RoomExportAuditLog, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest, ServicePage, ServicePageSection, ServicePageFAQ, ServicePageTranslation, ServicePageSectionTranslation, ServicePageFAQTranslation
 from .models import TeamMember
 from .models import AIUsageLog
 
@@ -1203,7 +1203,7 @@ class StudyRoomAdmin(ModelAdmin):
     list_filter = ('status', 'category', 'is_public')
     search_fields = ('title', 'creator__username', 'goal')
     readonly_fields = ('created_at', 'updated_at', 'terms_agreed_at', 'slug')
-    actions = ['approve_rooms', 'reject_rooms']
+    actions = ['approve_rooms', 'reject_rooms', 'export_room_messages']
 
     def member_count(self, obj):
         return obj.memberships.count()
@@ -1219,6 +1219,26 @@ class StudyRoomAdmin(ModelAdmin):
         updated = queryset.filter(status='pending').update(status='rejected', reviewed_by=request.user)
         self.message_user(request, f'{updated} oda reddedildi.')
 
+    @admin.action(description='📄 Mesaj dökümünü PDF olarak dışa aktar (adli talep) — yalnızca superuser')
+    def export_room_messages(self, request, queryset):
+        from django.http import HttpResponse
+        from django.utils import timezone
+        if not request.user.is_superuser:
+            self.message_user(request, 'Bu işlem yalnızca superuser tarafından yapılabilir.', level='error')
+            return None
+        if queryset.count() != 1:
+            self.message_user(request, 'Mesaj dökümü yalnızca tek bir oda seçildiğinde export edilir.', level='error')
+            return None
+        room = queryset.first()
+        posts = room.room_posts.select_related('author').order_by('created_at')
+        from .services.room_export import build_room_export_pdf
+        pdf_bytes = build_room_export_pdf(room, posts, request.user)
+        RoomExportAuditLog.objects.create(room=room, exported_by=request.user, message_count=posts.count())
+        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        filename = f"oda-mesaj-dokumu-{room.slug}-{timezone.now():%Y%m%d%H%M}.pdf"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+
 
 @admin.register(StudyRoomPost)
 class StudyRoomPostAdmin(ModelAdmin):
@@ -1227,6 +1247,24 @@ class StudyRoomPostAdmin(ModelAdmin):
     search_fields = ('message', 'author__username', 'room__title')
     readonly_fields = ('room', 'author', 'message', 'file', 'created_at', 'edited_at')
     ordering = ('-created_at',)
+
+
+@admin.register(RoomExportAuditLog)
+class RoomExportAuditLogAdmin(ModelAdmin):
+    list_display = ('room', 'exported_by', 'exported_at', 'message_count')
+    list_filter = ('room',)
+    search_fields = ('room__title', 'exported_by__username')
+    readonly_fields = ('room', 'exported_by', 'exported_at', 'message_count')
+    ordering = ('-exported_at',)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(StudyRoomPostReport)

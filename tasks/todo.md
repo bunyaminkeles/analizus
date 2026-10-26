@@ -119,21 +119,54 @@ maddelerde.
      kendi-mesajını-bildirme senaryoları `Client` ile uçtan uca test edildi,
      104/104 pytest yeşil, `docker compose restart web` + `restart nginx`
      yapıldı.
-  3. [ ] **Faz 3 — Saklama süresi + "legal hold":** oda arşivlendikten N ay
-     sonra otomatik silme politikası tanımla (N için kullanıcıya sor);
-     flagged/report edilmiş kayıtlar bu otomatik silmeden muaf (olası adli
-     talep için ayrı tutulur).
-  4. [ ] **Faz 4 — Adli makam talebi / export audit log:** mahkeme kararı/
-     savcılık yazısı geldiğinde kullanılacak export akışı; hangi admin, ne
-     zaman, hangi kaydı export etti bilgisi loglanır (chain of custody).
-  5. [ ] **Faz 5 — Aydınlatma metni güncellemesi:** Gizlilik Politikası/
-     Kullanım Şartları'na "mesajlarınız kötüye kullanımın önlenmesi ve yasal
-     yükümlülükler çerçevesinde saklanır, gerektiğinde yetkili makamlarla
-     paylaşılabilir" açıklaması eklenir — KVKK danışmanı/avukat onayı
-     ŞART, metni tek başına yazıp yayınlama.
-  6. [ ] **Faz 6 — Admin erişim logu:** bir admin bir odanın mesaj dökümünü
+  3. [x] **(26 Ekim 2026 TAMAMLANDI) Faz 3 — Saklama süresi + "legal hold".**
+     Kullanıcı kararları: N=6 ay (180 gün), kapsam yalnız mesajlar (oda kaydı
+     kalır), tetikleme günlük cron/management komut deseni (mevcut
+     `CRON_SECRET_KEY` korumalı `/api/cron/...` deseni). `StudyRoom.archived_at`
+     eklendi (migration `0188_studyroom_archived_at`), `auto_archive_if_expired()`
+     bu alanı da set ediyor. Yeni `cron_cleanup_archived_room_posts`
+     (`forum/api_views.py`, route `/api/cron/cleanup-archived-room-posts/`):
+     `archived_at` 180 günden eski odalardaki mesajları siler (önce varsa ekli
+     dosya S3'ten temizlenir); `flagged=True` veya en az bir
+     `StudyRoomPostReport`'u olan mesajlar muaf (legal hold). **Not:** bu yeni
+     URL'in dış cron servisine (cron-job.org vb., diğer `/api/cron/...`
+     uçlarıyla aynı yerde) eklenmesi kullanıcının kendisi tarafından
+     yapılmalı — kod yalnız endpoint'i oluşturur, dış tetikleyiciye erişimim
+     yok. Docker'da `transaction.atomic()+rollback` ile 5 senaryo
+     (eski/temiz mesaj silindi; flagged/bildirilen/180 günden yeni
+     arşiv/aktif oda mesajları korundu; yanlış secret 403) doğrulandı,
+     104/104 pytest yeşil, `docker compose restart web` yapıldı.
+  4. [x] **(26 Ekim 2026 TAMAMLANDI) Faz 4 — Adli makam talebi / export audit
+     log.** Kullanıcı kararları: format PDF, kapsam seçilen odanın TÜM
+     mesajları, yetki yalnızca superuser. `RoomExportAuditLog` modeli
+     (room, exported_by, exported_at, message_count — migration
+     `0189_roomexportauditlog`, admin'de değiştirilemez/silinemez salt
+     okunur). `forum/services/room_export.py` — ReportLab/Platypus ile PDF
+     (oda başlığı, dışa aktaran admin + zaman PDF üzerinde de yazılı, tüm
+     mesajlar tarih/yazar/içerik tablosu; `istatistik.services.pdf_fonts.
+     register_fonts()` ile Türkçe karakter desteği; mesaj içeriği
+     `xml.sax.saxutils.escape()` ile kaçışlı — bibliometrics/pdf_builder.py
+     ile aynı desen). `StudyRoomAdmin.export_room_messages` aksiyonu
+     (`TrainingRequestAdmin.generate_certificate` deseniyle aynı): staff
+     ama superuser olmayan reddedilir, birden fazla oda seçilirse reddedilir,
+     başarılı olursa PDF indirilir + audit log kaydı oluşur. Sidebar'a
+     "Oda Export Kayıtları" girdisi. Docker'da: staff/superuser/çoklu-seçim
+     senaryoları + üretilen PDF'in boyutu ve özel karakter (`<b>`, `&`)
+     içeren mesajın bozmadığı `transaction.atomic()+rollback` ile doğrulandı,
+     104/104 pytest yeşil, `docker compose restart web` yapıldı.
+  5. [ ] **Faz 5 — Aydınlatma metni güncellemesi (BEKLEMEDE — avukat/KVKK
+     danışmanı onayı gerekiyor, Claude tek başına yazıp yayınlayamaz).**
+     Gizlilik Politikası/Kullanım Şartları'na "mesajlarınız kötüye
+     kullanımın önlenmesi ve yasal yükümlülükler çerçevesinde saklanır,
+     gerektiğinde yetkili makamlarla paylaşılabilir" açıklaması eklenir.
+     Kullanıcı onaylı metni getirdiğinde uygulanacak.
+  6. [ ] **Faz 6 — Admin erişim logu (26 Ekim 2026, plan onaylanmadan
+     ertelendi — kullanıcı "geç" dedi).** Plan taslağı: `RoomAccessAuditLog`
+     modeli (room, viewed_by, viewed_at) + `StudyRoomPostAdmin.
+     changelist_view()` override edilip `room__id__exact` filtresiyle
+     görüntülemede otomatik log. Bir admin bir odanın mesaj dökümünü
      panelden görüntülediğinde bunun loglanması (kim, hangi oda, ne zaman) —
-     "görünmeden girme" yerine şeffaf ama izlenebilir erişim.
+     "görünmeden girme" yerine şeffaf ama izlenebilir erişim hedefi.
   - **Reddedilen fikir:** Admin'in canlı odaya görünmeden/stealth presence
     ile girmesi — gereksiz (mesajlar zaten DB'de, admin paneli yeterli) ve
     KVKK şeffaflık ilkesi + kullanıcı güveni açısından riskli; uygulanmayacak.

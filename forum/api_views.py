@@ -225,6 +225,50 @@ def cron_cleanup_attachments(request):
 
 
 @require_GET
+def cron_cleanup_archived_room_posts(request):
+    """
+    Arşivlenmesinden 180 gün (≈6 ay) geçmiş odalardaki mesajları siler.
+
+    Legal hold: işaretli (flagged) veya kullanıcı tarafından bildirilmiş
+    (StudyRoomPostReport) mesajlar olası adli talep için bu silmeden
+    muaf tutulur, silinmez.
+
+    Kullanım:
+    - GET /api/cron/cleanup-archived-room-posts/?secret=YOUR_SECRET
+    - Günlük cron job olarak çalıştırılmalıdır.
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+    from django.utils import timezone
+    from datetime import timedelta
+    from forum.models import StudyRoom, StudyRoomPost
+
+    cutoff_days = 180
+    cutoff = timezone.now() - timedelta(days=cutoff_days)
+    eligible_rooms = StudyRoom.objects.filter(status='archived', archived_at__lt=cutoff)
+    queryset = StudyRoomPost.objects.filter(
+        room__in=eligible_rooms, flagged=False
+    ).exclude(reports__isnull=False)
+
+    deleted_count = 0
+    for post in queryset:
+        if post.file:
+            try:
+                post.file.storage.delete(post.file.name)
+            except Exception:
+                pass
+        post.delete()
+        deleted_count += 1
+
+    return JsonResponse({
+        'success': True,
+        'deleted_posts': deleted_count,
+        'cutoff_days': cutoff_days,
+    })
+
+
+@require_GET
 def cron_cleanup_pageviews(request):
     """
     5 günden eski sayfa ziyaret loglarını özetleyip siler.
