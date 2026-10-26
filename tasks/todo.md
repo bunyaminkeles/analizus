@@ -154,6 +154,16 @@ maddelerde.
      senaryoları + üretilen PDF'in boyutu ve özel karakter (`<b>`, `&`)
      içeren mesajın bozmadığı `transaction.atomic()+rollback` ile doğrulandı,
      104/104 pytest yeşil, `docker compose restart web` yapıldı.
+     **Ek bulgu (26 Ekim 2026, merge sonrası production kontrolünde):**
+     Faz 3 deploy edildiğinde production'da zaten `archived` durumda olan
+     8 oda `archived_at=NULL` kaldığı için retention cron'una hiç girmiyordu.
+     Kullanıcı kararı: backfill yapılsın — migration
+     `0190_backfill_studyroom_archived_at` ile bu odalara `ends_at` proxy
+     olarak `archived_at`'a yazıldı (`RunPython`, `models.F('ends_at')`).
+     Docker'da izole bir senaryo (`transaction.atomic()+rollback`) ile
+     backfill mantığı doğrulandı, 104/104 pytest yeşil, `docker compose
+     restart web` yapıldı. Henüz yalnız `dev`'de, production'a migration
+     deploy ile gidecek.
   5. [ ] **Faz 5 — Aydınlatma metni güncellemesi (BEKLEMEDE — avukat/KVKK
      danışmanı onayı gerekiyor, Claude tek başına yazıp yayınlayamaz).**
      Gizlilik Politikası/Kullanım Şartları'na "mesajlarınız kötüye
