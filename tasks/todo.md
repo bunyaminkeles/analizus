@@ -193,11 +193,42 @@ maddelerde.
     ile girmesi — gereksiz (mesajlar zaten DB'de, admin paneli yeterli) ve
     KVKK şeffaflık ilkesi + kullanıcı güveni açısından riskli; uygulanmayacak.
 
-- [ ] **(25 Ekim 2026) Yeni Ücretsiz İstatistik Araçları Fikirleri — henüz
-  başlanmadı, öncelik sırasıyla:**
-  1. [ ] **Aracılık/Düzenleyici Değişken Analizi (Mediation/Moderation)** —
-     SPSS Process/Hayes'e karşılık; TR sosyal bilimler/işletme tezlerinde en
-     çok talep edilen, bizde hiç karşılığı yok.
+- [ ] **(25 Ekim 2026) Yeni Ücretsiz İstatistik Araçları Fikirleri — öncelik
+  sırasıyla:**
+  1. [x] **(26 Ekim 2026 TAMAMLANDI) Aracılık/Düzenleyici Değişken Analizi
+     (Mediation/Moderation)** — SPSS Process/Hayes'e karşılık; TR sosyal
+     bilimler/işletme tezlerinde en çok talep edilen, bizde hiç karşılığı
+     yoktu. **Kullanıcı kararıyla v1 kapsamı yalnız basit (tek aracı
+     değişkenli) Mediation** — Moderation ayrı, sonraki bir tur (KIRMIZI
+     ÇİZGİ "tek seferde tek görev" ilkesi). Yeni `istatistik/services/
+     mediation.py`: üç statsmodels OLS modeli (c: Y~X toplam etki, a: M~X,
+     b+c': Y~X+M direkt etki), dolaylı etki (a×b) **bootstrap %95 GA**
+     (5000 yeniden örnekleme, kullanıcı kararı — Hayes/Process ile eşleşir)
+     + **Sobel testi** (ek/klasik) ile raporlanıyor; tam/kısmi/aracılık yok
+     sınıflandırması c' anlamlılığına göre otomatik. Mevcut 18 araçla
+     birebir aynı iskelet: `TOOL_CHOICES` + migration `0012_add_mediation_
+     tool`, `job_runner.py` dispatch dalı, `views.py` (`TOOL_CATEGORIES`
+     "Regresyon Analizleri" grubuna 3. satır, `mediation_landing` view,
+     `_handle_group_tool_post`/`_SLUG_MAP` genişletmesi), `urls.py`,
+     yeni `istatistik/templates/istatistik/mediation.html` (lineer_regresyon.
+     html'in X/M/Y üç değişkenli uyarlaması, `_s3_retention_notice.html`
+     dahil), `seo_content.py` (intro/when_to_use/assumptions/
+     how_to_interpret/apa_example/2 faq/related_tools), `forum/sitemaps.py`
+     `IstatistikSitemap`. 75 yeni msgid EN/DE'ye çevrildi (`makemessages`
+     ilk denemede bazı stringleri eski alakasız çevirilerle fuzzy eşleşti —
+     tek tek doğru çeviriyle düzeltilip fuzzy bayrağı temizlendi, ayrıca
+     `{% trans %}` içindeki "%95" kendiliğinden "%%95"e kaçtığı için o
+     girdi ayrı düzeltildi), `compilemessages` hatasız derlendi. Docker'da:
+     tam/kısmi/aracılık-yok/kategorik-X/yetersiz-n/sayısal-olmayan-M
+     senaryoları `analyze()`+`build_pdf()` ile, tam job pipeline'ı
+     `transaction.atomic()+rollback` ile (`_upload_pdf` mock'lanarak
+     gerçek S3'e yazılmadan — CLAUDE.md'deki "lokal/prod aynı S3 bucket"
+     uyarısı gereği) doğrulandı; TR/EN/DE üç dilde hem anonim (promo) hem
+     girişli (konsol) sayfa render edildi, sitemap üç dilde de URL'i
+     içeriyor, 104/104 pytest yeşil, `docker compose restart web` + nginx
+     yapıldı. Henüz yalnız `dev`'de — migration içerdiği için (yalnız yeni
+     `TOOL_CHOICES` seçeneği, veri kaybı riski yok) `main`'e push öncesi
+     kullanıcıdan onay + `scripts/yedek_indir.sh --simdi` istenecek.
   2. [ ] **Kümeleme Analizi (K-means / Hiyerarşik Cluster)** — pazarlama/
      işletme/eğitim tezlerinde yaygın; mevcut sklearn altyapısına (karar_agaci,
      svm) yakın, görece düşük efor.

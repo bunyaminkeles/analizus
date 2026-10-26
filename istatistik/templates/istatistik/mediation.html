@@ -1,0 +1,466 @@
+{% extends "istatistik/analiz_console_base.html" %}
+{% load static i18n %}
+{% block canonical %}{% url 'analiz_console' 'mediation' %}{% endblock %}
+
+{% block title %}{% trans "Aracılık Analizi (Mediation)" %} - Analizus{% endblock %}
+{% block meta_description %}{% trans "Aracılık (mediation) analizi: a, b, c, c' yolları, bootstrap güven aralığı, Sobel testi ve APA formatında hazır rapor metni. Excel veya CSV yükleyin." %}{% endblock %}
+
+{% block tool_area %}
+<div class="container py-4">
+
+  <div class="row mb-4 align-items-center">
+    <div class="col">
+      <h2 class="fw-bold text-white mb-1">
+        <i class="bi bi-diagram-3-fill me-2" style="color:#a78bfa;"></i>{% trans "Aracılık Analizi (Mediation)" %}
+      </h2>
+      <p class="text-white-50 mb-0">{% trans "X'in Y üzerindeki etkisinin M aracı değişkeni üzerinden ne kadarının iletildiğini test edin — bootstrap güven aralığı ve Sobel testi dahil." %}</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="col-auto">
+      <span class="badge bg-secondary fs-6">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Sol panel: yükleme + config -->
+    <div class="col-lg-5">
+      <div class="card border-secondary" style="background-color:#1a1a2e;">
+        <div class="card-body p-4">
+
+          <!-- Adım 1: Yükleme -->
+          <div id="step-upload">
+            <h5 class="text-white fw-semibold mb-3">
+              <i class="bi bi-upload me-2" style="color:#a78bfa;"></i>{% trans "Dosya Yükle" %}
+            </h5>
+            <div id="upload-area"
+                 class="border border-secondary rounded-3 text-center p-4 mb-3"
+                 style="border-style:dashed!important;cursor:pointer;"
+                 onclick="document.getElementById('file-input').click()">
+              <i class="bi bi-cloud-upload-fill fs-2 mb-2 d-block" style="color:#a78bfa;"></i>
+              <p class="text-white-50 small mb-0" id="file-name">{% blocktrans with mb=max_upload_mb %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}</p>
+            </div>
+            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
+            <button id="preview-btn" class="btn w-100 fw-semibold disabled" style="background:#4c1d95;color:#fff;" disabled>
+              <i class="bi bi-arrow-right-circle me-2"></i>{% trans "Sütunları Getir" %}
+            </button>
+            <div id="upload-error" class="alert alert-danger mt-3 d-none small"></div>
+          </div>
+
+          <!-- Adım 2: Değişken seçimi -->
+          <div id="step-config" class="d-none">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="text-white fw-semibold mb-0">
+                <i class="bi bi-list-check me-2" style="color:#a78bfa;"></i>{% trans "Değişken Seçimi" %}
+              </h5>
+              <button class="btn btn-sm btn-outline-secondary" onclick="resetToUpload()">
+                <i class="bi bi-arrow-left me-1"></i>{% trans "Geri" %}
+              </button>
+            </div>
+            <p class="text-white-50 small mb-3" id="config-file-info">—</p>
+
+            <div class="mb-3">
+              <label class="text-white-50 small mb-1 d-block">{% trans "Bağımsız Değişken (X — sayısal veya 2 kategorili)" %}</label>
+              <select id="x-col" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="updateMYSelects()">
+                <option value="">{% trans "— Seçiniz —" %}</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="text-white-50 small mb-1 d-block">{% trans "Aracı Değişken (M — sayısal)" %}</label>
+              <select id="m-col" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="updateMYSelects()">
+                <option value="">{% trans "— Seçiniz —" %}</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="text-white-50 small mb-1 d-block">{% trans "Bağımlı Değişken (Y — sayısal)" %}</label>
+              <select id="y-col" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="updateMYSelects()">
+                <option value="">{% trans "— Seçiniz —" %}</option>
+              </select>
+            </div>
+
+            <button id="run-btn" class="btn w-100 fw-semibold" style="background:#4c1d95;color:#fff;" disabled>
+              <i class="bi bi-play-circle-fill me-2"></i>{% trans "Analizi Başlat" %}
+            </button>
+            <div id="run-error" class="alert alert-danger mt-3 d-none small"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Sağ panel: sonuçlar -->
+    <div class="col-lg-7">
+      <div class="card border-secondary h-100" style="background-color:#16213e;">
+        <div class="card-body p-4">
+
+          <div id="panel-idle">
+            <h5 class="text-white-50 fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
+            <ul class="text-white-50 small ps-3">
+              <li class="mb-1">{% trans "Her satır bir gözlem olmalıdır." %}</li>
+              <li class="mb-1">{% trans "Aracı (M) ve bağımlı (Y) değişkenler sayısal/sürekli olmalıdır." %}</li>
+              <li class="mb-1">{% trans "Bağımsız değişken (X) sayısal veya 2 kategorili olabilir." %}</li>
+              <li class="mb-1">{% trans "Dolaylı etkinin anlamlılığı bootstrap %95 güven aralığı ile test edilir." %}</li>
+              <li class="mb-1">{% trans "Sobel testi ek/klasik bir doğrulama olarak gösterilir." %}</li>
+            </ul>
+          </div>
+
+          <div id="panel-loading" class="text-center d-none py-4">
+            <div class="spinner-border mb-3" style="width:3rem;height:3rem;color:#a78bfa;"></div>
+            <p class="text-white-50">{% trans "Aracılık analizi yapılıyor (bootstrap hesaplanıyor)…" %}</p>
+          </div>
+
+          <div id="panel-error" class="d-none">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <span id="panel-error-msg"></span>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm" onclick="resetToUpload()">{% trans "Yeniden Dene" %}</button>
+          </div>
+
+          <div id="panel-done" class="d-none">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="text-white fw-semibold mb-0">{% trans "Aracılık Sonucu" %}</h5>
+              <a id="pdf-btn" href="#" class="btn btn-sm btn-outline-danger" target="_blank">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i>{% trans "PDF İndir" %}
+              </a>
+            </div>
+
+            {% include "partials/_s3_retention_notice.html" %}
+
+            <div id="sig-box" class="rounded-3 p-3 mb-3">
+              <div class="fs-6 fw-semibold" id="sig-text"></div>
+            </div>
+
+            <!-- Yol katsayıları -->
+            <h6 class="text-white fw-semibold mb-2">{% trans "Yol Katsayıları" %}</h6>
+            <div class="table-responsive mb-3">
+              <table class="table table-dark table-sm table-hover mb-0" style="font-size:0.8rem;">
+                <thead>
+                  <tr>
+                    <th>{% trans "Yol" %}</th>
+                    <th>{% trans "Katsayı" %}</th>
+                    <th>SE</th>
+                    <th>p</th>
+                  </tr>
+                </thead>
+                <tbody id="path-body"></tbody>
+              </table>
+            </div>
+
+            <!-- Dolaylı etki -->
+            <h6 class="text-white fw-semibold mb-2">{% trans "Dolaylı Etki (a × b)" %}</h6>
+            <div class="row g-2 mb-3">
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-6 fw-bold" id="res-indirect" style="color:#a78bfa;">—</div>
+                  <div class="text-white-50 small">a×b</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-6 fw-bold text-info" id="res-ci">—</div>
+                  <div class="text-white-50 small">{% trans "Bootstrap %95 GA" %}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-6 fw-bold text-warning" id="res-sobel-z">—</div>
+                  <div class="text-white-50 small">{% trans "Sobel z" %}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-6 fw-bold" id="res-sobel-p" style="color:#fb923c;">—</div>
+                  <div class="text-white-50 small">{% trans "Sobel p" %}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- APA -->
+            <div class="rounded-3 p-3 mb-2" style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);">
+              <p class="text-white-50 small fw-semibold mb-2">{% trans "APA Formatında Raporlama" %}</p>
+              <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
+
+              <div id="ai-yorum-box" class="d-none" style="border-top:1px solid var(--ax-border-default); margin:.5rem 0; padding-top:.5rem;">
+                <p class="text-white small mb-0" id="ai-yorum-text"></p>
+              </div>
+
+              <button class="btn btn-sm btn-outline-primary" onclick="copyApa()">
+                <i class="bi bi-clipboard me-1"></i>{% trans "Kopyala" %}
+              </button>
+            </div>
+          </div><!-- panel-done -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SEO: Bu Test Nedir? -->
+  <div class="ax-card mt-4 p-4">
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Aracılık (Mediation) Analizi Nedir?" %}</h5>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Aracılık analizi, bir bağımsız değişkenin (X) bağımlı değişken (Y) üzerindeki etkisinin, üçüncü bir aracı değişken (M) üzerinden ne kadarının iletildiğini test eder. Toplam etki (c), dolaylı yol (a×b) ve M kontrol edildiğinde kalan direkt etki (c') ayrı ayrı hesaplanır." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Dolaylı etkinin anlamlılığı, günümüz literatüründe ve SPSS Process (Hayes) makrosunda önerilen bootstrap güven aralığı yöntemiyle test edilir; klasik Sobel testi ek bir doğrulama olarak sunulur." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-0">{% trans "c' anlamlıysa kısmi aracılık, anlamlı değilse tam aracılık söz konusudur. Aracı (M) ve bağımlı (Y) değişkenler sürekli/sayısal olmalıdır; bağımsız değişken (X) sayısal veya iki kategorili olabilir." %}</p>
+  </div>
+</div>
+
+<script>
+{% blocktrans with mb=max_upload_mb asvar t_max_size %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}
+const T = {
+  maxSize: '{{ t_max_size|escapejs }}',
+  s1: '{% trans " satır, " as t %}{{ t|escapejs }}',
+  s2: '{% trans " sütun" as t %}{{ t|escapejs }}',
+  s3: '{% trans "Sunucu hatası." as t %}{{ t|escapejs }}',
+  s4: '{% trans "Bağımsız değişken (X) seçilmedi." as t %}{{ t|escapejs }}',
+  s5: '{% trans "Aracı değişken (M) seçilmedi." as t %}{{ t|escapejs }}',
+  s5b: '{% trans "Bağımlı değişken (Y) seçilmedi." as t %}{{ t|escapejs }}',
+  s5c: '{% trans "Bağımsız, aracı ve bağımlı değişkenler birbirinden farklı olmalıdır." as t %}{{ t|escapejs }}',
+  s6: '{% trans "Analiz başarısız." as t %}{{ t|escapejs }}',
+  s7: '{% trans "Durum sorgulanamadı: " as t %}{{ t|escapejs }}',
+  s8: '{% trans "Sonuç gösterilirken hata: " as t %}{{ t|escapejs }}',
+  s12: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  pathC: '{% trans "c (Toplam Etki: X→Y)" as t %}{{ t|escapejs }}',
+  pathA: '{% trans "a (X→M)" as t %}{{ t|escapejs }}',
+  pathB: '{% trans "b (M→Y)" as t %}{{ t|escapejs }}',
+  pathCp: "{% trans "c' (Direkt Etki: X→Y, M kontrollü)" as t %}{{ t|escapejs }}",
+  sigFull: '{% trans "✓ Tam Aracılık" as t %}{{ t|escapejs }}',
+  sigPartial: '{% trans "✓ Kısmi Aracılık" as t %}{{ t|escapejs }}',
+  sigNone: '{% trans "✗ Aracılık Etkisi Yok" as t %}{{ t|escapejs }}',
+  // APA — service (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  apaMain: '{% trans "Aracılık analizi sonucunda dolaylı etki (a×b = {ind}) bootstrap %95 güven aralığında {ci} olarak bulunmuştur (Sobel z = {z}, p {sp}). {concl}" as t %}{{ t|escapejs }}',
+  concFull: "{% trans "{m} değişkeninin {x} ile {y} arasındaki ilişkide tam aracılık rolü üstlendiği görülmüştür ({x} değişkeninin doğrudan etkisi M kontrol edildiğinde anlamlılığını yitirmiştir, c' = {cprime}, p {cprime_p})." as t %}{{ t|escapejs }}",
+  concPartial: "{% trans "{m} değişkeninin {x} ile {y} arasındaki ilişkide kısmi aracılık rolü üstlendiği görülmüştür ({x} değişkeninin doğrudan etkisi M kontrol edildiğinde anlamlılığını korumuştur, c' = {cprime}, p {cprime_p})." as t %}{{ t|escapejs }}",
+  concNone: '{% trans "{m} değişkeni, {x} ile {y} arasındaki ilişkide anlamlı bir aracılık etkisi göstermemiştir." as t %}{{ t|escapejs }}',
+};
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(4);
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const TOOL_URL = '{% url "istatistik:mediation" %}';
+const STATUS_TEMPLATE = '{% url "istatistik:mediation_status" "00000000-0000-0000-0000-000000000000" %}';
+
+let previewId = null, previewFilename = null, allCols = [], allNumericCols = [], pollInterval = null;
+
+const fileInput = document.getElementById('file-input');
+const previewBtn = document.getElementById('preview-btn');
+
+fileInput.addEventListener('change', () => {
+  const f = fileInput.files[0];
+  if (!f) return;
+  if (f.size > {{ max_upload_mb }} * 1024 * 1024) {
+    document.getElementById('upload-error').textContent = '{% filter escapejs %}{% blocktrans with mb=max_upload_mb %}Dosya boyutu {{ mb }} MB sınırını aşıyor.{% endblocktrans %}{% endfilter %}';
+    document.getElementById('upload-error').classList.remove('d-none');
+    fileInput.value = '';
+    return;
+  }
+  document.getElementById('file-name').textContent = f.name + ' (' + (f.size / 1024).toFixed(0) + ' KB)';
+  previewBtn.disabled = false; previewBtn.classList.remove('disabled');
+  document.getElementById('upload-error').classList.add('d-none');
+});
+
+previewBtn.addEventListener('click', previewFile);
+
+function previewFile() {
+  const f = fileInput.files[0];
+  if (!f) return;
+  previewBtn.disabled = true;
+  const fd = new FormData();
+  fd.append('file', f); fd.append('step', 'preview');
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      previewBtn.disabled = false;
+      if (!data.success) { showUploadError(data.error || 'Hata'); return; }
+      previewId = data.preview_id; previewFilename = data.filename;
+      allCols = data.columns || []; allNumericCols = data.numeric_cols || [];
+      document.getElementById('config-file-info').textContent = data.filename + ' — ' + data.n_rows + T.s1 + data.columns.length + T.s2;
+      buildSelect('x-col', allCols);
+      updateMYSelects();
+      document.getElementById('step-upload').classList.add('d-none');
+      document.getElementById('step-config').classList.remove('d-none');
+    })
+    .catch(() => { previewBtn.disabled = false; showUploadError(T.s3); });
+}
+
+function buildSelect(id, cols) {
+  const sel = document.getElementById(id);
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— {% filter escapejs %}{% trans "Seçiniz" %}{% endfilter %} —</option>';
+  cols.forEach(c => { sel.innerHTML += `<option value="${_esc(c)}">${_esc(c)}</option>`; });
+  if (cols.includes(current)) sel.value = current;
+}
+
+function updateMYSelects() {
+  const xVal = document.getElementById('x-col').value;
+  const mVal = document.getElementById('m-col').value;
+  const yAvailable = allNumericCols.filter(c => c !== xVal && c !== mVal);
+  const mAvailable = allNumericCols.filter(c => c !== xVal);
+  buildSelect('m-col', mAvailable);
+  buildSelect('y-col', yAvailable);
+  const yVal = document.getElementById('y-col').value;
+  document.getElementById('run-btn').disabled = !(xVal && mVal && yVal && xVal !== mVal && mVal !== yVal && xVal !== yVal);
+}
+
+document.getElementById('run-btn').addEventListener('click', runAnalysis);
+
+function runAnalysis() {
+  const xVal = document.getElementById('x-col').value;
+  const mVal = document.getElementById('m-col').value;
+  const yVal = document.getElementById('y-col').value;
+  if (!xVal) { showRunError(T.s4); return; }
+  if (!mVal) { showRunError(T.s5); return; }
+  if (!yVal) { showRunError(T.s5b); return; }
+  if (xVal === mVal || mVal === yVal || xVal === yVal) { showRunError(T.s5c); return; }
+
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('loading');
+
+  const fd = new FormData();
+  fd.append('step', 'run');
+  fd.append('preview_id', previewId);
+  fd.append('filename', previewFilename);
+  fd.append('x_col', xVal);
+  fd.append('m_col', mVal);
+  fd.append('y_col', yVal);
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) { showPanel('idle'); showRunError(data.error || 'Hata'); return; }
+      startPolling(data.job_id);
+    })
+    .catch(() => { showPanel('idle'); showRunError(T.s3); });
+}
+
+function startPolling(jobId) {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(() => {
+    fetch(STATUS_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', jobId), {headers:{'X-Requested-With':'XMLHttpRequest'}})
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(data => {
+        if (data.status === 'completed') {
+          clearInterval(pollInterval);
+          showResults(data);
+        } else if (data.status === 'failed') {
+          clearInterval(pollInterval);
+          showPanel('error');
+          document.getElementById('panel-error-msg').textContent = data.error || T.s6;
+        }
+      })
+      .catch(err => {
+        clearInterval(pollInterval);
+        showPanel('error');
+        document.getElementById('panel-error-msg').textContent = T.s7 + err.message;
+      });
+  }, 2000);
+}
+
+function showResults(data) {
+  try { _showResults(data); } catch(e) {
+    showPanel('error');
+    document.getElementById('panel-error-msg').textContent = T.s8 + e.message;
+  }
+}
+
+function _showResults(data) {
+  const r = data.result_data;
+  const sigBox = document.getElementById('sig-box');
+  const sigText = document.getElementById('sig-text');
+  if (r.mediation_type === 'full') {
+    sigBox.style.background = 'rgba(74,222,128,0.08)'; sigBox.style.border = '1px solid rgba(74,222,128,0.2)';
+    sigText.innerHTML = `<span style="color:#4ade80;">${T.sigFull}</span>`;
+  } else if (r.mediation_type === 'partial') {
+    sigBox.style.background = 'rgba(96,165,250,0.08)'; sigBox.style.border = '1px solid rgba(96,165,250,0.2)';
+    sigText.innerHTML = `<span style="color:#60a5fa;">${T.sigPartial}</span>`;
+  } else {
+    sigBox.style.background = 'rgba(248,113,113,0.08)'; sigBox.style.border = '1px solid rgba(248,113,113,0.2)';
+    sigText.innerHTML = `<span style="color:#f87171;">${T.sigNone}</span>`;
+  }
+
+  const pCell = (v, sig) => {
+    const txt = v < 0.001 ? '&lt; .001' : v.toFixed(4);
+    return sig ? `<td style="color:#4ade80;font-weight:bold;">${txt}</td>` : `<td>${txt}</td>`;
+  };
+  const rows = [
+    [T.pathC, r.paths.c], [T.pathA, r.paths.a], [T.pathB, r.paths.b], [T.pathCp, r.paths.c_prime],
+  ];
+  document.getElementById('path-body').innerHTML = rows.map(([label, p]) => `<tr>
+    <td class="fw-semibold">${label}</td>
+    <td>${p.coef.toFixed(4)}</td>
+    <td>${p.se.toFixed(4)}</td>
+    ${pCell(p.p, p.significant)}
+  </tr>`).join('');
+
+  document.getElementById('res-indirect').textContent = r.indirect_effect.toFixed(4);
+  document.getElementById('res-ci').textContent = `[${r.bootstrap_ci_low.toFixed(3)}, ${r.bootstrap_ci_high.toFixed(3)}]`;
+  document.getElementById('res-sobel-z').textContent = r.sobel_z.toFixed(3);
+  document.getElementById('res-sobel-p').textContent = r.sobel_p < 0.001 ? '< .001' : r.sobel_p.toFixed(4);
+
+  const ciText = `[${r.bootstrap_ci_low.toFixed(3)}, ${r.bootstrap_ci_high.toFixed(3)}]`;
+  let concl;
+  if (r.mediation_type === 'full') {
+    concl = fmt(T.concFull, {m: r.m_col, x: r.x_col, y: r.y_col, cprime: r.paths.c_prime.coef.toFixed(3), cprime_p: pStr(r.paths.c_prime.p)});
+  } else if (r.mediation_type === 'partial') {
+    concl = fmt(T.concPartial, {m: r.m_col, x: r.x_col, y: r.y_col, cprime: r.paths.c_prime.coef.toFixed(3), cprime_p: pStr(r.paths.c_prime.p)});
+  } else {
+    concl = fmt(T.concNone, {m: r.m_col, x: r.x_col, y: r.y_col});
+  }
+  const apa = fmt(T.apaMain, {ind: r.indirect_effect.toFixed(3), ci: ciText, z: r.sobel_z.toFixed(3), sp: pStr(r.sobel_p), concl: concl});
+  document.getElementById('res-apa').textContent = apa;
+  document.getElementById('pdf-btn').href = data.pdf_url;
+
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (r.ai_comment) {
+    document.getElementById('ai-yorum-text').textContent = r.ai_comment;
+    aiBox.classList.remove('d-none');
+  } else {
+    aiBox.classList.add('d-none');
+  }
+
+  showPanel('done');
+}
+
+function copyApa() {
+  let copyText = document.getElementById('res-apa').textContent;
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (aiBox && !aiBox.classList.contains('d-none')) {
+    copyText += '\n\n' + document.getElementById('ai-yorum-text').textContent;
+  }
+  navigator.clipboard.writeText(copyText).then(() => {
+    const btn = event.target.closest('button');
+    btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>' + T.s12;
+    setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard me-1"></i>Kopyala'; }, 2000);
+  });
+}
+
+function showPanel(name) {
+  ['idle','loading','error','done'].forEach(n => {
+    document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
+  });
+}
+function showUploadError(msg) { const el = document.getElementById('upload-error'); el.textContent = msg; el.classList.remove('d-none'); }
+function showRunError(msg) { const el = document.getElementById('run-error'); el.textContent = msg; el.classList.remove('d-none'); }
+function resetToUpload() {
+  if (pollInterval) clearInterval(pollInterval);
+  previewId = null; previewFilename = null;
+  fileInput.value = ''; previewBtn.disabled = true; previewBtn.classList.add('disabled');
+  document.getElementById('file-name').textContent = T.maxSize;
+  document.getElementById('step-config').classList.add('d-none');
+  document.getElementById('step-upload').classList.remove('d-none');
+  document.getElementById('upload-error').classList.add('d-none');
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('idle');
+}
+
+{% if active_job_id %}
+showPanel('loading');
+startPolling('{{ active_job_id }}');
+{% endif %}
+</script>
+{% endblock %}

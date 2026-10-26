@@ -684,6 +684,68 @@ SEO_CONTENT = {
         ],
     },
 
+    'mediation': {
+        'intro': (
+            gettext_lazy('Aracılık (mediation) analizi, bir bağımsız değişkenin (X) bağımlı '
+            'değişken (Y) üzerindeki etkisinin, üçüncü bir aracı değişken (M) '
+            'üzerinden ne kadarının iletildiğini test eder. Sosyal bilimler, '
+            'işletme ve psikoloji tezlerinde SPSS Process (Hayes) makrosuyla '
+            'yapılan analizin karşılığıdır.')
+        ),
+        'when_to_use': (
+            gettext_lazy('X\'in Y üzerindeki etkisinin "nasıl" veya "hangi mekanizma ile" '
+            'gerçekleştiğini açıklamak istediğinizde kullanın (örn. eğitim '
+            'düzeyinin gelir üzerindeki etkisi iş deneyimi üzerinden mi '
+            'iletiliyor?). X\'in etkisinin "ne zaman" değiştiğini test etmek '
+            'istiyorsanız (düzenleyici/moderatör değişken) farklı bir analiz '
+            'gereklidir.')
+        ),
+        'assumptions': (
+            gettext_lazy('Aracı (M) ve bağımlı (Y) değişkenler sürekli/sayısal olmalıdır. '
+            'Bağımsız değişken (X) sayısal veya iki kategorili olabilir. '
+            'Değişkenler arasında teorik/zamansal bir nedensellik sırası '
+            '(X→M→Y) varsayılır — analiz bunu veriden kanıtlamaz, araştırmacı '
+            'tasarımla gerekçelendirmelidir. Örneklem büyüklüğü arttıkça '
+            'bootstrap güven aralığı daha kararlı tahmin üretir.')
+        ),
+        'how_to_interpret': (
+            gettext_lazy('Dolaylı etki (a×b): X\'in M üzerinden Y\'ye ilettiği etki. Bootstrap '
+            '%95 güven aralığı sıfırı kapsamıyorsa anlamlıdır. '
+            'Direkt etki (c\'): M kontrol edildiğinde X\'in Y üzerinde kalan '
+            'doğrudan etkisi. c\' anlamlıysa kısmi aracılık, anlamlı değilse '
+            'tam aracılık söz konusudur. '
+            'Sobel testi: Dolaylı etkinin anlamlılığına dair klasik/ek bir '
+            'doğrulama sağlar.')
+        ),
+        'apa_example': (
+            gettext_lazy('İş deneyiminin (M), eğitim düzeyi (X) ile gelir (Y) arasındaki '
+            'ilişkide kısmi aracılık rolü üstlendiği bulunmuştur; dolaylı etki '
+            'a×b = .18, bootstrap %95 GA [.07, .31].')
+        ),
+        'faq': [
+            {
+                'q': gettext_lazy('Mediation ile moderation arasındaki fark nedir?'),
+                'a': (gettext_lazy('Aracılık (mediation) X\'in Y\'yi "nasıl" etkilediğini açıklayan '
+                      'bir mekanizmayı test eder. Düzenleyici (moderation) analizi ise '
+                      'X\'in Y üzerindeki etkisinin üçüncü bir değişkene (W) bağlı olarak '
+                      '"ne zaman/kimde" güçlendiğini veya zayıfladığını test eder.')),
+            },
+            {
+                'q': gettext_lazy('Neden Sobel testi yerine bootstrap kullanılıyor?'),
+                'a': (gettext_lazy('Dolaylı etkinin (a×b) örnekleme dağılımı genellikle normal '
+                      'değildir; bootstrap yeniden örnekleme bu dağılımı doğrudan '
+                      'kestirdiği için SPSS Process/Hayes yönteminde ve güncel '
+                      'literatürde önerilen standart yaklaşımdır. Sobel testi klasik '
+                      'bir ek bilgi olarak sunulur.')),
+            },
+        ],
+        'related_tools': [
+            ('lineer-regresyon', gettext_lazy('Doğrusal Regresyon')),
+            ('korelasyon', gettext_lazy('Korelasyon Analizi')),
+            ('lojistik-regresyon', gettext_lazy('Lojistik Regresyon')),
+        ],
+    },
+
     'friedman': {
         'intro': (
             gettext_lazy('Friedman Testi, tekrarlı ölçümler içeren üç veya daha fazla ilişkili '

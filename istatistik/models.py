@@ -22,6 +22,7 @@ TOOL_CHOICES = [
     ('tekrarli_anova', 'Tekrarlayan Ölçümler ANOVA'),
     ('karar_agaci', 'Karar Ağacı Sınıflandırması'),
     ('svm', 'Destek Vektör Makinesi (SVM)'),
+    ('mediation', 'Aracılık Analizi (Mediation)'),
 ]
 
 STATUS_CHOICES = [
