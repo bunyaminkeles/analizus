@@ -154,14 +154,19 @@ maddelerde.
      senaryoları + üretilen PDF'in boyutu ve özel karakter (`<b>`, `&`)
      içeren mesajın bozmadığı `transaction.atomic()+rollback` ile doğrulandı,
      104/104 pytest yeşil, `docker compose restart web` yapıldı.
-  5. [ ] **Faz 5 — Aydınlatma metni güncellemesi:** Gizlilik Politikası/
-     Kullanım Şartları'na "mesajlarınız kötüye kullanımın önlenmesi ve yasal
-     yükümlülükler çerçevesinde saklanır, gerektiğinde yetkili makamlarla
-     paylaşılabilir" açıklaması eklenir — KVKK danışmanı/avukat onayı
-     ŞART, metni tek başına yazıp yayınlama.
-  6. [ ] **Faz 6 — Admin erişim logu:** bir admin bir odanın mesaj dökümünü
+  5. [ ] **Faz 5 — Aydınlatma metni güncellemesi (BEKLEMEDE — avukat/KVKK
+     danışmanı onayı gerekiyor, Claude tek başına yazıp yayınlayamaz).**
+     Gizlilik Politikası/Kullanım Şartları'na "mesajlarınız kötüye
+     kullanımın önlenmesi ve yasal yükümlülükler çerçevesinde saklanır,
+     gerektiğinde yetkili makamlarla paylaşılabilir" açıklaması eklenir.
+     Kullanıcı onaylı metni getirdiğinde uygulanacak.
+  6. [ ] **Faz 6 — Admin erişim logu (26 Ekim 2026, plan onaylanmadan
+     ertelendi — kullanıcı "geç" dedi).** Plan taslağı: `RoomAccessAuditLog`
+     modeli (room, viewed_by, viewed_at) + `StudyRoomPostAdmin.
+     changelist_view()` override edilip `room__id__exact` filtresiyle
+     görüntülemede otomatik log. Bir admin bir odanın mesaj dökümünü
      panelden görüntülediğinde bunun loglanması (kim, hangi oda, ne zaman) —
-     "görünmeden girme" yerine şeffaf ama izlenebilir erişim.
+     "görünmeden girme" yerine şeffaf ama izlenebilir erişim hedefi.
   - **Reddedilen fikir:** Admin'in canlı odaya görünmeden/stealth presence
     ile girmesi — gereksiz (mesajlar zaten DB'de, admin paneli yeterli) ve
     KVKK şeffaflık ilkesi + kullanıcı güveni açısından riskli; uygulanmayacak.
