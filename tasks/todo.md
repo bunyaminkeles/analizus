@@ -164,6 +164,18 @@ maddelerde.
      backfill mantığı doğrulandı, 104/104 pytest yeşil, `docker compose
      restart web` yapıldı. Henüz yalnız `dev`'de, production'a migration
      deploy ile gidecek.
+  - [x] **(26 Ekim 2026 TAMAMLANDI) Admin sidebar grupla.** 4 ayrı sidebar
+    girdisi (Çalışma Odaları, Oda Mesajları (İşaretli), Oda Bildirimleri,
+    Oda Export Kayıtları) kullanıcı isteğiyle tek "Çalışma Odaları" girdisine
+    indirildi — mevcut `GroupTabsMixin` deseni (`analizdestek/admin_nav.py`,
+    16 Ekim'de Arama & Analiz Servisleri için kurulmuştu) `STUDYROOM_TABS`
+    ile tekrar kullanıldı; 4 admin sınıfına (`StudyRoomAdmin`,
+    `StudyRoomPostAdmin`, `StudyRoomPostReportAdmin`,
+    `RoomExportAuditLogAdmin`) mixin eklendi, her sayfanın üstünde sekme
+    çubuğuyla geçiş yapılıyor. Docker'da 4 sayfanın da 200 döndüğü ve sekme
+    çubuğunun göründüğü doğrulandı, 104/104 pytest yeşil, `docker compose
+    restart web` yapıldı.
+
   5. [ ] **Faz 5 — Aydınlatma metni güncellemesi (BEKLEMEDE — avukat/KVKK
      danışmanı onayı gerekiyor, Claude tek başına yazıp yayınlayamaz).**
      Gizlilik Politikası/Kullanım Şartları'na "mesajlarınız kötüye

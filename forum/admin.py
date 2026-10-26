@@ -9,6 +9,7 @@ from django.template.loader import render_to_string
 from django.utils.html import format_html, strip_tags
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from broadcast.models import EmailBroadcast
+from analizdestek.admin_nav import GroupTabsMixin, STUDYROOM_TABS
 from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, StudyRoomPost, StudyRoomPostReport, RoomExportAuditLog, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest, ServicePage, ServicePageSection, ServicePageFAQ, ServicePageTranslation, ServicePageSectionTranslation, ServicePageFAQTranslation
 from .models import TeamMember
 from .models import AIUsageLog
@@ -1196,7 +1197,8 @@ class SuccessStoryAdmin(ModelAdmin):
         self.message_user(request, f'{updated} hikaye reddedildi.')
 
 @admin.register(StudyRoom)
-class StudyRoomAdmin(ModelAdmin):
+class StudyRoomAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = STUDYROOM_TABS
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ('title', 'creator', 'status', 'category', 'ends_at', 'member_count', 'created_at')
@@ -1241,7 +1243,8 @@ class StudyRoomAdmin(ModelAdmin):
 
 
 @admin.register(StudyRoomPost)
-class StudyRoomPostAdmin(ModelAdmin):
+class StudyRoomPostAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = STUDYROOM_TABS
     list_display = ('room', 'author', 'flagged', 'created_at', 'edited_at')
     list_filter = ('flagged', 'room')
     search_fields = ('message', 'author__username', 'room__title')
@@ -1250,7 +1253,8 @@ class StudyRoomPostAdmin(ModelAdmin):
 
 
 @admin.register(RoomExportAuditLog)
-class RoomExportAuditLogAdmin(ModelAdmin):
+class RoomExportAuditLogAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = STUDYROOM_TABS
     list_display = ('room', 'exported_by', 'exported_at', 'message_count')
     list_filter = ('room',)
     search_fields = ('room__title', 'exported_by__username')
@@ -1268,7 +1272,8 @@ class RoomExportAuditLogAdmin(ModelAdmin):
 
 
 @admin.register(StudyRoomPostReport)
-class StudyRoomPostReportAdmin(ModelAdmin):
+class StudyRoomPostReportAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = STUDYROOM_TABS
     list_display = ('post', 'reporter', 'reason', 'created_at')
     list_filter = ('reason',)
     search_fields = ('reporter__username', 'post__message')

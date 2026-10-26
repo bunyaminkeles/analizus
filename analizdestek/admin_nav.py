@@ -23,6 +23,13 @@ GROUP2_TABS = [
     ("Bibliometrik Siparişler", "admin:tezanaliz_bibliometricorderproxy_changelist"),
 ]
 
+STUDYROOM_TABS = [
+    ("Odalar", "admin:forum_studyroom_changelist"),
+    ("Mesajlar (İşaretli)", "admin:forum_studyroompost_changelist"),
+    ("Bildirimler", "admin:forum_studyroompostreport_changelist"),
+    ("Export Kayıtları", "admin:forum_roomexportauditlog_changelist"),
+]
+
 
 class GroupTabsMixin:
     """ModelAdmin'e eklenince changelist üstünde grup sekme çubuğu gösterir."""
