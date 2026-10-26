@@ -248,6 +248,15 @@ def _execute_job_in_language(job_id: str):
                 C=float(c_val) if c_val else 1.0,
                 test_size=float(t_size) if t_size else 0.2,
             )
+        elif job.tool == 'kumeleme':
+            from .kumeleme import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                columns=opts.get('columns') or [],
+                method=opts.get('method', 'kmeans'),
+                n_clusters=opts.get('n_clusters'),
+            )
         else:
             job.mark_failed(gettext('Bilinmeyen araç: %(tool)s') % {'tool': job.tool})
             return
@@ -333,6 +342,8 @@ _AI_PROMPT_EXCLUDE_KEYS = {
     'heatmap_b64',     # korelasyon: base64 PNG, metin yoruma hiç katkı sağlamıyor
     'scree_plot_b64',  # afa: base64 PNG, metin yoruma hiç katkı sağlamıyor
     'interaction_plot_b64',  # moderation: base64 PNG, metin yoruma hiç katkı sağlamıyor
+    'diagnostic_plot_b64',   # kumeleme: base64 PNG (elbow/dendrogram), metin yoruma katkı sağlamıyor
+    'scatter_plot_b64',      # kumeleme: base64 PNG, metin yoruma katkı sağlamıyor
 }
 
 

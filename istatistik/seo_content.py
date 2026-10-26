@@ -1134,4 +1134,73 @@ SEO_CONTENT = {
         ],
     },
 
+    'kumeleme': {
+        'intro': (
+            gettext_lazy('Kümeleme analizi, gözlemleri önceden belirlenmiş bir etiket '
+            'olmadan benzerliklerine göre otomatik olarak gruplara (kümelere) '
+            'ayıran gözetimsiz (unsupervised) bir makine öğrenmesi yöntemidir. '
+            'Pazarlama (müşteri segmentasyonu), işletme ve eğitim '
+            'araştırmalarında katılımcı/vaka profilleri oluşturmak için '
+            'yaygın olarak kullanılır. K-means ve Hiyerarşik (Ward bağlantı) '
+            'olmak üzere iki temel yöntem sunulur.')
+        ),
+        'when_to_use': (
+            gettext_lazy('Veri setinizdeki gözlemleri "doğal" gruplara ayırmak, örneğin '
+            'benzer davranış/tutum sergileyen katılımcı profilleri çıkarmak '
+            'istediğinizde kullanın. Hedef/bağımlı bir değişkeniniz varsa ve '
+            'önceden bilinen gruplara göre tahmin yapmak istiyorsanız Karar '
+            'Ağacı veya SVM gibi gözetimli (supervised) yöntemler daha '
+            'uygundur.')
+        ),
+        'assumptions': (
+            gettext_lazy('Değişkenler sayısal/sürekli olmalıdır (en az 2 değişken). '
+            'Değişkenler farklı ölçeklerde olsa da analiz öncesi otomatik '
+            'olarak standartlaştırılır (StandardScaler), bu nedenle elle '
+            'ölçekleme gerekmez. K-means küresel/benzer büyüklükte kümeler '
+            'varsayar; aykırı değerlere duyarlıdır. Hiyerarşik (Ward) yöntem '
+            'daha esnek küme şekillerine izin verir ancak büyük veri '
+            'setlerinde (binlerce satır) hesaplama maliyeti yüksektir.')
+        ),
+        'how_to_interpret': (
+            gettext_lazy('Silhouette Skoru: Bir gözlemin kendi kümesine, en yakın diğer '
+            'kümeye göre ne kadar iyi uyduğunu ölçer (−1 ile +1 arası); '
+            '≥ 0.71 güçlü, 0.51–0.70 makul, 0.26–0.50 zayıf, ≤ 0.25 anlamlı '
+            'bir küme yapısı bulunamadığını gösterir (Kaufman & Rousseeuw, '
+            '1990). Küme Profili: Her kümenin büyüklüğü ve değişken '
+            'ortalamaları, kümelerin hangi özelliklerle ayrıştığını gösterir. '
+            'Elbow/WCSS grafiği (K-means): Küme içi hata kareler toplamının '
+            'küme sayısı arttıkça azalma hızındaki kırılma noktası, uygun k '
+            'için bir diğer görsel ipucudur.')
+        ),
+        'apa_example': (
+            gettext_lazy('K-means kümeleme analizi sonucunda silhouette katsayısına göre '
+            'en uygun küme sayısı k = 3 olarak belirlenmiştir (silhouette = '
+            '.58), bu değer makul düzeyde bir küme yapısına işaret '
+            'etmektedir.')
+        ),
+        'faq': [
+            {
+                'q': gettext_lazy('K-means mi, Hiyerarşik kümeleme mi seçmeliyim?'),
+                'a': (gettext_lazy('K-means büyük veri setlerinde hızlıdır ve küme sayısını '
+                      'önceden belirlemenizi gerektirir (otomatik öneri de '
+                      'sunulur). Hiyerarşik (Ward) yöntem dendrogram ile '
+                      'kümelerin iç içe yapısını görsel olarak sunar, küçük/orta '
+                      'büyüklükteki veri setlerinde (birkaç bin satırın altında) '
+                      'tercih edilir.')),
+            },
+            {
+                'q': gettext_lazy('Küme sayısını (k) kendim mi belirlemeliyim?'),
+                'a': (gettext_lazy('Alanı boş bırakırsanız k=2 ile 10 arasında silhouette '
+                      'skoruna göre en iyi k otomatik seçilir. Teorik bir '
+                      'beklentiniz varsa (örn. literatürde bilinen 3 segment) '
+                      'k değerini elle de girebilirsiniz.')),
+            },
+        ],
+        'related_tools': [
+            ('karar-agaci', gettext_lazy('Karar Ağacı')),
+            ('svm', gettext_lazy('Destek Vektör Makinesi')),
+            ('afa', gettext_lazy('Açıklayıcı Faktör Analizi')),
+        ],
+    },
+
 }

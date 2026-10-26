@@ -15,6 +15,30 @@ maddelerde.
   adres güncellenmeli. Detay/hangi adres henüz belirtilmedi — sonraki
   oturumda kullanıcıdan netleştirilecek, sonra uygulanacak.
 
+- [x] **(26 Ekim 2026 TAMAMLANDI, KRİTİK — Kümeleme aracı geliştirmesi
+  sırasında bulundu) `svm`, `mediation`, `moderation` araçlarının arka plan
+  işi hiç çalışmıyormuş.** `analizdestek/job_queue.py:147`'deki async iş
+  kuyruğu dispatch whitelist'i yalnız `('cronbach', 'normallik', 'betimsel',
+  'korelasyon', 'ttesti', 'anova', 'mann_whitney', 'kruskal_wallis',
+  'ki_kare', 'lineer_regresyon', 'lojistik_regresyon', 'afa', 'wilcoxon',
+  'friedman', 'tekrarli_anova', 'karar_agaci')` içeriyordu — **svm,
+  mediation, moderation eksikti**. Bu üç aracın "Analizi Başlat" butonuna
+  basan kullanıcı job'ı oluşturuyor ama `[job_queue] Bilinmeyen job_type`
+  log'uyla iş hiç işlenmiyordu, kullanıcı sonsuza kadar "yükleniyor"
+  ekranında kalıyordu (moderation 26 Ekim, mediation 26 Ekim, svm 15
+  Ekim'de main'e alınmıştı; GET ile sayfa 200 dönmesi deploy'u doğrulamış
+  ama POST→analiz akışı hiç test edilmemiş görünüyordu). **Düzeltme:**
+  whitelist tuple'ına `svm`, `mediation`, `moderation` (ve `kumeleme`)
+  eklendi. Docker'da gerçek async kuyruk (mock yok, `transaction.atomic()`
+  DIŞINDA — worker thread'in commit edilmiş veriyi görmesi gerekiyor)
+  üzerinden moderation job'ı oluşturulup `run_job()` çağrıldı, ~1sn içinde
+  `status='completed'` + gerçek `pdf_url` ile tamamlandığı doğrulandı (daha
+  önce sonsuza `pending` kalırdı); test job'ı silindi. 104/104 pytest yeşil,
+  `docker compose restart web` yapıldı. **Henüz `dev`→`main` merge/deploy
+  edilmedi** — production'daki gerçek svm/mediation/moderation kullanıcıları
+  bu düzeltme deploy edilene kadar hâlâ etkileniyor olabilir, merge kullanıcı
+  onayı bekliyor.
+
 - [x] **(25 Ekim 2026 TAMAMLANDI) S3 Dosya Saklama Süresi — Kullanıcı Bildirimi Eksik
   (S3 cron denetimi sırasında bulundu, bkz. sohbet). 9/10 araçta kullanıcı
   dosyasının ne zaman silineceğini hiç bilmiyor, 3 aracın e-postası yanlış
@@ -258,11 +282,51 @@ maddelerde.
      `transaction.atomic()+rollback` ile doğrulandı; TR/EN/DE üç dilde
      anonim+girişli sayfa render edildi, sitemap üç dilde URL'i içeriyor,
      104/104 pytest yeşil, `docker compose restart web` + nginx yapıldı.
-     Henüz yalnız `dev`'de — migration içerdiği için `main`'e push öncesi
-     kullanıcı onayı + yedek gerekiyor.
-  2. [ ] **Kümeleme Analizi (K-means / Hiyerarşik Cluster)** — pazarlama/
-     işletme/eğitim tezlerinde yaygın; mevcut sklearn altyapısına (karar_agaci,
-     svm) yakın, görece düşük efor.
+     Kullanıcı onayıyla `dev`→`main` merge + push edildi, GitHub Actions
+     otomatik Hetzner deploy'u tetikledi, migration production'da
+     uygulandı, canlı doğrulandı (`https://www.analizus.com/analiz/
+     moderation/` 200). `dev` de origin'e push edildi (Render staging).
+  2. [x] **(26 Ekim 2026 TAMAMLANDI) Kümeleme Analizi (K-means / Hiyerarşik
+     Cluster)** — kullanıcı kararıyla tek araç, "Yöntem" dropdown'u
+     (K-means / Hiyerarşik-Ward); küme sayısı (k) boş bırakılırsa k=2..10
+     arası silhouette skoruna göre otomatik seçilir (en iyi k), kullanıcı
+     elle de girebilir. Yeni `istatistik/services/kumeleme.py`: seçilen
+     sayısal değişkenler `StandardScaler` ile ölçekleniyor (n>3000 satırda
+     3000'e örnekleniyor — hiyerarşik yöntemin O(n²) bellek sınırı için);
+     K-means `sklearn.cluster.KMeans` + `inertia_`, Hiyerarşik
+     `scipy.cluster.hierarchy.linkage(method='ward')` tek sefer hesaplanıp
+     her k adayı için `fcluster` ile kesiliyor (performans — her k'de ağacı
+     yeniden kurmuyor). Silhouette skoru Kaufman & Rousseeuw (1990)
+     eşikleriyle yorumlanıyor; diyagnostik grafik K-means'te elbow(WCSS)+
+     silhouette çift eksen, Hiyerarşik'te dendrogram; dağılım grafiği 2
+     değişkende direkt, fazlasında PCA ile 2B. Mevcut 20 araçla birebir aynı
+     iskelet: `TOOL_CHOICES` + migration `0014_add_kumeleme_tool`,
+     `job_runner.py` dispatch dalı, `views.py` ("Makine Öğrenmesi" grubuna
+     3. satır, `kumeleme_landing`, `_handle_group_tool_post` options dalı,
+     `_SLUG_MAP`), `urls.py`, yeni `istatistik/templates/istatistik/
+     kumeleme.html` (afa.html'in ax- tasarım sistemi deseniyle — moderation/
+     mediation'ın henüz ax-'e taşınmamış eski Bootstrap kartları DEĞİL,
+     CLAUDE.md "ax- sistemi" kuralı gereği), `seo_content.py`, `forum/
+     sitemaps.py`. **Ek bulgu (kapsam içi, düzeltildi):** `analizdestek/
+     job_queue.py`'deki async iş kuyruğu dispatch whitelist'inde (satır 147)
+     `svm`, `mediation`, `moderation` hiç yoktu — yani bu üç canlı aracın
+     arka plan işi hiçbir zaman çalışmıyor, kullanıcı sonsuza kadar
+     "yükleniyor" ekranında kalıyor olmalı (uçtan uca test sırasında
+     `[job_queue] Bilinmeyen job_type` logu ile bulundu). `kumeleme`
+     whitelist'e eklendi (kendi kapsamım için zorunlu); **svm/mediation/
+     moderation'ın eksikliği kullanıcıya ayrıca bildirildi, kullanıcı onayı
+     ile aynı oturumda ayrı adım olarak düzeltildi (bkz. birkaç madde
+     yukarıdaki kritik bulgu kaydı).**
+     75 yeni msgid EN/DE'ye çevrildi (bazıları yine fuzzy yanlış eşleşti —
+     örn. "Dendrogram"→"Program", tek tek düzeltilip `previous_msgid` alanı
+     polib ile temizlendi), `compilemessages` hatasız derlendi. Docker'da:
+     `analyze()` doğrudan (kmeans/hierarchical × otomatik/elle k × 2 ve 3+
+     değişken × büyük n örnekleme × geçersiz girdi senaryoları) ve tam uçtan
+     uca akış (preview→run→job kuyruğu→analiz→PDF, `transaction.atomic()+
+     rollback` ile, `_upload_pdf`/`upload_bytes_to_s3` mock'lanarak) test
+     edildi; TR/EN/DE anonim (promo) sayfa 200, sitemap üç dilde URL'i
+     içeriyor, 104/104 pytest yeşil, `docker compose restart web` + nginx
+     yapıldı. Henüz `dev`→`main` merge edilmedi (kullanıcı onayı bekliyor).
   3. [ ] **MANOVA (Çok Değişkenli Varyans Analizi)** — mevcut ANOVA
      altyapısının doğal uzantısı.
   4. [ ] **Sağkalım Analizi (Kaplan-Meier / Cox Regresyon)** — sağlık bilimleri

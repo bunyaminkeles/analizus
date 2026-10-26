@@ -230,6 +230,7 @@ class IstatistikSitemap(MultilingualSitemapMixin, Sitemap):
             'svm',
             'afa',
             'wilcoxon',
+            'kumeleme',
         ]
 
     def location(self, item):
