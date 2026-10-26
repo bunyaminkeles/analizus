@@ -226,9 +226,40 @@ maddelerde.
      uyarısı gereği) doğrulandı; TR/EN/DE üç dilde hem anonim (promo) hem
      girişli (konsol) sayfa render edildi, sitemap üç dilde de URL'i
      içeriyor, 104/104 pytest yeşil, `docker compose restart web` + nginx
-     yapıldı. Henüz yalnız `dev`'de — migration içerdiği için (yalnız yeni
-     `TOOL_CHOICES` seçeneği, veri kaybı riski yok) `main`'e push öncesi
-     kullanıcıdan onay + `scripts/yedek_indir.sh --simdi` istenecek.
+     yapıldı. Kullanıcı onayıyla (yedek alındı) `dev`→`main` merge + push
+     edildi, GitHub Actions otomatik Hetzner deploy'u tetikledi, migration
+     production'da uygulandı, canlı doğrulandı (`https://www.analizus.com/
+     analiz/mediation/` 200).
+  1b. [x] **(26 Ekim 2026 TAMAMLANDI) Moderation (Düzenleyici Değişken
+     Analizi) — mediation'ın ikinci yarısı, ayrı tur.** Yeni `istatistik/
+     services/moderation.py`: Y~Xc+Wc+Xc*Wc modeli (statsmodels OLS,
+     Aiken & West 1991 merkezleme standardı), etkileşim katsayısı **b3**'ün
+     p değeri düzenleme etkisinin anlamlılığını belirliyor, **ΔR²**
+     (etkileşim teriminin ek açıklayıcılığı) raporlanıyor, **basit eğimler
+     (simple slopes)** W'nin düşük/orta/yüksek (sürekliyse Ort.±1SS, 2
+     kategoriliyse W=0/W=1) düzeylerinde X'in koşullu etkisini (model
+     `cov_params()`'tan SE/t/p ile) gösteriyor — Hayes/Process Model 1'in
+     temel yorumlama katmanı. Ek olarak matplotlib ile **etkileşim grafiği**
+     (X-Y ilişkisi W düzeylerine göre, base64 PNG — AFA'daki scree plot
+     deseniyle aynı, `job_runner.py` `_AI_PROMPT_EXCLUDE_KEYS`'e
+     `interaction_plot_b64` eklendi). Mediation ile birebir aynı iskelet:
+     `TOOL_CHOICES` + migration `0013_add_moderation_tool`, `job_runner.py`
+     dispatch dalı, `views.py` (`TOOL_CATEGORIES` 4. satır, `moderation_
+     landing` view, `_handle_group_tool_post`/`_SLUG_MAP`), `urls.py`, yeni
+     `istatistik/templates/istatistik/moderation.html` (X/W/Y üç değişkenli,
+     etkileşim grafiği `<img>` + basit eğimler tablosu), `seo_content.py`
+     (moderation girdisi + mediation'ın `related_tools`'una çapraz link
+     eklendi), `forum/sitemaps.py`. 64 yeni msgid EN/DE'ye çevrildi (yine
+     bazı stringler fuzzy eşleşti, tek tek düzeltilip bayrak temizlendi),
+     `compilemessages` hatasız derlendi. Docker'da: anlamlı/anlamsız
+     etkileşim, kategorik W (dummy), sürekli W (basit eğimler), yetersiz n,
+     sayısal olmayan X senaryoları `analyze()`+`build_pdf()` ile (gerçek PNG
+     üretimi dahil), tam job pipeline `_upload_pdf` mock'lanarak
+     `transaction.atomic()+rollback` ile doğrulandı; TR/EN/DE üç dilde
+     anonim+girişli sayfa render edildi, sitemap üç dilde URL'i içeriyor,
+     104/104 pytest yeşil, `docker compose restart web` + nginx yapıldı.
+     Henüz yalnız `dev`'de — migration içerdiği için `main`'e push öncesi
+     kullanıcı onayı + yedek gerekiyor.
   2. [ ] **Kümeleme Analizi (K-means / Hiyerarşik Cluster)** — pazarlama/
      işletme/eğitim tezlerinde yaygın; mevcut sklearn altyapısına (karar_agaci,
      svm) yakın, görece düşük efor.

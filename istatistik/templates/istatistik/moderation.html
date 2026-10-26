@@ -1,0 +1,479 @@
+{% extends "istatistik/analiz_console_base.html" %}
+{% load static i18n %}
+{% block canonical %}{% url 'analiz_console' 'moderation' %}{% endblock %}
+
+{% block title %}{% trans "Düzenleyici Değişken Analizi (Moderation)" %} - Analizus{% endblock %}
+{% block meta_description %}{% trans "Düzenleyici değişken (moderation) analizi: etkileşim terimi, basit eğimler (simple slopes), etkileşim grafiği ve APA formatında hazır rapor metni. Excel veya CSV yükleyin." %}{% endblock %}
+
+{% block tool_area %}
+<div class="container py-4">
+
+  <div class="row mb-4 align-items-center">
+    <div class="col">
+      <h2 class="fw-bold text-white mb-1">
+        <i class="bi bi-sliders me-2" style="color:#a78bfa;"></i>{% trans "Düzenleyici Değişken Analizi (Moderation)" %}
+      </h2>
+      <p class="text-white-50 mb-0">{% trans "X'in Y üzerindeki etkisinin W düzenleyici değişkenine bağlı olarak ne zaman güçlendiğini veya zayıfladığını test edin — basit eğimler ve etkileşim grafiği dahil." %}</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="col-auto">
+      <span class="badge bg-secondary fs-6">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Sol panel: yükleme + config -->
+    <div class="col-lg-5">
+      <div class="card border-secondary" style="background-color:#1a1a2e;">
+        <div class="card-body p-4">
+
+          <!-- Adım 1: Yükleme -->
+          <div id="step-upload">
+            <h5 class="text-white fw-semibold mb-3">
+              <i class="bi bi-upload me-2" style="color:#a78bfa;"></i>{% trans "Dosya Yükle" %}
+            </h5>
+            <div id="upload-area"
+                 class="border border-secondary rounded-3 text-center p-4 mb-3"
+                 style="border-style:dashed!important;cursor:pointer;"
+                 onclick="document.getElementById('file-input').click()">
+              <i class="bi bi-cloud-upload-fill fs-2 mb-2 d-block" style="color:#a78bfa;"></i>
+              <p class="text-white-50 small mb-0" id="file-name">{% blocktrans with mb=max_upload_mb %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}</p>
+            </div>
+            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
+            <button id="preview-btn" class="btn w-100 fw-semibold disabled" style="background:#4c1d95;color:#fff;" disabled>
+              <i class="bi bi-arrow-right-circle me-2"></i>{% trans "Sütunları Getir" %}
+            </button>
+            <div id="upload-error" class="alert alert-danger mt-3 d-none small"></div>
+          </div>
+
+          <!-- Adım 2: Değişken seçimi -->
+          <div id="step-config" class="d-none">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="text-white fw-semibold mb-0">
+                <i class="bi bi-list-check me-2" style="color:#a78bfa;"></i>{% trans "Değişken Seçimi" %}
+              </h5>
+              <button class="btn btn-sm btn-outline-secondary" onclick="resetToUpload()">
+                <i class="bi bi-arrow-left me-1"></i>{% trans "Geri" %}
+              </button>
+            </div>
+            <p class="text-white-50 small mb-3" id="config-file-info">—</p>
+
+            <div class="mb-3">
+              <label class="text-white-50 small mb-1 d-block">{% trans "Bağımsız/Yordayıcı Değişken (X — sayısal)" %}</label>
+              <select id="x-col" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="updateWYSelects()">
+                <option value="">{% trans "— Seçiniz —" %}</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="text-white-50 small mb-1 d-block">{% trans "Düzenleyici Değişken (W — sayısal veya 2 kategorili)" %}</label>
+              <select id="w-col" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="updateWYSelects()">
+                <option value="">{% trans "— Seçiniz —" %}</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="text-white-50 small mb-1 d-block">{% trans "Bağımlı Değişken (Y — sayısal)" %}</label>
+              <select id="y-col" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="updateWYSelects()">
+                <option value="">{% trans "— Seçiniz —" %}</option>
+              </select>
+            </div>
+
+            <button id="run-btn" class="btn w-100 fw-semibold" style="background:#4c1d95;color:#fff;" disabled>
+              <i class="bi bi-play-circle-fill me-2"></i>{% trans "Analizi Başlat" %}
+            </button>
+            <div id="run-error" class="alert alert-danger mt-3 d-none small"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Sağ panel: sonuçlar -->
+    <div class="col-lg-7">
+      <div class="card border-secondary h-100" style="background-color:#16213e;">
+        <div class="card-body p-4">
+
+          <div id="panel-idle">
+            <h5 class="text-white-50 fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
+            <ul class="text-white-50 small ps-3">
+              <li class="mb-1">{% trans "Her satır bir gözlem olmalıdır." %}</li>
+              <li class="mb-1">{% trans "Bağımsız (X) ve bağımlı (Y) değişkenler sayısal/sürekli olmalıdır." %}</li>
+              <li class="mb-1">{% trans "Düzenleyici değişken (W) sayısal veya 2 kategorili olabilir." %}</li>
+              <li class="mb-1">{% trans "Düzenleme etkisinin anlamlılığı etkileşim teriminin (X×W) p değeri ile test edilir." %}</li>
+              <li class="mb-1">{% trans "Basit eğimler (simple slopes) W'nin düşük/orta/yüksek düzeylerinde X'in etkisini gösterir." %}</li>
+            </ul>
+          </div>
+
+          <div id="panel-loading" class="text-center d-none py-4">
+            <div class="spinner-border mb-3" style="width:3rem;height:3rem;color:#a78bfa;"></div>
+            <p class="text-white-50">{% trans "Düzenleyici değişken analizi yapılıyor…" %}</p>
+          </div>
+
+          <div id="panel-error" class="d-none">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <span id="panel-error-msg"></span>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm" onclick="resetToUpload()">{% trans "Yeniden Dene" %}</button>
+          </div>
+
+          <div id="panel-done" class="d-none">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="text-white fw-semibold mb-0">{% trans "Düzenleyici Etki Sonucu" %}</h5>
+              <a id="pdf-btn" href="#" class="btn btn-sm btn-outline-danger" target="_blank">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i>{% trans "PDF İndir" %}
+              </a>
+            </div>
+
+            {% include "partials/_s3_retention_notice.html" %}
+
+            <div id="sig-box" class="rounded-3 p-3 mb-3">
+              <div class="fs-6 fw-semibold" id="sig-text"></div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6 col-md-4">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-6 fw-bold" id="res-b3" style="color:#a78bfa;">—</div>
+                  <div class="text-white-50 small">b3 ({% trans "Etkileşim" %})</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-6 fw-bold text-info" id="res-p3">—</div>
+                  <div class="text-white-50 small">p</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-6 fw-bold text-warning" id="res-delta-r2">—</div>
+                  <div class="text-white-50 small">ΔR²</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Katsayılar -->
+            <h6 class="text-white fw-semibold mb-2">{% trans "Katsayılar" %}</h6>
+            <div class="table-responsive mb-3">
+              <table class="table table-dark table-sm table-hover mb-0" style="font-size:0.8rem;">
+                <thead>
+                  <tr>
+                    <th>{% trans "Terim" %}</th>
+                    <th>{% trans "Katsayı" %}</th>
+                    <th>SE</th>
+                    <th>p</th>
+                  </tr>
+                </thead>
+                <tbody id="coef-body"></tbody>
+              </table>
+            </div>
+
+            <!-- Basit eğimler -->
+            <h6 class="text-white fw-semibold mb-2">{% trans "Basit Eğimler (Simple Slopes)" %}</h6>
+            <div class="table-responsive mb-3">
+              <table class="table table-dark table-sm table-hover mb-0" style="font-size:0.78rem;">
+                <thead>
+                  <tr>
+                    <th>{% trans "Düzey" %}</th>
+                    <th>W</th>
+                    <th>{% trans "X Etkisi" %}</th>
+                    <th>SE</th>
+                    <th>t</th>
+                    <th>p</th>
+                  </tr>
+                </thead>
+                <tbody id="slope-body"></tbody>
+              </table>
+            </div>
+
+            <!-- Etkileşim grafiği -->
+            <div class="mb-3 text-center">
+              <h6 class="text-white fw-semibold mb-2 text-start">{% trans "Etkileşim Grafiği" %}</h6>
+              <img id="interaction-plot" src="" alt="" class="img-fluid rounded-3" style="max-width:100%;background:#fff;">
+            </div>
+
+            <!-- APA -->
+            <div class="rounded-3 p-3 mb-2" style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);">
+              <p class="text-white-50 small fw-semibold mb-2">{% trans "APA Formatında Raporlama" %}</p>
+              <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
+
+              <div id="ai-yorum-box" class="d-none" style="border-top:1px solid var(--ax-border-default); margin:.5rem 0; padding-top:.5rem;">
+                <p class="text-white small mb-0" id="ai-yorum-text"></p>
+              </div>
+
+              <button class="btn btn-sm btn-outline-primary" onclick="copyApa()">
+                <i class="bi bi-clipboard me-1"></i>{% trans "Kopyala" %}
+              </button>
+            </div>
+          </div><!-- panel-done -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SEO: Bu Test Nedir? -->
+  <div class="ax-card mt-4 p-4">
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Düzenleyici Değişken (Moderation) Analizi Nedir?" %}</h5>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Düzenleyici değişken analizi, bir bağımsız değişkenin (X) bağımlı değişken (Y) üzerindeki etkisinin üçüncü bir değişkene (W) bağlı olarak ne zaman güçlendiğini veya zayıfladığını test eder. Etkileşim teriminin (X×W) katsayısı (b3) düzenleyici etkinin anlamlılığını gösterir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Etkileşim terimi kurulmadan önce X ve W, Aiken & West (1991) standardına göre merkezlenir (ortalamaları çıkarılır) — bu, ana etkilerin yorumlanabilir kalmasını sağlar. Basit eğimler (simple slopes), X'in Y üzerindeki etkisinin W'nin düşük, orta ve yüksek düzeylerinde ayrı ayrı ne kadar güçlü olduğunu gösterir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-0">{% trans "Mediation (aracılık) analizi X'in Y'yi nasıl etkilediğini açıklarken, moderation (düzenleyici değişken) analizi ne zaman/kimde etkinin değiştiğini test eder." %}</p>
+  </div>
+</div>
+
+<script>
+{% blocktrans with mb=max_upload_mb asvar t_max_size %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}
+const T = {
+  maxSize: '{{ t_max_size|escapejs }}',
+  s1: '{% trans " satır, " as t %}{{ t|escapejs }}',
+  s2: '{% trans " sütun" as t %}{{ t|escapejs }}',
+  s3: '{% trans "Sunucu hatası." as t %}{{ t|escapejs }}',
+  s4: '{% trans "Bağımsız/yordayıcı değişken (X) seçilmedi." as t %}{{ t|escapejs }}',
+  s5: '{% trans "Düzenleyici değişken (W) seçilmedi." as t %}{{ t|escapejs }}',
+  s5b: '{% trans "Bağımlı değişken (Y) seçilmedi." as t %}{{ t|escapejs }}',
+  s5c: '{% trans "Bağımsız, düzenleyici ve bağımlı değişkenler birbirinden farklı olmalıdır." as t %}{{ t|escapejs }}',
+  s6: '{% trans "Analiz başarısız." as t %}{{ t|escapejs }}',
+  s7: '{% trans "Durum sorgulanamadı: " as t %}{{ t|escapejs }}',
+  s8: '{% trans "Sonuç gösterilirken hata: " as t %}{{ t|escapejs }}',
+  s12: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  termB1: '{% trans "b1 (X ana etkisi)" as t %}{{ t|escapejs }}',
+  termB2: '{% trans "b2 (W ana etkisi)" as t %}{{ t|escapejs }}',
+  termB3: '{% trans "b3 (Etkileşim: X×W)" as t %}{{ t|escapejs }}',
+  sigYes: '{% trans "✓ Düzenleyici Etki Anlamlı" as t %}{{ t|escapejs }}',
+  sigNo: '{% trans "✗ Düzenleyici Etki Yok" as t %}{{ t|escapejs }}',
+  apaSig: '{% trans "{x} değişkeninin {y} üzerindeki etkisinin {w} tarafından düzenlendiği bulunmuştur, b = {b3}, SE = {se3}, p {p3}. Etkileşim terimi modele ek olarak ΔR² = {dr2} varyans açıklamıştır." as t %}{{ t|escapejs }}',
+  apaNs: '{% trans "{x} değişkeninin {y} üzerindeki etkisinin {w} tarafından anlamlı şekilde düzenlenmediği bulunmuştur, b = {b3}, SE = {se3}, p {p3}." as t %}{{ t|escapejs }}',
+};
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(4);
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const TOOL_URL = '{% url "istatistik:moderation" %}';
+const STATUS_TEMPLATE = '{% url "istatistik:moderation_status" "00000000-0000-0000-0000-000000000000" %}';
+
+let previewId = null, previewFilename = null, allNumericCols = [], pollInterval = null;
+
+const fileInput = document.getElementById('file-input');
+const previewBtn = document.getElementById('preview-btn');
+
+fileInput.addEventListener('change', () => {
+  const f = fileInput.files[0];
+  if (!f) return;
+  if (f.size > {{ max_upload_mb }} * 1024 * 1024) {
+    document.getElementById('upload-error').textContent = '{% filter escapejs %}{% blocktrans with mb=max_upload_mb %}Dosya boyutu {{ mb }} MB sınırını aşıyor.{% endblocktrans %}{% endfilter %}';
+    document.getElementById('upload-error').classList.remove('d-none');
+    fileInput.value = '';
+    return;
+  }
+  document.getElementById('file-name').textContent = f.name + ' (' + (f.size / 1024).toFixed(0) + ' KB)';
+  previewBtn.disabled = false; previewBtn.classList.remove('disabled');
+  document.getElementById('upload-error').classList.add('d-none');
+});
+
+previewBtn.addEventListener('click', previewFile);
+
+function previewFile() {
+  const f = fileInput.files[0];
+  if (!f) return;
+  previewBtn.disabled = true;
+  const fd = new FormData();
+  fd.append('file', f); fd.append('step', 'preview');
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      previewBtn.disabled = false;
+      if (!data.success) { showUploadError(data.error || 'Hata'); return; }
+      previewId = data.preview_id; previewFilename = data.filename;
+      allNumericCols = data.numeric_cols || [];
+      document.getElementById('config-file-info').textContent = data.filename + ' — ' + data.n_rows + T.s1 + data.columns.length + T.s2;
+      buildSelect('x-col', allNumericCols);
+      buildSelect('w-col', data.columns || []);
+      updateWYSelects();
+      document.getElementById('step-upload').classList.add('d-none');
+      document.getElementById('step-config').classList.remove('d-none');
+    })
+    .catch(() => { previewBtn.disabled = false; showUploadError(T.s3); });
+}
+
+function buildSelect(id, cols) {
+  const sel = document.getElementById(id);
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— {% filter escapejs %}{% trans "Seçiniz" %}{% endfilter %} —</option>';
+  cols.forEach(c => { sel.innerHTML += `<option value="${_esc(c)}">${_esc(c)}</option>`; });
+  if (cols.includes(current)) sel.value = current;
+}
+
+function updateWYSelects() {
+  const xVal = document.getElementById('x-col').value;
+  const wVal = document.getElementById('w-col').value;
+  const yAvailable = allNumericCols.filter(c => c !== xVal && c !== wVal);
+  buildSelect('y-col', yAvailable);
+  const yVal = document.getElementById('y-col').value;
+  document.getElementById('run-btn').disabled = !(xVal && wVal && yVal && xVal !== wVal && wVal !== yVal && xVal !== yVal);
+}
+
+document.getElementById('run-btn').addEventListener('click', runAnalysis);
+
+function runAnalysis() {
+  const xVal = document.getElementById('x-col').value;
+  const wVal = document.getElementById('w-col').value;
+  const yVal = document.getElementById('y-col').value;
+  if (!xVal) { showRunError(T.s4); return; }
+  if (!wVal) { showRunError(T.s5); return; }
+  if (!yVal) { showRunError(T.s5b); return; }
+  if (xVal === wVal || wVal === yVal || xVal === yVal) { showRunError(T.s5c); return; }
+
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('loading');
+
+  const fd = new FormData();
+  fd.append('step', 'run');
+  fd.append('preview_id', previewId);
+  fd.append('filename', previewFilename);
+  fd.append('x_col', xVal);
+  fd.append('w_col', wVal);
+  fd.append('y_col', yVal);
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) { showPanel('idle'); showRunError(data.error || 'Hata'); return; }
+      startPolling(data.job_id);
+    })
+    .catch(() => { showPanel('idle'); showRunError(T.s3); });
+}
+
+function startPolling(jobId) {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(() => {
+    fetch(STATUS_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', jobId), {headers:{'X-Requested-With':'XMLHttpRequest'}})
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(data => {
+        if (data.status === 'completed') {
+          clearInterval(pollInterval);
+          showResults(data);
+        } else if (data.status === 'failed') {
+          clearInterval(pollInterval);
+          showPanel('error');
+          document.getElementById('panel-error-msg').textContent = data.error || T.s6;
+        }
+      })
+      .catch(err => {
+        clearInterval(pollInterval);
+        showPanel('error');
+        document.getElementById('panel-error-msg').textContent = T.s7 + err.message;
+      });
+  }, 2000);
+}
+
+function showResults(data) {
+  try { _showResults(data); } catch(e) {
+    showPanel('error');
+    document.getElementById('panel-error-msg').textContent = T.s8 + e.message;
+  }
+}
+
+function _showResults(data) {
+  const r = data.result_data;
+  const sigBox = document.getElementById('sig-box');
+  const sigText = document.getElementById('sig-text');
+  if (r.interaction_significant) {
+    sigBox.style.background = 'rgba(74,222,128,0.08)'; sigBox.style.border = '1px solid rgba(74,222,128,0.2)';
+    sigText.innerHTML = `<span style="color:#4ade80;">${T.sigYes}</span>`;
+  } else {
+    sigBox.style.background = 'rgba(248,113,113,0.08)'; sigBox.style.border = '1px solid rgba(248,113,113,0.2)';
+    sigText.innerHTML = `<span style="color:#f87171;">${T.sigNo}</span>`;
+  }
+
+  document.getElementById('res-b3').textContent = r.b3.coef.toFixed(4);
+  document.getElementById('res-p3').textContent = r.b3.p < 0.001 ? '< .001' : r.b3.p.toFixed(4);
+  document.getElementById('res-delta-r2').textContent = r.delta_r_squared.toFixed(4);
+
+  const pCell = (v, sig) => {
+    const txt = v < 0.001 ? '&lt; .001' : v.toFixed(4);
+    return sig ? `<td style="color:#4ade80;font-weight:bold;">${txt}</td>` : `<td>${txt}</td>`;
+  };
+  const coefRows = [[T.termB1, r.b1], [T.termB2, r.b2], [T.termB3, r.b3]];
+  document.getElementById('coef-body').innerHTML = coefRows.map(([label, c]) => `<tr>
+    <td class="fw-semibold">${label}</td>
+    <td>${c.coef.toFixed(4)}</td>
+    <td>${c.se.toFixed(4)}</td>
+    ${pCell(c.p, c.significant)}
+  </tr>`).join('');
+
+  document.getElementById('slope-body').innerHTML = r.simple_slopes.map(s => `<tr>
+    <td class="fw-semibold">${_esc(s.label)}</td>
+    <td>${s.w_value.toFixed(3)}</td>
+    <td>${s.effect.toFixed(4)}</td>
+    <td>${s.se.toFixed(4)}</td>
+    <td>${s.t.toFixed(3)}</td>
+    ${pCell(s.p, s.significant)}
+  </tr>`).join('');
+
+  if (r.interaction_plot_b64) {
+    document.getElementById('interaction-plot').src = 'data:image/png;base64,' + r.interaction_plot_b64;
+  }
+
+  const apaTemplate = r.interaction_significant ? T.apaSig : T.apaNs;
+  const apa = fmt(apaTemplate, {
+    x: r.x_col, y: r.y_col, w: r.w_col,
+    b3: r.b3.coef.toFixed(3), se3: r.b3.se.toFixed(3), p3: pStr(r.b3.p),
+    dr2: r.delta_r_squared.toFixed(4),
+  });
+  document.getElementById('res-apa').textContent = apa;
+  document.getElementById('pdf-btn').href = data.pdf_url;
+
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (r.ai_comment) {
+    document.getElementById('ai-yorum-text').textContent = r.ai_comment;
+    aiBox.classList.remove('d-none');
+  } else {
+    aiBox.classList.add('d-none');
+  }
+
+  showPanel('done');
+}
+
+function copyApa() {
+  let copyText = document.getElementById('res-apa').textContent;
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (aiBox && !aiBox.classList.contains('d-none')) {
+    copyText += '\n\n' + document.getElementById('ai-yorum-text').textContent;
+  }
+  navigator.clipboard.writeText(copyText).then(() => {
+    const btn = event.target.closest('button');
+    btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>' + T.s12;
+    setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard me-1"></i>Kopyala'; }, 2000);
+  });
+}
+
+function showPanel(name) {
+  ['idle','loading','error','done'].forEach(n => {
+    document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
+  });
+}
+function showUploadError(msg) { const el = document.getElementById('upload-error'); el.textContent = msg; el.classList.remove('d-none'); }
+function showRunError(msg) { const el = document.getElementById('run-error'); el.textContent = msg; el.classList.remove('d-none'); }
+function resetToUpload() {
+  if (pollInterval) clearInterval(pollInterval);
+  previewId = null; previewFilename = null;
+  fileInput.value = ''; previewBtn.disabled = true; previewBtn.classList.add('disabled');
+  document.getElementById('file-name').textContent = T.maxSize;
+  document.getElementById('step-config').classList.add('d-none');
+  document.getElementById('step-upload').classList.remove('d-none');
+  document.getElementById('upload-error').classList.add('d-none');
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('idle');
+}
+
+{% if active_job_id %}
+showPanel('loading');
+startPolling('{{ active_job_id }}');
+{% endif %}
+</script>
+{% endblock %}

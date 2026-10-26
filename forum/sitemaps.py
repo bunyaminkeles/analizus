@@ -223,6 +223,7 @@ class IstatistikSitemap(MultilingualSitemapMixin, Sitemap):
             'lineer-regresyon',
             'lojistik-regresyon',
             'mediation',
+            'moderation',
             'friedman',
             'tekrarli-anova',
             'karar-agaci',

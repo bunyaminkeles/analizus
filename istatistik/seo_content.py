@@ -740,9 +740,72 @@ SEO_CONTENT = {
             },
         ],
         'related_tools': [
+            ('moderation', gettext_lazy('Düzenleyici Değişken Analizi')),
             ('lineer-regresyon', gettext_lazy('Doğrusal Regresyon')),
             ('korelasyon', gettext_lazy('Korelasyon Analizi')),
-            ('lojistik-regresyon', gettext_lazy('Lojistik Regresyon')),
+        ],
+    },
+
+    'moderation': {
+        'intro': (
+            gettext_lazy('Düzenleyici değişken (moderation) analizi, bir bağımsız değişkenin '
+            '(X) bağımlı değişken (Y) üzerindeki etkisinin üçüncü bir değişkene '
+            '(W) bağlı olarak ne zaman güçlendiğini veya zayıfladığını test '
+            'eder. Sosyal bilimler, işletme ve psikoloji tezlerinde SPSS '
+            'Process (Hayes) Model 1 ile yapılan analizin karşılığıdır.')
+        ),
+        'when_to_use': (
+            gettext_lazy('X\'in Y üzerindeki etkisinin "ne zaman" veya "kimde" değiştiğini '
+            'test etmek istediğinizde kullanın (örn. çalışma süresinin '
+            'performansa etkisi motivasyon düzeyine göre değişiyor mu?). '
+            'X\'in etkisinin "nasıl" ilettiğini açıklamak istiyorsanız '
+            '(aracı/mediator değişken) Aracılık (Mediation) Analizi daha '
+            'uygundur.')
+        ),
+        'assumptions': (
+            gettext_lazy('Bağımsız (X) ve bağımlı (Y) değişkenler sürekli/sayısal olmalıdır. '
+            'Düzenleyici değişken (W) sayısal veya iki kategorili olabilir. '
+            'Etkileşim terimi kurulmadan önce X ve W merkezlenir (ortalamaları '
+            'çıkarılır) — bu, ana etkilerin yorumlanabilir kalması ve çoklu '
+            'bağlantının azaltılması için standart bir adımdır. En az 30 '
+            'gözlem önerilir; etkileşim etkileri ana etkilerden daha fazla '
+            'istatistiksel güç gerektirir.')
+        ),
+        'how_to_interpret': (
+            gettext_lazy('b3 (etkileşim katsayısı): X×W teriminin katsayısı; p < 0.05 ise '
+            'düzenleyici etki anlamlıdır. '
+            'ΔR²: Etkileşim teriminin modele eklediği ek açıklayıcılık. '
+            'Basit eğimler (simple slopes): X\'in Y üzerindeki etkisi W\'nin '
+            'düşük/orta/yüksek (veya 2 kategorili) düzeylerinde ayrı ayrı '
+            'hesaplanır — düzenleyici etkinin hangi koşulda güçlü/zayıf '
+            'olduğunu gösterir.')
+        ),
+        'apa_example': (
+            gettext_lazy('Çalışma süresinin (X) performans (Y) üzerindeki etkisinin '
+            'motivasyon düzeyi (W) tarafından anlamlı şekilde düzenlendiği '
+            'bulunmuştur, b = .24, SE = .08, p = .003, ΔR² = .05.')
+        ),
+        'faq': [
+            {
+                'q': gettext_lazy('Mediation ile moderation arasındaki fark nedir?'),
+                'a': (gettext_lazy('Aracılık (mediation) X\'in Y\'yi "nasıl" etkilediğini açıklayan '
+                      'bir mekanizmayı test eder. Düzenleyici (moderation) analizi ise '
+                      'X\'in Y üzerindeki etkisinin üçüncü bir değişkene (W) bağlı olarak '
+                      '"ne zaman/kimde" güçlendiğini veya zayıfladığını test eder.')),
+            },
+            {
+                'q': gettext_lazy('Basit eğimler (simple slopes) neden gösteriliyor?'),
+                'a': (gettext_lazy('Tek başına etkileşim katsayısı (b3) düzenleyici etkinin var '
+                      'olduğunu gösterir ama "nasıl" olduğunu açıklamaz. Basit eğimler, '
+                      'X\'in Y üzerindeki etkisinin W\'nin düşük, orta ve yüksek '
+                      'düzeylerinde ayrı ayrı ne kadar güçlü olduğunu gösterir — SPSS '
+                      'Process/Hayes çıktısının standart bir parçasıdır.')),
+            },
+        ],
+        'related_tools': [
+            ('mediation', gettext_lazy('Aracılık Analizi')),
+            ('lineer-regresyon', gettext_lazy('Doğrusal Regresyon')),
+            ('korelasyon', gettext_lazy('Korelasyon Analizi')),
         ],
     },
 
