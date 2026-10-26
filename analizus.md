@@ -1384,6 +1384,39 @@ def _broadcast_chat(uid1, uid2, event):
   `status='active'` şartı arıyor) — yani "onay anında mevcut üyelere toplu bildirim" senaryosu yapısal
   olarak hiç mevcut değil; kurucuya "odanız açıldı" e-postası da YOK. İstenirse ayrı görev.
 
+### Kötüye Kullanım Tespiti, Bildirim, Saklama Süresi, Export (Faz 1-4, 26 Ekim 2026)
+
+Kaynak: `tasks/todo.md` "Çalışma Odaları — Kötüye Kullanım Tespiti + KVKK Uyumu" (6 fazlı plan; Faz 5
+avukat onayı bekliyor, Faz 6 ertelendi — kullanıcı kararı). Reddedilen fikir: admin'in odaya görünmeden
+(stealth) girmesi — KVKK şeffaflık ilkesine aykırı bulundu, uygulanmadı.
+
+- **Faz 1 — Otomatik işaretleme:** `StudyRoomPost.flagged` (migration `0186`). `save()` içinde
+  `_studyroom_post_abuse_signal()` çalışır — telefon, e-posta, WhatsApp/Telegram/Instagram/Signal geçen
+  metin, IBAN, kripto cüzdan adresi (0x.../bc1...) ve kısa bir tehdit-kelime listesi regex ile taranır.
+  Canlı engelleme yok, yalnız sonradan admin filtresi (`StudyRoomPostAdmin`, sidebar "Oda Mesajları
+  (İşaretli)"). **Dikkat:** mesaj düzenleme view'ı `save(update_fields=['message','edited_at'])`
+  kullanıyor — `flagged` bu listeye dahil edilmezse DB'ye yazılmaz; `save()` override bunu otomatik ekler.
+- **Faz 2 — Kullanıcı "Bildir":** `StudyRoomPostReport` (migration `0187`) — `post`, `reporter`, `reason`
+  (önceden tanımlı 5 seçenek: Taciz/Hakaret, Spam/Reklam, Platform Dışına Yönlendirme, Uygunsuz İçerik,
+  Diğer). Kullanıcı kararı: `unique_together` YOK, aynı mesaj tekrar tekrar bildirilebilir. `/api/room-
+  post/<id>/report/` — giriş+POST zorunlu, kendi mesajını bildirme ve geçersiz sebep reddedilir.
+  `studyroom_detail.html`'de başkasının mesajına hover'da "Bildir" butonu + sebep seçim paneli. **Not:**
+  `forum/urls.py` `i18n_patterns` DIŞINDA (oda sayfaları TR-only) — bu yüzden yeni UI metinleri de düz
+  Türkçe, EN/DE çeviri atlandı (dosyadaki mevcut desenle tutarlı).
+- **Faz 3 — Saklama süresi + legal hold:** `StudyRoom.archived_at` (migration `0188`) — oda arşivlenirken
+  (`auto_archive_if_expired()`) set edilir. `/api/cron/cleanup-archived-room-posts/` (bkz. §23): 180 gün
+  (≈6 ay, kullanıcı kararı) önce arşivlenmiş odalardaki mesajları siler (oda kaydı kalır, yalnız mesajlar
+  gider); `flagged=True` veya en az bir `StudyRoomPostReport`'u olan mesajlar muaf. **Backfill
+  (migration `0190`):** bu özellikten önce zaten `archived` olan 8 oda `archived_at=NULL` kaldığı için
+  cron'a hiç girmiyordu — `ends_at` proxy olarak yazıldı.
+- **Faz 4 — Adli makam talebi / export audit log:** `RoomExportAuditLog` (migration `0189` — room,
+  exported_by, exported_at, message_count; admin'de değiştirilemez/silinemez). `StudyRoomAdmin.
+  export_room_messages` aksiyonu: **yalnızca superuser**, tek oda seçildiğinde çalışır,
+  `forum/services/room_export.py` (ReportLab/Platypus, `istatistik.services.pdf_fonts.register_fonts()`
+  ile Türkçe karakter desteği, mesaj içeriği `xml.sax.saxutils.escape()` ile kaçışlı) ile tüm mesaj
+  geçmişini PDF olarak üretir, indirir ve her export'u otomatik loglar (chain of custody).
+- Sidebar'a sırasıyla "Oda Mesajları (İşaretli)", "Oda Bildirimleri", "Oda Export Kayıtları" eklendi.
+
 ---
 
 ## 14. BİBLİOMETRİK ANALİZ
@@ -2023,6 +2056,10 @@ kullanılamaz olduğundan bu yol açılmaz.
 - **Aktif:** `/api/cron/cleanup-attachments/` — 90 günden eski DM + oda mesajı dosyaları S3'ten silinir, mesaj/post kaydı korunur; Hetzner crontab'ında `0 6 * * 0` ile haftalık (Pazar) çalışır (31 Temmuz 2026'da eklendi — önceden dokümante "Aktif" ama crontab'da hiç yoktu)
 - **Aktif:** `/api/cron/cleanup-pageviews/` — 5 günden eski sayfa ziyaret loglarını PageViewSummary'e toplar ve siler; Hetzner crontab'ında `0 4 * * * curl -s "https://www.analizus.com/api/cron/cleanup-pageviews/?secret=..." >> /var/log/cron_pageviews.log 2>&1` ile çalışır (31 Temmuz 2026'da www'siz→www'li URL'e düzeltildi, önceki satır redirect yüzünden fiilen hiç çalışmıyordu)
 - **Aktif:** `/api/cron/process-account-deletions/` — `deletion_requested_at` üzerinden 30 gün geçmiş hesapları anonimleştirir (`_anonymize_deleted_account`, 25 Eylül 2026 kullanıcı kararları): açık içerik + DM'ler kalır (yazar anonim), bağış/sipariş kalır (bağış ad/e-posta/mesaj silinir; siparişli iş silinmez, dosyaları silinir), tarama/analiz işleri + S3 dosyaları, bildirim, PageView, quiz skoru, oda üyeliği, takip listesi silinir, açık ilanlar iptal; kullanıcı başına tek transaction; Hetzner crontab'ında `0 3 * * *` ile çalışıyor (www'li, doğru)
+- **Aktif:** `/api/cron/cleanup-archived-room-posts/` — arşivlenmesinden 180 gün (≈6 ay) geçmiş çalışma
+  odalarındaki mesajları siler (dosyası varsa S3'ten de temizler); `flagged=True` veya en az bir
+  `StudyRoomPostReport`'u olan mesajlar legal hold kapsamında muaf — bkz. §13b "Kötüye Kullanım Tespiti".
+  Hetzner crontab'ında `0 7 * * *` ile günlük çalışır (26 Ekim 2026'da eklendi).
 - **Kod hazır, crontab satırı eklenmedi:** `/api/cron/cleanup-session-datasets/` — `istatistik/services/job_runner.py`'deki `_session_datasets` (RAM'de tutulan, kullanıcının araçlar arası taşıdığı yüklenmiş CSV/Excel içeriği) 2 saatten (`SESSION_DATASET_TTL_SECONDS`, `SESSION_COOKIE_AGE` ile hizalı) eski girdileri temizler. **Neden ayrı bir mekanizma:** bu veri DB'de değil, çalışan web sürecinin RAM'inde — ayrı bir process olarak çalışan bir `manage.py` komutu bu dict'e erişemez, yalnızca çalışan sürece HTTP isteğiyle vuran bir `/api/cron/*` endpoint'i temizleyebilir (31 Temmuz 2026). Hetzner crontab'ına saatlik (`0 * * * * curl -s "https://www.analizus.com/api/cron/cleanup-session-datasets/?secret=..." >> /var/log/cron_cleanup_session_datasets.log 2>&1`) eklenmesi gerekiyor — henüz eklenmedi.
 - **Host (HTTP değil):** `0 2 * * *` gecelik `pg_dump` → `/root/backup_analizus_YYYYMMDD.sql` (7 gün rotasyon). Kullanıcının
   bilgisayarında saatlik `scripts/yedek_indir.sh` bunu yerele indirir (§3 "Sunucu bakımı").
@@ -2499,6 +2536,11 @@ with connection.cursor() as c:
   - **Faz 7 — Görsel yükseltme:** Kullanıcının sağladığı `odalar-hero(-mobile).webp` ile market/agentic sayfalarındaki cinematic hero deseni uygulandı (`static/css/odalar.css`, bundle.css'e girmiyor); oda kartlarına doluluk bar'ı eklendi.
   - **Faz 8 — SEO:** `turkish_slugify()` (bkz. §26) yeni odalarda kullanılıyor, mevcut slug'lara dokunulmadı; yalnızca aktif odada basılan JSON-LD Event schema (organizer="Analizus", kurucu adı sızdırılmıyor); `StudyRoomSitemap` eklendi; `robots.txt`'teki asla eşleşmeyen `/studyroom/*/katil/` kuralı (§26) `/odalar/*/katil/` + diğer aksiyon endpoint'leri olarak düzeltildi.
   - Toplamda forum test paketine ~24 smoke test eklendi (gizlilik, bekleme listesi, arşiv yazma kilidi, room_type, slug, sitemap, JSON-LD).
+
+- **Çalışma Odaları Kötüye Kullanım Tespiti + KVKK Uyumu, Faz 1-4** (26 Ekim 2026, main'de canlı) —
+  otomatik işaretleme (`flagged` + regex), kullanıcı "Bildir" özelliği, arşiv sonrası 180 gün saklama
+  süresi + legal hold, adli makam talebi için PDF export + audit log. Detay: §13b, §23. Faz 5 (aydınlatma
+  metni) avukat onayı bekliyor, Faz 6 (admin erişim logu) ertelendi.
 
 - **8 Ekim 2026 — Uzman Dizini (`/uzmanlar/`) giriş kriterleri sıkılaştırıldı (canlıda; main 864814c, migration forum/0175):**
   - Kullanıcı gözlemi: 0 puanlı/tek skilli kullanıcılar bile dizinde görünüyordu — eski kural üç koşuldan herhangi
