@@ -226,6 +226,15 @@ def _execute_job_in_language(job_id: str):
                 m_col=opts.get('m_col', ''),
                 y_col=opts.get('y_col', ''),
             )
+        elif job.tool == 'moderation':
+            from .moderation import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                x_col=opts.get('x_col', ''),
+                w_col=opts.get('w_col', ''),
+                y_col=opts.get('y_col', ''),
+            )
         elif job.tool == 'svm':
             from .svm import analyze, build_pdf
             opts = job.options or {}
@@ -323,6 +332,7 @@ _AI_PROMPT_EXCLUDE_KEYS = {
     'tree_text',       # karar_agaci: uzun ASCII ağaç çıktısı, yorum için gereksiz
     'heatmap_b64',     # korelasyon: base64 PNG, metin yoruma hiç katkı sağlamıyor
     'scree_plot_b64',  # afa: base64 PNG, metin yoruma hiç katkı sağlamıyor
+    'interaction_plot_b64',  # moderation: base64 PNG, metin yoruma hiç katkı sağlamıyor
 }
 
 

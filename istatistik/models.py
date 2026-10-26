@@ -23,6 +23,7 @@ TOOL_CHOICES = [
     ('karar_agaci', 'Karar Ağacı Sınıflandırması'),
     ('svm', 'Destek Vektör Makinesi (SVM)'),
     ('mediation', 'Aracılık Analizi (Mediation)'),
+    ('moderation', 'Düzenleyici Değişken Analizi (Moderation)'),
 ]
 
 STATUS_CHOICES = [

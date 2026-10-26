@@ -48,6 +48,7 @@ TOOL_CATEGORIES = [
         ('lineer_regresyon',  gettext_lazy('Çoklu Doğrusal Regresyon'), 'bi-graph-up-arrow',  'primary',  'lineer-regresyon'),
         ('lojistik_regresyon',gettext_lazy('Lojistik Regresyon'),        'bi-bezier2',         'success',  'lojistik-regresyon'),
         ('mediation',         gettext_lazy('Aracılık Analizi (Mediation)'), 'bi-diagram-3-fill', 'purple', 'mediation'),
+        ('moderation',        gettext_lazy('Düzenleyici Değişken Analizi (Moderation)'), 'bi-sliders', 'purple', 'moderation'),
     ]),
     (gettext_lazy('Makine Öğrenmesi'), [
         ('karar_agaci', gettext_lazy('Karar Ağacı'), 'bi-diagram-2', 'purple', 'karar-agaci'),
@@ -459,6 +460,12 @@ def _handle_group_tool_post(request, tool):
                 'm_col': request.POST.get('m_col', ''),
                 'y_col': request.POST.get('y_col', ''),
             }
+        elif tool == 'moderation':
+            options = {
+                'x_col': request.POST.get('x_col', ''),
+                'w_col': request.POST.get('w_col', ''),
+                'y_col': request.POST.get('y_col', ''),
+            }
         elif tool == 'afa':
             cols = request.POST.getlist('columns')
             n_factors_raw = request.POST.get('n_factors', '').strip()
@@ -693,6 +700,44 @@ def mediation_landing(request):
             gettext('Dolaylı etkinin anlamlılığı bootstrap %95 güven aralığı ile test edilir.'),
         ],
         **_console_ctx('mediation', request),
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def moderation_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('moderation'),
+            'promo_title': gettext('Düzenleyici Değişken Analizi (Moderation)'),
+            'promo_icon': 'bi-sliders',
+            'promo_color': 'purple',
+            'promo_description': gettext('X\'in Y üzerindeki etkisinin bir düzenleyici (moderatör) değişkene bağlı olarak ne zaman güçlendiğini veya zayıfladığını test edin. Basit eğimler, etkileşim grafiği ve APA formatında raporlama ile SPSS Process/Hayes\'e karşılık gelen tam bir düzenleyici değişken raporu.'),
+            'promo_features': [
+                {'icon': 'bi-sliders', 'title': gettext('Etkileşim Terimi (X×W)'), 'desc': gettext('Aiken & West (1991) merkezleme standardıyla X, W ve etkileşim terimlerinin etkisi ayrı ayrı hesaplanır.')},
+                {'icon': 'bi-graph-up', 'color': 'info', 'title': gettext('Basit Eğimler (Simple Slopes)'), 'desc': gettext('X\'in Y üzerindeki etkisi W\'nin düşük/orta/yüksek (veya 2 kategorili) düzeylerinde ayrı ayrı raporlanır.')},
+                {'icon': 'bi-bar-chart-line', 'color': 'warning', 'title': gettext('Etkileşim Grafiği'), 'desc': gettext('X-Y ilişkisinin W düzeylerine göre nasıl değiştiğini gösteren görsel grafik otomatik oluşturulur.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Katsayılar, basit eğimler tablosu ve APA formatında raporlama cümlesi PDF olarak indirilir.')},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'moderation')
+    active_job = _get_active_job(request.user, 'moderation')
+    return render(request, 'istatistik/moderation.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': gettext('Düzenleyici Değişken Analizi (Moderation)'),
+        'tool_icon': 'bi-sliders',
+        'tool_color': 'purple',
+        'tool_description': gettext('X\'in Y üzerindeki etkisinin W düzenleyici değişkenine bağlı olarak ne zaman güçlendiğini veya zayıfladığını test edin.'),
+        'tool_hints': [
+            gettext('Bağımsız (X) ve bağımlı (Y) değişkenler sayısal/sürekli olmalıdır.'),
+            gettext('Düzenleyici değişken (W) sayısal veya 2 kategorili olabilir.'),
+            gettext('En az 30 gözlem (satır) önerilir.'),
+            gettext('Düzenleme etkisinin anlamlılığı etkileşim teriminin (X×W) p değeri ile test edilir.'),
+        ],
+        **_console_ctx('moderation', request),
     })
 
 
@@ -977,6 +1022,7 @@ def analiz_console(request, tool_slug):
         'lineer-regresyon': lineer_regresyon_landing,
         'lojistik-regresyon': lojistik_regresyon_landing,
         'mediation': mediation_landing,
+        'moderation': moderation_landing,
         'karar-agaci': karar_agaci_landing,
         'svm': svm_landing,
     }
