@@ -53,6 +53,7 @@ TOOL_CATEGORIES = [
     (gettext_lazy('Makine Öğrenmesi'), [
         ('karar_agaci', gettext_lazy('Karar Ağacı'), 'bi-diagram-2', 'purple', 'karar-agaci'),
         ('svm', gettext_lazy('Destek Vektör Makinesi'), 'bi-cpu', 'teal', 'svm'),
+        ('kumeleme', gettext_lazy('Kümeleme Analizi (K-means / Hiyerarşik)'), 'bi-bounding-box-circles', 'info', 'kumeleme'),
     ]),
 ]
 
@@ -477,6 +478,17 @@ def _handle_group_tool_post(request, tool):
                 options['columns'] = cols
             if n_factors_raw.isdigit() and int(n_factors_raw) > 0:
                 options['n_factors'] = int(n_factors_raw)
+        elif tool == 'kumeleme':
+            cols = request.POST.getlist('columns')
+            method = request.POST.get('method', 'kmeans')
+            if method not in ('kmeans', 'hierarchical'):
+                method = 'kmeans'
+            n_clusters_raw = request.POST.get('n_clusters', '').strip()
+            options = {'method': method}
+            if cols:
+                options['columns'] = cols
+            if n_clusters_raw.isdigit() and int(n_clusters_raw) > 0:
+                options['n_clusters'] = int(n_clusters_raw)
         elif tool == 'wilcoxon':
             options = {
                 'col1': request.POST.get('col1', ''),
@@ -806,6 +818,38 @@ def svm_landing(request):
 
 @feature_required
 @ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def kumeleme_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('kumeleme'),
+            'promo_title': gettext('Kümeleme Analizi (K-means / Hiyerarşik)'),
+            'promo_icon': 'bi-bounding-box-circles',
+            'promo_color': 'info',
+            'promo_egitim_konu': 'makine-ogrenmesi',
+            'promo_description': gettext('Veri setinizdeki gözlemleri benzerliklerine göre otomatik gruplara ayırın. K-means veya Hiyerarşik (Ward) yöntemle, silhouette skoruna göre otomatik küme sayısı önerisi ve küme profili tablosuyla tam rapor.'),
+            'promo_features': [
+                {'icon': 'bi-bounding-box-circles', 'title': gettext('İki Yöntem'), 'desc': gettext('K-means veya Hiyerarşik (Ward bağlantı) kümeleme yöntemlerinden birini seçin.')},
+                {'icon': 'bi-sliders', 'color': 'warning', 'title': gettext('Otomatik k Seçimi'), 'desc': gettext('Küme sayısını belirtmezseniz silhouette skoruna göre en uygun k otomatik seçilir.')},
+                {'icon': 'bi-table', 'color': 'success', 'title': gettext('Küme Profili'), 'desc': gettext('Her kümenin büyüklüğü ve değişken ortalamaları tablo halinde raporlanır.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Diyagnostik grafik, dağılım grafiği ve APA formatında raporlama cümlesi PDF olarak indirilir.')},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'kumeleme')
+    active_job = _get_active_job(request.user, 'kumeleme')
+    return render(request, 'istatistik/kumeleme.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': gettext('Kümeleme Analizi (K-means / Hiyerarşik)'),
+        'tool_icon': 'bi-bounding-box-circles',
+        'tool_color': 'info',
+        **_console_ctx('kumeleme', request),
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def afa_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -1025,6 +1069,7 @@ def analiz_console(request, tool_slug):
         'moderation': moderation_landing,
         'karar-agaci': karar_agaci_landing,
         'svm': svm_landing,
+        'kumeleme': kumeleme_landing,
     }
     view_fn = _SLUG_MAP.get(tool_slug)
     if not view_fn:

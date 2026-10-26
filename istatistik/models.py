@@ -24,6 +24,7 @@ TOOL_CHOICES = [
     ('svm', 'Destek Vektör Makinesi (SVM)'),
     ('mediation', 'Aracılık Analizi (Mediation)'),
     ('moderation', 'Düzenleyici Değişken Analizi (Moderation)'),
+    ('kumeleme', 'Kümeleme Analizi (K-means / Hiyerarşik)'),
 ]
 
 STATUS_CHOICES = [

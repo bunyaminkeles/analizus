@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 15:26+0300\n"
+"POT-Creation-Date: 2026-10-26 23:42+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1327,6 +1327,7 @@ msgstr ""
 #: istatistik/templates/istatistik/korelasyon.html:90
 #: istatistik/templates/istatistik/kruskal_wallis.html:71
 #: istatistik/templates/istatistik/kruskal_wallis.html:231
+#: istatistik/templates/istatistik/kumeleme.html:108
 #: istatistik/templates/istatistik/lineer_regresyon.html:82
 #: istatistik/templates/istatistik/lojistik_regresyon.html:89
 #: istatistik/templates/istatistik/mann_whitney.html:71
@@ -1361,6 +1362,7 @@ msgstr ""
 #: istatistik/templates/istatistik/cronbach.html:134
 #: istatistik/templates/istatistik/friedman.html:134
 #: istatistik/templates/istatistik/korelasyon.html:153
+#: istatistik/templates/istatistik/kumeleme.html:132
 #: istatistik/templates/istatistik/normallik.html:133
 #: istatistik/templates/istatistik/tekrarli_anova.html:132
 #: istatistik/templates/istatistik/wilcoxon.html:118
@@ -1619,6 +1621,7 @@ msgstr "Diagramme und PDF werden erstellt..."
 #: istatistik/templates/istatistik/cronbach.html:246
 #: istatistik/templates/istatistik/friedman.html:267
 #: istatistik/templates/istatistik/korelasyon.html:291
+#: istatistik/templates/istatistik/kumeleme.html:269
 #: istatistik/templates/istatistik/normallik.html:227
 #: istatistik/templates/istatistik/tekrarli_anova.html:267
 #: istatistik/templates/istatistik/wilcoxon.html:244
@@ -1714,12 +1717,13 @@ msgstr "Institution & Land"
 msgid "Araştırma üretiminde öne çıkan kurumlar ve ülkeler."
 msgstr "Institutionen und Länder mit der höchsten Forschungsleistung."
 
-#: bibliometrics/views.py:50 istatistik/views.py:113 istatistik/views.py:233
-#: istatistik/views.py:284 istatistik/views.py:314 istatistik/views.py:528
-#: istatistik/views.py:559 istatistik/views.py:590 istatistik/views.py:621
-#: istatistik/views.py:652 istatistik/views.py:683 istatistik/views.py:721
-#: istatistik/views.py:760 istatistik/views.py:791 istatistik/views.py:822
-#: istatistik/views.py:860 istatistik/views.py:889 istatistik/views.py:918
+#: bibliometrics/views.py:50 istatistik/views.py:114 istatistik/views.py:234
+#: istatistik/views.py:285 istatistik/views.py:315 istatistik/views.py:540
+#: istatistik/views.py:571 istatistik/views.py:602 istatistik/views.py:633
+#: istatistik/views.py:664 istatistik/views.py:695 istatistik/views.py:733
+#: istatistik/views.py:772 istatistik/views.py:803 istatistik/views.py:835
+#: istatistik/views.py:866 istatistik/views.py:904 istatistik/views.py:933
+#: istatistik/views.py:962
 msgid "PDF Rapor"
 msgstr "PDF-Bericht"
 
@@ -1755,8 +1759,8 @@ msgstr ""
 "Sie haben Ihr tägliches Analyselimit ({limit}) erreicht. Bitte versuchen Sie"
 " es morgen erneut."
 
-#: bibliometrics/views.py:97 istatistik/views.py:358 istatistik/views.py:961
-#: istatistik/views.py:1092
+#: bibliometrics/views.py:97 istatistik/views.py:359 istatistik/views.py:1005
+#: istatistik/views.py:1137
 msgid "Dosya seçilmedi."
 msgstr "Keine Datei ausgewählt."
 
@@ -1782,7 +1786,7 @@ msgid "{email} adresine demo rapor gönderildi."
 msgstr "Der Demo-Bericht wurde an {email} gesendet."
 
 #: bibliometrics/views.py:227 bibliometrics/views.py:299
-#: istatistik/views.py:401 istatistik/views.py:1087
+#: istatistik/views.py:402 istatistik/views.py:1132
 msgid "E-posta doğrulaması gereklidir."
 msgstr "Eine E-Mail-Bestätigung ist erforderlich."
 
@@ -5083,7 +5087,7 @@ msgstr "Auf Analizus berechnen →"
 #: istatistik/templates/istatistik/anova.html:14
 #: istatistik/templates/istatistik/anova.html:117
 #: istatistik/templates/istatistik/orneklem.html:36 istatistik/views.py:40
-#: istatistik/views.py:306 istatistik/views.py:311 istatistik/views.py:322
+#: istatistik/views.py:307 istatistik/views.py:312 istatistik/views.py:323
 msgid "Tek Yönlü ANOVA"
 msgstr "Einfaktorielle ANOVA"
 
@@ -5132,7 +5136,7 @@ msgstr ""
 "Multikollinearitätsprüfung mit VIF."
 
 #: forum/templates/forum/hangi_test.html:202 istatistik/seo_content.py:681
-#: istatistik/views.py:36 istatistik/views.py:582 istatistik/views.py:599
+#: istatistik/views.py:36 istatistik/views.py:594 istatistik/views.py:611
 msgid "Ki-Kare Testi"
 msgstr "Chi-Quadrat-Test"
 
@@ -5145,7 +5149,7 @@ msgstr ""
 "Zellhäufigkeit unter 5, wird automatisch der exakte Fisher-Test angewendet."
 
 #: forum/templates/forum/hangi_test.html:211 istatistik/seo_content.py:408
-#: istatistik/views.py:32
+#: istatistik/seo_content.py:1202 istatistik/views.py:32
 msgid "Açıklayıcı Faktör Analizi"
 msgstr "Explorative Faktorenanalyse"
 
@@ -5511,7 +5515,7 @@ msgstr "t-Test für abhängige Stichproben"
 #: istatistik/seo_content.py:1131 istatistik/services/mann_whitney.py:61
 #: istatistik/templates/istatistik/mann_whitney.html:14
 #: istatistik/templates/istatistik/mann_whitney.html:110
-#: istatistik/views.py:520 istatistik/views.py:537
+#: istatistik/views.py:532 istatistik/views.py:549
 msgid "Mann-Whitney U Testi"
 msgstr "Mann-Whitney-U-Test"
 
@@ -5593,7 +5597,7 @@ msgstr "ANOVA mit Messwiederholung"
 #: forum/templates/forum/hangi_test.html:481
 #: istatistik/templates/istatistik/wilcoxon.html:5
 #: istatistik/templates/istatistik/wilcoxon.html:15 istatistik/views.py:43
-#: istatistik/views.py:852 istatistik/views.py:869
+#: istatistik/views.py:896 istatistik/views.py:913
 msgid "Wilcoxon İşaret Testi"
 msgstr "Wilcoxon-Vorzeichen-Rang-Test"
 
@@ -5703,7 +5707,7 @@ msgstr "Gemischte ANOVA"
 #: istatistik/seo_content.py:907 istatistik/seo_content.py:1132
 #: istatistik/templates/istatistik/friedman.html:5
 #: istatistik/templates/istatistik/friedman.html:15 istatistik/views.py:44
-#: istatistik/views.py:881 istatistik/views.py:898
+#: istatistik/views.py:925 istatistik/views.py:942
 msgid "Friedman Testi"
 msgstr "Friedman-Test"
 
@@ -5827,7 +5831,7 @@ msgstr "Exakter Fisher-Test"
 #: istatistik/seo_content.py:627 istatistik/seo_content.py:963
 #: istatistik/seo_content.py:1019
 #: istatistik/templates/istatistik/lojistik_regresyon.html:14
-#: istatistik/views.py:49 istatistik/views.py:644 istatistik/views.py:661
+#: istatistik/views.py:49 istatistik/views.py:656 istatistik/views.py:673
 msgid "Lojistik Regresyon"
 msgstr "Logistische Regression"
 
@@ -5866,7 +5870,7 @@ msgstr "Multiple Regression"
 
 #: forum/templates/forum/hangi_test.html:628
 #: istatistik/templates/istatistik/lineer_regresyon.html:14
-#: istatistik/views.py:48 istatistik/views.py:613 istatistik/views.py:630
+#: istatistik/views.py:48 istatistik/views.py:625 istatistik/views.py:642
 msgid "Çoklu Doğrusal Regresyon"
 msgstr "Multiple lineare Regression"
 
@@ -5988,8 +5992,8 @@ msgid "Madde Analizi"
 msgstr "Itemanalyse"
 
 #: forum/templates/forum/hangi_test.html:692
-#: istatistik/templates/istatistik/afa.html:5 istatistik/views.py:814
-#: istatistik/views.py:831
+#: istatistik/templates/istatistik/afa.html:5 istatistik/views.py:858
+#: istatistik/views.py:875
 msgid "Açıklayıcı Faktör Analizi (AFA)"
 msgstr "Explorative Faktorenanalyse (EFA)"
 
@@ -6087,7 +6091,7 @@ msgstr "p > 0.05 → die Normalverteilungsannahme kann nicht abgelehnt werden"
 msgid "Betimsel İstatistik"
 msgstr "Deskriptive Statistik"
 
-#: forum/templates/forum/hangi_test.html:733 istatistik/views.py:152
+#: forum/templates/forum/hangi_test.html:733 istatistik/views.py:153
 msgid "Q-Q Plot"
 msgstr "Q-Q-Plot"
 
@@ -6125,7 +6129,7 @@ msgstr ""
 #: istatistik/seo_content.py:516 istatistik/seo_content.py:628
 #: istatistik/seo_content.py:1133
 #: istatistik/templates/istatistik/normallik.html:15 istatistik/views.py:27
-#: istatistik/views.py:145 istatistik/views.py:164
+#: istatistik/views.py:146 istatistik/views.py:165
 msgid "Normallik Testi"
 msgstr "Normalitätstest"
 
@@ -7082,6 +7086,7 @@ msgstr "Datei konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut."
 #: istatistik/templates/istatistik/cronbach.html:242
 #: istatistik/templates/istatistik/friedman.html:262
 #: istatistik/templates/istatistik/korelasyon.html:287
+#: istatistik/templates/istatistik/kumeleme.html:265
 #: istatistik/templates/istatistik/normallik.html:223
 #: istatistik/templates/istatistik/orneklem.html:228
 #: istatistik/templates/istatistik/tekrarli_anova.html:262
@@ -7400,6 +7405,7 @@ msgstr "Aktualisieren (letzte Änderung)"
 #: istatistik/templates/istatistik/friedman.html:127
 #: istatistik/templates/istatistik/korelasyon.html:92
 #: istatistik/templates/istatistik/korelasyon.html:145
+#: istatistik/templates/istatistik/kumeleme.html:110
 #: istatistik/templates/istatistik/normallik.html:96
 #: istatistik/templates/istatistik/normallik.html:126
 #: istatistik/templates/istatistik/tekrarli_anova.html:95
@@ -8293,6 +8299,7 @@ msgstr "R-Programmierung"
 #: istatistik/templates/istatistik/ki_kare.html:189
 #: istatistik/templates/istatistik/korelasyon.html:212
 #: istatistik/templates/istatistik/kruskal_wallis.html:188
+#: istatistik/templates/istatistik/kumeleme.html:221
 #: istatistik/templates/istatistik/mann_whitney.html:179
 #: istatistik/templates/istatistik/normallik.html:164
 #: istatistik/templates/istatistik/orneklem.html:182
@@ -9808,7 +9815,7 @@ msgstr "Überwachtes/unüberwachtes Lernen"
 msgid "Eğitim-test ayrımı"
 msgstr "Train-Test-Aufteilung"
 
-#: forum/training_catalog.py:234 istatistik/views.py:651
+#: forum/training_catalog.py:234 istatistik/views.py:663
 msgid "Sınıflandırma"
 msgstr "Klassifikation"
 
@@ -10934,7 +10941,7 @@ msgstr "Erstellt von:"
 msgid "Manuel"
 msgstr ""
 
-#: forum/views.py:2166 istatistik/views.py:31 istatistik/views.py:111
+#: forum/views.py:2166 istatistik/views.py:31 istatistik/views.py:112
 msgid "Cronbach Alpha"
 msgstr "Cronbachs Alpha"
 
@@ -12474,7 +12481,7 @@ msgstr ""
 "gemeinsam betrachtet werden."
 
 #: istatistik/seo_content.py:683 istatistik/seo_content.py:1018
-#: istatistik/views.py:54
+#: istatistik/seo_content.py:1200 istatistik/views.py:54
 msgid "Karar Ağacı"
 msgstr "Entscheidungsbaum"
 
@@ -12927,7 +12934,8 @@ msgstr ""
 "Begrenzen Sie die Parameter max_depth, min_samples_leaf und "
 "min_samples_split. Prüfen Sie die Modellleistung mit Kreuzvalidierung."
 
-#: istatistik/seo_content.py:964 istatistik/views.py:55
+#: istatistik/seo_content.py:964 istatistik/seo_content.py:1201
+#: istatistik/views.py:55
 msgid "Destek Vektör Makinesi"
 msgstr "Support-Vector-Machine"
 
@@ -13203,8 +13211,120 @@ msgstr ""
 "Stichproben teststärker. Ohne Normalverteilung oder bei kleiner Stichprobe "
 "liefert Wilcoxon zuverlässigere Ergebnisse."
 
+#: istatistik/seo_content.py:1139
+msgid ""
+"Kümeleme analizi, gözlemleri önceden belirlenmiş bir etiket olmadan "
+"benzerliklerine göre otomatik olarak gruplara (kümelere) ayıran gözetimsiz "
+"(unsupervised) bir makine öğrenmesi yöntemidir. Pazarlama (müşteri "
+"segmentasyonu), işletme ve eğitim araştırmalarında katılımcı/vaka profilleri"
+" oluşturmak için yaygın olarak kullanılır. K-means ve Hiyerarşik (Ward "
+"bağlantı) olmak üzere iki temel yöntem sunulur."
+msgstr ""
+"Die Clusteranalyse ist ein unüberwachtes maschinelles Lernverfahren, das "
+"Beobachtungen ohne vordefiniertes Label automatisch nach Ähnlichkeit in "
+"Cluster einteilt. Sie wird häufig im Marketing (Kundensegmentierung) sowie "
+"in der Wirtschafts- und Bildungsforschung zur Erstellung von "
+"Teilnehmer-/Fallprofilen eingesetzt. Es werden zwei Hauptmethoden angeboten:"
+" K-means und Hierarchisch (Ward-Verknüpfung)."
+
+#: istatistik/seo_content.py:1148
+msgid ""
+"Veri setinizdeki gözlemleri \"doğal\" gruplara ayırmak, örneğin benzer "
+"davranış/tutum sergileyen katılımcı profilleri çıkarmak istediğinizde "
+"kullanın. Hedef/bağımlı bir değişkeniniz varsa ve önceden bilinen gruplara "
+"göre tahmin yapmak istiyorsanız Karar Ağacı veya SVM gibi gözetimli "
+"(supervised) yöntemler daha uygundur."
+msgstr ""
+"Verwenden Sie dies, wenn Sie die Beobachtungen in Ihrem Datensatz in "
+"\"natürliche\" Gruppen einteilen möchten, zum Beispiel um Teilnehmerprofile "
+"mit ähnlichem Verhalten/ähnlicher Einstellung abzuleiten. Wenn Sie über eine"
+" Ziel-/abhängige Variable verfügen und anhand bereits bekannter Gruppen "
+"Vorhersagen treffen möchten, sind überwachte Verfahren wie Entscheidungsbaum"
+" oder SVM besser geeignet."
+
+#: istatistik/seo_content.py:1156
+msgid ""
+"Değişkenler sayısal/sürekli olmalıdır (en az 2 değişken). Değişkenler farklı"
+" ölçeklerde olsa da analiz öncesi otomatik olarak standartlaştırılır "
+"(StandardScaler), bu nedenle elle ölçekleme gerekmez. K-means küresel/benzer"
+" büyüklükte kümeler varsayar; aykırı değerlere duyarlıdır. Hiyerarşik (Ward)"
+" yöntem daha esnek küme şekillerine izin verir ancak büyük veri setlerinde "
+"(binlerce satır) hesaplama maliyeti yüksektir."
+msgstr ""
+"Die Variablen müssen numerisch/stetig sein (mindestens 2 Variablen). Auch "
+"wenn die Variablen unterschiedliche Skalen haben, werden sie vor der Analyse"
+" automatisch standardisiert (StandardScaler), sodass keine manuelle "
+"Skalierung erforderlich ist. K-means geht von kugelförmigen/ähnlich großen "
+"Clustern aus und reagiert empfindlich auf Ausreißer. Die Hierarchische "
+"(Ward-)Methode erlaubt flexiblere Clusterformen, hat jedoch bei großen "
+"Datensätzen (Tausende von Zeilen) hohe Rechenkosten."
+
+#: istatistik/seo_content.py:1165
+msgid ""
+"Silhouette Skoru: Bir gözlemin kendi kümesine, en yakın diğer kümeye göre ne"
+" kadar iyi uyduğunu ölçer (−1 ile +1 arası); ≥ 0.71 güçlü, 0.51–0.70 makul, "
+"0.26–0.50 zayıf, ≤ 0.25 anlamlı bir küme yapısı bulunamadığını gösterir "
+"(Kaufman & Rousseeuw, 1990). Küme Profili: Her kümenin büyüklüğü ve değişken"
+" ortalamaları, kümelerin hangi özelliklerle ayrıştığını gösterir. Elbow/WCSS"
+" grafiği (K-means): Küme içi hata kareler toplamının küme sayısı arttıkça "
+"azalma hızındaki kırılma noktası, uygun k için bir diğer görsel ipucudur."
+msgstr ""
+"Silhouetten-Score: Misst, wie gut eine Beobachtung zu ihrem eigenen Cluster "
+"passt im Vergleich zum nächstgelegenen anderen Cluster (Bereich −1 bis +1); "
+"≥ 0,71 steht für eine starke, 0,51–0,70 für eine angemessene, 0,26–0,50 für "
+"eine schwache und ≤ 0,25 für keine wesentliche Clusterstruktur (Kaufman & "
+"Rousseeuw, 1990). Clusterprofil: Die Größe jedes Clusters und die "
+"Variablenmittelwerte zeigen, durch welche Merkmale sich die Cluster "
+"unterscheiden. Elbow-/WCSS-Diagramm (K-means): Der Knickpunkt in der "
+"Abnahmerate der Fehlerquadratsumme innerhalb der Cluster bei steigender "
+"Clusteranzahl ist ein weiterer visueller Hinweis zur Wahl eines geeigneten "
+"k."
+
+#: istatistik/seo_content.py:1176
+msgid ""
+"K-means kümeleme analizi sonucunda silhouette katsayısına göre en uygun küme"
+" sayısı k = 3 olarak belirlenmiştir (silhouette = .58), bu değer makul "
+"düzeyde bir küme yapısına işaret etmektedir."
+msgstr ""
+"Im Rahmen einer K-means-Clusteranalyse wurde anhand des Silhouetten-"
+"Koeffizienten die optimale Clusteranzahl mit k = 3 bestimmt (Silhouette = "
+".58), was auf eine angemessene Clusterstruktur hinweist."
+
+#: istatistik/seo_content.py:1183
+msgid "K-means mi, Hiyerarşik kümeleme mi seçmeliyim?"
+msgstr "Sollte ich K-means oder hierarchisches Clustering wählen?"
+
+#: istatistik/seo_content.py:1184
+msgid ""
+"K-means büyük veri setlerinde hızlıdır ve küme sayısını önceden "
+"belirlemenizi gerektirir (otomatik öneri de sunulur). Hiyerarşik (Ward) "
+"yöntem dendrogram ile kümelerin iç içe yapısını görsel olarak sunar, "
+"küçük/orta büyüklükteki veri setlerinde (birkaç bin satırın altında) tercih "
+"edilir."
+msgstr ""
+"K-means ist bei großen Datensätzen schnell und erfordert die vorherige "
+"Festlegung der Clusteranzahl (ein automatischer Vorschlag wird ebenfalls "
+"bereitgestellt). Die Hierarchische (Ward-)Methode stellt die verschachtelte "
+"Struktur der Cluster visuell mit einem Dendrogramm dar und wird für "
+"kleine/mittlere Datensätze (unter einigen tausend Zeilen) bevorzugt."
+
+#: istatistik/seo_content.py:1192
+msgid "Küme sayısını (k) kendim mi belirlemeliyim?"
+msgstr "Sollte ich die Anzahl der Cluster (k) selbst bestimmen?"
+
+#: istatistik/seo_content.py:1193
+msgid ""
+"Alanı boş bırakırsanız k=2 ile 10 arasında silhouette skoruna göre en iyi k "
+"otomatik seçilir. Teorik bir beklentiniz varsa (örn. literatürde bilinen 3 "
+"segment) k değerini elle de girebilirsiniz."
+msgstr ""
+"Wenn Sie das Feld leer lassen, wird anhand des Silhouetten-Scores "
+"automatisch das beste k zwischen 2 und 10 ausgewählt. Wenn Sie eine "
+"theoretische Erwartung haben (z. B. 3 aus der Literatur bekannte Segmente), "
+"können Sie den k-Wert auch manuell eingeben."
+
 #: istatistik/services/afa.py:39 istatistik/services/cronbach.py:15
-#: istatistik/services/normallik.py:18
+#: istatistik/services/kumeleme.py:30 istatistik/services/normallik.py:18
 msgid "Seçilen sütunlar sayısal değil veya bulunamadı."
 msgstr ""
 "Die ausgewählten Spalten sind nicht numerisch oder wurden nicht gefunden."
@@ -13335,6 +13455,7 @@ msgstr "Bericht zur explorativen Faktorenanalyse"
 #: istatistik/services/friedman.py:119 istatistik/services/karar_agaci.py:157
 #: istatistik/services/ki_kare.py:157 istatistik/services/korelasyon.py:162
 #: istatistik/services/kruskal_wallis.py:161
+#: istatistik/services/kumeleme.py:234
 #: istatistik/services/lineer_regresyon.py:149
 #: istatistik/services/lojistik_regresyon.py:180
 #: istatistik/services/mann_whitney.py:123
@@ -13397,7 +13518,7 @@ msgid "Communality"
 msgstr "Kommunalität"
 
 #: istatistik/services/afa.py:357 istatistik/templates/istatistik/afa.html:181
-#: istatistik/templates/istatistik/afa.html:208 istatistik/views.py:821
+#: istatistik/templates/istatistik/afa.html:208 istatistik/views.py:865
 msgid "Açıklanan Varyans"
 msgstr "Erklärte Varianz"
 
@@ -13414,6 +13535,7 @@ msgstr "Kumulativ %"
 #: istatistik/services/friedman.py:201 istatistik/services/karar_agaci.py:247
 #: istatistik/services/ki_kare.py:275 istatistik/services/korelasyon.py:256
 #: istatistik/services/kruskal_wallis.py:252
+#: istatistik/services/kumeleme.py:324
 #: istatistik/services/lineer_regresyon.py:224
 #: istatistik/services/lojistik_regresyon.py:289
 #: istatistik/services/mann_whitney.py:178
@@ -13430,6 +13552,7 @@ msgstr "Kumulativ %"
 #: istatistik/templates/istatistik/ki_kare.html:161
 #: istatistik/templates/istatistik/korelasyon.html:242
 #: istatistik/templates/istatistik/kruskal_wallis.html:160
+#: istatistik/templates/istatistik/kumeleme.html:188
 #: istatistik/templates/istatistik/lineer_regresyon.html:175
 #: istatistik/templates/istatistik/lojistik_regresyon.html:191
 #: istatistik/templates/istatistik/mann_whitney.html:151
@@ -13612,9 +13735,9 @@ msgstr "Eta-Quadrat (η²)"
 #: istatistik/templates/istatistik/orneklem.html:53
 #: istatistik/templates/istatistik/orneklem.html:153
 #: istatistik/templates/istatistik/tekrarli_anova.html:157
-#: istatistik/templates/istatistik/ttesti.html:350 istatistik/views.py:283
-#: istatistik/views.py:313 istatistik/views.py:527 istatistik/views.py:558
-#: istatistik/views.py:858
+#: istatistik/templates/istatistik/ttesti.html:350 istatistik/views.py:284
+#: istatistik/views.py:314 istatistik/views.py:539 istatistik/views.py:570
+#: istatistik/views.py:902
 msgid "Etki Büyüklüğü"
 msgstr "Effektstärke"
 
@@ -13716,6 +13839,7 @@ msgstr "Nein"
 #: istatistik/services/tekrarli_anova.py:247 istatistik/services/ttesti.py:344
 #: istatistik/services/wilcoxon.py:187
 #: istatistik/templates/istatistik/cronbach.html:147
+#: istatistik/templates/istatistik/kumeleme.html:145
 #: istatistik/templates/istatistik/orneklem.html:161
 msgid "Yorum"
 msgstr "Interpretation"
@@ -13769,8 +13893,8 @@ msgid "Çarpıklık: %(s)s · Basıklık: %(k)s"
 msgstr "Schiefe: %(s)s · Wölbung: %(k)s"
 
 #: istatistik/services/betimsel.py:126
-#: istatistik/templates/istatistik/betimsel.html:15 istatistik/views.py:185
-#: istatistik/views.py:204
+#: istatistik/templates/istatistik/betimsel.html:15 istatistik/views.py:186
+#: istatistik/views.py:205
 msgid "Betimleyici İstatistik Raporu"
 msgstr "Bericht zur deskriptiven Statistik"
 
@@ -13922,7 +14046,7 @@ msgstr "Exzellent (α ≥ 0.90)"
 msgid "Güvenilirlik Analizi Raporu"
 msgstr "Bericht zur Reliabilitätsanalyse"
 
-#: istatistik/services/cronbach.py:158 istatistik/views.py:112
+#: istatistik/services/cronbach.py:158 istatistik/views.py:113
 msgid "Madde İstatistikleri"
 msgstr "Itemstatistiken"
 
@@ -14087,7 +14211,7 @@ msgstr "χ²-Statistik"
 msgid "Serbestlik derecesi (df)"
 msgstr "Freiheitsgrade (df)"
 
-#: istatistik/services/friedman.py:153 istatistik/views.py:887
+#: istatistik/services/friedman.py:153 istatistik/views.py:931
 msgid "Kendall's W"
 msgstr "Kendalls W"
 
@@ -14154,27 +14278,27 @@ msgstr ""
 msgid "Dosya içeriği bulunamadı. Lütfen tekrar yükleyin."
 msgstr "Dateiinhalt nicht gefunden. Bitte laden Sie die Datei erneut hoch."
 
-#: istatistik/services/job_runner.py:252
+#: istatistik/services/job_runner.py:261
 #, python-format
 msgid "Bilinmeyen araç: %(tool)s"
 msgstr "Unbekanntes Tool: %(tool)s"
 
-#: istatistik/services/job_runner.py:275
+#: istatistik/services/job_runner.py:284
 #, python-format
 msgid "Analiz sırasında hata oluştu: %(error)s"
 msgstr "Bei der Analyse ist ein Fehler aufgetreten: %(error)s"
 
-#: istatistik/services/job_runner.py:290
+#: istatistik/services/job_runner.py:299
 msgid "Desteklenmeyen dosya formatı. CSV veya Excel yükleyin."
 msgstr ""
 "Nicht unterstütztes Dateiformat. Bitte laden Sie eine CSV- oder Excel-Datei "
 "hoch."
 
-#: istatistik/services/job_runner.py:293
+#: istatistik/services/job_runner.py:302
 msgid "Dosya boş veya okunamadı."
 msgstr "Die Datei ist leer oder konnte nicht gelesen werden."
 
-#: istatistik/services/job_runner.py:295
+#: istatistik/services/job_runner.py:304
 #, python-format
 msgid "En az 5 satır (katılımcı/gözlem) gereklidir, %(count)s satır bulundu."
 msgstr ""
@@ -14234,7 +14358,7 @@ msgstr ""
 msgid "Karar Ağacı Sınıflandırma Raporu"
 msgstr "Bericht zur Entscheidungsbaum-Klassifikation"
 
-#: istatistik/services/karar_agaci.py:160
+#: istatistik/services/karar_agaci.py:160 istatistik/services/kumeleme.py:237
 #: istatistik/services/lineer_regresyon.py:153
 #: istatistik/services/lojistik_regresyon.py:184
 #: istatistik/services/mediation.py:171 istatistik/services/moderation.py:197
@@ -14316,7 +14440,7 @@ msgid "Gerçek"
 msgstr "Tatsächlich"
 
 #: istatistik/services/karar_agaci.py:207 istatistik/services/svm.py:221
-#: istatistik/views.py:759 istatistik/views.py:790
+#: istatistik/views.py:771 istatistik/views.py:802
 msgid "Confusion Matrix"
 msgstr "Konfusionsmatrix"
 
@@ -14480,7 +14604,7 @@ msgstr "Variable 1"
 msgid "Değişken 2"
 msgstr "Variable 2"
 
-#: istatistik/services/ki_kare.py:163 istatistik/views.py:589
+#: istatistik/services/ki_kare.py:163 istatistik/views.py:601
 msgid "Cramér's V"
 msgstr "Cramérs V"
 
@@ -14512,7 +14636,7 @@ msgstr "nicht signifikant"
 msgid "Fisher's Exact Test (2×2 tablo)"
 msgstr "Exakter Test nach Fisher (2×2-Tabelle)"
 
-#: istatistik/services/ki_kare.py:211 istatistik/views.py:650
+#: istatistik/services/ki_kare.py:211 istatistik/views.py:662
 msgid "Odds Ratio"
 msgstr "Odds Ratio"
 
@@ -14616,9 +14740,10 @@ msgstr "%(method)s-Korrelationsmatrix"
 msgid "Korelasyon Matrisi Raporu"
 msgstr "Bericht zur Korrelationsmatrix"
 
-#: istatistik/services/korelasyon.py:166
+#: istatistik/services/korelasyon.py:166 istatistik/services/kumeleme.py:239
 #: istatistik/templates/istatistik/korelasyon.html:173
 #: istatistik/templates/istatistik/korelasyon.html:219
+#: istatistik/templates/istatistik/kumeleme.html:93
 msgid "Yöntem"
 msgstr "Methode"
 
@@ -14677,7 +14802,7 @@ msgstr ""
 #: istatistik/services/kruskal_wallis.py:101
 #: istatistik/templates/istatistik/kruskal_wallis.html:14
 #: istatistik/templates/istatistik/kruskal_wallis.html:110
-#: istatistik/views.py:551 istatistik/views.py:568
+#: istatistik/views.py:563 istatistik/views.py:580
 msgid "Kruskal-Wallis H Testi"
 msgstr "Kruskal-Wallis-H-Test"
 
@@ -14741,6 +14866,164 @@ msgid ""
 msgstr ""
 "Ein Kruskal-Wallis-H-Test ergab keinen signifikanten Unterschied in {dep} "
 "zwischen den Gruppen von {group}, H({df}) = {h}, {p}, η² = {eta} ({effect})."
+
+#: istatistik/services/kumeleme.py:38
+#: istatistik/templates/istatistik/kumeleme.html:69
+msgid "En az 2 sayısal değişken seçilmelidir."
+msgstr "Es müssen mindestens 2 numerische Variablen ausgewählt werden."
+
+#: istatistik/services/kumeleme.py:40
+#, python-format
+msgid "En az 20 gözlem (satır) gereklidir, %(n)s satır bulundu."
+msgstr ""
+"Es sind mindestens 20 Beobachtungen (Zeilen) erforderlich; %(n)s gefunden."
+
+#: istatistik/services/kumeleme.py:55
+msgid "Kümeleme için yetersiz gözlem sayısı."
+msgstr "Unzureichende Anzahl an Beobachtungen für die Clusteranalyse."
+
+#: istatistik/services/kumeleme.py:85
+#, python-format
+msgid "Küme sayısı 2 ile %(max_k)s arasında olmalıdır."
+msgstr "Die Anzahl der Cluster muss zwischen 2 und %(max_k)s liegen."
+
+#: istatistik/services/kumeleme.py:105
+#: istatistik/templates/istatistik/kumeleme.html:95
+#: istatistik/templates/istatistik/kumeleme.html:274
+msgid "K-means"
+msgstr "K-means"
+
+#: istatistik/services/kumeleme.py:105
+#: istatistik/templates/istatistik/kumeleme.html:96
+#: istatistik/templates/istatistik/kumeleme.html:275
+msgid "Hiyerarşik (Ward)"
+msgstr "Hierarchisch (Ward)"
+
+#: istatistik/services/kumeleme.py:127
+msgid "Güçlü küme yapısı (≥ 0.71)"
+msgstr "Starke Clusterstruktur (≥ 0.71)"
+
+#: istatistik/services/kumeleme.py:129
+msgid "Makul küme yapısı (0.51–0.70)"
+msgstr "Angemessene Clusterstruktur (0.51–0.70)"
+
+#: istatistik/services/kumeleme.py:131
+msgid "Zayıf küme yapısı (0.26–0.50)"
+msgstr "Schwache Clusterstruktur (0.26–0.50)"
+
+#: istatistik/services/kumeleme.py:132
+msgid "Anlamlı küme yapısı bulunamadı (≤ 0.25)"
+msgstr "Keine wesentliche Clusterstruktur gefunden (≤ 0.25)"
+
+#: istatistik/services/kumeleme.py:145
+msgid "Küme İçi Hata Kareler Toplamı (WCSS)"
+msgstr "Fehlerquadratsumme innerhalb der Cluster (WCSS)"
+
+#: istatistik/services/kumeleme.py:146 istatistik/services/kumeleme.py:242
+#: istatistik/templates/istatistik/kumeleme.html:100
+#: istatistik/templates/istatistik/kumeleme.html:153
+msgid "Küme Sayısı (k)"
+msgstr "Anzahl der Cluster (k)"
+
+#: istatistik/services/kumeleme.py:147 istatistik/services/kumeleme.py:259
+#: istatistik/templates/istatistik/kumeleme.html:280
+msgid "WCSS"
+msgstr "WCSS"
+
+#: istatistik/services/kumeleme.py:151 istatistik/services/kumeleme.py:152
+#: istatistik/services/kumeleme.py:243
+#: istatistik/templates/istatistik/kumeleme.html:139
+msgid "Silhouette Skoru"
+msgstr "Silhouetten-Score"
+
+#: istatistik/services/kumeleme.py:160
+msgid "Gözlem Kümeleri (parantez: eleman sayısı)"
+msgstr "Beobachtungscluster (in Klammern: Elementanzahl)"
+
+#: istatistik/services/kumeleme.py:161
+msgid "Bağlantı Mesafesi (Ward)"
+msgstr "Verknüpfungsdistanz (Ward)"
+
+#: istatistik/services/kumeleme.py:194
+#, python-format
+msgid "Küme %(c)s"
+msgstr "Cluster %(c)s"
+
+#: istatistik/services/kumeleme.py:197
+msgid "Merkezler"
+msgstr "Zentren"
+
+#: istatistik/services/kumeleme.py:233
+msgid "Kümeleme Analizi Raporu"
+msgstr "Clusteranalyse-Bericht"
+
+#: istatistik/services/kumeleme.py:240
+msgid "Değişkenler"
+msgstr "Variablen"
+
+#: istatistik/services/kumeleme.py:241
+msgid "(örneklenmiş)"
+msgstr "(Stichprobe)"
+
+#: istatistik/services/kumeleme.py:242
+msgid " (elle seçildi)"
+msgstr " (manuell ausgewählt)"
+
+#: istatistik/services/kumeleme.py:242
+msgid " (otomatik seçildi)"
+msgstr " (automatisch ausgewählt)"
+
+#: istatistik/services/kumeleme.py:258
+msgid "Küme Sayısı (k) Seçim Diyagnostiği"
+msgstr "Diagnostik zur Auswahl der Clusteranzahl (k)"
+
+#: istatistik/services/kumeleme.py:259
+#: istatistik/templates/istatistik/kumeleme.html:278
+msgid "k"
+msgstr "k"
+
+#: istatistik/services/kumeleme.py:259
+#: istatistik/templates/istatistik/kumeleme.html:279
+msgid "Silhouette"
+msgstr "Silhouette"
+
+#: istatistik/services/kumeleme.py:286
+#: istatistik/templates/istatistik/kumeleme.html:182 istatistik/views.py:834
+msgid "Küme Profili"
+msgstr "Clusterprofil"
+
+#: istatistik/services/kumeleme.py:287
+#: istatistik/templates/istatistik/kumeleme.html:281
+msgid "Küme"
+msgstr "Cluster"
+
+#: istatistik/services/kumeleme.py:313
+#: istatistik/templates/istatistik/kumeleme.html:175
+msgid "Küme Dağılım Grafiği"
+msgstr "Cluster-Streudiagramm"
+
+#: istatistik/services/kumeleme.py:316
+#: istatistik/templates/istatistik/kumeleme.html:176
+msgid ""
+"İkiden fazla değişken seçildiği için gösterim PCA (Temel Bileşenler Analizi)"
+" ile 2 boyuta indirgenmiştir."
+msgstr ""
+"Da mehr als zwei Variablen ausgewählt wurden, wurde die Darstellung mittels "
+"PCA (Hauptkomponentenanalyse) auf 2 Dimensionen reduziert."
+
+#: istatistik/services/kumeleme.py:326
+#: istatistik/templates/istatistik/kumeleme.html:285
+#, python-brace-format
+msgid ""
+"{n} gözlem üzerinde {n_vars} değişken ({cols}) kullanılarak {method} "
+"kümeleme analizi uygulanmıştır. Silhouette katsayısına göre en uygun küme "
+"sayısı k = {k} olarak belirlenmiş (silhouette katsayısı = {sil}), bu değer "
+"{interp} düzeyinde bir küme yapısına işaret etmektedir."
+msgstr ""
+"Bei {n} Beobachtungen wurde mit {n_vars} Variablen ({cols}) eine "
+"{method}-Clusteranalyse durchgeführt. Anhand des Silhouetten-Koeffizienten "
+"wurde die optimale Clusteranzahl mit k = {k} bestimmt (Silhouetten-"
+"Koeffizient = {sil}), was auf eine {interp} Clusterstruktur hinweist."
 
 #: istatistik/services/lineer_regresyon.py:16
 #: istatistik/services/lojistik_regresyon.py:17
@@ -15388,7 +15671,7 @@ msgid "b3 (Etkileşim: X×W)"
 msgstr "b3 (Interaktion: X×W)"
 
 #: istatistik/services/moderation.py:244
-#: istatistik/templates/istatistik/moderation.html:176 istatistik/views.py:719
+#: istatistik/templates/istatistik/moderation.html:176 istatistik/views.py:731
 msgid "Basit Eğimler (Simple Slopes)"
 msgstr "Simple Slopes (einfache Steigungen)"
 
@@ -15403,7 +15686,7 @@ msgid "X Etkisi"
 msgstr "Effekt von X"
 
 #: istatistik/services/moderation.py:268
-#: istatistik/templates/istatistik/moderation.html:195 istatistik/views.py:720
+#: istatistik/templates/istatistik/moderation.html:195 istatistik/views.py:732
 msgid "Etkileşim Grafiği"
 msgstr "Interaktionsdiagramm"
 
@@ -16127,6 +16410,7 @@ msgstr ""
 #: istatistik/templates/istatistik/ki_kare.html:20
 #: istatistik/templates/istatistik/korelasyon.html:21
 #: istatistik/templates/istatistik/kruskal_wallis.html:20
+#: istatistik/templates/istatistik/kumeleme.html:21
 #: istatistik/templates/istatistik/lineer_regresyon.html:20
 #: istatistik/templates/istatistik/lojistik_regresyon.html:20
 #: istatistik/templates/istatistik/mann_whitney.html:20
@@ -16150,6 +16434,7 @@ msgstr "Heute: noch %(daily_remaining)s Analysen"
 #: istatistik/templates/istatistik/ki_kare.html:33
 #: istatistik/templates/istatistik/korelasyon.html:34
 #: istatistik/templates/istatistik/kruskal_wallis.html:33
+#: istatistik/templates/istatistik/kumeleme.html:34
 #: istatistik/templates/istatistik/lineer_regresyon.html:35
 #: istatistik/templates/istatistik/lojistik_regresyon.html:35
 #: istatistik/templates/istatistik/mann_whitney.html:33
@@ -16168,6 +16453,7 @@ msgstr "Datei hochladen"
 #: istatistik/templates/istatistik/cronbach.html:36
 #: istatistik/templates/istatistik/friedman.html:36
 #: istatistik/templates/istatistik/korelasyon.html:36
+#: istatistik/templates/istatistik/kumeleme.html:36
 #: istatistik/templates/istatistik/normallik.html:36
 #: istatistik/templates/istatistik/tekrarli_anova.html:36
 #: istatistik/templates/istatistik/wilcoxon.html:36
@@ -16179,6 +16465,7 @@ msgstr "Laden Sie Ihre CSV- oder Excel-Datei (.xlsx/.xls) hoch."
 #: istatistik/templates/istatistik/cronbach.html:41
 #: istatistik/templates/istatistik/friedman.html:41
 #: istatistik/templates/istatistik/korelasyon.html:41
+#: istatistik/templates/istatistik/kumeleme.html:41
 #: istatistik/templates/istatistik/normallik.html:41
 #: istatistik/templates/istatistik/tekrarli_anova.html:41
 #: istatistik/templates/istatistik/ttesti.html:204
@@ -16191,6 +16478,7 @@ msgstr "Melden Sie sich an"
 #: istatistik/templates/istatistik/cronbach.html:41
 #: istatistik/templates/istatistik/friedman.html:41
 #: istatistik/templates/istatistik/korelasyon.html:41
+#: istatistik/templates/istatistik/kumeleme.html:41
 #: istatistik/templates/istatistik/normallik.html:41
 #: istatistik/templates/istatistik/tekrarli_anova.html:41
 #: istatistik/templates/istatistik/ttesti.html:204
@@ -16203,6 +16491,7 @@ msgstr "oder"
 #: istatistik/templates/istatistik/cronbach.html:41
 #: istatistik/templates/istatistik/friedman.html:41
 #: istatistik/templates/istatistik/korelasyon.html:41
+#: istatistik/templates/istatistik/kumeleme.html:41
 #: istatistik/templates/istatistik/normallik.html:41
 #: istatistik/templates/istatistik/tekrarli_anova.html:41
 #: istatistik/templates/istatistik/ttesti.html:204
@@ -16215,6 +16504,7 @@ msgstr "registrieren Sie sich"
 #: istatistik/templates/istatistik/cronbach.html:41
 #: istatistik/templates/istatistik/friedman.html:41
 #: istatistik/templates/istatistik/korelasyon.html:41
+#: istatistik/templates/istatistik/kumeleme.html:41
 #: istatistik/templates/istatistik/normallik.html:41
 #: istatistik/templates/istatistik/tekrarli_anova.html:41
 #: istatistik/templates/istatistik/wilcoxon.html:41
@@ -16226,6 +16516,7 @@ msgstr "— damit Ihr Verlauf gespeichert wird."
 #: istatistik/templates/istatistik/cronbach.html:47
 #: istatistik/templates/istatistik/friedman.html:47
 #: istatistik/templates/istatistik/korelasyon.html:49
+#: istatistik/templates/istatistik/kumeleme.html:47
 #: istatistik/templates/istatistik/normallik.html:47
 #: istatistik/templates/istatistik/tekrarli_anova.html:47
 #: istatistik/templates/istatistik/ttesti.html:210
@@ -16251,6 +16542,8 @@ msgstr "Datei hierher ziehen oder klicken"
 #: istatistik/templates/istatistik/korelasyon.html:281
 #: istatistik/templates/istatistik/kruskal_wallis.html:40
 #: istatistik/templates/istatistik/kruskal_wallis.html:224
+#: istatistik/templates/istatistik/kumeleme.html:48
+#: istatistik/templates/istatistik/kumeleme.html:262
 #: istatistik/templates/istatistik/lineer_regresyon.html:42
 #: istatistik/templates/istatistik/lineer_regresyon.html:203
 #: istatistik/templates/istatistik/lojistik_regresyon.html:42
@@ -16286,6 +16579,7 @@ msgstr "CSV, XLSX, XLS — max. %(mb)s MB"
 #: istatistik/templates/istatistik/ki_kare.html:230
 #: istatistik/templates/istatistik/kruskal_wallis.html:44
 #: istatistik/templates/istatistik/kruskal_wallis.html:229
+#: istatistik/templates/istatistik/kumeleme.html:54
 #: istatistik/templates/istatistik/lineer_regresyon.html:46
 #: istatistik/templates/istatistik/lojistik_regresyon.html:46
 #: istatistik/templates/istatistik/mann_whitney.html:44
@@ -16310,6 +16604,7 @@ msgstr "Spalten laden"
 #: istatistik/templates/istatistik/ki_kare.html:85
 #: istatistik/templates/istatistik/korelasyon.html:105
 #: istatistik/templates/istatistik/kruskal_wallis.html:85
+#: istatistik/templates/istatistik/kumeleme.html:66
 #: istatistik/templates/istatistik/lineer_regresyon.html:97
 #: istatistik/templates/istatistik/lojistik_regresyon.html:104
 #: istatistik/templates/istatistik/mann_whitney.html:85
@@ -16332,7 +16627,7 @@ msgstr "Jede Spalte muss ein Skalen-Item (Frage) sein."
 #: istatistik/templates/istatistik/cronbach.html:69
 #: istatistik/templates/istatistik/friedman.html:69
 #: istatistik/templates/istatistik/tekrarli_anova.html:69
-#: istatistik/templates/istatistik/wilcoxon.html:69 istatistik/views.py:130
+#: istatistik/templates/istatistik/wilcoxon.html:69 istatistik/views.py:131
 msgid "Her satır bir katılımcıyı temsil etmelidir."
 msgstr "Jede Zeile muss eine teilnehmende Person darstellen."
 
@@ -16373,6 +16668,8 @@ msgstr "0 Items ausgewählt"
 #: istatistik/templates/istatistik/friedman.html:265
 #: istatistik/templates/istatistik/korelasyon.html:81
 #: istatistik/templates/istatistik/korelasyon.html:290
+#: istatistik/templates/istatistik/kumeleme.html:85
+#: istatistik/templates/istatistik/kumeleme.html:268
 #: istatistik/templates/istatistik/normallik.html:84
 #: istatistik/templates/istatistik/normallik.html:226
 #: istatistik/templates/istatistik/tekrarli_anova.html:84
@@ -16402,6 +16699,7 @@ msgid "Faktör Sayısı"
 msgstr "Anzahl der Faktoren"
 
 #: istatistik/templates/istatistik/afa.html:101
+#: istatistik/templates/istatistik/kumeleme.html:100
 msgid "(boş = otomatik)"
 msgstr "(leer = automatisch)"
 
@@ -16417,6 +16715,7 @@ msgstr "Faktorenanalyse läuft, bitte warten…"
 #: istatistik/templates/istatistik/ki_kare.html:104
 #: istatistik/templates/istatistik/korelasyon.html:127
 #: istatistik/templates/istatistik/kruskal_wallis.html:104
+#: istatistik/templates/istatistik/kumeleme.html:125
 #: istatistik/templates/istatistik/mann_whitney.html:104
 #: istatistik/templates/istatistik/normallik.html:111
 #: istatistik/templates/istatistik/tekrarli_anova.html:110
@@ -16487,6 +16786,7 @@ msgstr "Teilnehmende"
 #: istatistik/templates/istatistik/ki_kare.html:171
 #: istatistik/templates/istatistik/korelasyon.html:196
 #: istatistik/templates/istatistik/kruskal_wallis.html:170
+#: istatistik/templates/istatistik/kumeleme.html:205
 #: istatistik/templates/istatistik/lineer_regresyon.html:126
 #: istatistik/templates/istatistik/lojistik_regresyon.html:134
 #: istatistik/templates/istatistik/mann_whitney.html:161
@@ -16506,6 +16806,7 @@ msgstr "PDF herunterladen"
 #: istatistik/templates/istatistik/cronbach.html:161
 #: istatistik/templates/istatistik/friedman.html:186
 #: istatistik/templates/istatistik/korelasyon.html:199
+#: istatistik/templates/istatistik/kumeleme.html:208
 #: istatistik/templates/istatistik/normallik.html:151
 #: istatistik/templates/istatistik/tekrarli_anova.html:186
 #: istatistik/templates/istatistik/wilcoxon.html:164
@@ -16515,6 +16816,7 @@ msgstr "Neue Analyse"
 #: istatistik/templates/istatistik/afa.html:238
 #: istatistik/templates/istatistik/cronbach.html:179
 #: istatistik/templates/istatistik/friedman.html:203
+#: istatistik/templates/istatistik/kumeleme.html:226
 #: istatistik/templates/istatistik/tekrarli_anova.html:203
 #: istatistik/templates/istatistik/wilcoxon.html:182
 msgid "Yöntem &amp; Varsayımlar"
@@ -16596,6 +16898,7 @@ msgstr "Ausgezeichnet"
 #: istatistik/templates/istatistik/ki_kare.html:174
 #: istatistik/templates/istatistik/korelasyon.html:251
 #: istatistik/templates/istatistik/kruskal_wallis.html:173
+#: istatistik/templates/istatistik/kumeleme.html:197
 #: istatistik/templates/istatistik/lineer_regresyon.html:183
 #: istatistik/templates/istatistik/lojistik_regresyon.html:199
 #: istatistik/templates/istatistik/mann_whitney.html:164
@@ -16630,6 +16933,7 @@ msgstr ""
 #: istatistik/templates/istatistik/cronbach.html:223
 #: istatistik/templates/istatistik/friedman.html:243
 #: istatistik/templates/istatistik/korelasyon.html:264
+#: istatistik/templates/istatistik/kumeleme.html:246
 #: istatistik/templates/istatistik/normallik.html:203
 #: istatistik/templates/istatistik/tekrarli_anova.html:243
 #: istatistik/templates/istatistik/wilcoxon.html:223
@@ -16697,6 +17001,7 @@ msgstr " Items ausgewählt"
 #: istatistik/templates/istatistik/cronbach.html:244
 #: istatistik/templates/istatistik/friedman.html:264
 #: istatistik/templates/istatistik/korelasyon.html:289
+#: istatistik/templates/istatistik/kumeleme.html:267
 #: istatistik/templates/istatistik/normallik.html:225
 #: istatistik/templates/istatistik/tekrarli_anova.html:264
 msgid "Tümünü Kaldır"
@@ -16707,6 +17012,7 @@ msgstr "Alle abwählen"
 #: istatistik/templates/istatistik/cronbach.html:247
 #: istatistik/templates/istatistik/friedman.html:268
 #: istatistik/templates/istatistik/korelasyon.html:292
+#: istatistik/templates/istatistik/kumeleme.html:270
 #: istatistik/templates/istatistik/normallik.html:228
 #: istatistik/templates/istatistik/tekrarli_anova.html:268
 #: istatistik/templates/istatistik/wilcoxon.html:245
@@ -16718,6 +17024,7 @@ msgstr "Heute: "
 #: istatistik/templates/istatistik/cronbach.html:248
 #: istatistik/templates/istatistik/friedman.html:269
 #: istatistik/templates/istatistik/korelasyon.html:293
+#: istatistik/templates/istatistik/kumeleme.html:271
 #: istatistik/templates/istatistik/normallik.html:229
 #: istatistik/templates/istatistik/tekrarli_anova.html:269
 #: istatistik/templates/istatistik/wilcoxon.html:246
@@ -16739,6 +17046,7 @@ msgstr " Teilnehmende"
 #: istatistik/templates/istatistik/ki_kare.html:237
 #: istatistik/templates/istatistik/korelasyon.html:294
 #: istatistik/templates/istatistik/kruskal_wallis.html:235
+#: istatistik/templates/istatistik/kumeleme.html:272
 #: istatistik/templates/istatistik/lineer_regresyon.html:216
 #: istatistik/templates/istatistik/lojistik_regresyon.html:231
 #: istatistik/templates/istatistik/mann_whitney.html:226
@@ -16761,6 +17069,7 @@ msgstr "{n} Items"
 
 #: istatistik/templates/istatistik/afa.html:312
 #: istatistik/templates/istatistik/karar_agaci.html:267
+#: istatistik/templates/istatistik/kumeleme.html:273
 #: istatistik/templates/istatistik/lineer_regresyon.html:218
 #: istatistik/templates/istatistik/lojistik_regresyon.html:233
 #: istatistik/templates/istatistik/svm.html:270
@@ -17009,7 +17318,7 @@ msgstr "Unterstützt werden mindestens 2 und höchstens 20 Gruppen."
 msgid "Analiz yapılıyor…"
 msgstr "Analyse läuft…"
 
-#: istatistik/templates/istatistik/anova.html:153 istatistik/views.py:312
+#: istatistik/templates/istatistik/anova.html:153 istatistik/views.py:313
 msgid "Post-Hoc Testler"
 msgstr "Post-hoc-Tests"
 
@@ -17044,7 +17353,7 @@ msgstr "Varianzhomogenität (mit dem Levene-Test berichtet)"
 
 #: istatistik/templates/istatistik/anova.html:205
 #: istatistik/templates/istatistik/kruskal_wallis.html:200
-#: istatistik/views.py:916
+#: istatistik/views.py:960
 msgid "Etki Büyüklüğü (η²)"
 msgstr "Effektstärke (η²)"
 
@@ -17217,6 +17526,7 @@ msgstr "Alle Ergebnisse können als PDF-Bericht heruntergeladen werden."
 
 #: istatistik/templates/istatistik/betimsel.html:78
 #: istatistik/templates/istatistik/karar_agaci.html:55
+#: istatistik/templates/istatistik/kumeleme.html:79
 #: istatistik/templates/istatistik/lineer_regresyon.html:55
 #: istatistik/templates/istatistik/lojistik_regresyon.html:55
 #: istatistik/templates/istatistik/mediation.html:55
@@ -17231,6 +17541,7 @@ msgid "Raporlanacak sütunları seçin (sayısal ve kategorik)."
 msgstr "Wählen Sie die zu berichtenden Spalten (numerisch und kategorial)."
 
 #: istatistik/templates/istatistik/betimsel.html:82
+#: istatistik/templates/istatistik/kumeleme.html:84
 #: istatistik/templates/istatistik/normallik.html:83
 msgid "0 değişken seçili"
 msgstr "0 Variablen ausgewählt"
@@ -17358,6 +17669,7 @@ msgstr ""
 "alle numerischen Spalten."
 
 #: istatistik/templates/istatistik/betimsel.html:244
+#: istatistik/templates/istatistik/kumeleme.html:266
 #: istatistik/templates/istatistik/normallik.html:224
 msgid " değişken seçili"
 msgstr " Variablen ausgewählt"
@@ -17375,8 +17687,8 @@ msgstr ""
 "Cronbachs Alpha. Laden Sie Excel oder CSV hoch und erhalten Sie eine "
 "Itemanalyse und einen PDF-Bericht im APA-Format."
 
-#: istatistik/templates/istatistik/cronbach.html:15 istatistik/views.py:104
-#: istatistik/views.py:124
+#: istatistik/templates/istatistik/cronbach.html:15 istatistik/views.py:105
+#: istatistik/views.py:125
 msgid "Güvenilirlik Analizi — Cronbach Alpha"
 msgstr "Reliabilitätsanalyse — Cronbachs Alpha"
 
@@ -17531,7 +17843,7 @@ msgstr ""
 msgid "0 ölçüm seçili"
 msgstr "0 Messungen ausgewählt"
 
-#: istatistik/templates/istatistik/friedman.html:141 istatistik/views.py:886
+#: istatistik/templates/istatistik/friedman.html:141 istatistik/views.py:930
 msgid "χ² İstatistiği"
 msgstr "χ²-Statistik"
 
@@ -17603,8 +17915,8 @@ msgid "✗ İstatistiksel olarak anlamlı değil (p ≥ .05)"
 msgstr "✗ Statistisch nicht signifikant (p ≥ .05)"
 
 #: istatistik/templates/istatistik/karar_agaci.html:5
-#: istatistik/templates/istatistik/karar_agaci.html:14 istatistik/views.py:751
-#: istatistik/views.py:769
+#: istatistik/templates/istatistik/karar_agaci.html:14 istatistik/views.py:763
+#: istatistik/views.py:781
 msgid "Karar Ağacı Sınıflandırması"
 msgstr "Klassifikation mit Entscheidungsbaum"
 
@@ -18061,7 +18373,7 @@ msgstr ""
 "Bericht im APA-Format."
 
 #: istatistik/templates/istatistik/korelasyon.html:15 istatistik/views.py:35
-#: istatistik/views.py:225 istatistik/views.py:244
+#: istatistik/views.py:226 istatistik/views.py:245
 msgid "Korelasyon Matrisi"
 msgstr "Korrelationsmatrix"
 
@@ -18326,6 +18638,184 @@ msgstr ""
 "Als Effektstärke sollte η² (Eta-Quadrat) oder ε² (Epsilon-Quadrat) berechnet"
 " werden. Für Zwei-Gruppen-Vergleiche ist der Mann-Whitney-U-Test zu "
 "verwenden; Kruskal-Wallis ist für drei oder mehr Gruppen gedacht."
+
+#: istatistik/templates/istatistik/kumeleme.html:5
+#: istatistik/templates/istatistik/kumeleme.html:15 istatistik/views.py:56
+#: istatistik/views.py:826 istatistik/views.py:844
+msgid "Kümeleme Analizi (K-means / Hiyerarşik)"
+msgstr "Clusteranalyse (K-means / Hierarchisch)"
+
+#: istatistik/templates/istatistik/kumeleme.html:6
+msgid ""
+"Veri setinizdeki gözlemleri K-means veya Hiyerarşik (Ward) yöntemle otomatik"
+" kümelere ayırın. Silhouette skoruna göre otomatik k önerisi, küme profili "
+"tablosu ve APA formatında rapor."
+msgstr ""
+"Gruppieren Sie die Beobachtungen in Ihrem Datensatz automatisch mit der "
+"K-means- oder Hierarchischen (Ward-)Methode. Inklusive automatischem "
+"Vorschlag für k anhand des Silhouetten-Scores, einer Clusterprofil-Tabelle "
+"und eines Berichts im APA-Format."
+
+#: istatistik/templates/istatistik/kumeleme.html:17
+msgid ""
+"Gözlemleri benzerliklerine göre otomatik gruplara ayırın — silhouette "
+"skoruna göre otomatik küme sayısı önerisi dahil."
+msgstr ""
+"Gruppieren Sie Beobachtungen automatisch nach Ähnlichkeit — inklusive "
+"automatischem Vorschlag für die Clusteranzahl anhand des Silhouetten-Scores."
+
+#: istatistik/templates/istatistik/kumeleme.html:68
+msgid "Her satır bir gözlem (katılımcı/vaka) olmalıdır."
+msgstr "Jede Zeile muss eine Beobachtung (Teilnehmer/Fall) sein."
+
+#: istatistik/templates/istatistik/kumeleme.html:70
+msgid ""
+"Değişkenler otomatik olarak standartlaştırılır, elle ölçekleme gerekmez."
+msgstr ""
+"Variablen werden automatisch standardisiert; eine manuelle Skalierung ist "
+"nicht erforderlich."
+
+#: istatistik/templates/istatistik/kumeleme.html:71
+msgid ""
+"Küme sayısı (k) boş bırakılırsa silhouette skoruna göre otomatik belirlenir."
+msgstr ""
+"Wird die Clusteranzahl (k) leer gelassen, wird sie automatisch anhand des "
+"Silhouetten-Scores bestimmt."
+
+#: istatistik/templates/istatistik/kumeleme.html:72
+msgid "Önerilen minimum: 20 gözlem."
+msgstr "Empfohlenes Minimum: 20 Beobachtungen."
+
+#: istatistik/templates/istatistik/kumeleme.html:81
+msgid "Kümelemeye dahil edilecek sayısal değişkenleri seçin."
+msgstr ""
+"Wählen Sie die numerischen Variablen aus, die in die Clusteranalyse "
+"einbezogen werden sollen."
+
+#: istatistik/templates/istatistik/kumeleme.html:101
+msgid "Otomatik belirle"
+msgstr "Automatisch bestimmen"
+
+#: istatistik/templates/istatistik/kumeleme.html:116
+msgid "Kümeleme analizi yapılıyor, lütfen bekleyin…"
+msgstr "Clusteranalyse wird durchgeführt, bitte warten…"
+
+#: istatistik/templates/istatistik/kumeleme.html:159
+msgid "Gözlem Sayısı (N)"
+msgstr "Anzahl der Beobachtungen (N)"
+
+#: istatistik/templates/istatistik/kumeleme.html:163
+msgid ""
+"Not: Satır sayısı yüksek olduğu için 3000 satırlık rastgele örneklem "
+"üzerinde analiz yapılmıştır."
+msgstr ""
+"Hinweis: Da die Zeilenanzahl hoch ist, wurde die Analyse an einer "
+"Zufallsstichprobe von 3000 Zeilen durchgeführt."
+
+#: istatistik/templates/istatistik/kumeleme.html:166
+msgid "Küme Sayısı (k) Diyagnostiği"
+msgstr "Diagnostik der Clusteranzahl (k)"
+
+#: istatistik/templates/istatistik/kumeleme.html:227
+msgid ""
+"Kümeleme, gözlemleri önceden tanımlı bir etiket olmadan benzerliklerine göre"
+" gruplayan gözetimsiz bir makine öğrenmesi yöntemidir. Seçilen değişkenler "
+"otomatik olarak standartlaştırılır (StandardScaler)."
+msgstr ""
+"Clustering ist ein unüberwachtes maschinelles Lernverfahren, das "
+"Beobachtungen ohne vordefinierte Labels nach Ähnlichkeit gruppiert. Die "
+"ausgewählten Variablen werden automatisch standardisiert (StandardScaler)."
+
+#: istatistik/templates/istatistik/kumeleme.html:228
+msgid "K-means:"
+msgstr "K-means:"
+
+#: istatistik/templates/istatistik/kumeleme.html:228
+msgid ""
+"Gözlemleri k adet küme merkezine en yakın oldukları kümeye atar; "
+"küresel/benzer büyüklükte kümelerde iyi çalışır."
+msgstr ""
+"Weist Beobachtungen dem Cluster zu, dessen Zentrum unter k Zentren am "
+"nächsten liegt; funktioniert gut bei kugelförmigen/ähnlich großen Clustern."
+
+#: istatistik/templates/istatistik/kumeleme.html:229
+msgid "Hiyerarşik (Ward):"
+msgstr "Hierarchisch (Ward):"
+
+#: istatistik/templates/istatistik/kumeleme.html:229
+msgid ""
+"Her gözlemi ayrı bir küme olarak başlatıp adım adım birleştirir; dendrogram "
+"ile iç içe yapı görselleştirilir."
+msgstr ""
+"Beginnt mit jeder Beobachtung als eigenem Cluster und fasst sie schrittweise"
+" zusammen; die verschachtelte Struktur wird mit einem Dendrogramm "
+"visualisiert."
+
+#: istatistik/templates/istatistik/kumeleme.html:232
+msgid "Silhouette Skoru Yorumu"
+msgstr "Interpretation des Silhouetten-Scores"
+
+#: istatistik/templates/istatistik/kumeleme.html:235
+msgid "Anlamlı yapı yok"
+msgstr "Keine bedeutsame Struktur"
+
+#: istatistik/templates/istatistik/kumeleme.html:236
+msgid "Zayıf"
+msgstr "Schwach"
+
+#: istatistik/templates/istatistik/kumeleme.html:237
+msgid "Makul"
+msgstr "Angemessen"
+
+#: istatistik/templates/istatistik/kumeleme.html:238
+msgid "Güçlü"
+msgstr "Stark"
+
+#: istatistik/templates/istatistik/kumeleme.html:254
+msgid "Kümeleme Analizi Nedir?"
+msgstr "Was ist eine Clusteranalyse?"
+
+#: istatistik/templates/istatistik/kumeleme.html:255
+msgid ""
+"Kümeleme analizi, bir veri setindeki gözlemleri önceden tanımlı bir grup "
+"etiketi olmadan benzerliklerine göre otomatik olarak gruplara ayıran "
+"gözetimsiz bir makine öğrenmesi yöntemidir. Pazarlama, işletme ve eğitim "
+"araştırmalarında müşteri/katılımcı segmentasyonu için sıkça kullanılır."
+msgstr ""
+"Die Clusteranalyse ist ein unüberwachtes maschinelles Lernverfahren, das die"
+" Beobachtungen in einem Datensatz automatisch nach Ähnlichkeit gruppiert, "
+"ohne ein vordefiniertes Gruppenlabel. Sie wird häufig im Marketing sowie in "
+"der Wirtschafts- und Bildungsforschung zur Kunden-/Teilnehmersegmentierung "
+"eingesetzt."
+
+#: istatistik/templates/istatistik/kumeleme.html:256
+msgid ""
+"Küme sayısını (k) kendiniz belirleyebilir ya da boş bırakarak k=2 ile 10 "
+"arasında silhouette skoruna göre otomatik önerilmesini sağlayabilirsiniz. "
+"K-means hızlı ve büyük veri setlerine uygundur; Hiyerarşik (Ward) yöntem ise"
+" kümelerin iç içe yapısını dendrogram ile görselleştirir."
+msgstr ""
+"Sie können die Anzahl der Cluster (k) selbst festlegen oder das Feld leer "
+"lassen, damit sie anhand des Silhouetten-Scores automatisch zwischen k=2 und"
+" 10 vorgeschlagen wird. K-means ist schnell und für große Datensätze "
+"geeignet; die Hierarchische (Ward-)Methode visualisiert die verschachtelte "
+"Struktur der Cluster mit einem Dendrogramm."
+
+#: istatistik/templates/istatistik/kumeleme.html:276
+msgid "Elbow (WCSS) ve Silhouette Grafiği"
+msgstr "Elbow-(WCSS-) und Silhouette-Diagramm"
+
+#: istatistik/templates/istatistik/kumeleme.html:277
+msgid "Dendrogram"
+msgstr "Dendrogramm"
+
+#: istatistik/templates/istatistik/kumeleme.html:283
+msgid " (otomatik)"
+msgstr " (automatisch)"
+
+#: istatistik/templates/istatistik/kumeleme.html:284
+msgid " (elle)"
+msgstr " (manuell)"
 
 #: istatistik/templates/istatistik/lineer_regresyon.html:5
 msgid "Çoklu Doğrusal Regresyon Analizi (OLS)"
@@ -18721,7 +19211,7 @@ msgstr ""
 
 #: istatistik/templates/istatistik/mediation.html:5
 #: istatistik/templates/istatistik/mediation.html:14 istatistik/views.py:50
-#: istatistik/views.py:675 istatistik/views.py:692
+#: istatistik/views.py:687 istatistik/views.py:704
 msgid "Aracılık Analizi (Mediation)"
 msgstr "Mediationsanalyse"
 
@@ -18751,13 +19241,13 @@ msgstr "Unabhängige Variable (X — numerisch oder 2 Kategorien)"
 msgid "Aracı Değişken (M — sayısal)"
 msgstr "Mediatorvariable (M — numerisch)"
 
-#: istatistik/templates/istatistik/mediation.html:103 istatistik/views.py:698
+#: istatistik/templates/istatistik/mediation.html:103 istatistik/views.py:710
 msgid "Aracı (M) ve bağımlı (Y) değişkenler sayısal/sürekli olmalıdır."
 msgstr ""
 "Die Mediator- (M) und die abhängige Variable (Y) müssen "
 "numerisch/kontinuierlich sein."
 
-#: istatistik/templates/istatistik/mediation.html:104 istatistik/views.py:697
+#: istatistik/templates/istatistik/mediation.html:104 istatistik/views.py:709
 msgid "Bağımsız değişken (X) sayısal veya 2 kategorili olabilir."
 msgstr "Die unabhängige Variable (X) kann numerisch oder zweikategorial sein."
 
@@ -18857,7 +19347,7 @@ msgstr ""
 
 #: istatistik/templates/istatistik/moderation.html:5
 #: istatistik/templates/istatistik/moderation.html:14 istatistik/views.py:51
-#: istatistik/views.py:713 istatistik/views.py:730
+#: istatistik/views.py:725 istatistik/views.py:742
 msgid "Düzenleyici Değişken Analizi (Moderation)"
 msgstr "Moderationsanalyse"
 
@@ -18888,17 +19378,17 @@ msgstr "Unabhängige/Prädiktorvariable (X — numerisch)"
 msgid "Düzenleyici Değişken (W — sayısal veya 2 kategorili)"
 msgstr "Moderatorvariable (W — numerisch oder 2 Kategorien)"
 
-#: istatistik/templates/istatistik/moderation.html:103 istatistik/views.py:735
+#: istatistik/templates/istatistik/moderation.html:103 istatistik/views.py:747
 msgid "Bağımsız (X) ve bağımlı (Y) değişkenler sayısal/sürekli olmalıdır."
 msgstr ""
 "Die unabhängige (X) und die abhängige Variable (Y) müssen "
 "numerisch/kontinuierlich sein."
 
-#: istatistik/templates/istatistik/moderation.html:104 istatistik/views.py:736
+#: istatistik/templates/istatistik/moderation.html:104 istatistik/views.py:748
 msgid "Düzenleyici değişken (W) sayısal veya 2 kategorili olabilir."
 msgstr "Die Moderatorvariable (W) kann numerisch oder zweikategorial sein."
 
-#: istatistik/templates/istatistik/moderation.html:105 istatistik/views.py:738
+#: istatistik/templates/istatistik/moderation.html:105 istatistik/views.py:750
 msgid ""
 "Düzenleme etkisinin anlamlılığı etkileşim teriminin (X×W) p değeri ile test "
 "edilir."
@@ -19035,7 +19525,7 @@ msgstr "Sie können trotzdem fortfahren."
 msgid "Genel Öneri"
 msgstr "Allgemeine Empfehlung"
 
-#: istatistik/templates/istatistik/normallik.html:169 istatistik/views.py:150
+#: istatistik/templates/istatistik/normallik.html:169 istatistik/views.py:151
 msgid "Shapiro-Wilk Testi"
 msgstr "Shapiro-Wilk-Test"
 
@@ -19126,7 +19616,7 @@ msgstr ""
 "Wallis (3+ Gruppen) oder Wilcoxon (gepaarte Gruppen)."
 
 #: istatistik/templates/istatistik/orneklem.html:5
-#: istatistik/templates/istatistik/orneklem.html:14 istatistik/views.py:263
+#: istatistik/templates/istatistik/orneklem.html:14 istatistik/views.py:264
 msgid "Örneklem Büyüklüğü Hesaplayıcı"
 msgstr "Stichprobenumfang-Rechner"
 
@@ -19325,8 +19815,8 @@ msgstr ""
 " von n = {n}."
 
 #: istatistik/templates/istatistik/svm.html:5
-#: istatistik/templates/istatistik/svm.html:14 istatistik/views.py:783
-#: istatistik/views.py:800
+#: istatistik/templates/istatistik/svm.html:14 istatistik/views.py:795
+#: istatistik/views.py:812
 msgid "Destek Vektör Makinesi (SVM)"
 msgstr "Support-Vector-Machine (SVM)"
 
@@ -19461,7 +19951,7 @@ msgstr "Stützvektoren:"
 
 #: istatistik/templates/istatistik/tekrarli_anova.html:5
 #: istatistik/templates/istatistik/tekrarli_anova.html:15
-#: istatistik/views.py:45 istatistik/views.py:910 istatistik/views.py:927
+#: istatistik/views.py:45 istatistik/views.py:954 istatistik/views.py:971
 msgid "Tekrarlayan Ölçümler ANOVA"
 msgstr "ANOVA mit Messwiederholung"
 
@@ -19500,7 +19990,7 @@ msgid "Analiz edilecek en az 3 sayısal sütunu seçin."
 msgstr "Wählen Sie mindestens 3 numerische Spalten für die Analyse."
 
 #: istatistik/templates/istatistik/tekrarli_anova.html:139
-#: istatistik/views.py:915
+#: istatistik/views.py:959
 msgid "F İstatistiği"
 msgstr "F-Statistik"
 
@@ -19549,7 +20039,7 @@ msgstr ""
 " Analyse von Gruppenunterschieden mit PDF-Bericht im APA-Format."
 
 #: istatistik/templates/istatistik/ttesti.html:177 istatistik/views.py:39
-#: istatistik/views.py:275 istatistik/views.py:292
+#: istatistik/views.py:276 istatistik/views.py:293
 msgid "t-Testi"
 msgstr "t-Test"
 
@@ -19631,8 +20121,8 @@ msgstr ""
 "Vergleicht den Mittelwert einer Spalte mit einem von Ihnen angegebenen "
 "theoretischen/Referenzwert."
 
-#: istatistik/templates/istatistik/ttesti.html:302 istatistik/views.py:131
-#: istatistik/views.py:211
+#: istatistik/templates/istatistik/ttesti.html:302 istatistik/views.py:132
+#: istatistik/views.py:212
 msgid "Başlık satırı otomatik algılanır."
 msgstr "Die Kopfzeile wird automatisch erkannt."
 
@@ -19779,7 +20269,7 @@ msgstr "Messung 1 (Prätest / Gruppe 1)"
 msgid "2. Ölçüm (son test / grup 2)"
 msgstr "Messung 2 (Posttest / Gruppe 2)"
 
-#: istatistik/templates/istatistik/wilcoxon.html:125 istatistik/views.py:857
+#: istatistik/templates/istatistik/wilcoxon.html:125 istatistik/views.py:901
 msgid "W İstatistiği"
 msgstr "W-Statistik"
 
@@ -19914,32 +20404,32 @@ msgstr "Regressionsanalysen"
 msgid "Makine Öğrenmesi"
 msgstr "Maschinelles Lernen"
 
-#: istatistik/views.py:65
+#: istatistik/views.py:66
 #, fuzzy
 #| msgid "Nicel Analiz Desteği"
 msgid "Nicel Analiz"
 msgstr "Unterstützung bei quantitativer Analyse"
 
-#: istatistik/views.py:66
+#: istatistik/views.py:67
 #, fuzzy
 #| msgid "Veri Bilimi"
 msgid "Veri Bilimi ve Yapay Zeka"
 msgstr "Data Science"
 
-#: istatistik/views.py:90
+#: istatistik/views.py:91
 msgid "CSV veya Excel dosyanızı yükleyin."
 msgstr "Laden Sie Ihre CSV- oder Excel-Datei hoch."
 
-#: istatistik/views.py:91
+#: istatistik/views.py:92
 msgid "Analiz otomatik olarak saniyeler içinde tamamlanır."
 msgstr "Die Analyse ist automatisch in Sekunden abgeschlossen."
 
-#: istatistik/views.py:92
+#: istatistik/views.py:93
 msgid "Sonuçları ekranda görün ve PDF olarak indirin."
 msgstr ""
 "Sehen Sie die Ergebnisse am Bildschirm und laden Sie sie als PDF herunter."
 
-#: istatistik/views.py:108
+#: istatistik/views.py:109
 msgid ""
 "Anket ölçeğinizin iç tutarlılığını ölçün. CSV/Excel dosyanızı yükleyin; "
 "Cronbach Alpha katsayısı, madde-toplam korelasyonları ve madde çıkarma "
@@ -19949,11 +20439,11 @@ msgstr ""
 "CSV-/Excel-Datei hoch; Cronbachs Alpha, Item-Skala-Korrelationen und die "
 "Tabelle „Alpha, wenn Item gelöscht“ stehen als PDF bereit."
 
-#: istatistik/views.py:110
+#: istatistik/views.py:111
 msgid "Kolay Yükleme"
 msgstr "Einfacher Upload"
 
-#: istatistik/views.py:110
+#: istatistik/views.py:111
 msgid ""
 "CSV veya Excel dosyanızı sürükle-bırak ile yükleyin. Her sütun bir madde, "
 "her satır bir katılımcı olmalıdır."
@@ -19961,7 +20451,7 @@ msgstr ""
 "Laden Sie Ihre CSV- oder Excel-Datei per Drag-and-drop hoch. Jede Spalte "
 "muss ein Item und jede Zeile eine teilnehmende Person sein."
 
-#: istatistik/views.py:111
+#: istatistik/views.py:112
 msgid ""
 "α katsayısı ve \"Kabul Edilemez / Düşük / Kabul Edilebilir / İyi / "
 "Mükemmel\" yorumu otomatik hesaplanır."
@@ -19969,7 +20459,7 @@ msgstr ""
 "Der α-Koeffizient und seine Einstufung („Inakzeptabel / Niedrig / Akzeptabel"
 " / Gut / Ausgezeichnet“) werden automatisch berechnet."
 
-#: istatistik/views.py:112
+#: istatistik/views.py:113
 msgid ""
 "Her madde için ortalama, standart sapma, düzeltilmiş madde-toplam "
 "korelasyonu ve madde silinince alpha tablosu."
@@ -19977,13 +20467,13 @@ msgstr ""
 "Für jedes Item: Mittelwert, Standardabweichung, korrigierte Item-Skala-"
 "Korrelation und Tabelle „Alpha, wenn Item gelöscht“."
 
-#: istatistik/views.py:113
+#: istatistik/views.py:114
 msgid "Tüm sonuçlar düzenli tablolar halinde PDF olarak indirilebilir."
 msgstr ""
 "Alle Ergebnisse können übersichtlich in Tabellen als PDF heruntergeladen "
 "werden."
 
-#: istatistik/views.py:127
+#: istatistik/views.py:128
 msgid ""
 "Anket ölçeğinizin iç tutarlılığını ölçün. Her sütun bir madde, her satır bir"
 " katılımcı olmalıdır."
@@ -19991,15 +20481,15 @@ msgstr ""
 "Messen Sie die interne Konsistenz Ihrer Fragebogenskala. Jede Spalte muss "
 "ein Item und jede Zeile eine teilnehmende Person sein."
 
-#: istatistik/views.py:129
+#: istatistik/views.py:130
 msgid "Her sütun bir ölçek maddesi olmalıdır (örn. S1, S2, S3…)."
 msgstr "Jede Spalte muss ein Skalen-Item sein (z. B. F1, F2, F3…)."
 
-#: istatistik/views.py:132
+#: istatistik/views.py:133
 msgid "Boş hücreler (NA) satırdan çıkarılır."
 msgstr "Leere Zellen (NA) werden aus der Zeile ausgeschlossen."
 
-#: istatistik/views.py:148
+#: istatistik/views.py:149
 msgid ""
 "\"Parametrik mi, non-parametrik mi?\" sorusunu yanıtlayın. Shapiro-Wilk "
 "testi, çarpıklık/basıklık değerleri ve Q-Q plot içeren PDF raporu saniyeler "
@@ -20009,7 +20499,7 @@ msgstr ""
 "Sie in Sekunden einen PDF-Bericht mit Shapiro-Wilk-Test, "
 "Schiefe-/Wölbungswerten und Q-Q-Plots."
 
-#: istatistik/views.py:150
+#: istatistik/views.py:151
 msgid ""
 "Her değişken için W istatistiği ve p-değeri hesaplanır. p < 0.05 normal "
 "dağılımdan sapma anlamına gelir."
@@ -20017,11 +20507,11 @@ msgstr ""
 "Für jede Variable werden W-Statistik und p-Wert berechnet. p < 0.05 bedeutet"
 " eine Abweichung von der Normalverteilung."
 
-#: istatistik/views.py:151
+#: istatistik/views.py:152
 msgid "Çarpıklık & Basıklık"
 msgstr "Schiefe & Wölbung"
 
-#: istatistik/views.py:151
+#: istatistik/views.py:152
 msgid ""
 "Skewness ve kurtosis değerleri ±1.96 ve ±2.58 kritik sınırlarıyla "
 "yorumlanır."
@@ -20029,17 +20519,17 @@ msgstr ""
 "Schiefe- und Wölbungswerte werden anhand der kritischen Grenzen ±1.96 und "
 "±2.58 interpretiert."
 
-#: istatistik/views.py:152
+#: istatistik/views.py:153
 msgid "Her değişken için görsel normallik grafiği PDF'e eklenir."
 msgstr ""
 "Für jede Variable wird ein grafischer Normalverteilungsplot in das PDF "
 "aufgenommen."
 
-#: istatistik/views.py:153
+#: istatistik/views.py:154
 msgid "Otomatik Öneri"
 msgstr "Automatische Empfehlung"
 
-#: istatistik/views.py:153
+#: istatistik/views.py:154
 msgid ""
 "\"Parametrik test kullanılabilir\" veya \"Non-parametrik test önerilir\" "
 "kararı otomatik verilir."
@@ -20047,7 +20537,7 @@ msgstr ""
 "Die Entscheidung „parametrischer Test möglich“ oder „nichtparametrischer "
 "Test empfohlen“ wird automatisch getroffen."
 
-#: istatistik/views.py:167
+#: istatistik/views.py:168
 msgid ""
 "Shapiro-Wilk testi, çarpıklık/basıklık ve Q-Q plot ile değişkenlerinizin "
 "normal dağılıma uygunluğunu test edin."
@@ -20055,28 +20545,28 @@ msgstr ""
 "Prüfen Sie mit Shapiro-Wilk-Test, Schiefe/Wölbung und Q-Q-Plots, ob Ihre "
 "Variablen normalverteilt sind."
 
-#: istatistik/views.py:169
+#: istatistik/views.py:170
 msgid "Her sütun ayrı bir değişken olarak analiz edilir."
 msgstr "Jede Spalte wird als eigene Variable analysiert."
 
-#: istatistik/views.py:170
+#: istatistik/views.py:171
 msgid ""
 "Shapiro-Wilk testi N ≤ 5000 için; üzerinde D'Agostino-Pearson kullanılır."
 msgstr ""
 "Für N ≤ 5000 wird der Shapiro-Wilk-Test, darüber D'Agostino-Pearson "
 "verwendet."
 
-#: istatistik/views.py:171
+#: istatistik/views.py:172
 msgid "p ≥ 0.05 → normal dağılım varsayımı reddedilemez."
 msgstr "p ≥ 0.05 → die Normalverteilungsannahme kann nicht abgelehnt werden."
 
-#: istatistik/views.py:172
+#: istatistik/views.py:173
 msgid "Hem istatistiksel hem görsel (Q-Q plot) sonuçlar PDF'e eklenir."
 msgstr ""
 "Sowohl statistische als auch grafische (Q-Q-Plot) Ergebnisse werden in das "
 "PDF aufgenommen."
 
-#: istatistik/views.py:188
+#: istatistik/views.py:189
 msgid ""
 "Verinizi yükleyin; frekans tabloları, ortalama, standart sapma ve grafikler "
 "otomatik oluşsun. Raporunuzun bulgular bölümünün ilk sayfası hazır."
@@ -20085,11 +20575,11 @@ msgstr ""
 "Mittelwerte, Standardabweichungen und Diagramme. Die erste Seite des "
 "Ergebnisteils Ihres Berichts ist fertig."
 
-#: istatistik/views.py:190
+#: istatistik/views.py:191
 msgid "Frekans Tabloları"
 msgstr "Häufigkeitstabellen"
 
-#: istatistik/views.py:190
+#: istatistik/views.py:191
 msgid ""
 "Kategorik değişkenler için frekans ve yüzde dağılım tabloları otomatik "
 "oluşturulur."
@@ -20097,11 +20587,11 @@ msgstr ""
 "Für kategoriale Variablen werden Häufigkeits- und Prozentverteilungstabellen"
 " automatisch erstellt."
 
-#: istatistik/views.py:191
+#: istatistik/views.py:192
 msgid "Merkezi Eğilim"
 msgstr "Lagemaße"
 
-#: istatistik/views.py:191
+#: istatistik/views.py:192
 msgid ""
 "Sürekli değişkenler için n, ortalama, standart sapma, min, max, medyan, "
 "Q1-Q3 hesaplanır."
@@ -20109,11 +20599,11 @@ msgstr ""
 "Für stetige Variablen werden n, Mittelwert, Standardabweichung, Min, Max, "
 "Median und Q1–Q3 berechnet."
 
-#: istatistik/views.py:192
+#: istatistik/views.py:193
 msgid "Otomatik Grafikler"
 msgstr "Automatische Diagramme"
 
-#: istatistik/views.py:192
+#: istatistik/views.py:193
 msgid ""
 "Kategorik değişkenler için çubuk grafik, sürekli değişkenler için histogram "
 "PDF'e eklenir."
@@ -20121,17 +20611,17 @@ msgstr ""
 "Balkendiagramme für kategoriale und Histogramme für stetige Variablen werden"
 " in das PDF aufgenommen."
 
-#: istatistik/views.py:193
+#: istatistik/views.py:194
 msgid "Hazır PDF Rapor"
 msgstr "Fertiger PDF-Bericht"
 
-#: istatistik/views.py:193
+#: istatistik/views.py:194
 msgid "Tüm tablolar ve grafikler düzenli formatta PDF olarak indirilir."
 msgstr ""
 "Alle Tabellen und Diagramme werden übersichtlich formatiert als PDF "
 "heruntergeladen."
 
-#: istatistik/views.py:207
+#: istatistik/views.py:208
 msgid ""
 "Verinizdeki her sütun için frekans tabloları, merkezi eğilim ölçüleri ve "
 "grafikler otomatik oluşturulur."
@@ -20139,7 +20629,7 @@ msgstr ""
 "Für jede Spalte Ihrer Daten werden Häufigkeitstabellen, Lagemaße und "
 "Diagramme automatisch erstellt."
 
-#: istatistik/views.py:209
+#: istatistik/views.py:210
 msgid ""
 "Kategorik değişkenler (≤10 farklı değer veya metin) → frekans tablosu + "
 "çubuk grafik."
@@ -20147,16 +20637,16 @@ msgstr ""
 "Kategoriale Variablen (≤10 verschiedene Werte oder Text) → "
 "Häufigkeitstabelle + Balkendiagramm."
 
-#: istatistik/views.py:210
+#: istatistik/views.py:211
 msgid "Sürekli sayısal değişkenler → ortalama, SS, medyan, Q1-Q3 + histogram."
 msgstr ""
 "Stetige numerische Variablen → Mittelwert, SD, Median, Q1–Q3 + Histogramm."
 
-#: istatistik/views.py:212
+#: istatistik/views.py:213
 msgid "Boş hücreler (NA) değişken bazında çıkarılır."
 msgstr "Leere Zellen (NA) werden pro Variable ausgeschlossen."
 
-#: istatistik/views.py:228
+#: istatistik/views.py:229
 msgid ""
 "Değişkenleriniz arasındaki ilişkileri tek bakışta görün. Pearson, Spearman "
 "veya Kendall yöntemiyle p-değerleri ve ısı haritası içeren PDF raporu "
@@ -20166,11 +20656,11 @@ msgstr ""
 "Erhalten Sie in Sekunden einen PDF-Bericht mit p-Werten und Heatmap nach "
 "Pearson, Spearman oder Kendall."
 
-#: istatistik/views.py:230
+#: istatistik/views.py:231
 msgid "Korelasyon Tablosu"
 msgstr "Korrelationstabelle"
 
-#: istatistik/views.py:230
+#: istatistik/views.py:231
 msgid ""
 "Tüm değişken çiftleri için r katsayısı ve p-değeri hesaplanır. p < 0.05 "
 "anlamlı ilişkiyi gösterir."
@@ -20178,11 +20668,11 @@ msgstr ""
 "Für alle Variablenpaare werden der Koeffizient r und der p-Wert berechnet. p"
 " < 0.05 zeigt einen signifikanten Zusammenhang."
 
-#: istatistik/views.py:231
+#: istatistik/views.py:232
 msgid "Isı Haritası"
 msgstr "Heatmap"
 
-#: istatistik/views.py:231
+#: istatistik/views.py:232
 msgid ""
 "Korelasyon katsayıları renk skalasıyla görselleştirilir. Güçlü ilişkiler "
 "anında fark edilir."
@@ -20190,11 +20680,11 @@ msgstr ""
 "Korrelationskoeffizienten werden farbig dargestellt, starke Zusammenhänge "
 "fallen sofort auf."
 
-#: istatistik/views.py:232
+#: istatistik/views.py:233
 msgid "Üç Yöntem"
 msgstr "Drei Methoden"
 
-#: istatistik/views.py:232
+#: istatistik/views.py:233
 msgid ""
 "Pearson (parametrik), Spearman (non-parametrik sıralı) veya Kendall (küçük "
 "örneklem) yöntemlerinden seçin."
@@ -20202,12 +20692,12 @@ msgstr ""
 "Wählen Sie Pearson (parametrisch), Spearman (nichtparametrisch, Ränge) oder "
 "Kendall (kleine Stichproben)."
 
-#: istatistik/views.py:233
+#: istatistik/views.py:234
 msgid "Tablo ve ısı haritası düzenli formatta PDF olarak indirilir."
 msgstr ""
 "Tabelle und Heatmap werden übersichtlich formatiert als PDF heruntergeladen."
 
-#: istatistik/views.py:247
+#: istatistik/views.py:248
 msgid ""
 "Değişkenleriniz arasındaki ilişkileri Pearson, Spearman veya Kendall "
 "yöntemiyle hesaplayın. Her sütun bir değişken, her satır bir gözlem "
@@ -20217,23 +20707,23 @@ msgstr ""
 "Spearman oder Kendall. Jede Spalte muss eine Variable und jede Zeile eine "
 "Beobachtung sein."
 
-#: istatistik/views.py:249
+#: istatistik/views.py:250
 msgid "Her sütun bir değişkeni temsil etmelidir."
 msgstr "Jede Spalte muss eine Variable darstellen."
 
-#: istatistik/views.py:250
+#: istatistik/views.py:251
 msgid "Pearson: normal dağılımlı sürekli veriler için."
 msgstr "Pearson: für normalverteilte stetige Daten."
 
-#: istatistik/views.py:251
+#: istatistik/views.py:252
 msgid "Spearman: sıralı veriler veya normallik varsayımı sağlanmıyorsa."
 msgstr "Spearman: für ordinale Daten oder ohne Normalverteilung."
 
-#: istatistik/views.py:252
+#: istatistik/views.py:253
 msgid "Kendall: küçük örneklem veya çok sayıda bağlı sıra olduğunda."
 msgstr "Kendall: bei kleinen Stichproben oder vielen Rangbindungen."
 
-#: istatistik/views.py:279
+#: istatistik/views.py:280
 msgid ""
 "İki grup arasındaki ortalama farkını test edin. Bağımsız veya bağımlı "
 "örneklem t-testi, Cohen's d etki büyüklüğü ve %95 güven aralığı ile PDF "
@@ -20243,11 +20733,11 @@ msgstr ""
 "einen PDF-Bericht mit t-Test für unabhängige oder abhängige Stichproben, "
 "Effektstärke Cohens d und 95-%-Konfidenzintervall."
 
-#: istatistik/views.py:281
+#: istatistik/views.py:282
 msgid "Bağımsız Örneklem"
 msgstr "Unabhängige Stichproben"
 
-#: istatistik/views.py:281
+#: istatistik/views.py:282
 msgid ""
 "Farklı iki grubun ortalamalarını karşılaştırın. Levene testi ile varyans "
 "homojenliği otomatik kontrol edilir."
@@ -20255,11 +20745,11 @@ msgstr ""
 "Vergleichen Sie die Mittelwerte zweier verschiedener Gruppen. Die "
 "Varianzhomogenität wird automatisch mit dem Levene-Test geprüft."
 
-#: istatistik/views.py:282
+#: istatistik/views.py:283
 msgid "Bağımlı Örneklem"
 msgstr "Abhängige Stichproben"
 
-#: istatistik/views.py:282
+#: istatistik/views.py:283
 msgid ""
 "Aynı gruba ait iki ölçüm arasındaki farkı test edin (öntest-sontest, "
 "eşleştirilmiş)."
@@ -20267,12 +20757,12 @@ msgstr ""
 "Testen Sie den Unterschied zwischen zwei Messungen derselben Gruppe "
 "(Prätest/Posttest, gepaart)."
 
-#: istatistik/views.py:283
+#: istatistik/views.py:284
 msgid "Cohen's d katsayısı ve %95 güven aralığı otomatik hesaplanır."
 msgstr ""
 "Cohens d und das 95-%-Konfidenzintervall werden automatisch berechnet."
 
-#: istatistik/views.py:284
+#: istatistik/views.py:285
 msgid ""
 "Grup istatistikleri ve test sonuçları düzenli tablolar halinde PDF'e "
 "aktarılır."
@@ -20280,7 +20770,7 @@ msgstr ""
 "Gruppenstatistiken und Testergebnisse werden übersichtlich in Tabellen als "
 "PDF exportiert."
 
-#: istatistik/views.py:309
+#: istatistik/views.py:310
 msgid ""
 "Üç veya daha fazla grubun ortalamalarını karşılaştırın. Tukey/Bonferroni "
 "post-hoc testleri ve η² etki büyüklüğü ile tam bir ANOVA raporu alın."
@@ -20289,11 +20779,11 @@ msgstr ""
 "einen vollständigen ANOVA-Bericht mit Post-hoc-Tests nach Tukey/Bonferroni "
 "und Effektstärke η²."
 
-#: istatistik/views.py:311
+#: istatistik/views.py:312
 msgid "F istatistiği, serbestlik dereceleri ve p-değeri otomatik hesaplanır."
 msgstr "F-Statistik, Freiheitsgrade und p-Wert werden automatisch berechnet."
 
-#: istatistik/views.py:312
+#: istatistik/views.py:313
 msgid ""
 "Hangi gruplar arasında fark var? Tukey veya Bonferroni post-hoc testi ile "
 "belirleyin."
@@ -20301,42 +20791,42 @@ msgstr ""
 "Welche Gruppen unterscheiden sich? Finden Sie es mit Post-hoc-Tests nach "
 "Tukey oder Bonferroni heraus."
 
-#: istatistik/views.py:313 istatistik/views.py:558
+#: istatistik/views.py:314 istatistik/views.py:570
 msgid "Eta-kare (η²) ile etki büyüklüğü raporlanır."
 msgstr "Die Effektstärke wird mit Eta-Quadrat (η²) berichtet."
 
-#: istatistik/views.py:314
+#: istatistik/views.py:315
 msgid ""
 "Grup istatistikleri, ANOVA tablosu ve post-hoc sonuçları PDF'e aktarılır."
 msgstr ""
 "Gruppenstatistiken, ANOVA-Tabelle und Post-hoc-Ergebnisse werden als PDF "
 "exportiert."
 
-#: istatistik/views.py:348
+#: istatistik/views.py:349
 msgid "Oturum verisi bulunamadı. Lütfen dosyayı tekrar yükleyin."
 msgstr "Sitzungsdaten nicht gefunden. Bitte laden Sie die Datei erneut hoch."
 
-#: istatistik/views.py:352 istatistik/views.py:963
+#: istatistik/views.py:353 istatistik/views.py:1007
 msgid "CSV veya Excel dosyası yükleyin."
 msgstr "Laden Sie eine CSV- oder Excel-Datei hoch."
 
-#: istatistik/views.py:354 istatistik/views.py:965 istatistik/views.py:1099
+#: istatistik/views.py:355 istatistik/views.py:1009 istatistik/views.py:1144
 msgid "Dosya boyutu 5 MB sınırını aşıyor."
 msgstr "Die Datei überschreitet die Größenbeschränkung von 5 MB."
 
-#: istatistik/views.py:399 istatistik/views.py:1082
+#: istatistik/views.py:400 istatistik/views.py:1127
 msgid "Günlük analiz limitiniz doldu."
 msgstr "Sie haben Ihr tägliches Analyselimit erreicht."
 
-#: istatistik/views.py:409
+#: istatistik/views.py:410
 msgid "Önizleme süresi doldu. Lütfen dosyayı tekrar yükleyin."
 msgstr "Die Vorschau ist abgelaufen. Bitte laden Sie die Datei erneut hoch."
 
-#: istatistik/views.py:510
+#: istatistik/views.py:522
 msgid "Geçersiz adım."
 msgstr "Ungültiger Schritt."
 
-#: istatistik/views.py:523
+#: istatistik/views.py:535
 msgid ""
 "İki bağımsız grubun dağılımını karşılaştırın. Normallik varsayımı gerekmez. "
 "Medyan farkı, sıra ortalamaları ve rank-biserial etki büyüklüğü ile PDF "
@@ -20346,34 +20836,34 @@ msgstr ""
 "Normalverteilungsannahme. Erhalten Sie einen PDF-Bericht mit "
 "Mediandifferenz, mittleren Rängen und Rang-biserialer Effektstärke."
 
-#: istatistik/views.py:525
+#: istatistik/views.py:537
 msgid "Non-Parametrik"
 msgstr "Nichtparametrisch"
 
-#: istatistik/views.py:525
+#: istatistik/views.py:537
 msgid "Normallik varsayımı sağlanmadığında t-testine güçlü bir alternatif."
 msgstr ""
 "Eine starke Alternative zum t-Test, wenn keine Normalverteilung vorliegt."
 
-#: istatistik/views.py:526
+#: istatistik/views.py:538
 msgid "Sıra Analizi"
 msgstr "Ranganalyse"
 
-#: istatistik/views.py:526
+#: istatistik/views.py:538
 msgid "Medyanlar ve ortalama sıralar raporlanır."
 msgstr "Mediane und mittlere Ränge werden berichtet."
 
-#: istatistik/views.py:527
+#: istatistik/views.py:539
 msgid "Rank-biserial korelasyon (r) ile etki büyüklüğü hesaplanır."
 msgstr ""
 "Die Effektstärke wird mit der Rang-biserialen Korrelation (r) berechnet."
 
-#: istatistik/views.py:528
+#: istatistik/views.py:540
 msgid "Sonuçlar düzenli tablolar halinde PDF olarak indirilir."
 msgstr ""
 "Die Ergebnisse werden übersichtlich in Tabellen als PDF heruntergeladen."
 
-#: istatistik/views.py:554
+#: istatistik/views.py:566
 msgid ""
 "Üç veya daha fazla bağımsız grubun dağılımını non-parametrik olarak "
 "karşılaştırın. Bonferroni düzeltmeli post-hoc testleri ve η² etki büyüklüğü "
@@ -20383,31 +20873,31 @@ msgstr ""
 "nichtparametrisch. Erhalten Sie einen PDF-Bericht mit Bonferroni-"
 "korrigierten Post-hoc-Tests und Effektstärke η²."
 
-#: istatistik/views.py:556
+#: istatistik/views.py:568
 msgid "3+ Grup"
 msgstr "3+ Gruppen"
 
-#: istatistik/views.py:556
+#: istatistik/views.py:568
 msgid "ANOVA'nın parametrik olmayan alternatifi. Normallik gerekmez."
 msgstr ""
 "Die nichtparametrische Alternative zur ANOVA. Keine Normalverteilung "
 "erforderlich."
 
-#: istatistik/views.py:557 istatistik/views.py:888 istatistik/views.py:917
+#: istatistik/views.py:569 istatistik/views.py:932 istatistik/views.py:961
 msgid "Post-Hoc"
 msgstr "Post-hoc"
 
-#: istatistik/views.py:557
+#: istatistik/views.py:569
 msgid "Anlamlı fark bulunursa Dunn testi + Bonferroni düzeltmesi uygulanır."
 msgstr ""
 "Bei signifikantem Unterschied wird der Dunn-Test mit Bonferroni-Korrektur "
 "durchgeführt."
 
-#: istatistik/views.py:559
+#: istatistik/views.py:571
 msgid "Grup istatistikleri ve post-hoc sonuçları PDF'e aktarılır."
 msgstr "Gruppenstatistiken und Post-hoc-Ergebnisse werden als PDF exportiert."
 
-#: istatistik/views.py:585
+#: istatistik/views.py:597
 msgid ""
 "İki kategorik değişken arasındaki ilişkiyi test edin. Çapraz tablo ve "
 "Cramér's V etki büyüklüğü ile PDF raporu alın."
@@ -20415,11 +20905,11 @@ msgstr ""
 "Testen Sie den Zusammenhang zweier kategorialer Variablen. Erhalten Sie "
 "einen PDF-Bericht mit Kreuztabelle und Effektstärke Cramérs V."
 
-#: istatistik/views.py:587
+#: istatistik/views.py:599
 msgid "Bağımsızlık Testi"
 msgstr "Unabhängigkeitstest"
 
-#: istatistik/views.py:587
+#: istatistik/views.py:599
 msgid ""
 "Pearson's Ki-Kare testi ile iki kategorik değişken arasındaki ilişki "
 "sınanır."
@@ -20427,27 +20917,27 @@ msgstr ""
 "Der Zusammenhang zweier kategorialer Variablen wird mit dem Chi-Quadrat-Test"
 " nach Pearson geprüft."
 
-#: istatistik/views.py:588
+#: istatistik/views.py:600
 msgid "Çapraz Tablo"
 msgstr "Kreuztabelle"
 
-#: istatistik/views.py:588
+#: istatistik/views.py:600
 msgid "Gözlenen frekanslar ve satır/sütun toplamları ile tam çapraz tablo."
 msgstr ""
 "Vollständige Kreuztabelle mit beobachteten Häufigkeiten und "
 "Zeilen-/Spaltensummen."
 
-#: istatistik/views.py:589
+#: istatistik/views.py:601
 msgid "Etki büyüklüğü V katsayısı ile ilişkinin gücü raporlanır."
 msgstr ""
 "Die Stärke des Zusammenhangs wird mit dem Koeffizienten V als Effektstärke "
 "berichtet."
 
-#: istatistik/views.py:590 istatistik/views.py:621
+#: istatistik/views.py:602 istatistik/views.py:633
 msgid "APA formatında raporlanabilir sonuçlar PDF olarak indirilir."
 msgstr "Nach APA berichtbare Ergebnisse werden als PDF heruntergeladen."
 
-#: istatistik/views.py:616
+#: istatistik/views.py:628
 msgid ""
 "Bir veya birden fazla bağımsız değişkenin sürekli bir bağımlı değişkeni ne "
 "kadar açıkladığını analiz edin. R², F testi, standardize beta ve VIF dahil "
@@ -20457,22 +20947,22 @@ msgstr ""
 "stetige abhängige Variable erklären. Vollständiger OLS-Regressionsbericht "
 "inklusive R², F-Test, standardisiertem Beta und VIF."
 
-#: istatistik/views.py:618
+#: istatistik/views.py:630
 msgid "OLS Regresyon"
 msgstr "OLS-Regression"
 
-#: istatistik/views.py:618
+#: istatistik/views.py:630
 msgid ""
 "R², düzeltilmiş R², F istatistiği ve model anlamlılığı otomatik hesaplanır."
 msgstr ""
 "R², korrigiertes R², F-Statistik und Modellsignifikanz werden automatisch "
 "berechnet."
 
-#: istatistik/views.py:619
+#: istatistik/views.py:631
 msgid "Katsayı Tablosu"
 msgstr "Koeffiziententabelle"
 
-#: istatistik/views.py:619
+#: istatistik/views.py:631
 msgid ""
 "Her yordayıcı için B, β (standardize), SE, t, p ve %95 güven aralığı "
 "raporlanır."
@@ -20480,15 +20970,15 @@ msgstr ""
 "Für jeden Prädiktor werden B, β (standardisiert), SE, t, p und das "
 "95-%-Konfidenzintervall berichtet."
 
-#: istatistik/views.py:620
+#: istatistik/views.py:632
 msgid "VIF (Çoklu Bağlantı)"
 msgstr "VIF (Multikollinearität)"
 
-#: istatistik/views.py:620
+#: istatistik/views.py:632
 msgid "Variance Inflation Factor ile çoklu bağlantı sorunu kontrol edilir."
 msgstr "Multikollinearität wird mit dem Varianzinflationsfaktor geprüft."
 
-#: istatistik/views.py:647
+#: istatistik/views.py:659
 msgid ""
 "İkili (binary) bir sonuç değişkenini yordayın. Odds Ratio, Nagelkerke R² ve "
 "sınıflandırma tablosu ile tam lojistik regresyon raporu."
@@ -20497,11 +20987,11 @@ msgstr ""
 "logistischen Regression mit Odds Ratio, Nagelkerkes R² und "
 "Klassifikationstabelle."
 
-#: istatistik/views.py:649
+#: istatistik/views.py:661
 msgid "Binary Sonuç"
 msgstr "Binäres Ergebnis"
 
-#: istatistik/views.py:649
+#: istatistik/views.py:661
 msgid ""
 "0/1 veya iki kategorili bağımlı değişken ile çalışır. Kategorik yordayıcılar"
 " otomatik dummy'e dönüştürülür."
@@ -20509,7 +20999,7 @@ msgstr ""
 "Funktioniert mit einer 0/1- oder zweikategorialen abhängigen Variable. "
 "Kategoriale Prädiktoren werden automatisch in Dummy-Variablen umgewandelt."
 
-#: istatistik/views.py:650
+#: istatistik/views.py:662
 msgid ""
 "Her yordayıcı için B, SE, Wald, p ve Exp(B) = Odds Ratio %95 GA ile "
 "raporlanır."
@@ -20517,13 +21007,13 @@ msgstr ""
 "Für jeden Prädiktor werden B, SE, Wald, p und Exp(B) = Odds Ratio mit "
 "95-%-KI berichtet."
 
-#: istatistik/views.py:651
+#: istatistik/views.py:663
 msgid "Model doğruluğu ve sınıflandırma tablosu (TP, TN, FP, FN) gösterilir."
 msgstr ""
 "Modellgenauigkeit und Klassifikationstabelle (TP, TN, FP, FN) werden "
 "angezeigt."
 
-#: istatistik/views.py:652
+#: istatistik/views.py:664
 msgid ""
 "Nagelkerke R², model χ² ve APA formatında raporlanabilir sonuçlar PDF olarak"
 " indirilir."
@@ -20531,7 +21021,7 @@ msgstr ""
 "Nagelkerkes R², Modell-χ² und nach APA berichtbare Ergebnisse werden als PDF"
 " heruntergeladen."
 
-#: istatistik/views.py:678
+#: istatistik/views.py:690
 msgid ""
 "Bir bağımsız değişkenin bağımlı değişken üzerindeki etkisinin bir aracı "
 "(mediator) değişken üzerinden ne kadar ilettiğini test edin. Bootstrap güven"
@@ -20543,11 +21033,11 @@ msgstr ""
 "vollständiger Mediationsbericht mit Bootstrap-Konfidenzintervall und Sobel-"
 "Test — das Äquivalent zu SPSS Process/Hayes."
 
-#: istatistik/views.py:680
+#: istatistik/views.py:692
 msgid "a, b, c, c' Yolları"
 msgstr "a-, b-, c-, c'-Pfade"
 
-#: istatistik/views.py:680
+#: istatistik/views.py:692
 msgid ""
 "Toplam etki, dolaylı yol ve M kontrol edildiğinde kalan direkt etki ayrı "
 "ayrı hesaplanır."
@@ -20555,11 +21045,11 @@ msgstr ""
 "Der Gesamteffekt, der indirekte Pfad und der nach Kontrolle von M "
 "verbleibende direkte Effekt werden jeweils separat berechnet."
 
-#: istatistik/views.py:681
+#: istatistik/views.py:693
 msgid "Bootstrap Güven Aralığı"
 msgstr "Bootstrap-Konfidenzintervall"
 
-#: istatistik/views.py:681
+#: istatistik/views.py:693
 msgid ""
 "Dolaylı etkinin (a×b) anlamlılığı 5000 yeniden örneklemeli bootstrap %95 GA "
 "ile test edilir — Hayes/Process yöntemiyle aynı mantık."
@@ -20568,16 +21058,16 @@ msgstr ""
 " aus 5000 Resampling-Durchläufen getestet — dieselbe Logik wie bei der "
 "Hayes/Process-Methode."
 
-#: istatistik/views.py:682
+#: istatistik/views.py:694
 msgid "Sobel Testi"
 msgstr "Sobel-Test"
 
-#: istatistik/views.py:682
+#: istatistik/views.py:694
 msgid "Klasik Sobel z testi ek doğrulama olarak raporlanır."
 msgstr ""
 "Der klassische Sobel-z-Test wird als zusätzliche Bestätigung ausgewiesen."
 
-#: istatistik/views.py:683
+#: istatistik/views.py:695
 msgid ""
 "Tam/kısmi aracılık sonucu ve APA formatında raporlama cümlesi PDF olarak "
 "indirilir."
@@ -20585,7 +21075,7 @@ msgstr ""
 "Das Ergebnis der vollständigen/partiellen Mediation sowie ein Berichtssatz "
 "im APA-Format können als PDF heruntergeladen werden."
 
-#: istatistik/views.py:695
+#: istatistik/views.py:707
 msgid ""
 "X'in Y üzerindeki etkisinin M aracı değişkeni üzerinden ne kadarının "
 "iletildiğini test edin."
@@ -20593,18 +21083,18 @@ msgstr ""
 "Testen Sie, wie viel des Effekts von X auf Y über die Mediatorvariable M "
 "vermittelt wird."
 
-#: istatistik/views.py:699
+#: istatistik/views.py:711
 msgid "En az 20 gözlem (satır) önerilir."
 msgstr "Mindestens 20 Beobachtungen (Zeilen) werden empfohlen."
 
-#: istatistik/views.py:700
+#: istatistik/views.py:712
 msgid ""
 "Dolaylı etkinin anlamlılığı bootstrap %95 güven aralığı ile test edilir."
 msgstr ""
 "Die Signifikanz des indirekten Effekts wird mit einem "
 "Bootstrap-95%-Konfidenzintervall getestet."
 
-#: istatistik/views.py:716
+#: istatistik/views.py:728
 msgid ""
 "X'in Y üzerindeki etkisinin bir düzenleyici (moderatör) değişkene bağlı "
 "olarak ne zaman güçlendiğini veya zayıfladığını test edin. Basit eğimler, "
@@ -20616,11 +21106,11 @@ msgstr ""
 "Moderationsbericht mit Simple Slopes, einem Interaktionsdiagramm und "
 "Berichterstattung im APA-Format — das Äquivalent zu SPSS Process/Hayes."
 
-#: istatistik/views.py:718
+#: istatistik/views.py:730
 msgid "Etkileşim Terimi (X×W)"
 msgstr "Interaktionsterm (X×W)"
 
-#: istatistik/views.py:718
+#: istatistik/views.py:730
 msgid ""
 "Aiken & West (1991) merkezleme standardıyla X, W ve etkileşim terimlerinin "
 "etkisi ayrı ayrı hesaplanır."
@@ -20628,7 +21118,7 @@ msgstr ""
 "Nach dem Zentrierungsstandard von Aiken & West (1991) werden die Effekte von"
 " X, W und dem Interaktionsterm jeweils separat berechnet."
 
-#: istatistik/views.py:719
+#: istatistik/views.py:731
 msgid ""
 "X'in Y üzerindeki etkisi W'nin düşük/orta/yüksek (veya 2 kategorili) "
 "düzeylerinde ayrı ayrı raporlanır."
@@ -20636,7 +21126,7 @@ msgstr ""
 "Der Effekt von X auf Y wird separat für niedrige/mittlere/hohe (oder "
 "2-kategoriale) Werte von W ausgewiesen."
 
-#: istatistik/views.py:720
+#: istatistik/views.py:732
 msgid ""
 "X-Y ilişkisinin W düzeylerine göre nasıl değiştiğini gösteren görsel grafik "
 "otomatik oluşturulur."
@@ -20644,7 +21134,7 @@ msgstr ""
 "Es wird automatisch ein Diagramm erstellt, das zeigt, wie sich die X-Y-"
 "Beziehung über die Werte von W verändert."
 
-#: istatistik/views.py:721
+#: istatistik/views.py:733
 msgid ""
 "Katsayılar, basit eğimler tablosu ve APA formatında raporlama cümlesi PDF "
 "olarak indirilir."
@@ -20652,7 +21142,7 @@ msgstr ""
 "Die Koeffizienten, die Simple-Slopes-Tabelle und ein Berichtssatz im APA-"
 "Format können als PDF heruntergeladen werden."
 
-#: istatistik/views.py:733
+#: istatistik/views.py:745
 msgid ""
 "X'in Y üzerindeki etkisinin W düzenleyici değişkenine bağlı olarak ne zaman "
 "güçlendiğini veya zayıfladığını test edin."
@@ -20660,11 +21150,11 @@ msgstr ""
 "Testen Sie, wann sich der Effekt von X auf Y in Abhängigkeit von der "
 "Moderatorvariable W verstärkt oder abschwächt."
 
-#: istatistik/views.py:737
+#: istatistik/views.py:749
 msgid "En az 30 gözlem (satır) önerilir."
 msgstr "Mindestens 30 Beobachtungen (Zeilen) werden empfohlen."
 
-#: istatistik/views.py:755
+#: istatistik/views.py:767
 msgid ""
 "Veri setinizdeki kategorik hedef değişkeni sınıflandırın. Özellik önemi, "
 "confusion matrix ve ağaç yapısı görselleştirmesiyle tam ML raporu."
@@ -20673,11 +21163,11 @@ msgstr ""
 "Vollständiger ML-Bericht mit Merkmalswichtigkeit, Konfusionsmatrix und "
 "Visualisierung der Baumstruktur."
 
-#: istatistik/views.py:757
+#: istatistik/views.py:769
 msgid "Ağaç Modeli"
 msgstr "Baummodell"
 
-#: istatistik/views.py:757
+#: istatistik/views.py:769
 msgid ""
 "Gini veya Entropy kriteri ile karar ağacı eğitilir. Maksimum derinliği "
 "kendiniz belirleyebilirsiniz."
@@ -20685,11 +21175,11 @@ msgstr ""
 "Ein Entscheidungsbaum wird mit dem Gini- oder Entropie-Kriterium trainiert. "
 "Die maximale Tiefe können Sie selbst festlegen."
 
-#: istatistik/views.py:758
+#: istatistik/views.py:770
 msgid "Özellik Önemi"
 msgstr "Merkmalswichtigkeit"
 
-#: istatistik/views.py:758
+#: istatistik/views.py:770
 msgid ""
 "Hangi değişkenin sınıflandırmaya en çok katkı yaptığı sıralı tablo ile "
 "gösterilir."
@@ -20697,14 +21187,14 @@ msgstr ""
 "Eine sortierte Tabelle zeigt, welche Variable am meisten zur Klassifikation "
 "beiträgt."
 
-#: istatistik/views.py:759 istatistik/views.py:790
+#: istatistik/views.py:771 istatistik/views.py:802
 msgid ""
 "Test seti üzerindeki doğruluk, kesinlik, duyarlılık ve F1 skoru raporlanır."
 msgstr ""
 "Genauigkeit, Präzision, Sensitivität und F1-Score auf dem Testdatensatz "
 "werden berichtet."
 
-#: istatistik/views.py:760
+#: istatistik/views.py:772
 msgid ""
 "Ağaç yapısı, metrikler ve APA formatında raporlama cümlesi PDF olarak "
 "indirilir."
@@ -20712,7 +21202,7 @@ msgstr ""
 "Baumstruktur, Kennzahlen und ein Berichtssatz im APA-Format werden als PDF "
 "heruntergeladen."
 
-#: istatistik/views.py:786
+#: istatistik/views.py:798
 msgid ""
 "Veri setinizdeki kategorik hedef değişkeni yüksek doğrulukla sınıflandırın. "
 "RBF, Doğrusal ve Polinom kernel seçenekleriyle confusion matrix ve "
@@ -20722,11 +21212,11 @@ msgstr ""
 "Genauigkeit. Vollständiger ML-Bericht mit RBF-, linearem und Polynom-Kernel "
 "inklusive Konfusionsmatrix und Permutation Importance."
 
-#: istatistik/views.py:788
+#: istatistik/views.py:800
 msgid "SVM Modeli"
 msgstr "SVM-Modell"
 
-#: istatistik/views.py:788
+#: istatistik/views.py:800
 msgid ""
 "RBF, Doğrusal veya Polinom kernel ve C düzenleme parametresiyle Destek "
 "Vektör Makinesi eğitilir."
@@ -20734,11 +21224,11 @@ msgstr ""
 "Eine Support-Vector-Machine wird mit RBF-, linearem oder Polynom-Kernel und "
 "dem Regularisierungsparameter C trainiert."
 
-#: istatistik/views.py:789
+#: istatistik/views.py:801
 msgid "Permutation Importance"
 msgstr "Permutation Importance"
 
-#: istatistik/views.py:789
+#: istatistik/views.py:801
 msgid ""
 "Her değişkenin sınıflandırmaya gerçek katkısı permütasyon yöntemiyle "
 "hesaplanır ve sıralanır."
@@ -20746,7 +21236,7 @@ msgstr ""
 "Der tatsächliche Beitrag jeder Variable zur Klassifikation wird per "
 "Permutation berechnet und sortiert."
 
-#: istatistik/views.py:791
+#: istatistik/views.py:803
 msgid ""
 "Metrikler, confusion matrix ve APA formatında raporlama cümlesi PDF olarak "
 "indirilir."
@@ -20754,7 +21244,66 @@ msgstr ""
 "Kennzahlen, Konfusionsmatrix und ein Berichtssatz im APA-Format werden als "
 "PDF heruntergeladen."
 
-#: istatistik/views.py:817
+#: istatistik/views.py:830
+msgid ""
+"Veri setinizdeki gözlemleri benzerliklerine göre otomatik gruplara ayırın. "
+"K-means veya Hiyerarşik (Ward) yöntemle, silhouette skoruna göre otomatik "
+"küme sayısı önerisi ve küme profili tablosuyla tam rapor."
+msgstr ""
+"Gruppieren Sie die Beobachtungen in Ihrem Datensatz automatisch nach "
+"Ähnlichkeit. Erhalten Sie mit der K-means- oder Hierarchischen "
+"(Ward-)Methode einen vollständigen Bericht mit automatischem Vorschlag für "
+"die Clusteranzahl anhand des Silhouetten-Scores und einer Clusterprofil-"
+"Tabelle."
+
+#: istatistik/views.py:832
+#, fuzzy
+#| msgid "Yöntem"
+msgid "İki Yöntem"
+msgstr "Methode"
+
+#: istatistik/views.py:832
+msgid ""
+"K-means veya Hiyerarşik (Ward bağlantı) kümeleme yöntemlerinden birini "
+"seçin."
+msgstr ""
+"Wählen Sie zwischen den Clustering-Methoden K-means oder Hierarchisch (Ward-"
+"Verknüpfung)."
+
+#: istatistik/views.py:833
+#, fuzzy
+#| msgid "Otomatik Öneri"
+msgid "Otomatik k Seçimi"
+msgstr "Automatische Empfehlung"
+
+#: istatistik/views.py:833
+msgid ""
+"Küme sayısını belirtmezseniz silhouette skoruna göre en uygun k otomatik "
+"seçilir."
+msgstr ""
+"Wenn Sie die Clusteranzahl nicht angeben, wird das optimale k automatisch "
+"anhand des Silhouetten-Scores ausgewählt."
+
+#: istatistik/views.py:834
+msgid ""
+"Her kümenin büyüklüğü ve değişken ortalamaları tablo halinde raporlanır."
+msgstr ""
+"Die Größe jedes Clusters und die Variablenmittelwerte werden in einer "
+"Tabelle ausgewiesen."
+
+#: istatistik/views.py:835
+#, fuzzy
+#| msgid ""
+#| "Tam/kısmi aracılık sonucu ve APA formatında raporlama cümlesi PDF olarak "
+#| "indirilir."
+msgid ""
+"Diyagnostik grafik, dağılım grafiği ve APA formatında raporlama cümlesi PDF "
+"olarak indirilir."
+msgstr ""
+"Das Ergebnis der vollständigen/partiellen Mediation sowie ein Berichtssatz "
+"im APA-Format können als PDF heruntergeladen werden."
+
+#: istatistik/views.py:861
 msgid ""
 "Ölçek geçerliğini kanıtlayın. KMO, Bartlett testi, faktör yük matrisi ve "
 "açıklanan varyans tablosu ile tam AFA raporu."
@@ -20762,11 +21311,11 @@ msgstr ""
 "Belegen Sie die Skalenvalidität. Vollständiger EFA-Bericht mit KMO, "
 "Bartlett-Test, Faktorladungsmatrix und Tabelle der erklärten Varianz."
 
-#: istatistik/views.py:819
+#: istatistik/views.py:863
 msgid "Faktör Yapısı"
 msgstr "Faktorstruktur"
 
-#: istatistik/views.py:819
+#: istatistik/views.py:863
 msgid ""
 "Varimax rotasyonlu faktör yük matrisi ile her maddenin hangi faktöre "
 "yüklendiğini görün."
@@ -20774,11 +21323,11 @@ msgstr ""
 "Sehen Sie mit der Varimax-rotierten Faktorladungsmatrix, auf welchem Faktor "
 "jedes Item lädt."
 
-#: istatistik/views.py:820
+#: istatistik/views.py:864
 msgid "KMO & Bartlett"
 msgstr "KMO & Bartlett"
 
-#: istatistik/views.py:820
+#: istatistik/views.py:864
 msgid ""
 "Örneklem yeterliliği (KMO) ve Bartlett küresellik testi ile faktör analizine"
 " uygunluğu sınayın."
@@ -20786,18 +21335,18 @@ msgstr ""
 "Prüfen Sie die Eignung für die Faktorenanalyse mit Stichprobeneignung (KMO) "
 "und Bartlett-Test auf Sphärizität."
 
-#: istatistik/views.py:821
+#: istatistik/views.py:865
 msgid "Her faktörün açıkladığı varyans yüzdesi ve kümülatif varyans tablosu."
 msgstr ""
 "Anteil der von jedem Faktor erklärten Varianz und Tabelle der kumulierten "
 "Varianz."
 
-#: istatistik/views.py:822
+#: istatistik/views.py:866
 msgid "APA formatında raporlanabilir tablo ve yorum içeren PDF indirilir."
 msgstr ""
 "Ein PDF mit APA-gerechter Tabelle und Interpretation wird heruntergeladen."
 
-#: istatistik/views.py:834
+#: istatistik/views.py:878
 msgid ""
 "Ölçek geçerliğini sınayın. Her sütun bir madde, her satır bir katılımcı "
 "olmalıdır."
@@ -20805,25 +21354,25 @@ msgstr ""
 "Prüfen Sie die Skalenvalidität. Jede Spalte muss ein Item und jede Zeile "
 "eine teilnehmende Person sein."
 
-#: istatistik/views.py:836
+#: istatistik/views.py:880
 msgid "Her sütun bir ölçek maddesi olmalıdır (örn. M1, M2…)."
 msgstr "Jede Spalte muss ein Skalen-Item sein (z. B. M1, M2…)."
 
-#: istatistik/views.py:837
+#: istatistik/views.py:881
 msgid "Tüm sütunlar sayısal olmalıdır (Likert vb.)."
 msgstr "Alle Spalten müssen numerisch sein (Likert usw.)."
 
-#: istatistik/views.py:838
+#: istatistik/views.py:882
 msgid "Faktör sayısı otomatik belirlenir (özdeğer > 1 kuralı)."
 msgstr ""
 "Die Anzahl der Faktoren wird automatisch bestimmt (Eigenwert-"
 "größer-1-Regel)."
 
-#: istatistik/views.py:839
+#: istatistik/views.py:883
 msgid "En az 3 madde ve 10 katılımcı gereklidir."
 msgstr "Es sind mindestens 3 Items und 10 Teilnehmende erforderlich."
 
-#: istatistik/views.py:855
+#: istatistik/views.py:899
 msgid ""
 "İki bağımlı (eşleştirilmiş) ölçümü karşılaştırın. Bağımlı t-testinin "
 "parametrik olmayan alternatifi."
@@ -20831,31 +21380,31 @@ msgstr ""
 "Vergleichen Sie zwei abhängige (gepaarte) Messungen. Die nichtparametrische "
 "Alternative zum t-Test für abhängige Stichproben."
 
-#: istatistik/views.py:857
+#: istatistik/views.py:901
 msgid ""
 "Wilcoxon W istatistiği ve p değeri ile iki ölçüm arasındaki farkı sınayın."
 msgstr ""
 "Prüfen Sie den Unterschied zwischen zwei Messungen mit der Wilcoxon-W-"
 "Statistik und dem p-Wert."
 
-#: istatistik/views.py:858
+#: istatistik/views.py:902
 msgid "Rank-biserial korelasyon (r) ile etki büyüklüğünü hesaplayın."
 msgstr ""
 "Berechnen Sie die Effektstärke mit der Rang-biserialen Korrelation (r)."
 
-#: istatistik/views.py:859
+#: istatistik/views.py:903
 msgid "Betimsel Tablo"
 msgstr "Deskriptive Tabelle"
 
-#: istatistik/views.py:859
+#: istatistik/views.py:903
 msgid "Her ölçüm için medyan, ortalama ve fark istatistikleri."
 msgstr "Median, Mittelwert und Differenzstatistiken für jede Messung."
 
-#: istatistik/views.py:860
+#: istatistik/views.py:904
 msgid "APA formatında otomatik rapor cümlesi ve PDF indirme."
 msgstr "Automatischer Berichtssatz im APA-Format und PDF-Download."
 
-#: istatistik/views.py:884
+#: istatistik/views.py:928
 msgid ""
 "3 veya daha fazla bağımlı (eşleştirilmiş) ölçümü karşılaştırın. Tekrarlayan "
 "ölçümler ANOVA'nın parametrik olmayan alternatifi."
@@ -20863,7 +21412,7 @@ msgstr ""
 "Vergleichen Sie 3 oder mehr abhängige (gepaarte) Messungen. Die "
 "nichtparametrische Alternative zur ANOVA mit Messwiederholung."
 
-#: istatistik/views.py:886
+#: istatistik/views.py:930
 msgid ""
 "Friedman χ² istatistiği, serbestlik derecesi ve p değeri ile ölçümler arası "
 "farkı sınayın."
@@ -20871,21 +21420,21 @@ msgstr ""
 "Prüfen Sie den Unterschied zwischen den Messungen mit der Friedman-χ²-"
 "Statistik, den Freiheitsgraden und dem p-Wert."
 
-#: istatistik/views.py:887
+#: istatistik/views.py:931
 msgid "Etki büyüklüğü Kendall's W katsayısı ile raporlanır."
 msgstr "Die Effektstärke wird mit dem Koeffizienten Kendalls W berichtet."
 
-#: istatistik/views.py:888
+#: istatistik/views.py:932
 msgid ""
 "Anlamlı bulunursa Bonferroni düzeltmeli pairwise Wilcoxon karşılaştırmaları."
 msgstr ""
 "Bei Signifikanz paarweise Wilcoxon-Vergleiche mit Bonferroni-Korrektur."
 
-#: istatistik/views.py:889
+#: istatistik/views.py:933
 msgid "APA formatında hazır raporlama cümlesi ve PDF indirme."
 msgstr "Fertiger Berichtssatz im APA-Format und PDF-Download."
 
-#: istatistik/views.py:913
+#: istatistik/views.py:957
 msgid ""
 "Aynı katılımcıların 3+ farklı koşulda/zamanda ölçüldüğü verileri analiz "
 "edin. F istatistiği, η² etki büyüklüğü ve Bonferroni post-hoc ile PDF raporu"
@@ -20895,7 +21444,7 @@ msgstr ""
 "Bedingungen/Zeitpunkten gemessen wurden. Erhalten Sie einen PDF-Bericht mit "
 "F-Statistik, Effektstärke η² und Post-hoc-Tests nach Bonferroni."
 
-#: istatistik/views.py:915
+#: istatistik/views.py:959
 msgid ""
 "Tekrarlayan ölçümler ANOVA ile F istatistiği, serbestlik derecesi ve p "
 "değeri hesaplanır."
@@ -20903,11 +21452,11 @@ msgstr ""
 "Mit der ANOVA mit Messwiederholung werden F-Statistik, Freiheitsgrade und "
 "p-Wert berechnet."
 
-#: istatistik/views.py:916
+#: istatistik/views.py:960
 msgid "Partial eta-squared (η²) ile etki büyüklüğü raporlanır."
 msgstr "Die Effektstärke wird mit partiellem Eta-Quadrat (η²) berichtet."
 
-#: istatistik/views.py:917
+#: istatistik/views.py:961
 msgid ""
 "Bonferroni düzeltmeli bağımlı t-testi ile hangi ölçüm çiftlerinin "
 "farklılaştığı belirlenir."
@@ -20915,17 +21464,17 @@ msgstr ""
 "Mit Bonferroni-korrigierten t-Tests für abhängige Stichproben wird bestimmt,"
 " welche Messpaare sich unterscheiden."
 
-#: istatistik/views.py:918
+#: istatistik/views.py:962
 msgid "ANOVA tablosu, post-hoc ve APA formatında otomatik raporlama cümlesi."
 msgstr ""
 "ANOVA-Tabelle, Post-hoc-Tests und automatischer Berichtssatz im APA-Format."
 
-#: istatistik/views.py:1048
+#: istatistik/views.py:1093
 #, python-format
 msgid "Hesaplama hatası: %(e)s"
 msgstr "Berechnungsfehler: %(e)s"
 
-#: istatistik/views.py:1096
+#: istatistik/views.py:1141
 msgid "Yalnızca CSV veya Excel (.xlsx/.xls) dosyası yükleyebilirsiniz."
 msgstr "Sie können nur CSV- oder Excel-Dateien (.xlsx/.xls) hochladen."
 
@@ -22926,9 +23475,6 @@ msgid ""
 msgstr ""
 "Datenerfassung ohne Code aus internationalen wissenschaftlichen Datenbanken."
 " Keine Python- oder Selenium-Kenntnisse nötig."
-
-#~ msgid "Zayıf"
-#~ msgstr "Schwach"
 
 #~ msgid "Küçük örneklemlerde daha sağlam sonuçlar verir."
 #~ msgstr "Liefert bei kleinen Stichproben robustere Ergebnisse."
