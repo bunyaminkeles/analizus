@@ -144,7 +144,7 @@ def _run_job(job_type: str, job_id: str):
             # Kaynak (OpenAlex/PubMed) BibliometricJob.source'tan okunur
             from bibliometrics.services.job_runner import _execute_job_openalex
             _execute_job_openalex(job_id)
-        elif job_type in ('cronbach', 'normallik', 'betimsel', 'korelasyon', 'ttesti', 'anova', 'mann_whitney', 'kruskal_wallis', 'ki_kare', 'lineer_regresyon', 'lojistik_regresyon', 'afa', 'wilcoxon', 'friedman', 'tekrarli_anova', 'karar_agaci', 'svm', 'mediation', 'moderation', 'kumeleme', 'manova', 'sagkalim'):
+        elif job_type in ('cronbach', 'normallik', 'betimsel', 'korelasyon', 'ttesti', 'anova', 'mann_whitney', 'kruskal_wallis', 'ki_kare', 'lineer_regresyon', 'lojistik_regresyon', 'afa', 'wilcoxon', 'friedman', 'tekrarli_anova', 'karar_agaci', 'svm', 'mediation', 'moderation', 'kumeleme', 'manova', 'sagkalim', 'roc'):
             from istatistik.services.job_runner import _execute_job
             _execute_job(job_id)
         elif job_type == 'transcript':

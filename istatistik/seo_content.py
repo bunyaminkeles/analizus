@@ -1340,4 +1340,69 @@ SEO_CONTENT = {
         ],
     },
 
+    'roc': {
+        'intro': (
+            gettext_lazy('ROC (Receiver Operating Characteristic) eğrisi analizi, sürekli bir '
+            'test veya biyobelirtecin ikili bir referans (altın standart) durumu '
+            'ayırt etme gücünü ölçen bir yöntemdir. Tanısal/tarama testlerinin '
+            'doğruluğunu değerlendirmek için sağlık bilimleri alanında yaygın '
+            'olarak kullanılır. Eğrinin altındaki alan (AUC) 0.5 (rastgele '
+            'tahmin) ile 1.0 (mükemmel ayırt edicilik) arasında değişir.')
+        ),
+        'when_to_use': (
+            gettext_lazy('Bir test veya ölçümün (örn. bir biyobelirteç düzeyi, bir ölçek puanı) '
+            'hastalığı/durumu olan ve olmayan bireyleri ne kadar iyi ayırt '
+            'ettiğini sınamak istediğinizde kullanın. İki farklı testi aynı '
+            'örneklem üzerinde karşılaştırmak istiyorsanız (hangisi daha iyi '
+            'ayırt edicilik sağlıyor?) DeLong testiyle karşılaştırma seçeneğini '
+            'kullanın.')
+        ),
+        'assumptions': (
+            gettext_lazy('Referans (altın standart) değişkeni tam 2 kategorili olmalıdır '
+            '(hasta/sağlıklı gibi). Test değişkeni sürekli veya sıralı '
+            'olmalıdır. İki test karşılaştırmasında her iki test de aynı '
+            'örneklem (aynı bireyler) üzerinde ölçülmüş olmalıdır (eşleştirilmiş/'
+            'paired tasarım) — DeLong testi bu korelasyonu hesaba katar.')
+        ),
+        'how_to_interpret': (
+            gettext_lazy('AUC: 0.90+ mükemmel, 0.80–0.90 çok iyi, 0.70–0.80 iyi, 0.60–0.70 orta, '
+            '0.50–0.60 zayıf, &lt; 0.50 ayırt edicilik yok/ters yönlü. Youden J '
+            'İndeksi (duyarlılık + özgüllük − 1) en yüksek olduğu nokta optimal '
+            'kesim noktası olarak seçilir. Duyarlılık (Sensitivity): Gerçek '
+            'pozitifleri doğru tespit etme oranı. Özgüllük (Specificity): '
+            'Gerçek negatifleri doğru tespit etme oranı. PPV/NPV: Pozitif/negatif '
+            'test sonucunun gerçek durumu yansıtma olasılığı (örneklem '
+            'prevalansına bağlıdır). LR+/LR−: Olabilirlik oranları, test '
+            'sonucunun tanı olasılığını ne kadar değiştirdiğini gösterir.')
+        ),
+        'apa_example': (
+            gettext_lazy('Biyobelirteç X, hastalık durumunu ayırt etmede AUC = .91 ile mükemmel '
+            'bir performans göstermiştir (%95 GA [.87, .96], p &lt; .001). Youden J '
+            'indeksine göre optimal kesim noktası 4.2 olarak belirlenmiş, bu '
+            'noktada duyarlılık %85, özgüllük %88 olarak hesaplanmıştır.')
+        ),
+        'faq': [
+            {
+                'q': gettext_lazy('AUC değeri ne kadar olmalı ki test "iyi" sayılsın?'),
+                'a': (gettext_lazy('Genel kabul gören eşiklere göre AUC ≥ 0.80 "çok iyi", '
+                      '0.70–0.80 "iyi" kabul edilir. Ancak klinik bağlama göre '
+                      'değişir — tarama testlerinde yüksek duyarlılık, '
+                      'doğrulama testlerinde yüksek özgüllük önceliklidir.')),
+            },
+            {
+                'q': gettext_lazy('Optimal kesim noktasını neden Youden J ile belirliyoruz?'),
+                'a': (gettext_lazy('Youden J indeksi (duyarlılık + özgüllük − 1), duyarlılık ve '
+                      'özgüllüğü eşit ağırlıklandırarak tek bir optimal nokta '
+                      'önerir. Klinik önceliğiniz farklıysa (örn. yanlış negatifin '
+                      'maliyeti çok yüksekse) daha yüksek duyarlılıklı farklı bir '
+                      'kesim noktası tercih edilebilir.')),
+            },
+        ],
+        'related_tools': [
+            ('lojistik-regresyon', gettext_lazy('Lojistik Regresyon')),
+            ('karar-agaci', gettext_lazy('Karar Ağacı')),
+            ('svm', gettext_lazy('Destek Vektör Makinesi')),
+        ],
+    },
+
 }

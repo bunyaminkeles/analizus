@@ -1,0 +1,584 @@
+{% extends "istatistik/analiz_console_base.html" %}
+{% load static i18n %}
+{% block canonical %}{% url 'analiz_console' 'roc' %}{% endblock %}
+
+{% block title %}{% trans "ROC Eğrisi / Tanısal Tarama Analizi" %} - Analizus{% endblock %}
+{% block meta_description %}{% trans "ROC eğrisi ve AUC ile bir tanı testinin ayırt edicilik gücünü ölçün. Youden J optimal kesim noktası, duyarlılık/özgüllük tablosu ve DeLong testiyle iki test karşılaştırma." %}{% endblock %}
+
+{% block tool_area %}
+<div class="container py-4">
+
+  <div class="row mb-4 align-items-center">
+    <div class="col">
+      <h2 class="fw-bold ax-text-primary mb-1 d-flex align-items-center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        {% trans "ROC Eğrisi / Tanısal Tarama Analizi" %}
+      </h2>
+      <p class="ax-text-muted mb-0">{% trans "Bir tanı testinin ayırt edicilik gücünü AUC ile ölçün — opsiyonel olarak iki testi karşılaştırın." %}</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="col-auto">
+      <span class="ax-badge ax-badge-secondary">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Sol: Yükleme -->
+    <div class="col-lg-5">
+      <div class="ax-card p-4">
+
+        <!-- Adım 1: Yükleme -->
+        <div id="step-upload">
+          <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            {% trans "Dosya Yükle" %}
+          </h5>
+          <p class="ax-text-muted ax-text-sm mb-3">{% trans "CSV veya Excel (.xlsx/.xls) dosyanızı yükleyin." %}</p>
+
+          {% if not user.is_authenticated %}
+          <div class="ax-alert-info mb-3 ax-text-sm">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">{% trans "Giriş yapın" %}</a> {% trans "veya" %} <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">{% trans "kayıt olun" %}</a> {% trans "— geçmişiniz kaydedilsin." %}</span>
+          </div>
+          {% endif %}
+
+          <div id="upload-area" class="ax-upload-area mb-3" onclick="document.getElementById('file-input').click()">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-2 mx-auto d-block"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 16 4-4 4 4"/></svg>
+            <p class="ax-text-muted ax-text-sm mb-1">{% trans "Dosyayı buraya sürükleyin veya tıklayın" %}</p>
+            <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">{% blocktrans with mb=max_upload_mb %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}</p>
+          </div>
+          <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
+
+          <button id="analyze-btn" class="ax-btn ax-btn-accent w-100 fw-semibold" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M4 6h16"/><path d="M8 12h8"/><path d="M11 18h2"/></svg>
+            {% trans "Sütunları Getir" %}
+          </button>
+
+          <div id="error-msg" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
+        </div>
+
+        <!-- Adım 2: Değişken seçimi -->
+        <div id="step-config" class="d-none">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="ax-text-primary fw-semibold mb-0 d-flex align-items-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M4 6h16"/><path d="M8 12h8"/><path d="M11 18h2"/></svg>
+              {% trans "Değişken Seçimi" %}
+            </h5>
+            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>{% trans "Geri" %}
+            </button>
+          </div>
+          <p class="ax-text-muted ax-text-sm mb-3" id="config-file-info">—</p>
+
+          <div class="mb-2">
+            <label class="ax-text-muted ax-text-sm mb-1 d-block">{% trans "Referans (Altın Standart) Değişkeni (2 kategori)" %}</label>
+            <select id="ref-col" class="ax-select w-100">
+              <option value="">{% trans "— Seçiniz —" %}</option>
+            </select>
+          </div>
+          <div class="mb-3 d-none" id="positive-cat-wrapper">
+            <label class="ax-text-muted ax-text-sm mb-1 d-block">{% trans "Pozitif Kategori (hasta/olay var)" %}</label>
+            <select id="positive-category" class="ax-select w-100"></select>
+            <p class="ax-text-muted ax-text-sm mt-1 mb-0">{% trans "Seçmezseniz ikinci değer (alfabetik/sayısal sırada) otomatik pozitif kabul edilir." %}</p>
+          </div>
+
+          <div class="mb-3">
+            <label class="ax-text-muted ax-text-sm mb-1 d-block">{% trans "Analiz Modu" %}</label>
+            <select id="mode-select" class="ax-select w-100">
+              <option value="single">{% trans "Tek Test" %}</option>
+              <option value="compare">{% trans "İki Test Karşılaştırma (DeLong)" %}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="ax-text-muted ax-text-sm mb-1 d-block" id="test-col-label">{% trans "Test Değişkeni (sayısal)" %}</label>
+            <select id="test-col" class="ax-select w-100">
+              <option value="">{% trans "— Seçiniz —" %}</option>
+            </select>
+          </div>
+          <div class="mb-3 d-none" id="test-col2-wrapper">
+            <label class="ax-text-muted ax-text-sm mb-1 d-block">{% trans "İkinci Test Değişkeni (sayısal)" %}</label>
+            <select id="test-col2" class="ax-select w-100">
+              <option value="">{% trans "— Seçiniz —" %}</option>
+            </select>
+          </div>
+
+          <button id="run-analysis-btn" class="ax-btn ax-btn-accent w-100 fw-semibold" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            {% trans "Analizi Başlat" %}
+          </button>
+          <div id="run-error" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sağ: Sonuç -->
+    <div class="col-lg-7">
+      <div class="ax-card p-4 h-100">
+
+        <div id="panel-idle">
+          <h5 class="ax-text-muted fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
+          <ul class="ax-text-muted ax-text-sm ps-3">
+            <li class="mb-1">{% trans "Her satır bir gözlem (hasta/birey) olmalıdır." %}</li>
+            <li class="mb-1">{% trans "Referans değişkeni tam 2 kategorili olmalıdır (hasta/sağlıklı gibi)." %}</li>
+            <li class="mb-1">{% trans "Test değişkeni sayısal (sürekli veya sıralı) olmalıdır." %}</li>
+            <li class="mb-1">{% trans "Her iki grupta (pozitif/negatif) en az 5 gözlem gereklidir." %}</li>
+          </ul>
+        </div>
+
+        <div id="panel-loading" class="text-center d-none py-4">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-3 mx-auto d-block" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <p class="ax-text-muted">{% trans "ROC analizi yapılıyor, lütfen bekleyin…" %}</p>
+        </div>
+
+        <div id="panel-error" class="d-none">
+          <div class="ax-alert-danger mb-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span id="panel-error-msg" class="ax-text-sm"></span>
+          </div>
+          <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">{% trans "Tekrar Dene" %}</button>
+        </div>
+
+        <div id="panel-done" class="d-none">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <h5 class="ax-text-primary mb-0">{% trans "ROC Analizi Sonucu" %}</h5>
+          </div>
+
+          <div class="row g-2 mb-3" id="auc-tiles"></div>
+
+          <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "ROC Eğrisi" %}</h6>
+          <div class="text-center mb-3">
+            <img id="roc-plot-img" src="" alt="" style="max-width:100%; border-radius:8px;">
+          </div>
+
+          <div id="delong-box" class="ax-rounded-md p-3 mb-3 d-none">
+            <p class="ax-text-sm mb-0 fw-semibold" id="delong-text">—</p>
+          </div>
+
+          <h6 class="ax-text-secondary fw-semibold mb-2" id="diag-table-title-1">{% trans "Tanısal Performans Tablosu" %}</h6>
+          <div class="table-responsive mb-3">
+            <table class="ax-table mb-0" style="font-size:0.8rem;" id="diag-table-1"></table>
+          </div>
+          <div id="diag-table-2-wrapper" class="d-none">
+            <h6 class="ax-text-secondary fw-semibold mb-2" id="diag-table-title-2">{% trans "Tanısal Performans Tablosu" %}</h6>
+            <div class="table-responsive mb-3">
+              <table class="ax-table mb-0" style="font-size:0.8rem;" id="diag-table-2"></table>
+            </div>
+          </div>
+
+          <div class="ax-rounded-md p-3 mb-3" style="background:rgba(0,0,0,0.2); border:1px solid var(--ax-border-default);">
+            <p class="ax-text-muted ax-text-sm fw-semibold mb-1">{% trans "Sonuç" %}</p>
+            <p class="ax-text-primary ax-text-sm mb-0" id="res-conclusion">—</p>
+          </div>
+
+          <!-- APA -->
+          <div class="ax-rounded-md p-3 mb-2" style="background:rgba(37,99,235,0.08); border:1px solid rgba(37,99,235,0.2);">
+            <p class="ax-text-muted ax-text-sm fw-semibold mb-2">{% trans "APA Formatında Raporlama" %}</p>
+            <p class="ax-text-primary ax-text-sm mb-2" id="res-apa" style="font-style:italic;"></p>
+
+            <div id="ai-yorum-box" class="d-none" style="border-top:1px solid var(--ax-border-default); margin:.5rem 0; padding-top:.5rem;">
+              <p class="ax-text-primary ax-text-sm mb-0" id="ai-yorum-text"></p>
+            </div>
+
+            {% include "partials/_s3_retention_notice.html" %}
+            <div class="d-flex gap-2 flex-wrap">
+              <a id="pdf-btn" href="#" target="_blank" class="ax-btn ax-btn-danger fw-semibold ax-btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>{% trans "PDF İndir" %}
+              </a>
+              <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="copyApa(this)">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>{% trans "Kopyala" %}
+              </button>
+              <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>{% trans "Yeni Analiz" %}
+              </button>
+            </div>
+          </div>
+        </div><!-- panel-done -->
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Metodoloji -->
+  <div class="ax-card mt-4 p-4">
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Metodoloji" %}</h5>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Varsayımlar" %}</h6>
+        <ul class="ax-text-muted ax-text-sm ps-3 mb-0">
+          <li>{% trans "Referans değişkeni tam 2 kategorili (hasta/sağlıklı gibi)" %}</li>
+          <li>{% trans "Test değişkeni sayısal (sürekli veya sıralı)" %}</li>
+          <li>{% trans "İki test karşılaştırmasında aynı örneklem (eşleştirilmiş tasarım)" %}</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "AUC Yorumu" %}</h6>
+        <table class="ax-table">
+          <tbody>
+            <tr><td>AUC &lt; 0.50</td><td class="ax-text-danger">{% trans "Ayırt edicilik yok" %}</td></tr>
+            <tr><td>0.50 – 0.70</td><td class="ax-text-warning">{% trans "Zayıf/orta" %}</td></tr>
+            <tr><td>0.70 – 0.80</td><td class="ax-text-info">{% trans "İyi" %}</td></tr>
+            <tr><td>0.80 – 0.90</td><td class="ax-text-success">{% trans "Çok iyi" %}</td></tr>
+            <tr><td>&gt; 0.90</td><td class="ax-text-success fw-bold">{% trans "Mükemmel" %}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEO: Bu Test Nedir? -->
+  <div class="ax-card mt-4 p-4">
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "ROC Eğrisi / Tanısal Tarama Analizi Nedir?" %}</h5>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "ROC (Receiver Operating Characteristic) eğrisi analizi, sürekli bir test veya biyobelirtecin ikili bir referans (altın standart) durumu ayırt etme gücünü ölçen bir yöntemdir. Eğrinin altındaki alan (AUC) 0.5 (rastgele tahmin) ile 1.0 (mükemmel ayırt edicilik) arasında değişir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-0">{% trans "Youden J indeksine göre belirlenen optimal kesim noktasında duyarlılık, özgüllük, PPV, NPV ve olabilirlik oranları (LR+/LR−) raporlanır. İki testi aynı örneklem üzerinde karşılaştırmak için DeLong testi kullanılır." %}</p>
+  </div>
+
+</div>
+
+<script>
+{% blocktrans with mb=max_upload_mb asvar t_max_size %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}
+const T = {
+  maxSize: '{{ t_max_size|escapejs }}',
+  s1: '{% trans " satır, " as t %}{{ t|escapejs }}',
+  s2: '{% trans " sütun" as t %}{{ t|escapejs }}',
+  s3: '{% trans "Sunucu hatası." as t %}{{ t|escapejs }}',
+  s4: '{% trans "Referans değişkeni seçilmedi." as t %}{{ t|escapejs }}',
+  s5: '{% trans "Test değişkeni seçilmedi." as t %}{{ t|escapejs }}',
+  s6: '{% trans "İkinci test değişkeni seçilmedi." as t %}{{ t|escapejs }}',
+  s7: '{% trans "Analiz başarısız." as t %}{{ t|escapejs }}',
+  s8: '{% trans "Durum sorgulanamadı: " as t %}{{ t|escapejs }}',
+  s9: '{% trans "Sonuç gösterilirken hata: " as t %}{{ t|escapejs }}',
+  s10: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  thMetric: '{% trans "Ölçüt" as t %}{{ t|escapejs }}',
+  thValue: '{% trans "Değer" as t %}{{ t|escapejs }}',
+  rowAuc: '{% trans "AUC (%95 GA)" as t %}{{ t|escapejs }}',
+  rowP: 'p (AUC = 0.5)',
+  rowInterp: '{% trans "Yorum" as t %}{{ t|escapejs }}',
+  rowCutoff: '{% trans "Optimal Kesim Noktası (Youden J)" as t %}{{ t|escapejs }}',
+  rowSens: '{% trans "Duyarlılık (Sensitivity)" as t %}{{ t|escapejs }}',
+  rowSpec: '{% trans "Özgüllük (Specificity)" as t %}{{ t|escapejs }}',
+  rowAcc: '{% trans "Doğruluk (Accuracy)" as t %}{{ t|escapejs }}',
+  tileAuc: 'AUC',
+  delongTemplate: '{% trans "DeLong: AUC farkı = {diff}, z = {z}, {p} — {concl}" as t %}{{ t|escapejs }}',
+  delongSig: '{% trans "anlamlı fark var" as t %}{{ t|escapejs }}',
+  delongNs: '{% trans "anlamlı fark yok" as t %}{{ t|escapejs }}',
+};
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(4);
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const TOOL_URL = '{% url "istatistik:roc" %}';
+const STATUS_TEMPLATE = '{% url "istatistik:roc_status" "00000000-0000-0000-0000-000000000000" %}';
+
+let previewId = null, previewFilename = null, allNumericCols = [], categoryValues = {}, pollInterval = null;
+
+const fileInput = document.getElementById('file-input');
+const analyzeBtn = document.getElementById('analyze-btn');
+const runAnalysisBtn = document.getElementById('run-analysis-btn');
+
+fileInput.addEventListener('change', () => {
+  const f = fileInput.files[0];
+  if (!f) return;
+  if (f.size > {{ max_upload_mb }} * 1024 * 1024) {
+    document.getElementById('error-msg').textContent = '{% filter escapejs %}{% blocktrans with mb=max_upload_mb %}Dosya boyutu {{ mb }} MB sınırını aşıyor.{% endblocktrans %}{% endfilter %}';
+    document.getElementById('error-msg').classList.remove('d-none');
+    fileInput.value = '';
+    return;
+  }
+  document.getElementById('file-name-display').textContent = f.name + ' (' + (f.size / 1024).toFixed(0) + ' KB)';
+  analyzeBtn.disabled = false;
+  document.getElementById('error-msg').classList.add('d-none');
+});
+
+analyzeBtn.addEventListener('click', previewFile);
+runAnalysisBtn.addEventListener('click', runAnalysis);
+document.getElementById('ref-col').addEventListener('change', () => { updatePositiveCategory(); updateRunButtonState(); });
+document.getElementById('mode-select').addEventListener('change', onModeChange);
+document.getElementById('test-col').addEventListener('change', updateRunButtonState);
+document.getElementById('test-col2').addEventListener('change', updateRunButtonState);
+
+function previewFile() {
+  const f = fileInput.files[0];
+  if (!f) return;
+  analyzeBtn.disabled = true;
+  const fd = new FormData();
+  fd.append('file', f); fd.append('step', 'preview');
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      analyzeBtn.disabled = false;
+      if (!data.success) { showUploadError(data.error || 'Hata'); return; }
+      previewId = data.preview_id; previewFilename = data.filename;
+      allNumericCols = data.numeric_cols || [];
+      categoryValues = data.category_values || {};
+      document.getElementById('config-file-info').textContent = data.filename + ' — ' + data.n_rows + T.s1 + data.columns.length + T.s2;
+      buildSelect('ref-col', Object.keys(categoryValues));
+      buildSelect('test-col', allNumericCols);
+      buildSelect('test-col2', allNumericCols);
+      updatePositiveCategory();
+      document.getElementById('step-upload').classList.add('d-none');
+      document.getElementById('step-config').classList.remove('d-none');
+    })
+    .catch(() => { analyzeBtn.disabled = false; showUploadError(T.s3); });
+}
+
+function buildSelect(id, cols) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = `<option value="">— {% filter escapejs %}{% trans "Seçiniz" %}{% endfilter %} —</option>`;
+  cols.forEach(c => { sel.innerHTML += `<option value="${_esc(c)}">${_esc(c)}</option>`; });
+}
+
+function updatePositiveCategory() {
+  const refVal = document.getElementById('ref-col').value;
+  const wrapper = document.getElementById('positive-cat-wrapper');
+  const sel = document.getElementById('positive-category');
+  const values = categoryValues[refVal];
+  if (!values || values.length !== 2) {
+    wrapper.classList.add('d-none');
+    sel.innerHTML = '';
+    return;
+  }
+  wrapper.classList.remove('d-none');
+  sel.innerHTML = values.map((v, i) => `<option value="${_esc(v)}"${i === 1 ? ' selected' : ''}>${_esc(v)}</option>`).join('');
+}
+
+function onModeChange() {
+  const mode = document.getElementById('mode-select').value;
+  document.getElementById('test-col2-wrapper').classList.toggle('d-none', mode !== 'compare');
+  document.getElementById('test-col-label').textContent = mode === 'compare'
+    ? '{% filter escapejs %}{% trans "Birinci Test Değişkeni (sayısal)" %}{% endfilter %}'
+    : '{% filter escapejs %}{% trans "Test Değişkeni (sayısal)" %}{% endfilter %}';
+  updateRunButtonState();
+}
+
+function updateRunButtonState() {
+  const refVal = document.getElementById('ref-col').value;
+  const testVal = document.getElementById('test-col').value;
+  const mode = document.getElementById('mode-select').value;
+  let ok = !!refVal && !!testVal;
+  if (ok && mode === 'compare') {
+    ok = !!document.getElementById('test-col2').value;
+  }
+  runAnalysisBtn.disabled = !ok;
+}
+
+function runAnalysis() {
+  const refVal = document.getElementById('ref-col').value;
+  const testVal = document.getElementById('test-col').value;
+  const mode = document.getElementById('mode-select').value;
+  if (!refVal) { showRunError(T.s4); return; }
+  if (!testVal) { showRunError(T.s5); return; }
+
+  const fd = new FormData();
+  fd.append('step', 'run');
+  fd.append('preview_id', previewId);
+  fd.append('filename', previewFilename);
+  fd.append('ref_col', refVal);
+  fd.append('test_col', testVal);
+  const posCat = document.getElementById('positive-category').value;
+  if (posCat) fd.append('positive_category', posCat);
+  fd.append('mode', mode);
+  if (mode === 'compare') {
+    const test2Val = document.getElementById('test-col2').value;
+    if (!test2Val) { showRunError(T.s6); return; }
+    fd.append('test_col2', test2Val);
+  }
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('loading');
+
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) { showPanel('idle'); showRunError(data.error || 'Hata'); return; }
+      startPolling(data.job_id);
+    })
+    .catch(() => { showPanel('idle'); showRunError(T.s3); });
+}
+
+function startPolling(jobId) {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(() => {
+    fetch(STATUS_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', jobId), {headers:{'X-Requested-With':'XMLHttpRequest'}})
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(data => {
+        if (data.status === 'completed') {
+          clearInterval(pollInterval);
+          showResults(data);
+        } else if (data.status === 'failed') {
+          clearInterval(pollInterval);
+          showPanel('error');
+          document.getElementById('panel-error-msg').textContent = data.error || T.s7;
+        }
+      })
+      .catch(err => {
+        clearInterval(pollInterval);
+        showPanel('error');
+        document.getElementById('panel-error-msg').textContent = T.s8 + err.message;
+      });
+  }, 2000);
+}
+
+function showResults(data) {
+  try { _showResults(data); } catch(e) {
+    showPanel('error');
+    document.getElementById('panel-error-msg').textContent = T.s9 + e.message;
+  }
+}
+
+function diagRows(roc) {
+  return [
+    [T.rowAuc, `${roc.auc.toFixed(4)} [${roc.ci_low.toFixed(4)}, ${roc.ci_high.toFixed(4)}]`],
+    [T.rowP, pStr(roc.p_value)],
+    [T.rowInterp, _esc(roc.interpretation)],
+    [T.rowCutoff, roc.best_threshold.toFixed(4)],
+    [T.rowSens, roc.sensitivity.toFixed(4)],
+    [T.rowSpec, roc.specificity.toFixed(4)],
+    ['PPV', roc.ppv !== null ? roc.ppv.toFixed(4) : '—'],
+    ['NPV', roc.npv !== null ? roc.npv.toFixed(4) : '—'],
+    [T.rowAcc, roc.accuracy !== null ? roc.accuracy.toFixed(4) : '—'],
+    ['LR+', roc.lr_plus !== null ? roc.lr_plus.toFixed(4) : '—'],
+    ['LR−', roc.lr_minus !== null ? roc.lr_minus.toFixed(4) : '—'],
+  ];
+}
+
+function renderDiagTable(elId, roc) {
+  const head = `<thead><tr><th>${T.thMetric}</th><th>${T.thValue}</th></tr></thead>`;
+  const body = '<tbody>' + diagRows(roc).map(([k, v]) => `<tr><td class="fw-semibold">${k}</td><td>${v}</td></tr>`).join('') + '</tbody>';
+  document.getElementById(elId).innerHTML = head + body;
+}
+
+function aucTile(roc) {
+  return `<div class="col-6">
+    <div class="ax-stat-box text-center">
+      <div class="ax-stat-val ax-text-accent">${roc.auc.toFixed(3)}</div>
+      <div class="ax-stat-label">${_esc(roc.test_col)} — ${T.tileAuc}</div>
+    </div>
+  </div>`;
+}
+
+function _showResults(data) {
+  const r = data.result_data;
+
+  if (r.mode === 'single') {
+    document.getElementById('auc-tiles').innerHTML = aucTile(r.roc);
+    document.getElementById('diag-table-title-1').textContent = `{% filter escapejs %}{% trans "Tanısal Performans Tablosu" %}{% endfilter %} — ${_esc(r.roc.test_col)}`;
+    renderDiagTable('diag-table-1', r.roc);
+    document.getElementById('diag-table-2-wrapper').classList.add('d-none');
+    document.getElementById('delong-box').classList.add('d-none');
+  } else {
+    document.getElementById('auc-tiles').innerHTML = aucTile(r.roc1) + aucTile(r.roc2);
+    document.getElementById('diag-table-title-1').textContent = `{% filter escapejs %}{% trans "Tanısal Performans Tablosu" %}{% endfilter %} — ${_esc(r.roc1.test_col)}`;
+    renderDiagTable('diag-table-1', r.roc1);
+    document.getElementById('diag-table-2-wrapper').classList.remove('d-none');
+    document.getElementById('diag-table-title-2').textContent = `{% filter escapejs %}{% trans "Tanısal Performans Tablosu" %}{% endfilter %} — ${_esc(r.roc2.test_col)}`;
+    renderDiagTable('diag-table-2', r.roc2);
+
+    const dl = r.delong;
+    const delongBox = document.getElementById('delong-box');
+    delongBox.classList.remove('d-none');
+    if (dl.significant) {
+      delongBox.style.background = 'rgba(74,222,128,0.08)'; delongBox.style.border = '1px solid rgba(74,222,128,0.2)';
+    } else {
+      delongBox.style.background = 'rgba(248,113,113,0.08)'; delongBox.style.border = '1px solid rgba(248,113,113,0.2)';
+    }
+    document.getElementById('delong-text').textContent = fmt(T.delongTemplate, {
+      diff: dl.auc_diff.toFixed(4), z: dl.z.toFixed(3), p: pStr(dl.p_value),
+      concl: dl.significant ? T.delongSig : T.delongNs,
+    });
+  }
+
+  if (r.roc_plot_b64) {
+    document.getElementById('roc-plot-img').src = 'data:image/png;base64,' + r.roc_plot_b64;
+  }
+
+  document.getElementById('res-conclusion').textContent = r.conclusion;
+  document.getElementById('res-apa').textContent = r.conclusion;
+  document.getElementById('pdf-btn').href = data.pdf_url;
+
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (r.ai_comment) {
+    document.getElementById('ai-yorum-text').textContent = r.ai_comment;
+    aiBox.classList.remove('d-none');
+  } else {
+    aiBox.classList.add('d-none');
+  }
+
+  showPanel('done');
+}
+
+function copyApa(btn) {
+  let copyText = document.getElementById('res-apa').textContent;
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (aiBox && !aiBox.classList.contains('d-none')) {
+    copyText += '\n\n' + document.getElementById('ai-yorum-text').textContent;
+  }
+  navigator.clipboard.writeText(copyText).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' + T.s10;
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  });
+}
+
+function showPanel(name) {
+  ['idle','loading','error','done'].forEach(n => {
+    document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
+  });
+}
+function showUploadError(msg) { const el = document.getElementById('error-msg'); el.textContent = msg; el.classList.remove('d-none'); }
+function showRunError(msg) { const el = document.getElementById('run-error'); el.textContent = msg; el.classList.remove('d-none'); }
+function resetUI() {
+  if (pollInterval) clearInterval(pollInterval);
+  document.getElementById('step-config').classList.add('d-none');
+  document.getElementById('step-upload').classList.remove('d-none');
+  previewId = null; previewFilename = null;
+  fileInput.value = ''; analyzeBtn.disabled = true;
+  document.getElementById('file-name-display').textContent = T.maxSize;
+  document.getElementById('error-msg').classList.add('d-none');
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('idle');
+}
+
+{% if active_job_id %}
+showPanel('loading');
+startPolling('{{ active_job_id }}');
+{% endif %}
+</script>
+
+<style>
+  .ax-upload-area { border: 2px dashed var(--ax-border-hover); border-radius: var(--ax-radius-md); background: rgba(0,0,0,0.1); padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+  .ax-upload-area:hover { border-color: var(--ax-accent-primary); }
+  .ax-btn-accent { background: var(--ax-accent-primary); color: #fff; border: 1px solid transparent; }
+  .ax-btn-accent:hover { background: var(--ax-accent-primary-hover); color: #fff; }
+  .ax-btn-accent:disabled { opacity: 0.45; cursor: not-allowed; }
+  .ax-btn-danger { background: var(--ax-accent-danger); color: #fff; border: 1px solid transparent; }
+  .ax-btn-danger:hover { opacity: 0.9; color: #fff; }
+  .ax-btn-outline-secondary { border: 1px solid var(--ax-border-hover); color: var(--ax-text-secondary); background: transparent; }
+  .ax-btn-outline-secondary:hover { background: rgba(255,255,255,0.05); color: var(--ax-text-primary); }
+  .ax-alert-danger, .ax-alert-info { display: flex; align-items: flex-start; padding: 12px 16px; border-radius: var(--ax-radius-md); }
+  .ax-alert-danger  { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.25);  color: var(--ax-accent-danger); }
+  .ax-alert-info    { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); color: var(--ax-text-secondary); }
+  .ax-link { color: var(--ax-accent-primary); text-decoration: none; }
+  .ax-link:hover { text-decoration: underline; }
+  .ax-stat-box { background: rgba(0,0,0,0.2); border: 1px solid var(--ax-border-default); border-radius: var(--ax-radius-md); padding: 12px; }
+  .ax-stat-val   { font-size: 1.5rem; font-weight: 700; }
+  .ax-stat-label { font-size: 0.75rem; color: var(--ax-text-muted); margin-top: 2px; }
+  .ax-badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
+  .ax-badge-secondary { background: rgba(71,85,105,0.25); color: var(--ax-text-secondary); }
+  .ax-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--ax-text-primary); }
+  .ax-table th, .ax-table td { padding: 8px 12px; border-bottom: 1px solid var(--ax-border-default); }
+  .ax-table thead th { color: var(--ax-text-secondary); font-weight: 600; background: rgba(0,0,0,0.2); }
+  .ax-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .ax-text-accent  { color: var(--ax-accent-primary) !important; }
+  .ax-text-success { color: var(--ax-accent-secondary) !important; }
+  .ax-text-warning { color: var(--ax-accent-warning) !important; }
+  .ax-text-danger  { color: var(--ax-accent-danger) !important; }
+  .ax-select { background: rgba(0,0,0,0.2); border: 1px solid var(--ax-border-default); border-radius: var(--ax-radius-sm); color: var(--ax-text-primary); padding: 6px 10px; font-size: 0.85rem; }
+  .ax-select:focus { outline: none; border-color: var(--ax-accent-primary); }
+  @keyframes ax-spin { 100% { transform: rotate(360deg); } }
+</style>
+{% endblock %}

@@ -277,6 +277,17 @@ def _execute_job_in_language(job_id: str):
                 group_col=opts.get('group_col', ''),
                 covariate_cols=opts.get('covariate_cols', []),
             )
+        elif job.tool == 'roc':
+            from .roc import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                mode=opts.get('mode', 'single'),
+                test_col=opts.get('test_col', ''),
+                test_col2=opts.get('test_col2', ''),
+                ref_col=opts.get('ref_col', ''),
+                positive_category=opts.get('positive_category', ''),
+            )
         else:
             job.mark_failed(gettext('Bilinmeyen araç: %(tool)s') % {'tool': job.tool})
             return
@@ -367,6 +378,7 @@ _AI_PROMPT_EXCLUDE_KEYS = {
     'profile_plot_b64',      # manova: base64 PNG, metin yoruma katkı sağlamıyor
     'km_plot_b64',           # sagkalim: base64 PNG, metin yoruma katkı sağlamıyor
     'curves',                # sagkalim: uzun zaman/olasılık dizileri, yorum için gereksiz
+    'roc_plot_b64',          # roc: base64 PNG, metin yoruma katkı sağlamıyor
 }
 
 

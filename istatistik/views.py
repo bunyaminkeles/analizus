@@ -51,6 +51,7 @@ TOOL_CATEGORIES = [
         ('mediation',         gettext_lazy('Aracılık Analizi (Mediation)'), 'bi-diagram-3-fill', 'purple', 'mediation'),
         ('moderation',        gettext_lazy('Düzenleyici Değişken Analizi (Moderation)'), 'bi-sliders', 'purple', 'moderation'),
         ('sagkalim',          gettext_lazy('Sağkalım Analizi (Kaplan-Meier / Cox)'), 'bi-heart-pulse', 'danger', 'sagkalim'),
+        ('roc',               gettext_lazy('ROC Eğrisi / Tanısal Tarama'), 'bi-bullseye', 'info', 'roc'),
     ]),
     (gettext_lazy('Makine Öğrenmesi'), [
         ('karar_agaci', gettext_lazy('Karar Ağacı'), 'bi-diagram-2', 'purple', 'karar-agaci'),
@@ -391,6 +392,37 @@ def sagkalim_landing(request):
     })
 
 
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def roc_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('roc'),
+            'promo_title': gettext('ROC Eğrisi / Tanısal Tarama Analizi'),
+            'promo_icon': 'bi-bullseye',
+            'promo_color': 'info',
+            'promo_description': gettext('Bir tanı testinin/biyobelirtecin ayırt edicilik gücünü AUC, optimal kesim noktası ve duyarlılık/özgüllük tablosu ile ölçün. İki testi DeLong testiyle karşılaştırma seçeneği dahil.'),
+            'promo_features': [
+                {'icon': 'bi-graph-up', 'title': gettext('ROC Eğrisi & AUC'), 'desc': gettext('AUC değeri Hanley-McNeil %95 güven aralığı ile raporlanır.')},
+                {'icon': 'bi-bullseye', 'color': 'warning', 'title': gettext('Optimal Kesim Noktası'), 'desc': gettext('Youden J indeksine göre en iyi kesim noktası ve o noktadaki duyarlılık/özgüllük/PPV/NPV/LR+/LR- tablosu.')},
+                {'icon': 'bi-arrow-left-right', 'color': 'success', 'title': gettext('İki Test Karşılaştırma'), 'desc': gettext('Aynı örneklemdeki iki testin AUC farkı DeLong testiyle sınanır.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('ROC eğrisi grafiği ve APA formatında raporlama cümlesi PDF olarak indirilir.')},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'roc')
+    active_job = _get_active_job(request.user, 'roc')
+    return render(request, 'istatistik/roc.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': gettext('ROC Eğrisi / Tanısal Tarama Analizi'),
+        'tool_icon': 'bi-bullseye',
+        'tool_color': 'info',
+        **_console_ctx('roc', request),
+    })
+
+
 def _handle_group_tool_post(request, tool):
     """t-testi ve ANOVA için iki adımlı POST yönetimi.
     Adım 1: 'step=preview' — dosyayı parse et, sütun isimlerini döndür.
@@ -449,7 +481,7 @@ def _handle_group_tool_post(request, tool):
             'numeric_cols': numeric_cols,
             'n_rows': len(df),
         }
-        if tool in ('lojistik_regresyon', 'sagkalim'):
+        if tool in ('lojistik_regresyon', 'sagkalim', 'roc'):
             # Kullanıcının hedef kategoriyi (y=1 / olay) seçebilmesi için binary sütunların değerleri
             response_data['category_values'] = {
                 col: sorted(str(v) for v in df[col].dropna().unique())
@@ -507,6 +539,18 @@ def _handle_group_tool_post(request, tool):
                 options['group_col'] = request.POST.get('group_col', '')
             else:
                 options['covariate_cols'] = request.POST.getlist('covariate_cols')
+        elif tool == 'roc':
+            mode = request.POST.get('mode', 'single')
+            if mode not in ('single', 'compare'):
+                mode = 'single'
+            options = {
+                'mode': mode,
+                'test_col': request.POST.get('test_col', ''),
+                'ref_col': request.POST.get('ref_col', ''),
+                'positive_category': request.POST.get('positive_category', ''),
+            }
+            if mode == 'compare':
+                options['test_col2'] = request.POST.get('test_col2', '')
         elif tool in ('cronbach', 'normallik', 'betimsel'):
             cols = request.POST.getlist('columns')
             options = {'columns': cols} if cols else {}
@@ -1155,6 +1199,7 @@ def analiz_console(request, tool_slug):
         'kumeleme': kumeleme_landing,
         'manova': manova_landing,
         'sagkalim': sagkalim_landing,
+        'roc': roc_landing,
     }
     view_fn = _SLUG_MAP.get(tool_slug)
     if not view_fn:
