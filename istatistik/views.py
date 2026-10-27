@@ -52,6 +52,7 @@ TOOL_CATEGORIES = [
         ('moderation',        gettext_lazy('Düzenleyici Değişken Analizi (Moderation)'), 'bi-sliders', 'purple', 'moderation'),
         ('sagkalim',          gettext_lazy('Sağkalım Analizi (Kaplan-Meier / Cox)'), 'bi-heart-pulse', 'danger', 'sagkalim'),
         ('roc',               gettext_lazy('ROC Eğrisi / Tanısal Tarama'), 'bi-bullseye', 'info', 'roc'),
+        ('path_analizi',      gettext_lazy('Basit Path Analizi'), 'bi-signpost-split', 'teal', 'path-analizi'),
     ]),
     (gettext_lazy('Makine Öğrenmesi'), [
         ('karar_agaci', gettext_lazy('Karar Ağacı'), 'bi-diagram-2', 'purple', 'karar-agaci'),
@@ -588,6 +589,12 @@ def _handle_group_tool_post(request, tool):
                 'm_col': request.POST.get('m_col', ''),
                 'y_col': request.POST.get('y_col', ''),
             }
+        elif tool == 'path_analizi':
+            options = {
+                'x_col': request.POST.get('x_col', ''),
+                'm_cols': request.POST.getlist('m_cols'),
+                'y_col': request.POST.get('y_col', ''),
+            }
         elif tool == 'moderation':
             options = {
                 'x_col': request.POST.get('x_col', ''),
@@ -839,6 +846,37 @@ def mediation_landing(request):
             gettext('Dolaylı etkinin anlamlılığı bootstrap %95 güven aralığı ile test edilir.'),
         ],
         **_console_ctx('mediation', request),
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def path_analizi_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('path_analizi'),
+            'promo_title': gettext('Basit Path Analizi (Çoklu Aracı Değişken)'),
+            'promo_icon': 'bi-signpost-split',
+            'promo_color': 'teal',
+            'promo_description': gettext('Bir bağımsız değişkenin, birden fazla paralel aracı (mediator) değişken üzerinden bağımlı değişkene etkisini tek seferde test edin. Hayes PROCESS Model 4\'ün çoklu aracı versiyonu — her aracı için ayrı bootstrap güven aralığı.'),
+            'promo_features': [
+                {'icon': 'bi-signpost-split', 'title': gettext('Çoklu Paralel Aracı'), 'desc': gettext('2-5 aracı değişken aynı anda modellenir; her biri için ayrı dolaylı etki (a×b) hesaplanır.')},
+                {'icon': 'bi-arrow-repeat', 'color': 'info', 'title': gettext('Bootstrap Güven Aralığı'), 'desc': gettext('Her aracının ve toplam dolaylı etkinin anlamlılığı 5000 yeniden örneklemeli bootstrap %95 GA ile test edilir.')},
+                {'icon': 'bi-diagram-3', 'color': 'warning', 'title': gettext('Toplam Dolaylı Etki'), 'desc': gettext('Tüm aracı değişkenlerin birleşik (Σ a×b) etkisi ve direkt etki (c\') ayrı ayrı raporlanır.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Yol katsayıları tablosu ve APA formatında raporlama cümlesi PDF olarak indirilir.')},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'path_analizi')
+    active_job = _get_active_job(request.user, 'path_analizi')
+    return render(request, 'istatistik/path_analizi.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': gettext('Basit Path Analizi (Çoklu Aracı Değişken)'),
+        'tool_icon': 'bi-signpost-split',
+        'tool_color': 'teal',
+        **_console_ctx('path_analizi', request),
     })
 
 
@@ -1200,6 +1238,7 @@ def analiz_console(request, tool_slug):
         'manova': manova_landing,
         'sagkalim': sagkalim_landing,
         'roc': roc_landing,
+        'path-analizi': path_analizi_landing,
     }
     view_fn = _SLUG_MAP.get(tool_slug)
     if not view_fn:
@@ -1208,14 +1247,19 @@ def analiz_console(request, tool_slug):
 
 
 def _handle_orneklem_calc(request):
-    from .services.orneklem import calculate
+    from .services.orneklem import calculate, calculate_post_hoc
     try:
+        mode = request.POST.get('mode', 'a_priori')
         test_type = request.POST.get('test_type', '')
         effect_size = float(request.POST.get('effect_size', 0))
         alpha = float(request.POST.get('alpha', 0.05))
-        power = float(request.POST.get('power', 0.80))
         groups = int(request.POST.get('groups', 2))
-        result = calculate(test_type, effect_size, alpha, power, groups)
+        if mode == 'post_hoc':
+            n = int(request.POST.get('n', 0))
+            result = calculate_post_hoc(test_type, effect_size, alpha, n, groups)
+        else:
+            power = float(request.POST.get('power', 0.80))
+            result = calculate(test_type, effect_size, alpha, power, groups)
         return JsonResponse({'success': True, 'result': result})
     except ValueError as e:
         return JsonResponse({'error': str(e)}, status=400)

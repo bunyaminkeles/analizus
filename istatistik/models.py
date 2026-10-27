@@ -28,6 +28,7 @@ TOOL_CHOICES = [
     ('manova', 'Çok Değişkenli Varyans Analizi (MANOVA)'),
     ('sagkalim', 'Sağkalım Analizi (Kaplan-Meier / Cox Regresyon)'),
     ('roc', 'ROC Eğrisi / Tanısal Tarama Analizi'),
+    ('path_analizi', 'Basit Path Analizi (Çoklu Aracı Değişken)'),
 ]
 
 STATUS_CHOICES = [

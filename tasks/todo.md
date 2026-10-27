@@ -463,11 +463,80 @@ maddelerde.
      (kümeleme/MANOVA/sağkalım/ROC eklenince 18→24 oldu) — `TOOL_CATEGORIES`
      gerçek toplamı (24) ile güncellendi, ilgili 2 EN/DE çevirisi yeniden
      girildi; `analizus.md`/`tasks/todo.md` içindeki TARİHLİ geçmiş kayıtlara
-     (o tarihte gerçekten 18'di) kasıtlı dokunulmadı. Henüz `dev`→`main`
-     merge edilmedi (kullanıcı onayı bekliyor).
+     (o tarihte gerçekten 18'di) kasıtlı dokunulmadı. Kullanıcı onayıyla
+     `dev`→`main` merge + push edildi, GitHub Actions otomatik Hetzner
+     deploy'u tetikledi (19 sn), migration production'da uygulandı, canlı
+     doğrulandı (`https://www.analizus.com/analiz/roc/` TR/EN/DE 200; ana
+     sayfa artık "24 ücretsiz istatistik aracı" gösteriyor).
+  6. [x] **(27 Ekim 2026) Basit Path Analizi (Çoklu Paralel Aracı Değişken) —
+     TAMAMLANDI.** Kapsam kararı kullanıcı onayıyla netleşti: mediation.py'nin
+     çoklu-aracı uzantısı (Hayes PROCESS Model 4'ün çoklu aracı versiyonu) —
+     flexible genel path modeli veya `semopy` ile tam SEM DEĞİL. Yeni bağımlılık
+     gerekmedi, mevcut `statsmodels` OLS zinciri + bootstrap (5000 iterasyon,
+     percentile %95 GA) yeterli oldu (`lifelines`/pandas 3.1.0 çakışması emsali
+     burada devreye girmedi). X (sayısal veya 2 kategorili, dummy'lenir) →
+     2-5 paralel aracı M1..Mk (birbirinden bağımsız, aynı anda modellenir) →
+     Y; her aracı için a (X→M) / b (M→Y, diğer aracılar kontrollü) yolları,
+     dolaylı etki (a×b) ve bootstrap %95 GA; toplam dolaylı etki (Σ a×b) ve
+     c/c' (toplam/direkt etki) üzerinden tam/kısmi/yok aracılık sınıflandırması.
+     `istatistik/services/path_analizi.py` (yeni), model `TOOL_CHOICES` +
+     migration `0018`, `views.py` (TOOL_CATEGORIES, POST options, landing view,
+     `_SLUG_MAP`), `job_runner.py` dispatch, `urls.py`/`urls_analiz.py`,
+     `job_queue.py` whitelist, `forum/sitemaps.py`, `seo_content.py` (FAQ'de
+     Path Analizi vs Mediation farkı + seri/serial mediation sınırlaması
+     açıklandı) — hepsi tek seferde entegre edildi. Şablon
+     `path_analizi.html` manova.html'in checkbox-list deseniyle yazıldı (X/Y
+     select + M için dinamik 2-5 checkbox listesi, X/Y seçilince otomatik
+     filtrelenir). **Bulunan/düzeltilen 2 hata:** (1) `makemessages
+     --no-location` yanlışlıkla kullanıldı, location yorumlarını silip ~15 bin
+     satırlık gereksiz diff yarattı — fark edilip `git checkout` ile geri
+     alındı, doğru komutla (`-l en -l de`, location'lı) yeniden çalıştırıldı;
+     (2) JS'teki `rowCPrime` sabitinde `{% trans "c\' ..." %}` şeklinde
+     gereksiz backslash-escape kullanılmıştı (manova.html'de daha önce
+     yakalanan aynı tuzak) — yanlış/duplicate msgid üretiyordu, backslash
+     kaldırılarak düzeltildi. Docker'da gerçek (mocklanmamış) e2e test:
+     preview → run → async job (senkron patch ile) → sonuç → PDF (S3'e
+     gerçek upload + HEAD isteğiyle 200/application/pdf doğrulandı) — n=200
+     sentetik veri, 2 aracı anlamlı (kısmi aracılık) + 1 aracı anlamsız örneği
+     ile uçtan uca test edildi. Anonim promo sayfası TR/EN/DE 200, auth
+     konsol sayfası 200, `/analiz/` hub sayfasında kart görünüyor, sitemap
+     200. 39 yeni msgid EN/DE çevrildi (`%%95` çift-yüzdeleme tuzağına dikkat
+     edildi — template-side msgid'de `%%`, msgstr'de de `%%` olmalı; render
+     testiyle tek `%`'ye doğru çözüldüğü doğrulandı), `compilemessages`
+     hatasız. `pytest forum/tests.py` 104/104 yeşil. Henüz push/merge
+     edilmedi — kullanıcının "push et"/"merge et" onayı bekleniyor.
+  7. [x] **(27 Ekim 2026) Güç Analizi (Post-hoc Power) — TAMAMLANDI.** Kapsam
+     kararı kullanıcı onayıyla netleşti: yeni ayrı bir araç DEĞİL, mevcut
+     `orneklem` hesaplayıcısına "Örneklem Hesapla (A Priori)" / "Güç Hesapla
+     (Post-hoc)" mod geçişi eklendi. Yeni kütüphane gerekmedi —
+     `orneklem.py`'deki `_ttest_power`/`_anova_power`/`_correlation_power`
+     fonksiyonları zaten n verildiğinde gücü hesaplıyordu (a priori mod
+     bunları binary search içinde hedef güce ulaşan n'i ararken kullanıyordu);
+     yeni `calculate_post_hoc()` aynı fonksiyonları n sabitken DOĞRUDAN
+     çağırıyor, binary search'e gerek yok. Round-trip doğrulandı: a priori
+     modda d=0.5/α=0.05/güç=0.80 için bulunan n=63, post-hoc moda aynen
+     verilince achieved_power=0.8013 ile tam örtüştü. 4 test tipi (bağımsız/
+     bağımlı t-testi, ANOVA, korelasyon) + hata durumları (n<2, r≥1) test
+     edildi. Yeni `_interpret_power()` yorumu 4 kademeli (çok düşük/düşük/
+     yeterli/çok yüksek güç, Tip II hata riski vurgusu). `views.py`'de
+     `_handle_orneklem_calc` artık `mode` POST parametresine göre
+     `calculate`/`calculate_post_hoc` arasında dallanıyor (mode gönderilmezse
+     a_priori — geriye dönük uyumlu, eski davranış değişmedi).
+     `orneklem.html` şablonunda mod seçimi butonları eklendi; post-hoc modda
+     "İstatistiksel Güç" input'u gizlenip yerine "Elde Edilmiş Örneklem
+     Büyüklüğü (n)" input'u çıkıyor, sonuç panelindeki ana kutu (öncesi:
+     toplam örneklem) post-hoc modda elde edilen güce dönüşüyor, yorum kutusu
+     "Yorum"/öneri yerine "Güç Yorumu" gösteriyor, APA cümlesi moda göre iki
+     ayrı şablondan (`T.apa`/`T.apaPostHoc`) üretiliyor — mevcut Bootstrap
+     tasarımı korundu (bu dosya henüz ax- migrasyonuna dahil değil, kapsam
+     dışına çıkılmadı). Docker'da view endpoint'i her iki mod + hata senaryosu
+     (eksik n → 400) ile doğrudan test edildi, `/analiz/orneklem/` TR/EN/DE
+     200. 15 yeni msgid EN/DE çevrildi (`gettext()` + `{% trans %}` render
+     testiyle doğrulandı), `compilemessages` hatasız, `pytest forum/tests.py`
+     104/104 yeşil. Henüz push/merge edilmedi — kullanıcının "push et"/
+     "merge et" onayı bekleniyor.
   - Düşük öncelik / sonra değerlendirilebilir: diskriminant analizi, ordinal/
-    multinomial lojistik regresyon, basit path analizi/SEM, güç analizi
-    (post-hoc power).
+    multinomial lojistik regresyon.
 
 - [ ] **(25 Ekim 2026) İstatistik Araçları Denetimi — 18 aracın tamamı (hesaplama +
   rapor kalitesi) 7 paralel subagent ile salt-okunur incelendi. Hiçbir dosya
