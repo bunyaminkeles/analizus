@@ -503,8 +503,10 @@ maddelerde.
      200. 39 yeni msgid EN/DE çevrildi (`%%95` çift-yüzdeleme tuzağına dikkat
      edildi — template-side msgid'de `%%`, msgstr'de de `%%` olmalı; render
      testiyle tek `%`'ye doğru çözüldüğü doğrulandı), `compilemessages`
-     hatasız. `pytest forum/tests.py` 104/104 yeşil. Henüz push/merge
-     edilmedi — kullanıcının "push et"/"merge et" onayı bekleniyor.
+     hatasız. `pytest forum/tests.py` 104/104 yeşil. `dev`→`main` merge +
+     push edildi (27 Ekim 2026), GitHub Actions otomatik Hetzner deploy'u
+     tetikledi (18 sn), migration `0018` production'da uygulandı, canlı
+     doğrulandı (`/analiz/path-analizi/` TR/EN 200).
   7. [x] **(27 Ekim 2026) Güç Analizi (Post-hoc Power) — TAMAMLANDI.** Kapsam
      kararı kullanıcı onayıyla netleşti: yeni ayrı bir araç DEĞİL, mevcut
      `orneklem` hesaplayıcısına "Örneklem Hesapla (A Priori)" / "Güç Hesapla

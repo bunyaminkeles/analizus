@@ -3751,10 +3751,10 @@ msgstr "Training is done with your own data, not a ready-made demo dataset."
 
 #: forum/templates/forum/egitim.html:197 forum/templates/forum/egitim.html:230
 msgid ""
-"Eğitimi, bu sitedeki 24 istatistik aracını, bibliyometrik analiz motorunu ve"
-" YÖK Tez tarama altyapısını geliştiren ekip veriyor."
+"Eğitimi, bu sitedeki istatistik araçlarını, bibliyometrik analiz motorunu "
+"ve YÖK Tez tarama altyapısını geliştiren ekip veriyor."
 msgstr ""
-"Training is delivered by the team that built this site's 24 statistics "
+"Training is delivered by the team that built this site's statistics "
 "tools, its bibliometric analysis engine, and its thesis-scanning "
 "infrastructure."
 
@@ -6270,8 +6270,8 @@ msgstr "regression"
 
 #: forum/templates/forum/home.html:272
 #: forum/templates/forum/home_intl.html:115
-msgid "18 aracın tümü →"
-msgstr "All 18 tools →"
+msgid "Analiz araçlarının tümü →"
+msgstr "All analysis tools →"
 
 #: forum/templates/forum/home.html:276
 msgid "Ya da bu işi bir uzmana bırak →"
@@ -25453,6 +25453,17 @@ msgid ""
 msgstr ""
 "No-code data scraping from international academic databases. No Python or "
 "Selenium skills needed."
+
+#~ msgid "18 aracın tümü →"
+#~ msgstr "All 18 tools →"
+
+#~ msgid ""
+#~ "Eğitimi, bu sitedeki 24 istatistik aracını, bibliyometrik analiz motorunu ve"
+#~ " YÖK Tez tarama altyapısını geliştiren ekip veriyor."
+#~ msgstr ""
+#~ "Training is delivered by the team that built this site's 24 statistics "
+#~ "tools, its bibliometric analysis engine, and its thesis-scanning "
+#~ "infrastructure."
 
 #, fuzzy
 #~ msgid "c\\' (Direkt Etki: X→Y, aracılar kontrollü)"
