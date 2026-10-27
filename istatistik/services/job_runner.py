@@ -265,6 +265,18 @@ def _execute_job_in_language(job_id: str):
                 group_col=opts.get('group_col', ''),
                 dep_cols=opts.get('dep_cols', []),
             )
+        elif job.tool == 'sagkalim':
+            from .sagkalim import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                method=opts.get('method', 'kaplan_meier'),
+                duration_col=opts.get('duration_col', ''),
+                event_col=opts.get('event_col', ''),
+                event_category=opts.get('event_category', ''),
+                group_col=opts.get('group_col', ''),
+                covariate_cols=opts.get('covariate_cols', []),
+            )
         else:
             job.mark_failed(gettext('Bilinmeyen araç: %(tool)s') % {'tool': job.tool})
             return
@@ -353,6 +365,8 @@ _AI_PROMPT_EXCLUDE_KEYS = {
     'diagnostic_plot_b64',   # kumeleme: base64 PNG (elbow/dendrogram), metin yoruma katkı sağlamıyor
     'scatter_plot_b64',      # kumeleme: base64 PNG, metin yoruma katkı sağlamıyor
     'profile_plot_b64',      # manova: base64 PNG, metin yoruma katkı sağlamıyor
+    'km_plot_b64',           # sagkalim: base64 PNG, metin yoruma katkı sağlamıyor
+    'curves',                # sagkalim: uzun zaman/olasılık dizileri, yorum için gereksiz
 }
 
 

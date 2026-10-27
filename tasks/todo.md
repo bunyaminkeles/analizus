@@ -368,11 +368,57 @@ maddelerde.
      `enqueue` senkron çalıştırılarak, `upload_bytes_to_s3` mock'lanarak) test
      edildi; TR/EN/DE anonim (promo) sayfa 200, sitemap üç dilde URL'i
      içeriyor, 104/104 pytest yeşil, `docker compose restart web` + nginx
-     yapıldı. Henüz `dev`→`main` merge edilmedi (kullanıcı onayı bekliyor).
-  4. [ ] **Sağkalım Analizi (Kaplan-Meier / Cox Regresyon)** — sağlık bilimleri
-     tezlerinde çok aranıyor; `survival-analizi-101-kaplan-meier-cox-regresyon-...`
-     blog yazısı zaten iyi SEO alıyor (bkz. aşağıda ~satır 2197) ama karşılığında
-     araç yok.
+     yapıldı. Kullanıcı onayıyla (önce yedek alındı) `dev`→`main` merge + push
+     edildi, GitHub Actions otomatik Hetzner deploy'u tetikledi, migration
+     production'da uygulandı, canlı doğrulandı (`https://www.analizus.com/
+     analiz/manova/` TR/EN/DE 200).
+  4. [x] **(27 Ekim 2026 TAMAMLANDI) Sağkalım Analizi (Kaplan-Meier / Cox
+     Regresyon)** — kullanıcı kararıyla: tek araç (Yöntem dropdown: Kaplan-Meier
+     / Cox Regresyon, kümeleme ile aynı desen) + Cox'ta oransal tehlikeler
+     (proportional hazards) varsayım testi eklendi. **Bağımlılık notu:**
+     `lifelines` paketi denendi ama `pandas<3.0` gerektirdiği için projenin
+     `pandas==3.1.0` sabitlemesiyle çakıştı (Docker build `ResolutionImpossible`
+     hatası verdi) — pandas'ı düşürmek yerine **statsmodels'in kendi
+     `duration` modülü** (zaten kurulu, `statsmodels==0.15.0`) kullanıldı:
+     `SurvfuncRight` (Kaplan-Meier, Greenwood SE, medyan), `survdiff`
+     (log-rank, 2+ grup genellemeli) ve `PHReg` (Cox, Efron tie-breaking).
+     Yeni `istatistik/services/sagkalim.py`: olay değişkeni lojistik_regresyon
+     ile birebir aynı 2-kategori→0/1 kodlama deseni (`event_category` ile
+     hedef kategori seçimi, `views.py`'deki `category_values` önizleme
+     mekanizması `lojistik_regresyon`'dan `sagkalim`'e de genişletildi).
+     Cox'ta: hazard oranı + %95 GA (log ölçekten `exp()` ile dönüştürüldü),
+     Harrell's C-index (elle, O(n²) ama n≤birkaç bin için hızlı), oransal
+     tehlikeler testi (Grambsch & Therneau 1994 yaklaşımı — ölçeklenmiş
+     Schoenfeld rezidülerinin olay zamanı sırasıyla Pearson korelasyonu;
+     `statsmodels`'te hazır fonksiyon yok, elle implemente edildi).
+     Değişken başına minimum 10 olay (EPV kuralı) hard validation olarak
+     uygulandı. Mevcut 22 araçla aynı iskelet: `TOOL_CHOICES` + migration
+     `0016_add_sagkalim_tool`, `job_runner.py` dispatch dalı +
+     `_AI_PROMPT_EXCLUDE_KEYS` (km_plot_b64 + curves — uzun zaman/olasılık
+     dizileri), `views.py` ("Regresyon Analizleri" grubuna 5. satır,
+     `sagkalim_landing`, `_handle_group_tool_post` options dalı,
+     `_SLUG_MAP`), `urls.py`, `job_queue.py` whitelist, yeni `istatistik/
+     templates/istatistik/sagkalim.html` (grup değişkeni YA DA kovaryat
+     checkbox-listesi yönteme göre dinamik gösterilip gizleniyor), `seo_content.py`,
+     `forum/sitemaps.py`. **Bulunan 2 hata, düzeltildi:** (1) Kaplan-Meier
+     eğrisinin standart hata dizisinde (Greenwood formülü, risk seti
+     küçüldüğünde) `NaN` oluşabiliyordu — Postgres JSONField NaN kabul
+     etmediği için job tamamlanırken patlıyordu (CLAUDE.md'de zaten
+     belgelenmiş "result_data kaydetmeden önce inf/nan temizle" tuzağı);
+     `_safe_round()` yardımcısıyla NaN/inf → `None` çevrildi. (2) Şablonda
+     `{% trans %}` içinde "%95" kullanmak (manova turundaki `\'` kaçış dersine
+     benzer ama farklı bir tuzak) Django'nun extraction aşamasında "%%95"e
+     dönüştürülüyor, Python tarafındaki (`sagkalim.py`) "%95" msgid'inden
+     FARKLI bir kayıt oluşturuyor — ikisi ayrı ayrı çevrildi, izole
+     `Template()` render testiyle (hem EN hem DE) tek `%` olarak doğru
+     render edildiği doğrulandı. 107 yeni msgid EN/DE'ye çevrildi. Docker'da:
+     `analyze()` doğrudan (KM gruplu/gruplu-anlamsız/grupsuz × Cox × string
+     olay etiketi + event_category × 6 geçersiz girdi senaryosu) ve tam
+     uçtan uca akış (her iki yöntem için ayrı ayrı preview→run→job
+     kuyruğu→analiz→PDF) test edildi; TR/EN/DE anonim sayfa 200, sitemap üç
+     dilde URL'i içeriyor, 104/104 pytest yeşil, `docker compose restart web`
+     + nginx yapıldı. Henüz `dev`→`main` merge edilmedi (kullanıcı onayı
+     bekliyor).
   5. [ ] **ROC Eğrisi / Tanısal Tarama Analizi** — lojistik regresyon FAQ'ı
      zaten AUC-ROC'tan bahsediyor ama hesaplayan araç yok (bu tutarsızlık
      aşağıda ~satır 134-135'te zaten not edilmiş).

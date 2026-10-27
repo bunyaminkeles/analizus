@@ -26,6 +26,7 @@ TOOL_CHOICES = [
     ('moderation', 'Düzenleyici Değişken Analizi (Moderation)'),
     ('kumeleme', 'Kümeleme Analizi (K-means / Hiyerarşik)'),
     ('manova', 'Çok Değişkenli Varyans Analizi (MANOVA)'),
+    ('sagkalim', 'Sağkalım Analizi (Kaplan-Meier / Cox Regresyon)'),
 ]
 
 STATUS_CHOICES = [

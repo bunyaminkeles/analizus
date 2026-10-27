@@ -1270,4 +1270,74 @@ SEO_CONTENT = {
         ],
     },
 
+    'sagkalim': {
+        'intro': (
+            gettext_lazy('Sağkalım analizi, bir olayın (ölüm, nüksetme, terk, arıza vb.) '
+            'gerçekleşmesine kadar geçen süreyi inceleyen ve sansürlü (gözlem '
+            'süresi içinde olay henüz gerçekleşmemiş) gözlemleri doğru şekilde '
+            'hesaba katan istatistiksel yöntemler bütünüdür. Sağlık bilimleri '
+            'tezlerinde (hasta takibi, tedavi karşılaştırması) en sık kullanılan '
+            'yöntemlerden biridir. İki temel yaklaşım sunulur: Kaplan-Meier '
+            '(tanımlayıcı sağkalım eğrisi) ve Cox Regresyon (çoklu değişkenli '
+            'hazard modeli).')
+        ),
+        'when_to_use': (
+            gettext_lazy('Kaplan-Meier\'i, bir grubun (veya birden fazla grubun) zaman içindeki '
+            'sağkalım olasılığını tanımlamak ve gruplar arasında log-rank testi '
+            'ile karşılaştırma yapmak istediğinizde kullanın. Cox Regresyon\'u, '
+            'birden fazla değişkenin (yaş, tedavi türü, evre vb.) olay riski '
+            '(hazard) üzerindeki ortak etkisini aynı anda test etmek '
+            'istediğinizde kullanın.')
+        ),
+        'assumptions': (
+            gettext_lazy('Olay değişkeni tam 2 kategorili olmalıdır (olay oldu / sansürlü). '
+            'Süre değişkeni negatif olamaz. Sansürleme mekanizması "bilgilendirici '
+            'olmayan" (non-informative) olmalıdır — yani bir gözlemin sansürlenme '
+            'nedeni, o gözlemin gerçek olay riskiyle ilişkili olmamalıdır. Cox '
+            'Regresyon ek olarak oransal tehlikeler (proportional hazards) '
+            'varsayımını gerektirir: kovaryatların hazard oranı üzerindeki etkisi '
+            'zaman içinde sabit kalmalıdır — bu, Schoenfeld rezidüleri ile test '
+            'edilir.')
+        ),
+        'how_to_interpret': (
+            gettext_lazy('Medyan Sağkalım Süresi: Örneklemin yarısının olayı yaşadığı '
+            'süre. Log-Rank Testi: p < .05 ise karşılaştırılan gruplar arasında '
+            'sağkalım süreleri istatistiksel olarak farklıdır. Hazard Oranı (HR): '
+            '1\'den büyükse risk artışına, 1\'den küçükse risk azalışına işaret '
+            'eder (HR = 1.5 → risk %50 daha yüksek). Concordance Index (C): '
+            'Modelin ayırt edicilik gücü; 0.5 rastgele tahmine, 1.0 mükemmel '
+            'ayırt ediciliğe karşılık gelir (0.7+ genellikle iyi kabul edilir). '
+            'Oransal Tehlikeler Testi: p < .05 ilgili değişkenin etkisinin '
+            'zamana göre sabit olmayabileceğine işaret eder.')
+        ),
+        'apa_example': (
+            gettext_lazy('Log-rank testine göre tedavi grupları arasında sağkalım süreleri '
+            'açısından anlamlı bir fark bulunmuştur, χ²(1) = 8.00, p = .005. Cox '
+            'regresyon modelinde tedavi, olay riskini anlamlı şekilde azaltmıştır, '
+            'HR = 0.58, %95 GA [0.42, 0.82], p = .002.')
+        ),
+        'faq': [
+            {
+                'q': gettext_lazy('Kaplan-Meier mi, Cox Regresyon mu kullanmalıyım?'),
+                'a': (gettext_lazy('Yalnızca tek bir kategorik grup değişkenine göre sağkalımı '
+                      'karşılaştırmak istiyorsanız Kaplan-Meier + log-rank testi '
+                      'yeterlidir. Birden fazla değişkeni (yaş gibi sürekli '
+                      'değişkenler dahil) aynı anda kontrol etmek istiyorsanız Cox '
+                      'Regresyon gereklidir.')),
+            },
+            {
+                'q': gettext_lazy('Sansürlü (censored) gözlem ne demektir?'),
+                'a': (gettext_lazy('Gözlem süresi bittiğinde (çalışma sona erdiğinde, hasta '
+                      'takipten çıktığında vb.) olayın henüz gerçekleşmemiş olması '
+                      'durumudur. Bu gözlemler analiz dışı bırakılmaz — bilinen süre '
+                      'boyunca "olaysız hayatta kaldığı" bilgisiyle hesaba katılır.')),
+            },
+        ],
+        'related_tools': [
+            ('lojistik-regresyon', gettext_lazy('Lojistik Regresyon')),
+            ('lineer-regresyon', gettext_lazy('Çoklu Doğrusal Regresyon')),
+            ('anova', gettext_lazy('Tek Yönlü ANOVA')),
+        ],
+    },
+
 }

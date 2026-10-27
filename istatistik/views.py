@@ -50,6 +50,7 @@ TOOL_CATEGORIES = [
         ('lojistik_regresyon',gettext_lazy('Lojistik Regresyon'),        'bi-bezier2',         'success',  'lojistik-regresyon'),
         ('mediation',         gettext_lazy('Aracılık Analizi (Mediation)'), 'bi-diagram-3-fill', 'purple', 'mediation'),
         ('moderation',        gettext_lazy('Düzenleyici Değişken Analizi (Moderation)'), 'bi-sliders', 'purple', 'moderation'),
+        ('sagkalim',          gettext_lazy('Sağkalım Analizi (Kaplan-Meier / Cox)'), 'bi-heart-pulse', 'danger', 'sagkalim'),
     ]),
     (gettext_lazy('Makine Öğrenmesi'), [
         ('karar_agaci', gettext_lazy('Karar Ağacı'), 'bi-diagram-2', 'purple', 'karar-agaci'),
@@ -359,6 +360,37 @@ def manova_landing(request):
     })
 
 
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def sagkalim_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('sagkalim'),
+            'promo_title': gettext('Sağkalım Analizi (Kaplan-Meier / Cox Regresyon)'),
+            'promo_icon': 'bi-heart-pulse',
+            'promo_color': 'danger',
+            'promo_description': gettext('Süre/olay verinizi Kaplan-Meier ile tanımlayıcı olarak veya Cox Regresyon ile çoklu değişkenli olarak analiz edin. Sağkalım eğrisi, log-rank testi, hazard oranları ve oransal tehlikeler varsayım testi ile tam rapor.'),
+            'promo_features': [
+                {'icon': 'bi-graph-down', 'title': gettext('Kaplan-Meier Eğrisi'), 'desc': gettext('Medyan sağkalım süresi, opsiyonel grup karşılaştırması ve log-rank testi.')},
+                {'icon': 'bi-bezier2', 'color': 'warning', 'title': gettext('Cox Regresyon'), 'desc': gettext('Çoklu kovaryat ile hazard oranları (HR), %95 güven aralığı ve concordance index.')},
+                {'icon': 'bi-shield-check', 'color': 'success', 'title': gettext('Varsayım Testi'), 'desc': gettext('Oransal tehlikeler (proportional hazards) varsayımı Schoenfeld rezidüleri ile test edilir.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Sağkalım eğrisi grafiği ve APA formatında raporlama cümlesi PDF olarak indirilir.')},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'sagkalim')
+    active_job = _get_active_job(request.user, 'sagkalim')
+    return render(request, 'istatistik/sagkalim.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': gettext('Sağkalım Analizi (Kaplan-Meier / Cox Regresyon)'),
+        'tool_icon': 'bi-heart-pulse',
+        'tool_color': 'danger',
+        **_console_ctx('sagkalim', request),
+    })
+
+
 def _handle_group_tool_post(request, tool):
     """t-testi ve ANOVA için iki adımlı POST yönetimi.
     Adım 1: 'step=preview' — dosyayı parse et, sütun isimlerini döndür.
@@ -417,8 +449,8 @@ def _handle_group_tool_post(request, tool):
             'numeric_cols': numeric_cols,
             'n_rows': len(df),
         }
-        if tool == 'lojistik_regresyon':
-            # Kullanıcının hedef kategoriyi (y=1) seçebilmesi için binary sütunların değerleri
+        if tool in ('lojistik_regresyon', 'sagkalim'):
+            # Kullanıcının hedef kategoriyi (y=1 / olay) seçebilmesi için binary sütunların değerleri
             response_data['category_values'] = {
                 col: sorted(str(v) for v in df[col].dropna().unique())
                 for col in all_cols if df[col].nunique() == 2
@@ -461,6 +493,20 @@ def _handle_group_tool_post(request, tool):
                 'group_col': request.POST.get('group_col', ''),
                 'dep_cols': request.POST.getlist('dep_cols'),
             }
+        elif tool == 'sagkalim':
+            method = request.POST.get('method', 'kaplan_meier')
+            if method not in ('kaplan_meier', 'cox'):
+                method = 'kaplan_meier'
+            options = {
+                'method': method,
+                'duration_col': request.POST.get('duration_col', ''),
+                'event_col': request.POST.get('event_col', ''),
+                'event_category': request.POST.get('event_category', ''),
+            }
+            if method == 'kaplan_meier':
+                options['group_col'] = request.POST.get('group_col', '')
+            else:
+                options['covariate_cols'] = request.POST.getlist('covariate_cols')
         elif tool in ('cronbach', 'normallik', 'betimsel'):
             cols = request.POST.getlist('columns')
             options = {'columns': cols} if cols else {}
@@ -1108,6 +1154,7 @@ def analiz_console(request, tool_slug):
         'svm': svm_landing,
         'kumeleme': kumeleme_landing,
         'manova': manova_landing,
+        'sagkalim': sagkalim_landing,
     }
     view_fn = _SLUG_MAP.get(tool_slug)
     if not view_fn:
