@@ -43,6 +43,7 @@ TOOL_CATEGORIES = [
         ('wilcoxon',       gettext_lazy('Wilcoxon İşaret Testi'),     'bi-arrows-collapse',   'info',     'wilcoxon'),
         ('friedman',       gettext_lazy('Friedman Testi'),            'bi-bar-chart-steps',   'success',  'friedman'),
         ('tekrarli_anova', gettext_lazy('Tekrarlayan Ölçümler ANOVA'),'bi-arrow-repeat',      'primary',  'tekrarli-anova'),
+        ('manova',         gettext_lazy('Çok Değişkenli Varyans Analizi (MANOVA)'), 'bi-layers', 'purple', 'manova'),
     ]),
     (gettext_lazy('Regresyon Analizleri'), [
         ('lineer_regresyon',  gettext_lazy('Çoklu Doğrusal Regresyon'), 'bi-graph-up-arrow',  'primary',  'lineer-regresyon'),
@@ -327,6 +328,37 @@ def anova_landing(request):
     })
 
 
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def manova_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('manova'),
+            'promo_title': gettext('Çok Değişkenli Varyans Analizi (MANOVA)'),
+            'promo_icon': 'bi-layers',
+            'promo_color': 'purple',
+            'promo_description': gettext('Bir grup değişkeninin 2 veya daha fazla bağımlı değişken üzerindeki ortak etkisini tek seferde test edin. Wilks\' Lambda dahil tüm çok değişkenli testler, takip ANOVA\'ları ve Box\'s M testi ile tam rapor.'),
+            'promo_features': [
+                {'icon': 'bi-layers', 'title': gettext('Çok Değişkenli Testler'), 'desc': gettext('Wilks\' Lambda, Pillai\'s Trace, Hotelling-Lawley Trace ve Roy\'s Largest Root — SPSS ile aynı tablo.')},
+                {'icon': 'bi-diagram-3', 'color': 'warning', 'title': gettext('Takip ANOVA\'ları'), 'desc': gettext('MANOVA anlamlıysa her bağımlı değişken için Bonferroni düzeltmeli takip ANOVA\'ları otomatik hesaplanır.')},
+                {'icon': 'bi-grid-3x3', 'color': 'success', 'title': gettext('Box\'s M Testi'), 'desc': gettext('Kovaryans matrisi homojenliği varsayımı test edilir.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Profil grafiği, çok değişkenli test tablosu ve APA formatında raporlama cümlesi PDF olarak indirilir.')},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'manova')
+    active_job = _get_active_job(request.user, 'manova')
+    return render(request, 'istatistik/manova.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': gettext('Çok Değişkenli Varyans Analizi (MANOVA)'),
+        'tool_icon': 'bi-layers',
+        'tool_color': 'purple',
+        **_console_ctx('manova', request),
+    })
+
+
 def _handle_group_tool_post(request, tool):
     """t-testi ve ANOVA için iki adımlı POST yönetimi.
     Adım 1: 'step=preview' — dosyayı parse et, sütun isimlerini döndür.
@@ -423,6 +455,11 @@ def _handle_group_tool_post(request, tool):
                 'group_col': request.POST.get('group_col', ''),
                 'dep_col': request.POST.get('dep_col', ''),
                 'posthoc': request.POST.get('posthoc', 'tukey'),
+            }
+        elif tool == 'manova':
+            options = {
+                'group_col': request.POST.get('group_col', ''),
+                'dep_cols': request.POST.getlist('dep_cols'),
             }
         elif tool in ('cronbach', 'normallik', 'betimsel'):
             cols = request.POST.getlist('columns')
@@ -1070,6 +1107,7 @@ def analiz_console(request, tool_slug):
         'karar-agaci': karar_agaci_landing,
         'svm': svm_landing,
         'kumeleme': kumeleme_landing,
+        'manova': manova_landing,
     }
     view_fn = _SLUG_MAP.get(tool_slug)
     if not view_fn:

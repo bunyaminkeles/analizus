@@ -257,6 +257,14 @@ def _execute_job_in_language(job_id: str):
                 method=opts.get('method', 'kmeans'),
                 n_clusters=opts.get('n_clusters'),
             )
+        elif job.tool == 'manova':
+            from .manova import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                group_col=opts.get('group_col', ''),
+                dep_cols=opts.get('dep_cols', []),
+            )
         else:
             job.mark_failed(gettext('Bilinmeyen araç: %(tool)s') % {'tool': job.tool})
             return
@@ -344,6 +352,7 @@ _AI_PROMPT_EXCLUDE_KEYS = {
     'interaction_plot_b64',  # moderation: base64 PNG, metin yoruma hiç katkı sağlamıyor
     'diagnostic_plot_b64',   # kumeleme: base64 PNG (elbow/dendrogram), metin yoruma katkı sağlamıyor
     'scatter_plot_b64',      # kumeleme: base64 PNG, metin yoruma katkı sağlamıyor
+    'profile_plot_b64',      # manova: base64 PNG, metin yoruma katkı sağlamıyor
 }
 
 

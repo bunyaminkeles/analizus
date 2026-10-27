@@ -1203,4 +1203,71 @@ SEO_CONTENT = {
         ],
     },
 
+    'manova': {
+        'intro': (
+            gettext_lazy('Çok Değişkenli Varyans Analizi (MANOVA), tek yönlü ANOVA\'nın '
+            'birden fazla bağımlı değişkeni aynı anda test edebilen genişletilmiş '
+            'halidir. Bir grup (kategorik) değişkenin, birbiriyle ilişkili birden '
+            'fazla sürekli bağımlı değişken üzerindeki ortak etkisini tek bir '
+            'testle sınar; bu sayede her değişkeni ayrı ayrı test etmenin yol '
+            'açacağı Tip-I hata birikimi önlenir.')
+        ),
+        'when_to_use': (
+            gettext_lazy('Bir grup değişkeninin (örn. tedavi türü, sınıf, cinsiyet) birden '
+            'fazla birbiriyle ilişkili bağımlı değişken (örn. kaygı, motivasyon '
+            've akademik başarı puanları) üzerindeki ortak etkisini test etmek '
+            'istediğinizde kullanın. Bağımlı değişkenler birbiriyle ilişkisizse '
+            've ayrı ayrı anlamlıysa, her biri için ayrı ANOVA yapmak daha uygun '
+            'olabilir.')
+        ),
+        'assumptions': (
+            gettext_lazy('Bağımlı değişkenler sürekli/sayısal ve aralarında orta düzeyde '
+            'korelasyon olmalıdır (çok yüksek korelasyon çoklu bağlantı sorunu '
+            'yaratır). Çok değişkenli normallik varsayılır. Gruplar arası '
+            'kovaryans matrislerinin homojenliği Box\'s M testi ile sınanır — '
+            'ancak bu test normallik ihlaline ve büyük örneklem büyüklüğüne '
+            'aşırı duyarlıdır; anlamlı çıksa bile Pillai\'s Trace bu ihlale '
+            'nispeten dayanıklıdır. Her grupta gözlem sayısı, bağımlı değişken '
+            'sayısından fazla olmalıdır.')
+        ),
+        'how_to_interpret': (
+            gettext_lazy('Wilks\' Lambda: En yaygın raporlanan çok değişkenli test '
+            'istatistiğidir; 0\'a yaklaştıkça grup etkisi güçlenir, p < .05 ise '
+            'anlamlıdır. Pillai\'s Trace, Hotelling-Lawley Trace ve Roy\'s '
+            'Largest Root alternatif/tamamlayıcı istatistiklerdir (SPSS\'in '
+            '"Multivariate Tests" tablosuyla aynı dört test). MANOVA anlamlı '
+            'çıktığında hangi bağımlı değişken(ler)in farka kaynaklık ettiğini '
+            'belirlemek için Bonferroni düzeltmeli (α / değişken sayısı) takip '
+            '(follow-up) ANOVA\'larına bakılır.')
+        ),
+        'apa_example': (
+            gettext_lazy('Grup değişkeninin bağımlı değişkenler üzerinde anlamlı bir ortak '
+            'etkisi bulunmuştur, Wilks\' Λ = .62, F(6, 170) = 8.45, p < .001, '
+            'kısmi η² = .38. Takip ANOVA\'ları, bu farkın öncelikle X değişkeninden '
+            'kaynaklandığını göstermiştir.')
+        ),
+        'faq': [
+            {
+                'q': gettext_lazy('MANOVA mı, ayrı ayrı ANOVA\'lar mı yapmalıyım?'),
+                'a': (gettext_lazy('Bağımlı değişkenleriniz kavramsal olarak ilişkiliyse '
+                      '(ör. bir ölçeğin alt boyutları) MANOVA tercih edilmelidir — '
+                      'hem Tip-I hata birikimini önler hem de değişkenler arası '
+                      'ilişkiyi hesaba katar. Değişkenler birbiriyle ilgisizse ayrı '
+                      'ANOVA\'lar daha yorumlanabilir sonuç verir.')),
+            },
+            {
+                'q': gettext_lazy('Hangi çok değişkenli test istatistiğini raporlamalıyım?'),
+                'a': (gettext_lazy('Wilks\' Lambda literatürde en sık raporlanandır ve APA '
+                      'formatının standart tercihidir. Grup büyüklükleri dengesiz veya '
+                      'kovaryans homojenliği şüpheliyse Pillai\'s Trace daha '
+                      'dayanıklı (robust) kabul edilir.')),
+            },
+        ],
+        'related_tools': [
+            ('anova', gettext_lazy('Tek Yönlü ANOVA')),
+            ('korelasyon', gettext_lazy('Korelasyon Analizi')),
+            ('afa', gettext_lazy('Açıklayıcı Faktör Analizi')),
+        ],
+    },
+
 }
