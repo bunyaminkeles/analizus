@@ -28,6 +28,7 @@ _TOOLS = [
     ('friedman', views.friedman_landing, 'friedman', True),
     ('tekrarli-anova', views.tekrarli_anova_landing, 'tekrarli_anova', True),
     ('manova', views.manova_landing, 'manova', True),
+    ('sagkalim', views.sagkalim_landing, 'sagkalim', True),
     ('karar-agaci', views.karar_agaci_landing, 'karar_agaci', True),
     ('svm', views.svm_landing, 'svm', True),
     ('kumeleme', views.kumeleme_landing, 'kumeleme', True),
