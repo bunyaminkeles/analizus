@@ -48,6 +48,7 @@ def calculate(test_type: str, effect_size: float, alpha: float,
 
     return {
         'test_type': test_type,
+        'mode': 'a_priori',
         'label': label,
         'n_per_group': n,
         'n_total': n_total,
@@ -119,6 +120,71 @@ def _correlation(r: float, alpha: float, target_power: float):
     return _binary_search(lambda n: _correlation_power(n, r, alpha), target_power)
 
 
+def calculate_post_hoc(test_type: str, effect_size: float, alpha: float,
+                        n: int, groups: int = 2) -> dict:
+    """
+    Tamamlanmış bir çalışma için elde edilmiş örneklem büyüklüğü, etki
+    büyüklüğü ve alfa verildiğinde ulaşılan istatistiksel gücü (1-β) hesaplar
+    (post-hoc / gözlemlenen güç). _ttest_power/_anova_power/_correlation_power
+    doğrudan çağrılır — a priori moddaki binary search (hedef güce göre n
+    arama) burada gerekmez, n zaten biliniyor.
+    Dönüş: calculate() ile aynı şekli taşır (achieved_power öne çıkar).
+    """
+    if not (0 < alpha < 1):
+        raise ValueError(gettext('Alfa 0 ile 1 arasında olmalıdır.'))
+    if n < 2:
+        raise ValueError(gettext("Örneklem büyüklüğü (n) 2'den büyük olmalıdır."))
+    if effect_size <= 0:
+        raise ValueError(gettext("Etki büyüklüğü 0'dan büyük olmalıdır."))
+    if test_type == 'correlation' and effect_size >= 1:
+        raise ValueError(gettext("Korelasyon katsayısı (r) 1'den küçük olmalıdır."))
+
+    if test_type == 'ttest_independent':
+        achieved = _ttest_power(n, effect_size, alpha, paired=False)
+        n_total = n * 2
+        label = gettext('Bağımsız Örneklem t-Testi')
+        unit = gettext('%(n)s kişi/grup × 2 grup') % {'n': n}
+    elif test_type == 'ttest_paired':
+        achieved = _ttest_power(n, effect_size, alpha, paired=True)
+        n_total = n
+        label = gettext('Bağımlı Örneklem t-Testi (Eşleştirilmiş)')
+        unit = gettext('%(n)s çift') % {'n': n}
+    elif test_type == 'anova':
+        if groups < 2:
+            raise ValueError(gettext('ANOVA için en az 2 grup gereklidir.'))
+        achieved = _anova_power(n, effect_size, alpha, groups)
+        n_total = n * groups
+        label = gettext('Tek Yönlü ANOVA (%(groups)s grup)') % {'groups': groups}
+        unit = gettext('%(n)s kişi/grup × %(groups)s grup') % {'n': n, 'groups': groups}
+    elif test_type == 'correlation':
+        achieved = _correlation_power(n, effect_size, alpha)
+        n_total = n
+        label = gettext('Korelasyon Analizi')
+        unit = gettext('%(n)s çift gözlem') % {'n': n}
+    else:
+        raise ValueError(gettext('Bilinmeyen test tipi: %(type)s') % {'type': test_type})
+
+    achieved = float(achieved)
+    return {
+        'test_type': test_type,
+        'mode': 'post_hoc',
+        'label': label,
+        'n_per_group': n,
+        'n_total': n_total,
+        'unit': unit,
+        'achieved_power': round(achieved, 4),
+        'power_adequate': bool(achieved >= 0.80),
+        'inputs': {
+            'effect_size': effect_size,
+            'alpha': alpha,
+            'n': n,
+            'groups': groups,
+        },
+        'effect_interpretation': _interpret_effect(test_type, effect_size),
+        'power_interpretation': _interpret_power(achieved),
+    }
+
+
 def _binary_search(power_fn, target: float, lo: int = 2, hi: int = 10000):
     """Hedef güce ulaşan minimum n'i binary search ile bulur."""
     while lo < hi:
@@ -160,6 +226,16 @@ def _interpret_effect(test_type: str, effect_size: float) -> str:
         if effect_size < 0.5:
             return f'r = {effect_size} — ' + gettext('Orta düzey etki (Cohen, 1988)')
         return f'r = {effect_size} — ' + gettext('Büyük etki (Cohen, 1988)')
+
+
+def _interpret_power(power: float) -> str:
+    if power < 0.50:
+        return gettext('Çok düşük güç — gerçek bir etki var olsa bile tespit edilememe (Tip II hata) olasılığı çok yüksektir; anlamlı olmayan bir sonuç temkinli yorumlanmalıdır.')
+    if power < 0.80:
+        return gettext('Düşük güç — genel kabul gören 0.80 eşiğinin altındadır; anlamlı çıkmayan bir bulgu "etki yok" şeklinde yorumlanmamalıdır.')
+    if power < 0.95:
+        return gettext('Yeterli güç — 0.80 eşiğini karşılamaktadır, gerçek bir etkiyi tespit etme olasılığı yüksektir.')
+    return gettext('Çok yüksek güç — çok küçük etkiler bile istatistiksel olarak anlamlı çıkabilir; pratik önemi etki büyüklüğüne bakarak değerlendirin.')
 
 
 def _recommendation(n_total: int) -> str:

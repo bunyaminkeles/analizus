@@ -22,6 +22,7 @@ _TOOLS = [
     ('lineer-regresyon', views.lineer_regresyon_landing, 'lineer_regresyon', True),
     ('lojistik-regresyon', views.lojistik_regresyon_landing, 'lojistik_regresyon', True),
     ('mediation', views.mediation_landing, 'mediation', True),
+    ('path-analizi', views.path_analizi_landing, 'path_analizi', True),
     ('moderation', views.moderation_landing, 'moderation', True),
     ('afa', views.afa_landing, 'afa', True),
     ('wilcoxon', views.wilcoxon_landing, 'wilcoxon', True),

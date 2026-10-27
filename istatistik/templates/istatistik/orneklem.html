@@ -23,9 +23,21 @@
     <div class="col-lg-5">
       <div class="card border-secondary h-100" style="background-color:#1a1a2e;">
         <div class="card-body p-4">
-          <h5 class="text-white fw-semibold mb-4">
+          <h5 class="text-white fw-semibold mb-3">
             <i class="bi bi-sliders me-2 text-warning"></i>{% trans "Parametreler" %}
           </h5>
+
+          {# Mod seçimi: A Priori (örneklem hesapla) / Post-hoc (güç hesapla) #}
+          <div class="d-flex gap-2 mb-2">
+            <button type="button" id="mode-a-priori" class="btn btn-sm btn-warning flex-fill mode-btn active" data-mode="a_priori">
+              {% trans "Örneklem Hesapla" %}
+            </button>
+            <button type="button" id="mode-post-hoc" class="btn btn-sm btn-outline-secondary flex-fill mode-btn" data-mode="post_hoc">
+              {% trans "Güç Hesapla (Post-hoc)" %}
+            </button>
+          </div>
+          <p class="text-white-50 small mb-4" id="mode-desc-a-priori">{% trans "Hedeflenen istatistiksel güce ulaşmak için gereken minimum örneklem büyüklüğünü hesaplar (a priori güç analizi)." %}</p>
+          <p class="text-white-50 small mb-4 d-none" id="mode-desc-post-hoc">{% trans "Tamamlanmış bir çalışmanın örneklem büyüklüğü, etki büyüklüğü ve alfa değerine göre fiilen ulaşılmış istatistiksel gücü (1−β) hesaplar (post-hoc / gözlemlenen güç)." %}</p>
 
           {# Test tipi #}
           <div class="mb-3">
@@ -77,8 +89,8 @@
                    value="0.05" min="0.001" max="0.20" step="0.001">
           </div>
 
-          {# Güç #}
-          <div class="mb-4">
+          {# Güç (yalnızca A Priori modda) #}
+          <div id="power-row" class="mb-4">
             <label class="text-white-50 small fw-semibold mb-1 d-block">
               {% trans "İstatistiksel Güç (1−β)" %}
             </label>
@@ -91,8 +103,18 @@
                    value="0.80" min="0.50" max="0.99" step="0.01">
           </div>
 
+          {# Örneklem büyüklüğü (yalnızca Post-hoc modda) #}
+          <div id="n-row" class="mb-4 d-none">
+            <label class="text-white-50 small fw-semibold mb-1 d-block">
+              {% trans "Elde Edilmiş Örneklem Büyüklüğü (n)" %}
+              <span class="text-white-50 fw-normal" id="n-hint">— {% trans "grup başına" %}</span>
+            </label>
+            <input type="number" id="n-input" class="form-control form-control-sm bg-dark text-white border-secondary"
+                   value="30" min="2" max="100000" step="1">
+          </div>
+
           <button id="calc-btn" class="btn btn-warning w-100 fw-semibold">
-            <i class="bi bi-calculator me-2"></i>{% trans "Hesapla" %}
+            <i class="bi bi-calculator me-2"></i><span id="calc-btn-label">{% trans "Hesapla" %}</span>
           </button>
           <div id="calc-error" class="alert alert-danger mt-3 d-none small"></div>
         </div>
@@ -130,14 +152,14 @@
             <div class="row g-3 mb-4">
               <div class="col-6">
                 <div class="rounded-3 p-4 text-center" style="background:rgba(255,193,7,0.1); border:1px solid rgba(255,193,7,0.3);">
-                  <div class="display-5 fw-bold text-warning" id="res-n-total">—</div>
-                  <div class="text-white-50 small mt-1">{% trans "Toplam Örneklem" %}</div>
+                  <div class="display-5 fw-bold text-warning" id="res-primary-val">—</div>
+                  <div class="text-white-50 small mt-1" id="res-primary-label">{% trans "Toplam Örneklem" %}</div>
                 </div>
               </div>
               <div class="col-6">
                 <div class="rounded-3 p-4 text-center" style="background:rgba(255,255,255,0.05);">
-                  <div class="fs-3 fw-bold text-info" id="res-n-group">—</div>
-                  <div class="text-white-50 small mt-1" id="res-unit">—</div>
+                  <div class="fs-3 fw-bold text-info" id="res-secondary-val">—</div>
+                  <div class="text-white-50 small mt-1" id="res-secondary-label">—</div>
                 </div>
               </div>
             </div>
@@ -145,7 +167,7 @@
             {# Detaylar #}
             <table class="table table-dark table-sm table-borderless small mb-3">
               <tbody>
-                <tr>
+                <tr id="res-power-row">
                   <td class="text-white-50">{% trans "Elde Edilen Güç" %}</td>
                   <td class="text-white fw-semibold" id="res-power">—</td>
                 </tr>
@@ -158,7 +180,7 @@
 
             {# Yorum #}
             <div class="rounded-3 p-3 mb-3" style="background:rgba(255,193,7,0.05); border:1px solid rgba(255,193,7,0.15);">
-              <p class="text-white-50 small mb-1 fw-semibold"><i class="bi bi-info-circle me-1 text-warning"></i>{% trans "Yorum" %}</p>
+              <p class="text-white-50 small mb-1 fw-semibold"><i class="bi bi-info-circle me-1 text-warning"></i><span id="res-interpretation-title">{% trans "Yorum" %}</span></p>
               <p class="text-white small mb-0" id="res-recommendation">—</p>
             </div>
 
@@ -232,7 +254,16 @@ const T = {
   s14: '{% trans "Orta etki (f=0.25)" as t %}{{ t|escapejs }}',
   s15: '{% trans "Orta etki (r=0.3)" as t %}{{ t|escapejs }}',
   s16: '{% trans "Hesapla" as t %}{{ t|escapejs }}',
+  s17: '{% trans "Gücü Hesapla" as t %}{{ t|escapejs }}',
+  s18: '{% trans "Hesaplanıyor…" as t %}{{ t|escapejs }}',
+  lblTotalSample: '{% trans "Toplam Örneklem" as t %}{{ t|escapejs }}',
+  lblAchievedPower: '{% trans "Elde Edilen Güç" as t %}{{ t|escapejs }}',
+  lblRecommendation: '{% trans "Yorum" as t %}{{ t|escapejs }}',
+  lblPowerInterp: '{% trans "Güç Yorumu" as t %}{{ t|escapejs }}',
+  hintPerGroup: '— {% trans "grup başına" as t %}{{ t|escapejs }}',
+  hintPairs: '— {% trans "çift" as t %}{{ t|escapejs }}',
   apa: '{% trans "Çalışmanın örneklem büyüklüğü a priori güç analizi ile belirlenmiştir ({label}; Cohen, 1988). Etki büyüklüğü {effect}, α = {alpha}, istatistiksel güç = {power} olarak alındığında gerekli örneklem büyüklüğü n = {n} olarak hesaplanmıştır." as t %}{{ t|escapejs }}',
+  apaPostHoc: '{% trans "Çalışmanın post-hoc (gözlemlenen) güç analizi yapılmıştır ({label}; Cohen, 1988). Etki büyüklüğü {effect}, α = {alpha}, örneklem büyüklüğü n = {n} alındığında elde edilen istatistiksel güç (1−β) = {power} olarak hesaplanmıştır." as t %}{{ t|escapejs }}',
 };
 const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const EFFECT_LABELS = {
@@ -253,6 +284,13 @@ const EFFECT_DESCS = {
   anova:             [T.s4, T.s14, T.s5],
   correlation:       [T.s6, T.s15, T.s7],
 };
+const N_HINTS = {
+  ttest_independent: T.hintPerGroup,
+  ttest_paired:      T.hintPairs,
+  anova:             T.hintPerGroup,
+  correlation:       T.hintPairs,
+};
+let currentMode = 'a_priori';
 
 document.getElementById('test-type').addEventListener('change', function() {
   const t = this.value;
@@ -266,6 +304,26 @@ document.getElementById('test-type').addEventListener('change', function() {
   });
   document.getElementById('effect-size').value = presets[1];
   document.getElementById('effect-desc').textContent = EFFECT_DESCS[t][1];
+  document.getElementById('n-hint').textContent = N_HINTS[t];
+});
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    currentMode = this.dataset.mode;
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.toggle('active', b === this);
+      b.classList.toggle('btn-warning', b === this);
+      b.classList.toggle('btn-outline-secondary', b !== this);
+    });
+    const isPostHoc = currentMode === 'post_hoc';
+    document.getElementById('mode-desc-a-priori').classList.toggle('d-none', isPostHoc);
+    document.getElementById('mode-desc-post-hoc').classList.toggle('d-none', !isPostHoc);
+    document.getElementById('power-row').classList.toggle('d-none', isPostHoc);
+    document.getElementById('n-row').classList.toggle('d-none', !isPostHoc);
+    document.getElementById('calc-btn-label').textContent = isPostHoc ? T.s17 : T.s16;
+    document.getElementById('result-idle').classList.remove('d-none');
+    document.getElementById('result-done').classList.add('d-none');
+  });
 });
 
 document.querySelectorAll('.effect-preset').forEach((btn, i) => {
@@ -293,14 +351,20 @@ document.getElementById('calc-btn').addEventListener('click', function() {
 
   const fd = new FormData();
   fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fd.append('mode', currentMode);
   fd.append('test_type', document.getElementById('test-type').value);
   fd.append('effect_size', document.getElementById('effect-size').value);
   fd.append('alpha', document.getElementById('alpha').value);
-  fd.append('power', document.getElementById('power').value);
   fd.append('groups', document.getElementById('groups').value);
+  if (currentMode === 'post_hoc') {
+    fd.append('n', document.getElementById('n-input').value);
+  } else {
+    fd.append('power', document.getElementById('power').value);
+  }
 
+  const calcBtnLabel = document.getElementById('calc-btn-label').textContent;
   this.disabled = true;
-  this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + T.s10;
+  this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + T.s18;
 
   fetch('{% url "istatistik:orneklem" %}', {
     method: 'POST',
@@ -310,7 +374,7 @@ document.getElementById('calc-btn').addEventListener('click', function() {
   .then(r => r.json())
   .then(data => {
     this.disabled = false;
-    this.innerHTML = '<i class="bi bi-calculator me-2"></i>' + T.s16;
+    this.innerHTML = '<i class="bi bi-calculator me-2"></i><span id="calc-btn-label">' + calcBtnLabel + '</span>';
     if (data.error) {
       errEl.textContent = data.error;
       errEl.classList.remove('d-none');
@@ -320,7 +384,7 @@ document.getElementById('calc-btn').addEventListener('click', function() {
   })
   .catch(() => {
     this.disabled = false;
-    this.innerHTML = '<i class="bi bi-calculator me-2"></i>' + T.s16;
+    this.innerHTML = '<i class="bi bi-calculator me-2"></i><span id="calc-btn-label">' + calcBtnLabel + '</span>';
     errEl.textContent = T.s11;
     errEl.classList.remove('d-none');
   });
@@ -331,15 +395,30 @@ function showResult(r) {
   document.getElementById('result-done').classList.remove('d-none');
 
   document.getElementById('res-label').textContent = r.label;
-  document.getElementById('res-n-total').textContent = r.n_total;
-  document.getElementById('res-n-group').textContent = r.n_per_group;
-  document.getElementById('res-unit').textContent = r.unit;
-  document.getElementById('res-power').textContent = (r.achieved_power * 100).toFixed(1) + '%';
   document.getElementById('res-effect').textContent = r.effect_interpretation;
-  document.getElementById('res-recommendation').textContent = r.recommendation;
 
   const inputs = r.inputs;
-  const apaText = fmt(T.apa, {label: r.label, effect: r.effect_interpretation.split(' — ')[0], alpha: inputs.alpha, power: (inputs.power * 100).toFixed(0) + '%', n: r.n_total});
+  let apaText;
+  if (r.mode === 'post_hoc') {
+    document.getElementById('res-primary-val').textContent = (r.achieved_power * 100).toFixed(1) + '%';
+    document.getElementById('res-primary-label').textContent = T.lblAchievedPower;
+    document.getElementById('res-secondary-val').textContent = r.n_total;
+    document.getElementById('res-secondary-label').textContent = r.unit;
+    document.getElementById('res-power-row').classList.add('d-none');
+    document.getElementById('res-interpretation-title').textContent = T.lblPowerInterp;
+    document.getElementById('res-recommendation').textContent = r.power_interpretation;
+    apaText = fmt(T.apaPostHoc, {label: r.label, effect: r.effect_interpretation.split(' — ')[0], alpha: inputs.alpha, n: inputs.n, power: (r.achieved_power * 100).toFixed(1) + '%'});
+  } else {
+    document.getElementById('res-primary-val').textContent = r.n_total;
+    document.getElementById('res-primary-label').textContent = T.lblTotalSample;
+    document.getElementById('res-secondary-val').textContent = r.n_per_group;
+    document.getElementById('res-secondary-label').textContent = r.unit;
+    document.getElementById('res-power-row').classList.remove('d-none');
+    document.getElementById('res-power').textContent = (r.achieved_power * 100).toFixed(1) + '%';
+    document.getElementById('res-interpretation-title').textContent = T.lblRecommendation;
+    document.getElementById('res-recommendation').textContent = r.recommendation;
+    apaText = fmt(T.apa, {label: r.label, effect: r.effect_interpretation.split(' — ')[0], alpha: inputs.alpha, power: (inputs.power * 100).toFixed(0) + '%', n: r.n_total});
+  }
   document.getElementById('res-apa').textContent = apaText;
 }
 

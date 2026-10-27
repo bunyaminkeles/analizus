@@ -1405,4 +1405,68 @@ SEO_CONTENT = {
         ],
     },
 
+    'path_analizi': {
+        'intro': (
+            gettext_lazy('Basit Path Analizi, Aracılık (Mediation) Analizi\'nin birden '
+            'fazla aracı (mediator) değişkeni aynı anda modelleyebilen genişletilmiş '
+            'halidir. Bir bağımsız değişkenin (X) bağımlı değişken (Y) üzerindeki '
+            'etkisinin, birbirinden bağımsız (paralel) birden fazla aracı değişken '
+            '(M1, M2, ...) üzerinden ne kadar iletildiğini tek bir modelle test eder '
+            '— SPSS Process/Hayes PROCESS Model 4\'ün çoklu aracı versiyonuna karşılık '
+            'gelir.')
+        ),
+        'when_to_use': (
+            gettext_lazy('X\'in Y üzerindeki etkisinin birden fazla, birbirinden bağımsız '
+            'mekanizma (aracı değişken) üzerinden iletildiğini düşündüğünüzde kullanın '
+            '(örn. eğitim düzeyinin gelir üzerindeki etkisi hem iş deneyimi hem de '
+            'sosyal sermaye üzerinden mi iletiliyor?). Tek bir aracı değişkeniniz '
+            'varsa Aracılık (Mediation) Analizi yeterlidir — daha basittir. Aracı '
+            'değişkenler birbirini sırayla etkiliyorsa (seri/serial mediation, '
+            'M1→M2) bu araç uygun değildir, yalnızca paralel (birbirinden bağımsız) '
+            'aracı değişkenler için tasarlanmıştır.')
+        ),
+        'assumptions': (
+            gettext_lazy('Aracı değişkenler (M) ve bağımlı değişken (Y) sürekli/sayısal '
+            'olmalıdır. Bağımsız değişken (X) sayısal veya iki kategorili olabilir. '
+            'Aracı değişkenlerin birbirleriyle aşırı yüksek korelasyonlu olmaması '
+            'önerilir (çoklu bağlantı). Değişkenler arasında teorik/zamansal bir '
+            'nedensellik sırası (X→M→Y) varsayılır — analiz bunu veriden kanıtlamaz, '
+            'araştırmacı tasarımla gerekçelendirmelidir.')
+        ),
+        'how_to_interpret': (
+            gettext_lazy('Her aracı için dolaylı etki (a×b): X\'in o aracı üzerinden Y\'ye '
+            'ilettiği etki; bootstrap %95 güven aralığı sıfırı kapsamıyorsa '
+            'anlamlıdır. Toplam dolaylı etki (Σ a×b): Tüm aracıların birleşik '
+            'etkisi. Direkt etki (c\'): Tüm aracılar kontrol edildiğinde X\'in Y '
+            'üzerinde kalan doğrudan etkisi. c\' anlamlıysa kısmi aracılık, anlamlı '
+            'değilse tam aracılık söz konusudur.')
+        ),
+        'apa_example': (
+            gettext_lazy('İş deneyimi (M1) ve sosyal sermaye (M2), eğitim düzeyi (X) ile '
+            'gelir (Y) arasındaki ilişkide kısmi aracılık rolü üstlenmiştir; toplam '
+            'dolaylı etki Σ a×b = .24, bootstrap %95 GA [.12, .38].')
+        ),
+        'faq': [
+            {
+                'q': gettext_lazy('Path Analizi ile Aracılık (Mediation) Analizi arasındaki fark nedir?'),
+                'a': (gettext_lazy('Aracılık Analizi tek bir aracı değişkeni test eder. Basit Path '
+                      'Analizi, birden fazla aracı değişkeni AYNI ANDA ve birbirinden '
+                      'bağımsız (paralel) olarak modeller; her birinin dolaylı etkisi '
+                      'diğerleri kontrol edilerek hesaplanır.')),
+            },
+            {
+                'q': gettext_lazy('Aracı değişkenlerim birbirini etkiliyorsa (M1→M2) ne yapmalıyım?'),
+                'a': (gettext_lazy('Bu araç yalnızca paralel (birbirinden bağımsız) aracı '
+                      'değişkenler için tasarlanmıştır. Aracılar arasında sıralı bir '
+                      'nedensellik varsa (seri/serial mediation) tam SEM yazılımları '
+                      '(ör. AMOS, lavaan) gerekebilir.')),
+            },
+        ],
+        'related_tools': [
+            ('mediation', gettext_lazy('Aracılık Analizi (Mediation)')),
+            ('moderation', gettext_lazy('Düzenleyici Değişken Analizi')),
+            ('lineer-regresyon', gettext_lazy('Çoklu Doğrusal Regresyon')),
+        ],
+    },
+
 }

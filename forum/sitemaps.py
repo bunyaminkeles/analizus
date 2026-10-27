@@ -234,6 +234,7 @@ class IstatistikSitemap(MultilingualSitemapMixin, Sitemap):
             'manova',
             'sagkalim',
             'roc',
+            'path-analizi',
         ]
 
     def location(self, item):

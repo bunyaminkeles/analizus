@@ -226,6 +226,15 @@ def _execute_job_in_language(job_id: str):
                 m_col=opts.get('m_col', ''),
                 y_col=opts.get('y_col', ''),
             )
+        elif job.tool == 'path_analizi':
+            from .path_analizi import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                x_col=opts.get('x_col', ''),
+                m_cols=opts.get('m_cols', []),
+                y_col=opts.get('y_col', ''),
+            )
         elif job.tool == 'moderation':
             from .moderation import analyze, build_pdf
             opts = job.options or {}
