@@ -44,7 +44,7 @@ urlpatterns = i18n_patterns(
     # Akademik tarama hub'ı — EN/DE'de yalnız uluslararası araçlar (27 Eylül 2026)
     path('tarama/', tarama_hub, name='tarama_hub'),
 
-    # Unified Analiz Konsolu — 18 istatistik aracının açıklama/giriş sayfaları
+    # Unified Analiz Konsolu — 24 istatistik aracının açıklama/giriş sayfaları
     path('analiz/', include('istatistik.urls_analiz')),
 
     # Özel Giriş/Çıkış Sayfaları (Rate limited). i18n_patterns İÇİNDE olmalı —
