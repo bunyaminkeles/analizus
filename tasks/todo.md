@@ -34,10 +34,11 @@ maddelerde.
   üzerinden moderation job'ı oluşturulup `run_job()` çağrıldı, ~1sn içinde
   `status='completed'` + gerçek `pdf_url` ile tamamlandığı doğrulandı (daha
   önce sonsuza `pending` kalırdı); test job'ı silindi. 104/104 pytest yeşil,
-  `docker compose restart web` yapıldı. **Henüz `dev`→`main` merge/deploy
-  edilmedi** — production'daki gerçek svm/mediation/moderation kullanıcıları
-  bu düzeltme deploy edilene kadar hâlâ etkileniyor olabilir, merge kullanıcı
-  onayı bekliyor.
+  `docker compose restart web` yapıldı. **Güncelleme (27 Ekim 2026):** bu
+  düzeltme (commit `930263f`) sonraki `dev`→`main` merge'lerine (MANOVA/
+  Sağkalım/ROC/Path Analizi turları) dahil olarak zaten production'a ulaşmış
+  — `git show origin/main:analizdestek/job_queue.py` ile doğrulandı, ayrı bir
+  merge beklemiyor.
 
 - [x] **(25 Ekim 2026 TAMAMLANDI) S3 Dosya Saklama Süresi — Kullanıcı Bildirimi Eksik
   (S3 cron denetimi sırasında bulundu, bkz. sohbet). 9/10 araçta kullanıcı
