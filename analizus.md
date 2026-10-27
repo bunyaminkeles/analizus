@@ -3010,12 +3010,34 @@ with connection.cursor() as c:
 `form-control` 49 kez hâlâ kullanılıyor, bu yüzden `bootstrap.min.css`'i ana sayfadaki "%92 kullanılmıyor"
 bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kırılma riski var). **Bulgu:** component class'lardan (btn/card/badge/modal) bağımsız olarak Bootstrap **utility** class'ları (`d-flex`, `text-*`, `fw-*`, `mb-*`/`py-*`/`px-*`, `gap-*`, `rounded-*`, `shadow-*`, `bg-*`, `border-*`) hâlâ neredeyse her template'te yaygın — bunlar CLAUDE.md'nin "yalnızca grid" kuralına da aykırı ve Faz 4'te (CDN kaldırma) ayrıca migrate edilmeleri gerekiyor, henüz envanteri çıkarılmadı. Detaylı dosya bazlı ilerleme ve bulgular: `tasks/todo.md`.
 - **Erişilebilirlik bulguları** (Lighthouse skoru 91, düşük öncelik) — `nav-drawer` düzeltildi (temmuz 2026, `inert` eklendi); `aria-hidden="true"` taşıyan modal'lar (`searchModal` vb.) hâlâ kapalıyken içlerinde odaklanabilir `<a>`/`<button>` var, aynı `inert` çözümü uygulanabilir; bazı metin/arkaplan kontrast oranları yetersiz; başlık (`h1`-`h6`) sırası bazı sayfalarda azalan düzende değil; **pasif bekliyor**
+- **GSC "Page indexing → Not found (404)" — hreflang kök nedeni bulundu, henüz düzeltilmedi (27 Ekim 2026)** — Search Console'da görülen `/hizmetler/<slug>/` (EN/DE, ör. `nitel-analiz`, `akademik-danismanlik`) ve `/en/market/job/<id>/` 404'leri view seviyesinde HAKLI (hedef gerçekten yok: `nitel-analiz`/`akademik-danismanlik`'in `ServicePageTranslation` kaydı yok — yalnız `nicel-analiz` pilot çevrildi, migration `0182`; `feature_market_intl` varsayılanı `False` olduğu için EN/DE ilan sayfaları tamamen kapalı). Asıl sorun `forum/context_processors.py:115-141` `hreflang_alternates` — hedefte çeviri/flag uygunluğu kontrol etmeden `translate_url()` ile körü körüne tr/en/de `<link rel="alternate" hreflang>` üretiyor (`templates/base.html:273-276`), Google bu sahte linkleri takip edip var olmayan sayfaları crawl ediyor. Sitemap tarafı zaten doğru filtrelenmiş (`ServicePageTranslatedSitemap`, `JobIntlSitemap`), sorun kaynağı değil. **Öneri (uygulanmadı):** `hreflang_alternates`'e sayfa bazlı "hedef gerçekten var mı" kontrolü eklenmeli. Ayrıntı: `tasks/todo.md` açık işler listesi.
 
 ---
 
 #### Geçmiş Turlar (Kronoloji)
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
+
+- **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
+  canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
+  görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
+  `home_intl.html` hero bölümündeki sabit "18 aracın tümü →" ifadesi önceki
+  oturumdan (uncommitted) zaten "Analiz araçlarının tümü →" ifadesine
+  çevrilmişti; bu oturumda aynı mantıkla `egitim.html`'deki ("Eğitmen/Ekip"
+  + "Neden Analizus" bölümleri, 2 yer) ve `analizdestek/urls.py:47`
+  yorumundaki sabit "24 istatistik aracı" ifadeleri de genel "istatistik
+  araçları" ifadesine çevrildi — yeni araç eklendikçe (şu an gerçek sayı 25,
+  `istatistik/views.py` `TOOL_CATEGORIES`) bu sayı bir daha bayatlamayacak.
+  EN/DE çevirileri eklendi (`makemessages --no-wrap` yanlışlıkla tüm po
+  dosyasını yeniden sardı — devasa gereksiz diff fark edilip `git checkout`
+  ile geri alınıp elle doğru şekilde düzeltildi; **ders:** `makemessages`'a
+  `--no-wrap`/`--no-location` bayrağı verirken dikkat). Merge öncesi
+  production online-kullanıcı kontrolünde `fijital` (muhtemelen kullanıcının
+  kendi hesabı) aktif görüldü, kullanıcı onayıyla devam edildi. Canlıda
+  doğrulandı (`/egitim/` 200, hero "Analiz araçlarının tümü →" gösteriyor).
+  Ayrıca kullanıcının paylaştığı GSC "Not found (404)" raporu araştırıldı —
+  kök neden bulundu (bkz. "Teknik Borç" — `hreflang_alternates`), henüz
+  düzeltilmedi.
 
 - **26 Ekim 2026 — Aracılık (Mediation) + Düzenleyici Değişken (Moderation)
   Analizi araçları eklendi (main'de canlı, iki ayrı `dev`→`main` `--no-ff`

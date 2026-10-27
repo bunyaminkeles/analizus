@@ -10,6 +10,48 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(27 Ekim 2026) GSC "Page indexing → Not found (404)" raporu — kök
+  neden bulundu, henüz düzeltilmedi.** Kullanıcı Search Console'da iki URL
+  kalıbı gördü: `/hizmetler/<slug>/` (EN/DE, ör. `nitel-analiz`,
+  `akademik-danismanlik`) ve `/en/market/job/<id>/`. Araştırma: ikisi de
+  view seviyesinde HAKLI olarak 404 dönüyor (`nitel-analiz`/`akademik-
+  danismanlik`'in `ServicePageTranslation` kaydı yok — yalnız `nicel-analiz`
+  pilot çevrildi, migration `0182`; `feature_market_intl` varsayılanı
+  `False` olduğu için EN/DE ilan sayfaları tamamen kapalı). Asıl sorun:
+  `forum/context_processors.py:115-141` `hreflang_alternates`, hedefte
+  çeviri/flag uygunluğu kontrol etmeden `translate_url()` ile körü körüne
+  tr/en/de `<link rel="alternate" hreflang>` üretiyor (`templates/
+  base.html:273-276`) — Google bu sahte linkleri takip edip var olmayan
+  sayfaları crawl ediyor. Sitemap tarafı doğru filtrelenmiş, sorun kaynağı
+  değil. **Öneri (uygulanmadı):** `hreflang_alternates`'e sayfa bazlı "hedef
+  gerçekten var mı" kontrolü eklenmeli. Kullanıcı onayı bekliyor.
+
+- [x] **(27 Ekim 2026 TAMAMLANDI) Ana sayfa/eğitim/urls.py'deki sabit araç
+  sayısı genel ifadeye çevrildi, main'de canlı.** Yukarıdaki GSC araştırması
+  sırasında `home.html`/`home_intl.html` hero bölümünde bulunan sabit "18
+  aracın tümü →" ifadesi (önceki oturumdan uncommitted) zaten genel "Analiz
+  araçlarının tümü →" ifadesine çevrilmişti; bu oturumda aynı mantıkla
+  `egitim.html`'deki ("Eğitmen/Ekip" + "Neden Analizus" bölümleri, 2 yer) ve
+  `urls.py:47` yorumundaki sabit "24 istatistik aracı" ifadeleri de
+  "istatistik araçları" olarak genelleştirildi (gerçek sayı şu an 25,
+  `istatistik/views.py` `TOOL_CATEGORIES`). EN/DE çevirileri eklendi
+  (`makemessages --no-wrap` yanlışlıkla tüm dosyayı yeniden sardı, fark
+  edilip `git checkout` ile geri alınıp doğru şekilde elle düzeltildi —
+  ders: `--no-wrap`/`--no-location` bayraklarına dikkat). `dev`→`main`
+  `--no-ff` merge + push edildi, GitHub Actions otomatik Hetzner deploy'u
+  tetikledi; merge öncesi production online-kullanıcı kontrolünde `fijital`
+  (muhtemelen kullanıcının kendi hesabı) aktif görüldü, kullanıcı onayıyla
+  devam edildi. Canlıda doğrulandı (`/egitim/` 200, hero "Analiz araçlarının
+  tümü →" gösteriyor). **Yan not:** lokal Docker ortamında `/egitim/`
+  TR/EN/DE üçünde de 404 görünmüştü — kod bug'ı değil, `forum/views.py:2438`
+  `@feature_required('training')` decorator'ının lokal `SiteSettings`
+  kaydında kapalı olması (production'da açık); yanlışlıkla "pre-existing
+  bug" diye raporlanmıştı, sonradan düzeltildi. **Ayrıca düzeltildi:** aynı
+  taramada `svm`/`mediation`/`moderation` job_queue whitelist düzeltmesinin
+  (bkz. aşağıdaki 26 Ekim maddesi) "henüz merge edilmedi" notu bayat
+  çıktı — `git show origin/main:analizdestek/job_queue.py` ile zaten
+  production'da olduğu doğrulanıp not güncellendi.
+
 - [ ] **(25 Ekim 2026) EN/DE Ödeme Sistemleri Altında Adres Değişikliği** —
   kullanıcı talebi: EN ve DE sayfalarında ödeme sistemleri bölümünde yer alan
   adres güncellenmeli. Detay/hangi adres henüz belirtilmedi — sonraki
