@@ -417,11 +417,54 @@ maddelerde.
      uçtan uca akış (her iki yöntem için ayrı ayrı preview→run→job
      kuyruğu→analiz→PDF) test edildi; TR/EN/DE anonim sayfa 200, sitemap üç
      dilde URL'i içeriyor, 104/104 pytest yeşil, `docker compose restart web`
-     + nginx yapıldı. Henüz `dev`→`main` merge edilmedi (kullanıcı onayı
-     bekliyor).
-  5. [ ] **ROC Eğrisi / Tanısal Tarama Analizi** — lojistik regresyon FAQ'ı
-     zaten AUC-ROC'tan bahsediyor ama hesaplayan araç yok (bu tutarsızlık
-     aşağıda ~satır 134-135'te zaten not edilmiş).
+     + nginx yapıldı. Kullanıcı onayıyla (önce yedek alındı) `dev`→`main`
+     merge + push edildi, GitHub Actions otomatik Hetzner deploy'u
+     tetikledi, migration production'da uygulandı, canlı doğrulandı
+     (`https://www.analizus.com/analiz/sagkalim/` TR/EN/DE 200).
+  5. [x] **(27 Ekim 2026 TAMAMLANDI) ROC Eğrisi / Tanısal Tarama Analizi**
+     — lojistik regresyon FAQ'ı zaten AUC-ROC'tan bahsediyordu ama hesaplayan
+     araç yoktu. Kullanıcı kararıyla: (1) AUC güven aralığı Hanley-McNeil
+     (1982) kapalı-form formülüyle, (2) kapsam genişletilip iki testi aynı
+     örneklemde karşılaştıran DeLong testi (DeLong, DeLong & Clarke-Pearson,
+     1988) de eklendi. Yeni `istatistik/services/roc.py`: tek test modunda
+     `sklearn.metrics.roc_curve`/`auc` ile ROC eğrisi, AUC negatifse (ters
+     yönlü test — düşük değer = pozitif) otomatik yön düzeltmesi (test
+     senaryosuyla doğrulandı: ters yönlü veri orijinaliyle BİREBİR aynı AUC/
+     duyarlılık/özgüllük sonucunu veriyor), Youden J indeksine göre optimal
+     kesim noktası + o noktada duyarlılık/özgüllük/PPV/NPV/LR+/LR- tablosu.
+     İki test karşılaştırma modunda DeLong testi elle implemente edildi
+     (statsmodels/sklearn'de hazır fonksiyon yok — DeLong yerleşim
+     (placement) değerleri üzerinden kovaryans matrisi, z-testi). Olay/
+     referans değişkeni kodlaması `lojistik_regresyon.py`/`sagkalim.py` ile
+     birebir aynı 2-kategori→0/1 deseni (`positive_category` ile hedef
+     kategori seçimi, `views.py`'deki `category_values` önizleme mekanizması
+     `roc`'a da genişletildi). Mevcut 23 araçla aynı iskelet: `TOOL_CHOICES`
+     + migration `0017_add_roc_tool`, `job_runner.py` dispatch dalı +
+     `_AI_PROMPT_EXCLUDE_KEYS`, `views.py` ("Regresyon Analizleri" grubuna
+     6. satır, `roc_landing`, `_handle_group_tool_post` options dalı,
+     `_SLUG_MAP`), `urls.py`, `job_queue.py` whitelist, yeni `istatistik/
+     templates/istatistik/roc.html` (tek test/iki test karşılaştırma moduna
+     göre dinamik form + sonuç paneli), `seo_content.py`, `forum/
+     sitemaps.py`. **Ders (manova/sagkalim turlarındaki aynı tuzak tekrar
+     bulundu):** şablonda `{% trans "AUC (%95 GA)" %}` kullanımı yine
+     extraction'da `%%95`e kaçtı — Python tarafındaki msgid'den ayrı tutulup
+     her ikisi de çevrildi, izole `Template()` render testiyle tek `%`
+     olarak doğru render edildiği doğrulandı. 83 yeni msgid EN/DE'ye
+     çevrildi. Docker'da: `analyze()` doğrudan (güçlü/ters yönlü/ayırt
+     edicilik yok × string etiket + positive_category × iki test
+     karşılaştırma (anlamlı/anlamsız fark) × 4 geçersiz girdi senaryosu —
+     confusion matrix sanity check'leriyle) ve tam uçtan uca akış (tek test
+     ve karşılaştırma modları ayrı ayrı preview→run→job kuyruğu→analiz→PDF)
+     test edildi; TR/EN/DE anonim sayfa 200, sitemap üç dilde URL'i
+     içeriyor, 104/104 pytest yeşil, `docker compose restart web` + nginx
+     yapıldı. **Ayrıca kullanıcı bulgusu (aynı oturumda düzeltildi):** ana
+     sayfa hero/meta açıklaması + `egitim.html` + `teleprompter.html` +
+     `analizdestek/urls.py` yorumundaki sabit "18" araç sayısı artık yanlıştı
+     (kümeleme/MANOVA/sağkalım/ROC eklenince 18→24 oldu) — `TOOL_CATEGORIES`
+     gerçek toplamı (24) ile güncellendi, ilgili 2 EN/DE çevirisi yeniden
+     girildi; `analizus.md`/`tasks/todo.md` içindeki TARİHLİ geçmiş kayıtlara
+     (o tarihte gerçekten 18'di) kasıtlı dokunulmadı. Henüz `dev`→`main`
+     merge edilmedi (kullanıcı onayı bekliyor).
   - Düşük öncelik / sonra değerlendirilebilir: diskriminant analizi, ordinal/
     multinomial lojistik regresyon, basit path analizi/SEM, güç analizi
     (post-hoc power).
