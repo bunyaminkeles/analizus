@@ -1199,6 +1199,11 @@ def topic_detail(request, pk):
         ).values_list('post_id', flat=True))
 
     if request.method == 'POST':
+        profile = getattr(request.user, 'profile', None)
+        if profile and not profile.email_verified:
+            messages.warning(request, gettext('Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor.'))
+            return redirect('topic_detail', pk=pk)
+
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
@@ -1226,6 +1231,11 @@ def topic_detail(request, pk):
 def new_topic(request, slug):
     category = get_object_or_404(Category, slug=slug)
     if request.method == 'POST':
+        profile = getattr(request.user, 'profile', None)
+        if profile and not profile.email_verified:
+            messages.warning(request, gettext('Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor.'))
+            return redirect('new_topic', slug=slug)
+
         form = NewTopicForm(request.POST)
         if form.is_valid():
             topic = form.save(commit=False)
@@ -2817,6 +2827,10 @@ def api_ai_chat(request):
     """Floating widget için AI sohbet API endpoint'i — JSON döner"""
     import json
 
+    profile = getattr(request.user, 'profile', None)
+    if profile and not profile.email_verified:
+        return JsonResponse({'success': False, 'error': gettext('Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor.')}, status=403)
+
     try:
         data = json.loads(request.body)
         user_message = data.get('message', '').strip()
@@ -2889,6 +2903,10 @@ def _api_ai_chat(request, user_message, lang):
 def ai_suggest_answer(request, topic_id):
     """Forum konusu için AI yanıt önerisi"""
     from .services.ai_service import groq_service
+
+    profile = getattr(request.user, 'profile', None)
+    if profile and not profile.email_verified:
+        return JsonResponse({'error': 'Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor.'}, status=403)
 
     topic = get_object_or_404(Topic, pk=topic_id)
 
