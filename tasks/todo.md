@@ -195,8 +195,29 @@ maddelerde.
     doluyken zorluyor, boşken profil diline düşüyor), `forum+bibliometrics`
     117/117 geçti. EN/DE çevirileri (`Rapor Dili`/`Arayüz dili ile aynı`)
     eklendi. **Grup A TAMAMEN BİTTİ.**
-  - Grup B (bibliometrix/VOSviewer kalitesinde yol haritası — veri kalitesi,
-    bilim haritalama, çıktılar, ürün/huni) sıradaki iş, ayrı planlanacak.
+  - [ ] Grup B (bibliometrix/VOSviewer kalitesinde yol haritası — veri kalitesi,
+    bilim haritalama, çıktılar, ürün/huni) — **kullanıcı kararı (28 Ekim 2026):
+    ERTELENDİ, yarına/sonraki oturuma bırakıldı.** Özet sunuldu (B1 veri
+    kalitesi → B2 bilim haritalama (en karmaşık: tematik harita, ortak atıf
+    ağları, konu modelleme) → B3 çıktılar (VOSviewer export, hazır yöntem
+    metni, PRISMA) → B4 ürün/huni). Ayrı planlama turu gerekiyor.
+  - [ ] **A7 tamamlanmamış kısım — gerçek openalex.org web CSV'si elde edildi
+    (28 Ekim 2026), henüz parser desteği yazılmadı.** Kullanıcı gerçek bir
+    "Export CSV" dosyası verdi (`works-2026-10-28T22-05-18.csv`, ~150 kayıt).
+    Analiz edildi: sütunlar `Title,Author,Year,Citation count,Open access,
+    Abstract` — yazar `|` ile ayrılmış (bazı kayıtlarda tutarsız, virgülle).
+    **Kritik eksiklik:** bu formatta dergi/DOI/kurum/ülke/anahtar kelime/
+    yayın türü HİÇ YOK — openalex.org'un web export'u yalnız bu 6 sütunu
+    veriyor. Yani bu formatla top_journals/top_institutions/country_
+    collaboration/keyword_cooccurrence/keyword_trend/publication_types
+    analizleri hep `skipped` düşecek; yalnız keyword_cloud (abstract
+    metninden) ve atıf/yazar/yıl bazlı analizler çalışır. DOI olmadığı için
+    tekilleştirme başlığa düşüyor (zaten desteklenen yol). Dosyada gerçek
+    tekrar eden kayıtlar da var (iyi test senaryosu). Plan: `detect_format`'a
+    yeni dal (`'citation count' in lower and 'open access' in lower` gibi
+    ayırt edici imza) + yeni `_parse_openalex_csv()` fonksiyonu (csv.DictReader,
+    scopus parser'ın pattern'i). Kullanıcıya bu kısıtlama bildirilecek,
+    onay sonrası uygulanacak.
 
 - [ ] **(27 Ekim 2026) GSC "Page indexing → Not found (404)" raporu — kök
   neden bulundu, henüz düzeltilmedi.** Kullanıcı Search Console'da iki URL

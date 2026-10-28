@@ -3140,9 +3140,18 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   `tezanaliz/admin.py` `BibliometricJobProxyAdmin`'e list_display/filter
   eklendi. Canlı test (register→doğrula→form render) + 2 yeni pytest,
   `forum+bibliometrics` 117/117 geçti. EN/DE çevrildi.
-  Sırada: Grup B (bibliometrix/VOSviewer kalitesinde yol haritası) — ayrı
-  planlama turu gerekiyor (plan dosyasının kendi notu: her faz veri
-  gereksinimi + bağımsız pytest + TR/EN/DE başlık gerektirir).
+  **Grup B (bibliometrix/VOSviewer yol haritası) kullanıcı kararıyla
+  ERTELENDİ (28 Ekim 2026) — sonraki oturuma bırakıldı.** Özet sunuldu
+  (B1 veri kalitesi → B2 bilim haritalama en karmaşık → B3 çıktılar
+  VOSviewer/hazır yöntem metni/PRISMA → B4 ürün/huni), ayrı planlama
+  turu gerekecek.
+  **A7'nin açık kalan kısmı için gerçek veri geldi:** kullanıcı
+  openalex.org'dan gerçek bir "Export CSV" dosyası sağladı (~150 kayıt).
+  Analiz edildi: sütunlar yalnızca `Title,Author,Year,Citation count,
+  Open access,Abstract` — **dergi/DOI/kurum/ülke/anahtar kelime/yayın
+  türü hiç yok**, web export'un gerçek kısıtı bu. Plan: `detect_format`
+  yeni dal + `_parse_openalex_csv()` (scopus parser pattern'i), kullanıcıya
+  bu kısıtlamayı bildirip onay sonrası uygulanacak. Detay `tasks/todo.md`'de.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
