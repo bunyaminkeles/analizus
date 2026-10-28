@@ -1,8 +1,8 @@
 """
 PDF Rapor Oluşturucu (reportlab)
 - Beyaz arka plan, DejaVu font (Türkçe karakter desteği)
-- build_demo_pdf(figures):  3 grafik → demo PDF bytes
-- build_full_pdf(figures):  10 grafik → tam rapor PDF bytes
+- build_demo_pdf(figures):  çağıran taraf SiteSettings.bibliometri_demo_grafik_sayisi kadar önceden kırpar (default 10)
+- build_full_pdf(figures):  üretilebilen tüm grafikler (en fazla 17) → tam rapor PDF bytes
 """
 import io
 import os
@@ -475,7 +475,8 @@ def _trend_warning(notes: dict, in_full_report: bool) -> str:
 
 def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '', notes: dict = None,
                    time_series: list = None) -> bytes:
-    """figures: [(title, Figure), ...]  — ilk 3 tanesi kullanılır
+    """figures: [(title, Figure), ...]  — çağıran taraf kaç tanesinin demo'ya gireceğini
+    (SiteSettings.bibliometri_demo_grafik_sayisi) önceden kırpar; burada olduğu gibi kullanılır
     notes/time_series: verilirse veri kesildiğinde zaman serisi sayfalarına uyarı satırı (bölüm yok)"""
     A4, cm, canvas_mod, _ = _get_reportlab()
     width, height = A4
@@ -483,7 +484,7 @@ def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '', no
     buf = io.BytesIO()
     c = canvas_mod.Canvas(buf, pagesize=A4)
 
-    demo_figs   = figures[:3]
+    demo_figs   = figures
     total_pages = 1 + len(demo_figs)
     warning     = _trend_warning(notes, in_full_report=False)
     series      = set(time_series or [])

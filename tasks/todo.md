@@ -97,24 +97,30 @@ maddelerde.
     3/6 yıllık sentetik veri + EN/DE `translation.override` ile canlı
     test edildi, 2 yeni pytest eklendi (toplam bibliometrics 7 test).
     `pytest forum/tests.py bibliometrics/tests.py` 111/111 geçti.
-  - [ ] **[ÖNCELİKLİ — A6'dan hemen sonra] Demo grafik sayısı + AI yorumlama
-    (28 Ekim 2026, kullanıcı kararları alındı, henüz uygulanmadı).**
-    Kararlar: (1) Demo PDF'teki grafik sayısı şu an sabit 3 (`figures[:3]`,
-    `bibliometrics/services/job_runner.py` 2 yerde) — **10'a çıkarılacak,
-    `SiteSettings`'te yeni alan olarak** (admin'den değiştirilebilir,
-    migration gerekir — model alanı + `SiteSettingsAdmin.fieldsets`, feature
-    flag değil ama aynı yerde). (2) **AI yorumlama (her grafik için API ile
-    açıklama) yalnızca proje talebi formu doldurulduğunda** üretilecek —
-    demo/otomatik tam raporda HİÇ AI yorumu YOK (API maliyeti kontrolsüz
-    büyümesin). Mevcut desen: `openalex/services/job_runner.py`
-    `_build_ai_prompt()` + `forum/services/claude_service.py`
-    `claude_summary_service.generate_summary()` — bibliometri için bu
-    henüz yok (`project_claude_ai_yorumu.md` hafıza notundaki "Faz D —
-    Bibliometrics, en karmaşık" ile aynı iş). Demo PDF'e CTA: "Daha fazla
-    grafik ve AI destekli yorumlama için proje talebi bırakın" →
-    `/proje-talebi/?source=bibliometrics&type=...` (A8 ile aynı link
-    pattern'i, birlikte değerlendirilebilir). Dosya listesi + detaylı plan
-    A6 bitince sunulacak.
+  - [x] **TAMAMLANDI (28 Ekim 2026) Demo grafik sayısı 3→10.**
+    `SiteSettings.bibliometri_demo_grafik_sayisi` (PositiveIntegerField,
+    default=10, migration `0191`) eklendi — admin → Limitler'den
+    değiştirilebilir. `bibliometrics/services/job_runner.py`'deki 2
+    `figures[:3]` → `figures[:demo_n]` (SiteSettings'ten okunuyor).
+    **Bulgu:** `pdf_builder.py` `build_demo_pdf()` içinde de AYRICA sabit
+    `figures[:3]` vardı (çağıranın kırptığı listeyi tekrar 3'e indiriyordu,
+    gerçek fix burasıydı) — kaldırıldı, artık çağıranın kırptığı listeye
+    güveniyor. 300 kayıtlık zengin sentetik veriyle (15 grafik üretildi)
+    uçtan uca test edildi: 10 grafik demo PDF'e doğru girdi (1MB PDF
+    sorunsuz üretildi). `pytest forum/tests.py bibliometrics/tests.py`
+    111/111 geçti. Migration dosyası container'da root sahipli oluştu,
+    `chown 1000:1000` ile düzeltildi (bilinen ders, §26).
+  - [ ] **ERTELENDİ — AI yorumlama (28 Ekim 2026, kullanıcı "atla" dedi, şimdilik
+    yapılmayacak).** Tartışılan tasarım (ileride gerekirse buradan devam):
+    proje talebi hangi job'a ait olduğunu bilsin diye CTA linki `?job=<uuid>`
+    taşısın (projede zaten kullanılan "iş-spesifik ?job= link" deseni),
+    `ProjectRequest`'e yeni FK alanı (`BibliometricJob`, migration); her
+    grafik için ayrı Claude çağrısı (`claude_summary_service` + `AIUsageLog`
+    + `feature_ai_summary` deseni — `openalex/services/job_runner.py`
+    `_build_ai_prompt`/`_ai_comment_for_job` örnek alınacak), üretilince
+    "taslak" etiketiyle ADMIN ONAYI bekleyecek, otomatik gönderilmeyecek
+    (karar 28 Ekim 2026). `project_claude_ai_yorumu.md` hafıza notundaki
+    "Faz D — Bibliometrics, en karmaşık" ile aynı iş.
   - [ ] A7: OpenAlex web CSV format desteği — kullanıcı örnek dosya verecek,
     `bibliometrics/services/parser.py` `detect_format`'a yeni dal
   - [ ] A8: Demo PDF CTA — EN/DE'de proje talebi linkine yönlendirme

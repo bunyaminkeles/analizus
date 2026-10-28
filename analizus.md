@@ -3090,13 +3090,18 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   `report_notes.py` oradan okuyor. EN/DE çevrildi (`makemessages`
   flag'siz — `--no-location` yine devasa gereksiz diff ürettiği için geri
   alındı, bkz. §26 dersi). 2 yeni pytest, toplam `forum+bibliometrics`
-  111/111 geçti. Ayrıca kullanıcı kararıyla **öncelikli yeni iş** eklendi
-  (A6'dan hemen sonra, Grup A'nın geri kalanından önce): demo PDF grafik
-  sayısı 3→10 (`SiteSettings` alanı olacak) + grafik başına AI yorumlama
-  (yalnız proje talebi formunda üretilecek, `openalex`'teki
-  `claude_summary_service` pattern'i — bu, `project_claude_ai_yorumu.md`
-  hafıza notundaki "Faz D — Bibliometrics" ile aynı iş). Detay ve dosya
-  listesi `tasks/todo.md`'de. Sırada: bu yeni iş, sonra A7.
+  111/111 geçti.
+  **Demo grafik sayısı 3→10 TAMAMLANDI (28 Ekim 2026):**
+  `SiteSettings.bibliometri_demo_grafik_sayisi` (migration `0191`, admin
+  → Limitler) eklendi; `job_runner.py`'deki 2 `figures[:3]` →
+  `figures[:demo_n]`. **Asıl kök neden `pdf_builder.py`
+  `build_demo_pdf()`'in İÇİNDE AYRICA sabit `figures[:3]` olmasıydı**
+  (çağıranın kırptığı listeyi tekrar 3'e indiriyordu) — kaldırıldı, artık
+  çağırana güveniyor. 300 kayıtlık sentetik veriyle (15 grafik üretildi)
+  uçtan uca doğrulandı, 10 grafik demo PDF'e doğru girdi. AI yorumlama
+  kullanıcı kararıyla ŞİMDİLİK ERTELENDİ (tasarım notu `tasks/todo.md`'de
+  duruyor, ileride gerekirse "Faz D — Bibliometrics" olarak devam edilir).
+  Sırada: A7.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
