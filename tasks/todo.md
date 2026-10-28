@@ -86,6 +86,24 @@ maddelerde.
     eklendi (ilk kez — 5 test, hepsi geçti).
   - [ ] A6: kısa dönem (<N yıl) CAGR/büyüme uyarısı — eşik kullanıcıya
     sorulacak (öneri N=5)
+  - [ ] **[ÖNCELİKLİ — A6'dan hemen sonra] Demo grafik sayısı + AI yorumlama
+    (28 Ekim 2026, kullanıcı kararları alındı, henüz uygulanmadı).**
+    Kararlar: (1) Demo PDF'teki grafik sayısı şu an sabit 3 (`figures[:3]`,
+    `bibliometrics/services/job_runner.py` 2 yerde) — **10'a çıkarılacak,
+    `SiteSettings`'te yeni alan olarak** (admin'den değiştirilebilir,
+    migration gerekir — model alanı + `SiteSettingsAdmin.fieldsets`, feature
+    flag değil ama aynı yerde). (2) **AI yorumlama (her grafik için API ile
+    açıklama) yalnızca proje talebi formu doldurulduğunda** üretilecek —
+    demo/otomatik tam raporda HİÇ AI yorumu YOK (API maliyeti kontrolsüz
+    büyümesin). Mevcut desen: `openalex/services/job_runner.py`
+    `_build_ai_prompt()` + `forum/services/claude_service.py`
+    `claude_summary_service.generate_summary()` — bibliometri için bu
+    henüz yok (`project_claude_ai_yorumu.md` hafıza notundaki "Faz D —
+    Bibliometrics, en karmaşık" ile aynı iş). Demo PDF'e CTA: "Daha fazla
+    grafik ve AI destekli yorumlama için proje talebi bırakın" →
+    `/proje-talebi/?source=bibliometrics&type=...` (A8 ile aynı link
+    pattern'i, birlikte değerlendirilebilir). Dosya listesi + detaylı plan
+    A6 bitince sunulacak.
   - [ ] A7: OpenAlex web CSV format desteği — kullanıcı örnek dosya verecek,
     `bibliometrics/services/parser.py` `detect_format`'a yeni dal
   - [ ] A8: Demo PDF CTA — EN/DE'de proje talebi linkine yönlendirme
