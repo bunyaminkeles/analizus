@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.utils.translation import gettext, gettext_lazy
 
 INPUT_CSS = 'form-control bg-dark text-white border-secondary'
@@ -22,6 +23,12 @@ class BibliometricUploadForm(forms.Form):
             # Django FileInput multiple'ı desteklemiyor; view request.FILES.getlist ile alıyor
         }),
         required=True,
+    )
+    report_language = forms.ChoiceField(
+        label=gettext_lazy('Rapor Dili'),
+        choices=[('', gettext_lazy('Arayüz dili ile aynı'))] + list(settings.LANGUAGES),
+        required=False,
+        widget=forms.Select(attrs={'class': INPUT_CSS}),
     )
 
     def clean_file(self):

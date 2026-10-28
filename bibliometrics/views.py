@@ -123,6 +123,7 @@ def bibliometrics_landing(request):
         job = BibliometricJob.objects.create(
             user=user,
             original_filename=original_filename[:255],
+            report_language=form.cleaned_data.get('report_language', ''),
         )
 
         # Arka planda çalıştır (çoklu dosya içerikleri birleştirilecek)

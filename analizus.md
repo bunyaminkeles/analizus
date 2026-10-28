@@ -3129,8 +3129,20 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   2 yer, `pubmed/views.py`+`landing.html`) — bibliometrics'teki 3 yer artık
   `SiteSettings`'ten dinamik okuyor, openalex/pubmed'deki 3 yer (ayrı
   app'ler, bibliometri'nin SiteSettings'ine bağlı değil) "10" olarak sabit
-  güncellendi. 2 yeni pytest, `forum+bibliometrics` 113/113 geçti. Grup A
-  kalanı: yalnız [Karar] A4 (rapor dili). Sırada: A4 kararı, sonra Grup B.
+  güncellendi. 2 yeni pytest, `forum+bibliometrics` 113/113 geçti.
+  **A4 TAMAMLANDI (kullanıcı kararı: ayrı alan/migration ile) — GRUP A
+  TAMAMEN BİTTİ:** `BibliometricJob.report_language` eklendi (migration
+  `0006`, boş = arayüz diliyle aynı — mevcut davranış korunur). Kapsam
+  yalnız dosya yükleme formu (`BibliometricUploadForm` + `landing.html`);
+  OpenAlex/PubMed köprüsü bu formu kullanmadığı için etkilenmedi.
+  `job_runner.py` `_in_user_language()`: `report_language` doluysa
+  `translation.override()` ile TÜM iş (PDF+e-posta) o dilde zorlanıyor.
+  `tezanaliz/admin.py` `BibliometricJobProxyAdmin`'e list_display/filter
+  eklendi. Canlı test (register→doğrula→form render) + 2 yeni pytest,
+  `forum+bibliometrics` 117/117 geçti. EN/DE çevrildi.
+  Sırada: Grup B (bibliometrix/VOSviewer kalitesinde yol haritası) — ayrı
+  planlama turu gerekiyor (plan dosyasının kendi notu: her faz veri
+  gereksinimi + bağımsız pytest + TR/EN/DE başlık gerektirir).
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

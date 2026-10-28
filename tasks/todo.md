@@ -178,10 +178,25 @@ maddelerde.
       bırakıldı, ileride admin 10'u değiştirirse bu 3 yer elle güncellenmeli).
     - 2 yeni pytest (`_demo_cta_text` tr/en/de), `forum+bibliometrics`
       113/113 geçti. EN/DE çevirileri eklendi, `compilemessages` hatasız.
-  - [ ] [Karar] A4: rapor dili — ayrı alan (migration) mı, yalnız arayüz
-    dili mi? A1+A3 bitince sorulacak
+  - [x] A4 TAMAMLANDI (28 Ekim 2026, kullanıcı kararı: ayrı alan/migration
+    ile). `BibliometricJob.report_language` eklendi (boş = arayüz dili ile
+    aynı — mevcut davranış korunur; tr/en/de seçilebilir, migration `0006`).
+    Kapsam yalnız dosya yükleme formu (`BibliometricUploadForm` + `landing.html`
+    — `{{ form.report_language }}`, JS'e dokunulmadı, `FormData(form)` zaten
+    alıyor); OpenAlex/PubMed köprüsünden gelen job'lar bu formu kullanmadığı
+    için etkilenmedi, arayüz diliyle devam ediyor (A4'ün orijinal kapsamı).
+    `job_runner.py` `_in_user_language()`: `report_language` doluysa
+    `translation.override()` ile zorlanıyor (PDF+e-posta dahil TÜM iş o
+    dilde), boşsa eski davranış (profil dili). `tezanaliz/admin.py`'deki
+    `BibliometricJobProxyAdmin`'e `report_language` list_display/list_filter
+    olarak eklendi. Canlı test: register→email doğrula→bibliometri sayfası
+    → form alanı 4 seçenekle (Aynı/TR/EN/DE) doğru render oluyor (ekran
+    görüntüsü yerine HTML'den doğrulandı). 2 yeni pytest (`report_language`
+    doluyken zorluyor, boşken profil diline düşüyor), `forum+bibliometrics`
+    117/117 geçti. EN/DE çevirileri (`Rapor Dili`/`Arayüz dili ile aynı`)
+    eklendi. **Grup A TAMAMEN BİTTİ.**
   - Grup B (bibliometrix/VOSviewer kalitesinde yol haritası — veri kalitesi,
-    bilim haritalama, çıktılar, ürün/huni) Grup A bitince ayrı planlanacak.
+    bilim haritalama, çıktılar, ürün/huni) sıradaki iş, ayrı planlanacak.
 
 - [ ] **(27 Ekim 2026) GSC "Page indexing → Not found (404)" raporu — kök
   neden bulundu, henüz düzeltilmedi.** Kullanıcı Search Console'da iki URL

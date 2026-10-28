@@ -20,13 +20,21 @@ _pending_file_contents: dict = {}
 
 
 def _in_user_language(job_id: str, body) -> None:
-    """Worker thread'i dili bilmez → iş, başlatan kullanıcının dil tercihiyle
-    (Profile.preferred_language) çalışır: PDF rapor, hata mesajları ve e-postalar o dilde.
-    Sunucu yeniden başlasa da kaybolmaz (dil profilde)."""
+    """Worker thread'i dili bilmez → iş varsayılan olarak başlatan kullanıcının dil
+    tercihiyle (Profile.preferred_language) çalışır: PDF rapor, hata mesajları ve
+    e-postalar o dilde. job.report_language doluysa (yalnız dosya yükleme formunda
+    seçilebilir, A4) o dil zorlanır — arayüz/profil dilinden bağımsız.
+    Sunucu yeniden başlasa da kaybolmaz (dil job/profilde)."""
     from bibliometrics.models import BibliometricJob
     job = BibliometricJob.objects.select_related('user__profile').filter(id=job_id).first()
-    with recipient_language(getattr(job, 'user', None)):
-        body(job_id)
+    report_lang = getattr(job, 'report_language', '')
+    if report_lang:
+        from django.utils import translation
+        with translation.override(report_lang):
+            body(job_id)
+    else:
+        with recipient_language(getattr(job, 'user', None)):
+            body(job_id)
 
 
 def _execute_job(job_id: str) -> None:

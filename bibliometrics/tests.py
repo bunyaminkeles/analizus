@@ -1,12 +1,17 @@
 """
 Bibliometri grafik üretimi için regresyon testleri.
 Kapsam: yıl ekseni tam sayı tick'leri (A5), kısa dönem uyarısı (A6),
-OpenAlex/PubMed TXT yeniden-yükleme (A7), demo CTA dil ayrımı (A8/A9).
+OpenAlex/PubMed TXT yeniden-yükleme (A7), demo CTA dil ayrımı (A8/A9),
+rapor dili seçimi (A4).
 """
 import matplotlib
 matplotlib.use('Agg')
 
+import pytest
+from django.contrib.auth.models import User
 from django.utils import translation
+
+from forum.models import Profile
 
 from bibliometrics.services.analyzer import (
     publication_trend,
@@ -17,6 +22,8 @@ from bibliometrics.services.analyzer import (
 from bibliometrics.services.report_notes import build_report_notes
 from bibliometrics.services.parser import parse_openalex_txt, parse_pubmed_txt
 from bibliometrics.services.pdf_builder import _demo_cta_text
+from bibliometrics.models import BibliometricJob
+from bibliometrics.services.job_runner import _in_user_language
 
 
 def _records(years_counts):
@@ -147,3 +154,27 @@ def test_demo_cta_en_de_link_to_proje_talebi_with_language_prefix():
     assert '/en/proje-talebi/' in en_text
     assert '/de/proje-talebi/' in de_text
     assert en_text != de_text
+
+
+@pytest.mark.django_db
+def test_report_language_overrides_profile_language():
+    """job.report_language doluysa profil/arayüz dilinden bağımsız zorlanır (A4)."""
+    user = User.objects.create_user(username='testrptlang', password='x', email='t@example.com')
+    Profile.objects.create(user=user, preferred_language='tr')
+
+    job_en = BibliometricJob.objects.create(user=user, report_language='en')
+    seen = {}
+    _in_user_language(str(job_en.id), lambda job_id: seen.update(lang=translation.get_language()))
+    assert seen['lang'] == 'en'
+
+
+@pytest.mark.django_db
+def test_report_language_blank_falls_back_to_profile_language():
+    """job.report_language boşsa mevcut davranış (profil dili) korunur (A4)."""
+    user = User.objects.create_user(username='testrptlang2', password='x', email='t2@example.com')
+    Profile.objects.create(user=user, preferred_language='tr')
+
+    job_default = BibliometricJob.objects.create(user=user, report_language='')
+    seen = {}
+    _in_user_language(str(job_default.id), lambda job_id: seen.update(lang=translation.get_language()))
+    assert seen['lang'] == 'tr'
