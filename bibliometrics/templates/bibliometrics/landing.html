@@ -51,7 +51,7 @@
               <i class="bi bi-envelope-paper text-warning me-2 mt-1"></i>
               <div>
                 <div class="text-white fw-semibold small">{% trans "Email ile Teslim" %}</div>
-                <div class="text-white-50 x-small">{% if LANGUAGE_CODE == 'tr' %}{% trans "Demo (3 grafik) ücretsiz · Tam rapor kayıt sayısına göre ücretli" %}{% else %}{% trans "Demo (3 grafik) ücretsiz · Tam rapor için proje talebi" %}{% endif %}</div>
+                <div class="text-white-50 x-small">{% if LANGUAGE_CODE == 'tr' %}{% blocktrans with n=demo_grafik_sayisi %}Demo ({{ n }} grafik) ücretsiz · Tam rapor kayıt sayısına göre ücretli{% endblocktrans %}{% else %}{% blocktrans with n=demo_grafik_sayisi %}Demo ({{ n }} grafik) ücretsiz · Tam rapor için proje talebi{% endblocktrans %}{% endif %}</div>
               </div>
             </div>
           </div>
@@ -105,6 +105,10 @@
               <small class="text-info"><i class="bi bi-files me-1"></i><span id="selectedFilesText"></span></small>
             </div>
           </div>
+          <div class="mb-3">
+            {{ form.report_language.label_tag }}
+            {{ form.report_language }}
+          </div>
           <button type="submit" class="btn btn-info fw-bold px-4"
                   id="submitBtn" {% if remaining == 0 %}disabled{% endif %}>
             <i class="bi bi-play-fill me-1"></i> {% trans "Analizi Başlat" %}
@@ -146,7 +150,7 @@
       <div class="card-body p-4">
         <p class="text-white-50 mb-3">
           <span id="formatBadge" class="badge bg-secondary me-2"></span>
-          {% if LANGUAGE_CODE == 'tr' %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor (17 analize kadar) için sipariş oluşturunuz." %}{% else %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor için proje talebi bırakın." %}{% endif %}
+          {% if LANGUAGE_CODE == 'tr' %}{% blocktrans with n=demo_grafik_sayisi %}Bibliometrik analiziniz tamamlandı. Demo raporu ({{ n }} grafik) ücretsiz alabilirsiniz. Tam rapor (17 analize kadar) için sipariş oluşturunuz.{% endblocktrans %}{% else %}{% blocktrans with n=demo_grafik_sayisi %}Bibliometrik analiziniz tamamlandı. Demo raporu ({{ n }} grafik) ücretsiz alabilirsiniz. Tam rapor için proje talebi bırakın.{% endblocktrans %}{% endif %}
         </p>
 
         {% include "partials/_s3_retention_notice.html" %}
@@ -157,9 +161,11 @@
             <div class="card h-100 border-info" style="background-color: #16213e;">
               <div class="card-body text-center p-4">
                 <i class="bi bi-file-earmark-pdf-fill fs-2 text-info mb-2 d-block"></i>
-                <h6 class="text-white mb-1">{% trans "Demo Rapor (3 Grafik)" %}</h6>
-                <p class="text-white-50 small mb-3">{% trans "Yayın Trendi + Büyüme Oranı + Yazarlar" %}<br>
-                  <strong class="text-info">{% trans "ÜCRETSİZ" %}</strong></p>
+                <h6 class="text-white mb-1">{% blocktrans with n=demo_grafik_sayisi %}Demo Rapor ({{ n }} Grafik){% endblocktrans %}</h6>
+                <p class="text-white-50 small mb-3"><strong class="text-info">{% trans "ÜCRETSİZ" %}</strong></p>
+                <a href="#" target="_blank" class="btn btn-outline-info w-100 fw-bold mb-2 d-none" id="downloadDemoBtn">
+                  <i class="bi bi-download me-1"></i> {% trans "Demo PDF İndir" %}
+                </a>
                 <button class="btn btn-info w-100 fw-bold" id="sendDemoBtn">
                   <i class="bi bi-envelope-arrow-up me-1"></i> {% trans "Demo Emaile Gönder" %}
                 </button>
@@ -379,6 +385,7 @@
   const errorArea = document.getElementById('errorArea');
   const errorMsg  = document.getElementById('errorMsg');
   const results   = document.getElementById('resultsPanel');
+  const downloadDemo = document.getElementById('downloadDemoBtn');
   const sendDemo   = document.getElementById('sendDemoBtn');
   const orderBtn   = document.getElementById('orderBtn');
   const demoSent   = document.getElementById('demoSentMsg');

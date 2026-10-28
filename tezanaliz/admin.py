@@ -34,8 +34,8 @@ class BibliometricJobProxyAdmin(GroupTabsMixin, ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ('id_short', 'user', 'original_filename', 'file_format',
-                    'total_records', 'status', 'demo_email_sent', 'created_at')
-    list_filter = ('status', 'file_format', 'demo_email_sent')
+                    'total_records', 'status', 'report_language', 'demo_email_sent', 'created_at')
+    list_filter = ('status', 'file_format', 'report_language', 'demo_email_sent')
     search_fields = ('user__username', 'original_filename')
     readonly_fields = ('id', 'created_at', 'completed_at', 'demo_pdf_link', 'full_pdf_link')
     ordering = ('-created_at',)

@@ -20,13 +20,21 @@ _pending_file_contents: dict = {}
 
 
 def _in_user_language(job_id: str, body) -> None:
-    """Worker thread'i dili bilmez → iş, başlatan kullanıcının dil tercihiyle
-    (Profile.preferred_language) çalışır: PDF rapor, hata mesajları ve e-postalar o dilde.
-    Sunucu yeniden başlasa da kaybolmaz (dil profilde)."""
+    """Worker thread'i dili bilmez → iş varsayılan olarak başlatan kullanıcının dil
+    tercihiyle (Profile.preferred_language) çalışır: PDF rapor, hata mesajları ve
+    e-postalar o dilde. job.report_language doluysa (yalnız dosya yükleme formunda
+    seçilebilir, A4) o dil zorlanır — arayüz/profil dilinden bağımsız.
+    Sunucu yeniden başlasa da kaybolmaz (dil job/profilde)."""
     from bibliometrics.models import BibliometricJob
     job = BibliometricJob.objects.select_related('user__profile').filter(id=job_id).first()
-    with recipient_language(getattr(job, 'user', None)):
-        body(job_id)
+    report_lang = getattr(job, 'report_language', '')
+    if report_lang:
+        from django.utils import translation
+        with translation.override(report_lang):
+            body(job_id)
+    else:
+        with recipient_language(getattr(job, 'user', None)):
+            body(job_id)
 
 
 def _execute_job(job_id: str) -> None:
@@ -48,6 +56,7 @@ def _execute_job_body(job_id: str) -> None:
     from bibliometrics.services.pdf_builder import build_demo_pdf, build_full_pdf
     from bibliometrics.services.report_notes import build_report_notes
     from forum.s3_utils import upload_bytes_to_s3
+    from forum.models import SiteSettings
 
     close_old_connections()
     file_content = _pending_file_contents.pop(job_id, None)
@@ -88,7 +97,8 @@ def _execute_job_body(job_id: str) -> None:
             'format': dict(BibliometricJob.FORMAT_CHOICES).get(fmt, fmt),
             'files': len(contents),
         })
-        demo_pdf_bytes = build_demo_pdf(figures[:3], total_records=len(records), filename=job.original_filename,
+        demo_n = SiteSettings.load().bibliometri_demo_grafik_sayisi
+        demo_pdf_bytes = build_demo_pdf(figures[:demo_n], total_records=len(records), filename=job.original_filename,
                                         notes=notes, time_series=time_series)
         full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename,
                                         notes=notes, time_series=time_series)
@@ -188,7 +198,8 @@ def _execute_job_openalex_body(job_id: str) -> None:
             'fetched': len(search_job.all_results),
             'max_records': SiteSettings.load().scrap_max_records or 5000,
         })
-        demo_pdf_bytes = build_demo_pdf(figures[:3], total_records=len(records), filename=job.original_filename,
+        demo_n = SiteSettings.load().bibliometri_demo_grafik_sayisi
+        demo_pdf_bytes = build_demo_pdf(figures[:demo_n], total_records=len(records), filename=job.original_filename,
                                         notes=notes, time_series=time_series)
         full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename,
                                         notes=notes, time_series=time_series)

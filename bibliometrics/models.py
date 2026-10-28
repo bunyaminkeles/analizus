@@ -33,6 +33,13 @@ class BibliometricJob(models.Model):
     original_filename = models.CharField(max_length=255, blank=True)
     file_format = models.CharField(max_length=20, choices=FORMAT_CHOICES, blank=True)
     source = models.CharField(max_length=20, default='upload')  # 'upload' | 'openalex' | 'pubmed'
+    # Boş = arayüz dili (Profile.preferred_language) kullanılır — yalnız dosya yükleme formunda
+    # seçilebilir (A4); OpenAlex/PubMed köprüsünden gelen job'larda hep boş, arayüz dili geçerli.
+    report_language = models.CharField(
+        max_length=5, blank=True, default='',
+        choices=[('', 'Arayüz dili ile aynı')] + list(settings.LANGUAGES),
+        verbose_name='Rapor Dili',
+    )
     alex_job = models.ForeignKey(
         'openalex.AlexSearchJob',
         null=True, blank=True,

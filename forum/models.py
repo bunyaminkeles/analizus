@@ -1633,6 +1633,11 @@ class SiteSettings(models.Model):
         verbose_name="Scraping Maks. Kayıt Sayısı",
         help_text="TR Dizin, OpenAlex ve OAI-PMH scraperlarının çekebileceği maksimum kayıt sayısı. (default: 5000)",
     )
+    bibliometri_demo_grafik_sayisi = models.PositiveIntegerField(
+        default=10,
+        verbose_name="Bibliometri Demo Grafik Sayısı",
+        help_text="Bibliometri demo PDF'inde gösterilecek grafik sayısı (toplam en fazla 17 grafik üretilebilir). (default: 10)",
+    )
     uzman_dizini_min_puan = models.PositiveIntegerField(
         default=200,
         verbose_name="Uzman Dizini: minimum puan",

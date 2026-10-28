@@ -232,6 +232,23 @@ def _last_complete_year() -> int:
     return date.today().year - 1
 
 
+def _set_integer_year_ticks(ax, years: list[int], max_ticks: int = 15) -> None:
+    """Yıl eksenini tam sayıya zorlar (AutoLocator kısa aralıkta ondalık yıl üretebilir).
+    Uzun aralıklarda (>max_ticks) etiketler sıklaştırılır, son yıl her zaman korunur."""
+    if not years:
+        return
+    if len(years) <= max_ticks:
+        ticks = years
+    else:
+        step = -(-len(years) // max_ticks)  # ceil
+        ticks = list(years[::step])
+        if years[-1] not in ticks:
+            ticks.append(years[-1])
+    ax.set_xticks(ticks)
+    if len(years) > 20:
+        ax.tick_params(axis='x', rotation=45)
+
+
 # ─────────────────────────── 1. Yayın Trendi ───────────────────────────
 
 def publication_trend(records: list[dict]):
@@ -260,9 +277,7 @@ def publication_trend(records: list[dict]):
     ax.grid(axis='y', zorder=1)
     ax.legend(fontsize=11)
     _add_bar_labels(ax, bars)
-
-    if len(sorted_years) > 20:
-        ax.tick_params(axis='x', rotation=45)
+    _set_integer_year_ticks(ax, sorted_years)
 
     fig.tight_layout(pad=2.0)
     return fig
@@ -736,15 +751,17 @@ def annual_citation_trend(records: list[dict]):
     ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=11)
     ax1.set_title(gettext('Yıllık Atıf Trendi'))
     ax1.grid(axis='y', zorder=0)
-
-    if len(sorted_years) > 20:
-        ax1.tick_params(axis='x', rotation=45)
+    _set_integer_year_ticks(ax1, sorted_years)
 
     fig.tight_layout(pad=2.0)
     return fig
 
 
 # ─────────────────────────── 11. Büyüme Oranı ───────────────────────────
+
+# Bu eşikten kısa zaman serilerinde büyüme oranı/CAGR küçük taban etkisine açıktır (A6)
+SHORT_SERIES_YEARS = 5
+
 
 def publication_growth_rate(records: list[dict]):
     years = [r['year'] for r in records if r.get('year') and 1900 < r['year'] <= _last_complete_year()]
@@ -785,14 +802,17 @@ def publication_growth_rate(records: list[dict]):
     ax.legend(fontsize=11)
     ax.grid(axis='y', zorder=0)
 
-    ax.text(0.98, 0.97,
-            f'CAGR ({sorted_years[0]}–{sorted_years[-1]}): {cagr:+.1f}%',
+    cagr_text = f'CAGR ({sorted_years[0]}–{sorted_years[-1]}): {cagr:+.1f}%'
+    if len(sorted_years) < SHORT_SERIES_YEARS:
+        cagr_text += '\n' + gettext(
+            'Veri {n} yıldan kısa bir dönemi kapsıyor; büyüme oranları küçük '
+            'taban etkisine açıktır.').format(n=SHORT_SERIES_YEARS)
+    ax.text(0.98, 0.97, cagr_text,
             transform=ax.transAxes, fontsize=11, va='top', ha='right',
             bbox=dict(boxstyle='round,pad=0.5', facecolor='#f1f5f9',
                       edgecolor='#cbd5e0', alpha=0.95))
 
-    if len(growth_years) > 20:
-        ax.tick_params(axis='x', rotation=45)
+    _set_integer_year_ticks(ax, growth_years)
     fig.tight_layout(pad=2.0)
     return fig
 

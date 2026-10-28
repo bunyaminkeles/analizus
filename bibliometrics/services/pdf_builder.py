@@ -1,8 +1,8 @@
 """
 PDF Rapor Oluşturucu (reportlab)
 - Beyaz arka plan, DejaVu font (Türkçe karakter desteği)
-- build_demo_pdf(figures):  3 grafik → demo PDF bytes
-- build_full_pdf(figures):  10 grafik → tam rapor PDF bytes
+- build_demo_pdf(figures):  çağıran taraf SiteSettings.bibliometri_demo_grafik_sayisi kadar önceden kırpar (default 10)
+- build_full_pdf(figures):  üretilebilen tüm grafikler (en fazla 17) → tam rapor PDF bytes
 """
 import io
 import os
@@ -171,6 +171,18 @@ def _fit_text(text: str, font_name: str, font_size: float, max_width: float) -> 
         return text[:limit] + ('…' if len(text) > limit else '')
 
 
+def _demo_cta_text() -> str:
+    """Demo kapağındaki tam rapor çağrısı. TR: mevcut sipariş metni (sipariş sistemi var).
+    EN/DE: sipariş yok → proje talebi (kullanıcı kararı 27 Eylül 2026, A8). Sorgu parametreleri
+    (?source=&type=) PDF'teki düz metne eklenmiyor — tıklanabilir link değil, kısa/okunur kalsın."""
+    from django.utils.translation import get_language
+    from django.urls import reverse
+    if (get_language() or 'tr')[:2] == 'tr':
+        return gettext('Tam rapor için sipariş oluşturunuz → analizus.com')
+    return gettext('Tam rapor veya uzman incelemesi için proje talebi bırakın → analizus.com{path}').format(
+        path=reverse('proje_talebi'))
+
+
 def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: str, n_analyses: int = 0):
     _draw_page_background(c, width, height)
 
@@ -265,8 +277,8 @@ def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: s
         c.drawCentredString(width / 2, note_y + 27, gettext('Demo: {n} analiz içermektedir.').format(n=n_analyses))
         c.setFont(_FONT_NORMAL, 8)
         c.setFillColorRGB(*C_MUTED)
-        c.drawCentredString(width / 2, note_y + 12,
-                            gettext('Tam rapor için sipariş oluşturunuz → analizus.com'))
+        cta_text = _fit_text(_demo_cta_text(), _FONT_NORMAL, 8, card_w - 24)
+        c.drawCentredString(width / 2, note_y + 12, cta_text)
 
     _draw_footer(c, width)
 
@@ -475,7 +487,8 @@ def _trend_warning(notes: dict, in_full_report: bool) -> str:
 
 def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '', notes: dict = None,
                    time_series: list = None) -> bytes:
-    """figures: [(title, Figure), ...]  — ilk 3 tanesi kullanılır
+    """figures: [(title, Figure), ...]  — çağıran taraf kaç tanesinin demo'ya gireceğini
+    (SiteSettings.bibliometri_demo_grafik_sayisi) önceden kırpar; burada olduğu gibi kullanılır
     notes/time_series: verilirse veri kesildiğinde zaman serisi sayfalarına uyarı satırı (bölüm yok)"""
     A4, cm, canvas_mod, _ = _get_reportlab()
     width, height = A4
@@ -483,7 +496,7 @@ def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '', no
     buf = io.BytesIO()
     c = canvas_mod.Canvas(buf, pagesize=A4)
 
-    demo_figs   = figures[:3]
+    demo_figs   = figures
     total_pages = 1 + len(demo_figs)
     warning     = _trend_warning(notes, in_full_report=False)
     series      = set(time_series or [])

@@ -61,8 +61,12 @@ class EmailService:
 
 
     @classmethod
-    def send_verification_email(cls, user, verification_token):
-        """Kullanıcıya e-posta doğrulama linki gönderir"""
+    def send_verification_email(cls, user, verification_token, next_url=None):
+        """Kullanıcıya e-posta doğrulama linki gönderir.
+
+        next_url: doğrulama linkine gömülür (session'a değil) — kullanıcı linke
+        farklı cihaz/tarayıcıdan tıklayabileceği için session hayatta kalmayabilir.
+        """
         if not cls.is_configured():
             logger.warning(f"E-posta ayarları yapılmamış! Doğrulama maili gönderilemedi. Kullanıcı: {user.username}")
             return False
@@ -70,9 +74,13 @@ class EmailService:
         # Alıcının kayıtlı dilinde (Profile.preferred_language); link de o dilin
         # önekiyle (/en/verify-email/…) — doğrulama sonrası onboarding aynı dilde açılsın
         with recipient_language(user):
+            verification_url = cls.get_base_url().rstrip('/') + reverse('verify_email', args=[verification_token.token])
+            if next_url:
+                from urllib.parse import quote
+                verification_url += f'?next={quote(next_url)}'
             context = {
                 'user': user,
-                'verification_url': cls.get_base_url().rstrip('/') + reverse('verify_email', args=[verification_token.token]),
+                'verification_url': verification_url,
                 'site_name': 'Analizus',
                 'expires_hours': 24,
             }

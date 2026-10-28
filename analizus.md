@@ -3063,7 +3063,95 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   **`egitim.html:199,230` (F9) de TAMAMLANDI** — `{% url 'analiz_home' %}` /
   `{% url 'tarama_hub' %}` ile düzeltildi (lokal `feature_training` flag'i
   False olduğu için sayfa 404 veriyor, düzeltmeyle ilgisiz — reverse() +
-  `get_template()` ile doğrulandı). **A2 tamamen bitti.** Sırada: A3.
+  `get_template()` ile doğrulandı). **A2 tamamen bitti.**
+  **A3 TAMAMLANDI (28 Ekim 2026) — kök neden düzeltildi, orijinal belgenin
+  varsayımından farklı çıktı:** `next` kaybının asıl nedeni session değil,
+  `templates/base.html`'deki site geneli Giriş/Kayıt Ol linklerinin (navbar,
+  mobil menü, AI asistan banner'ı — 6 yer) hiç `?next=` eklememesiydi
+  (yalnız `service_promo.html`'deki tanıtım CTA'sı doğru ekliyordu — curl ile
+  register formunu POST ederek test ettim, next doğru geldiğinde zaten
+  çalışıyordu). Düzeltme: `base.html` 6 yere `?next={{ request.path }}`
+  eklendi; `next` **doğrulama e-postasının linkine gömülüyor** (session'a
+  değil — kullanıcı linke farklı cihazdan tıklayabilir), `register()` →
+  `verify_email()` → `onboarding()` zinciri boyunca `url_has_allowed_host_and_scheme`
+  ile doğrulanarak taşınıyor. Uçtan uca canlı test edildi (taze/cihazdan
+  bağımsız cookie ile tam zincir + next'siz eski akış + 3 noktada dış domain
+  reddi), `pytest forum/tests.py` 104/104 geçti.
+  **A5 TAMAMLANDI:** `bibliometrics/services/analyzer.py`'ye paylaşımlı
+  `_set_integer_year_ticks()` helper'ı eklendi (mevcut `lotka_law` set_xticks
+  pattern'i genelleştirildi), `publication_trend`/`annual_citation_trend`/
+  `publication_growth_rate` artık tam sayı yıl etiketi kullanıyor (kısa
+  dönemde AutoLocator'ın ürettiği 2021.5 gibi ondalık etiketler düzeldi),
+  uzun dönemde (>15 yıl) etiketler sıklaştırılıyor. `bibliometrics/tests.py`
+  ilk kez eklendi (5 test).
+  **A6 TAMAMLANDI (eşik N=5, kullanıcı onayıyla):** zaman serisi 3-4 tam
+  yılsa büyüme oranı grafiğine + rapor kısıtlar bölümüne "küçük taban
+  etkisi" uyarısı eklendi. `analyzer.SHORT_SERIES_YEARS=5` tek kaynak,
+  `report_notes.py` oradan okuyor. EN/DE çevrildi (`makemessages`
+  flag'siz — `--no-location` yine devasa gereksiz diff ürettiği için geri
+  alındı, bkz. §26 dersi). 2 yeni pytest, toplam `forum+bibliometrics`
+  111/111 geçti.
+  **Demo grafik sayısı 3→10 TAMAMLANDI (28 Ekim 2026):**
+  `SiteSettings.bibliometri_demo_grafik_sayisi` (migration `0191`, admin
+  → Limitler) eklendi; `job_runner.py`'deki 2 `figures[:3]` →
+  `figures[:demo_n]`. **Asıl kök neden `pdf_builder.py`
+  `build_demo_pdf()`'in İÇİNDE AYRICA sabit `figures[:3]` olmasıydı**
+  (çağıranın kırptığı listeyi tekrar 3'e indiriyordu) — kaldırıldı, artık
+  çağırana güveniyor. 300 kayıtlık sentetik veriyle (15 grafik üretildi)
+  uçtan uca doğrulandı, 10 grafik demo PDF'e doğru girdi. AI yorumlama
+  kullanıcı kararıyla ŞİMDİLİK ERTELENDİ (tasarım notu `tasks/todo.md`'de
+  duruyor, ileride gerekirse "Faz D — Bibliometrics" olarak devam edilir).
+  **A7 KISMEN TAMAMLANDI:** kullanıcının verdiği örnek dosya openalex.org
+  web CSV'si değil bizim OpenAlex aracımızın ürettiği TXT çıktısıydı, ama
+  test ederken gerçek bir hata bulundu — `openalex/services/job_runner.py`
+  etiket hizasını dinamik hesaplıyor (`w = max(len(v)...)`, "Anahtar
+  Kelimeler" eklenince w=17 oldu), `bibliometrics/services/parser.py`
+  `parse_openalex_txt()` sabit 14 karakter bekliyordu → üretici ile
+  ayrıştırıcı kopmuştu, gerçek TXT dosyaları yeniden yüklenince TÜM
+  kayıtlar "başlıksız" diye sessizce eleniyordu. Sabit genişlik yerine
+  esnek regex'e çevrildi (`parse_pubmed_txt`'e de önleyici olarak aynı
+  düzeltme uygulandı — EN/DE'de aynı kırılmaya açıktı). İkinci bulgu:
+  openalex'in anahtar kelime ayrıştırması `;`/`|` ile ayırıyordu ama
+  üretici `, ` ile birleştiriyor (pubmed'de zaten düzeltilmiş aynı hata,
+  openalex'e hiç uygulanmamıştı) — düzeltildi. Üretici→ayrıştırıcı uçtan
+  uca 4 yeni pytest, `forum+bibliometrics` 113/113 geçti. A7'nin orijinal
+  kapsamı (openalex.org'un gerçek web CSV export'u) hâlâ açık — gerçek
+  bir CSV örneği gerekiyor.
+  **A8+A9 TAMAMLANDI:** `pdf_builder.py`'ye `_demo_cta_text()` eklendi —
+  TR'de mevcut sipariş metni, EN/DE'de `reverse('proje_talebi')` ile dil
+  önekli proje talebi linki (A8). `promo_title`'ın paylaşımlı "Bibliometrik
+  Analiz" msgid'i navbar/ana sayfa/onboarding'de de kullanıldığından
+  doğrudan retranslate yerine `pgettext('seo_title', ...)` ile bağlamlı
+  çeviriye geçirildi (TR ve diğer kullanım yerleri etkilenmedi), EN/DE
+  SEO'ya güçlendirildi (A9). **Yan bulgu:** demo sayısı 3→10 değişince
+  stale kalan 6 ayrı "(3 grafik)" referansı daha bulundu
+  (`bibliometrics/views.py`+`landing.html`, `openalex/templates/.../landing.html`
+  2 yer, `pubmed/views.py`+`landing.html`) — bibliometrics'teki 3 yer artık
+  `SiteSettings`'ten dinamik okuyor, openalex/pubmed'deki 3 yer (ayrı
+  app'ler, bibliometri'nin SiteSettings'ine bağlı değil) "10" olarak sabit
+  güncellendi. 2 yeni pytest, `forum+bibliometrics` 113/113 geçti.
+  **A4 TAMAMLANDI (kullanıcı kararı: ayrı alan/migration ile) — GRUP A
+  TAMAMEN BİTTİ:** `BibliometricJob.report_language` eklendi (migration
+  `0006`, boş = arayüz diliyle aynı — mevcut davranış korunur). Kapsam
+  yalnız dosya yükleme formu (`BibliometricUploadForm` + `landing.html`);
+  OpenAlex/PubMed köprüsü bu formu kullanmadığı için etkilenmedi.
+  `job_runner.py` `_in_user_language()`: `report_language` doluysa
+  `translation.override()` ile TÜM iş (PDF+e-posta) o dilde zorlanıyor.
+  `tezanaliz/admin.py` `BibliometricJobProxyAdmin`'e list_display/filter
+  eklendi. Canlı test (register→doğrula→form render) + 2 yeni pytest,
+  `forum+bibliometrics` 117/117 geçti. EN/DE çevrildi.
+  **Grup B (bibliometrix/VOSviewer yol haritası) kullanıcı kararıyla
+  ERTELENDİ (28 Ekim 2026) — sonraki oturuma bırakıldı.** Özet sunuldu
+  (B1 veri kalitesi → B2 bilim haritalama en karmaşık → B3 çıktılar
+  VOSviewer/hazır yöntem metni/PRISMA → B4 ürün/huni), ayrı planlama
+  turu gerekecek.
+  **A7'nin açık kalan kısmı için gerçek veri geldi:** kullanıcı
+  openalex.org'dan gerçek bir "Export CSV" dosyası sağladı (~150 kayıt).
+  Analiz edildi: sütunlar yalnızca `Title,Author,Year,Citation count,
+  Open access,Abstract` — **dergi/DOI/kurum/ülke/anahtar kelime/yayın
+  türü hiç yok**, web export'un gerçek kısıtı bu. Plan: `detect_format`
+  yeni dal + `_parse_openalex_csv()` (scopus parser pattern'i), kullanıcıya
+  bu kısıtlamayı bildirip onay sonrası uygulanacak. Detay `tasks/todo.md`'de.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

@@ -10,6 +10,54 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(28 Ekim 2026) TAMAMLANDI — Site genelinde çok satırlı Django `{# #}`
+  yorumu site kullanıcılarına düz metin olarak sızıyordu.** Kullanıcı
+  Render'da bibliometri sayfasında soluk/düşük kontrastlı bir metin fark
+  etti ("renk uyumu sorunu" sandı), tarayıcı çeviri eklentisiyle seçince
+  gerçek içerik ortaya çıktı: `{# Ortak S3 saklama süresi uyarısı... #}`
+  — Django'nun `{# #}` yorum etiketi **TEK SATIR** için tasarlanmış (CLAUDE.md
+  kuralı), çok satıra yayılınca yorum olarak PARSE EDİLMİYOR, ham metin
+  olarak render ediliyor. İki dosyada bulundu ve düzeltildi
+  (`{% comment %}...{% endcomment %}`'a çevrildi):
+  - `templates/partials/_s3_retention_notice.html` — 30+ araç sayfasında
+    kullanılıyor (tüm istatistik araçları + tarama araçları + bibliometri)
+  - `templates/partials/order_payment.html` — 5 **sipariş/ödeme sayfasında**
+    kullanılıyor (openalex, bibliometrics, trdizin, oaipmh, semanticscholar
+    — gerçek müşteri IBAN ödeme sayfaları, daha yüksek risk)
+  Tüm template'lerde aynı hata kalıbı taranıp (regex ile) başka yer
+  bulunmadığı doğrulandı. `render_to_string()` ile içerik sızıntısı kalmadığı
+  test edildi, `forum+bibliometrics` 117/117 geçti.
+
+- [x] **(28 Ekim 2026) TAMAMLANDI — E-posta doğrulama middleware'i (`EmailVerificationMiddleware`)
+  aşırı engelleme hatası.** Kullanıcı raporu: `/verification-pending/`'e düşen
+  doğrulanmamış kullanıcı hiçbir sayfaya gidemiyor, dil bile değiştiremiyordu.
+  Kök neden: `forum/middleware.py` ALLOWED_URLS whitelist'i ilk eklendiğinden
+  beri güncellenmemiş, zamanla eklenen blog/hizmetler/eğitim/istatistik
+  araçları/dil seçici (`set_language`)/şifre sıfırlama gibi herkese-açık
+  sayfalar listeye hiç girmemişti. Düzeltme: whitelist tamamlandı (mimari
+  aynı kaldı) + 3 ek tutarsızlık giderildi — `topic_detail`/`new_topic`
+  POST kollarına ve `api_ai_chat`/`ai_suggest_answer`'a view-içi
+  `email_verified` kontrolü eklendi (AI widget artık `/api/` önek
+  muafiyetini bypass edemiyor). `forum/tests.py` 104/104 geçti, Django test
+  Client ile atomic-rollback senaryosuyla manuel doğrulandı. Plan:
+  `/home/bunyamin/.claude/plans/swift-yawning-perlis.md`.
+  - [ ] **Ertelendi — ayrı görev:** `topic_detail` view'ında `login_required`
+    yok; teorik olarak anonim kullanıcı yorum POST edebilir (`created_by`
+    `AnonymousUser` olursa FK hatasıyla 500 riski). Bu turun kapsamı dışında
+    bırakıldı, ayrı onayla ele alınmalı.
+
+- [ ] **(28 Ekim 2026) OpenAlex sayfalama (pagination) 401 Unauthorized hatası
+  — araştırılmadı, bibliometri işinden bağımsız.** Render (dev/staging)
+  loglarında görüldü: bir arama job'ı (`d0855985-...`) cursor ile sayfalama
+  yaparken OpenAlex API'den 3 deneme boyunca 401 aldı ("OpenAlex pagination
+  hatası: 401"), bu yüzden toplam 2890 bulunan kayıttan yalnızca ilk sayfa
+  (200) çekilebildi; kullanıcı 1000 kayıt istemişti, 200/1000 ile kaldı
+  (parser sonrası net 199). İlk sayfa isteği başarılı olduğuna göre
+  `OPENALEX_API_KEY`/`mailto` muhtemelen yalnızca cursor'lu (sayfalanmış)
+  isteklerde eksik/düşüyor — `openalex/services/scraper.py` `build_api_params`
+  ve `_fetch_page` cursor akışı incelenmeli. Kullanıcı kararı: şimdilik not,
+  araştırma ayrı görev olarak sorulacak.
+
 - [ ] **(28 Ekim 2026) Bibliometri — Grup A hata düzeltmeleri (plan onaylandı,
   henüz uygulanmadı).** Kaynak: `bibliometri_durum_ve_gelistirme_prompt.md`
   (gerçek vaka: d4yu/user 777, kayıt→doğrulama→onboarding huninde `next`
@@ -49,24 +97,163 @@ maddelerde.
       doğrulaması yeterli görüldü.
     - Tüm düzeltmeler reverse() (tr/en/de) + `get_template()` parse testi + canlı curl ile doğrulandı, web+nginx restart edildi
     - Temiz: e-posta şablonları, `base.html`/`partials/`, `static/js/*.js` (yalnız `/api/`), market şablonları, `HttpResponseRedirect('/...')` kalıbı yok
-  - [ ] A3: `next` kaybı — `forum/views.py` `register`/`verification_pending`/
-    `verify_email`/`onboarding` view'larında session'a yazılıp onboarding
-    sonunda okunacak (en hassas adım, auth akışı)
-  - [ ] A5: `bibliometrics/services/analyzer.py` — `publication_trend`,
-    `annual_citation_trend`, `publication_growth_rate` grafiklerine
-    `ax.set_xticks()` eksik (ondalık yıl etiketi), `lotka_law`'daki pattern
-    uygulanacak
-  - [ ] A6: kısa dönem (<N yıl) CAGR/büyüme uyarısı — eşik kullanıcıya
-    sorulacak (öneri N=5)
-  - [ ] A7: OpenAlex web CSV format desteği — kullanıcı örnek dosya verecek,
-    `bibliometrics/services/parser.py` `detect_format`'a yeni dal
-  - [ ] A8: Demo PDF CTA — EN/DE'de proje talebi linkine yönlendirme
-  - [ ] A9: `bibliometrics/views.py:38,43` `promo_title`/`promo_description`
-    EN/DE çevirisi SEO için güçlendirilecek (`.po` + `compilemessages`)
-  - [ ] [Karar] A4: rapor dili — ayrı alan (migration) mı, yalnız arayüz
-    dili mi? A1+A3 bitince sorulacak
-  - Grup B (bibliometrix/VOSviewer kalitesinde yol haritası — veri kalitesi,
-    bilim haritalama, çıktılar, ürün/huni) Grup A bitince ayrı planlanacak.
+  - [x] A3 TAMAMLANDI (28 Ekim 2026): Gerçek kök neden session değil —
+    `templates/base.html`'deki SİTE GENELİ Giriş/Kayıt Ol linkleri (navbar,
+    mobil menü, AI asistan banner'ı — 6 yer) hiç `?next=` eklemiyordu (yalnız
+    `service_promo.html`'deki özel CTA ekliyordu). d4yu muhtemelen navbar'ı
+    kullandı, next hiç oluşmadı. Düzeltme: (1) `base.html` 6 yere
+    `?next={{ request.path }}` eklendi; (2) `next`, SESSION'a değil
+    **doğrulama e-postasının linkine gömülüyor** (`email_service.py`
+    `send_verification_email(next_url=...)`) — cihazdan bağımsız çalışır;
+    (3) `register()` next doğrulamasını e-posta göndermeden önceye aldı;
+    (4) `verify_email()` next'i `onboarding`'e `?next=` ile aktarıyor;
+    (5) `onboarding()`'deki 3 koşulsuz `redirect('home')` → doğrulanmış
+    `next` (form action'sız olduğu için GET→POST arası otomatik korunuyor).
+    Her adımda `url_has_allowed_host_and_scheme` ile açık yönlendirme
+    koruması. **Uçtan uca canlı test edildi** (register→verify-email
+    [taze/cihazdan bağımsız cookie ile]→onboarding→hedef sayfa; next'siz
+    eski akış bozulmadı; dış domain next 3 noktada da reddedildi).
+    `pytest forum/tests.py` 104/104 geçti.
+  - [x] A5 TAMAMLANDI (28 Ekim 2026): `bibliometrics/services/analyzer.py`'ye
+    paylaşımlı `_set_integer_year_ticks()` helper'ı eklendi (lotka_law
+    pattern'i), `publication_trend`/`annual_citation_trend`/
+    `publication_growth_rate` kullanıyor. 3 ve 20 yıllık sentetik veriyle
+    görsel + `get_xticks()` testiyle doğrulandı. `bibliometrics/tests.py`
+    eklendi (ilk kez — 5 test, hepsi geçti).
+  - [x] A6 TAMAMLANDI (28 Ekim 2026, eşik N=5 kullanıcı onayıyla): Zaman
+    serisi 3-4 tam yıl ise (`publication_growth_rate`'in kendi 3 yıl
+    minimumuyla tutarlı) hem büyüme oranı grafiğindeki CAGR kutusuna hem
+    de rapor "Veri, Yöntem ve Kısıtlar" bölümüne "Veri N yıldan kısa bir
+    dönemi kapsıyor; büyüme oranları küçük taban etkisine açıktır." notu
+    eklendi. Yeni `SHORT_SERIES_YEARS=5` sabiti `analyzer.py`'de, eşik
+    `report_notes.py`'den `analyzer.SHORT_SERIES_YEARS` ile tek yerden
+    okunuyor (duplicate yok). EN/DE çevirisi eklendi (`makemessages`
+    **flag'siz** çalıştırıldı — `--no-location` tekrar denenip devasa
+    gereksiz diff ürettiği görülüp geri alındı, ders tekrar doğrulandı).
+    3/6 yıllık sentetik veri + EN/DE `translation.override` ile canlı
+    test edildi, 2 yeni pytest eklendi (toplam bibliometrics 7 test).
+    `pytest forum/tests.py bibliometrics/tests.py` 111/111 geçti.
+  - [x] **TAMAMLANDI (28 Ekim 2026) Demo grafik sayısı 3→10.**
+    `SiteSettings.bibliometri_demo_grafik_sayisi` (PositiveIntegerField,
+    default=10, migration `0191`) eklendi — admin → Limitler'den
+    değiştirilebilir. `bibliometrics/services/job_runner.py`'deki 2
+    `figures[:3]` → `figures[:demo_n]` (SiteSettings'ten okunuyor).
+    **Bulgu:** `pdf_builder.py` `build_demo_pdf()` içinde de AYRICA sabit
+    `figures[:3]` vardı (çağıranın kırptığı listeyi tekrar 3'e indiriyordu,
+    gerçek fix burasıydı) — kaldırıldı, artık çağıranın kırptığı listeye
+    güveniyor. 300 kayıtlık zengin sentetik veriyle (15 grafik üretildi)
+    uçtan uca test edildi: 10 grafik demo PDF'e doğru girdi (1MB PDF
+    sorunsuz üretildi). `pytest forum/tests.py bibliometrics/tests.py`
+    111/111 geçti. Migration dosyası container'da root sahipli oluştu,
+    `chown 1000:1000` ile düzeltildi (bilinen ders, §26).
+  - [ ] **ERTELENDİ — AI yorumlama (28 Ekim 2026, kullanıcı "atla" dedi, şimdilik
+    yapılmayacak).** Tartışılan tasarım (ileride gerekirse buradan devam):
+    proje talebi hangi job'a ait olduğunu bilsin diye CTA linki `?job=<uuid>`
+    taşısın (projede zaten kullanılan "iş-spesifik ?job= link" deseni),
+    `ProjectRequest`'e yeni FK alanı (`BibliometricJob`, migration); her
+    grafik için ayrı Claude çağrısı (`claude_summary_service` + `AIUsageLog`
+    + `feature_ai_summary` deseni — `openalex/services/job_runner.py`
+    `_build_ai_prompt`/`_ai_comment_for_job` örnek alınacak), üretilince
+    "taslak" etiketiyle ADMIN ONAYI bekleyecek, otomatik gönderilmeyecek
+    (karar 28 Ekim 2026). `project_claude_ai_yorumu.md` hafıza notundaki
+    "Faz D — Bibliometrics, en karmaşık" ile aynı iş.
+  - [x] A7 KISMEN TAMAMLANDI (28 Ekim 2026) — kullanıcının verdiği örnek
+    dosya aslında openalex.org web CSV'si değil, **bizim OpenAlex aracımızın
+    ürettiği TXT çıktısıydı** (`openalex_txt` formatı, zaten desteklenen).
+    Ama test ederken **gerçek, ciddi bir hata bulundu ve düzeltildi**:
+    - **Kök neden:** `openalex/services/job_runner.py:25`'teki üretici
+      etiket hizasını dinamik hesaplıyor (`w = max(len(v) for v in L.values())`,
+      "Anahtar Kelimeler" eklendiğinden beri w=17), ama
+      `bibliometrics/services/parser.py` `parse_openalex_txt()` **sabit
+      14 karakterlik** önek bekliyordu (`'Başlık       :'` gibi, ayrıca
+      "Anahtar Kel." kısaltmasıyla) — üretici ile ayrıştırıcı birbirinden
+      kopmuştu. Sonuç: gerçek bir OpenAlex TXT dosyası yeniden yüklenince
+      TÜM kayıtlar sessizce "başlıksız" diye eleniyordu (0 kayıt çıkıyordu).
+    - **Düzeltme:** sabit genişlik string eşleştirmesi yerine esnek
+      boşluklu regex (`_val(label)` → `re.match(label + r'\s*:\s*(.*)$')`)
+      — dil/etiket uzunluğu ne olursa olsun çalışır, bu hata sınıfını
+      kalıcı olarak ortadan kaldırır. `parse_pubmed_txt`'e de AYNI düzeltme
+      uygulandı (şu an Türkçe'de tesadüfen doğru çalışıyordu ama aynı
+      kırılmaya karşı savunmasızdı — EN/DE'de etiket uzunluğu değişince
+      kırılırdı, önleyici olarak düzeltildi).
+    - **İkinci bulgu:** `parse_openalex_txt`'in anahtar kelime ayrıştırması
+      da bozuktu — `_split_keywords()` `;`/`|` ile ayırıyor ama üretici
+      `, ` ile birleştiriyor (bu TAM OLARAK `parse_pubmed_txt`'te zaten
+      fark edilip düzeltilmiş olan aynı hataydı, kod yorumunda duruyordu
+      ama openalex'e hiç uygulanmamıştı) — aynı düzeltme uygulandı.
+    - Gerçek dosya + üretici→ayrıştırıcı uçtan uca testle (4 yeni pytest)
+      doğrulandı, `forum+bibliometrics` 113/113 geçti.
+    - **Hâlâ eksik (A7'nin orijinal kapsamı):** openalex.org web sitesinin
+      kendi "Export → CSV" özelliğiyle indirilen gerçek CSV formatı hâlâ
+      desteklenmiyor (`csv_auto`'ya düşüyor) — bunun için openalex.org'dan
+      gerçekten indirilmiş bir CSV örneği hâlâ gerekiyor, bu TXT dosyası
+      onun yerini tutmuyor.
+  - [x] A8+A9 TAMAMLANDI (28 Ekim 2026):
+    - **A8:** `bibliometrics/services/pdf_builder.py`'ye `_demo_cta_text()`
+      eklendi — TR'de mevcut "sipariş oluşturunuz" metni korunuyor, EN/DE'de
+      `reverse('proje_talebi')` ile dil önekli proje talebi linkine
+      yönlendiriyor ("analizus.com/en/proje-talebi/" vb., sorgu parametreleri
+      okunurluk için PDF düz metnine eklenmedi). `_fit_text` ile taşma
+      koruması eklendi, kapak PNG'ye render edilip görsel doğrulandı.
+    - **A9:** `promo_title` paylaşımlı "Bibliometrik Analiz" msgid'ini
+      kullanıyordu (navbar/mobil menü/ana sayfa/onboarding'de de aynı
+      çeviri) — doğrudan retranslate etmek o yerleri de bozardı. `pgettext('seo_title', ...)`
+      ile bağlamlı çeviriye geçirildi (TR çıktısı aynı kalıyor, context-free
+      kullanım yerleri etkilenmedi — ayrıca doğrulandı), EN/DE SEO'ya
+      güçlendirildi ("Bibliometric Analysis from Scopus, WoS & OpenAlex
+      Data – Automated Report").
+    - **Yan bulgu (A8/A9 sırasında, demo sayısı 3→10 işinin devamı):**
+      `bibliometrics/views.py`, `bibliometrics/templates/bibliometrics/landing.html`,
+      `openalex/templates/openalex/landing.html` (2 yer) ve `pubmed/views.py`
+      + `pubmed/templates/pubmed/landing.html`'de TOPLAM 6 yerde daha sabit
+      "(3 grafik)" referansı bulundu (demo sayısı değişince stale kalmışlar).
+      bibliometrics'teki 3 yer `SiteSettings.bibliometri_demo_grafik_sayisi`'nden
+      dinamik okuyor artık (`{% blocktrans with n=... %}`); openalex/pubmed'deki
+      3 yer basitçe "10" olarak güncellendi (bu ikisi bibliometri'nin
+      SiteSettings'ine bağlı değil, ayrı app'ler — sabit metin olarak
+      bırakıldı, ileride admin 10'u değiştirirse bu 3 yer elle güncellenmeli).
+    - 2 yeni pytest (`_demo_cta_text` tr/en/de), `forum+bibliometrics`
+      113/113 geçti. EN/DE çevirileri eklendi, `compilemessages` hatasız.
+  - [x] A4 TAMAMLANDI (28 Ekim 2026, kullanıcı kararı: ayrı alan/migration
+    ile). `BibliometricJob.report_language` eklendi (boş = arayüz dili ile
+    aynı — mevcut davranış korunur; tr/en/de seçilebilir, migration `0006`).
+    Kapsam yalnız dosya yükleme formu (`BibliometricUploadForm` + `landing.html`
+    — `{{ form.report_language }}`, JS'e dokunulmadı, `FormData(form)` zaten
+    alıyor); OpenAlex/PubMed köprüsünden gelen job'lar bu formu kullanmadığı
+    için etkilenmedi, arayüz diliyle devam ediyor (A4'ün orijinal kapsamı).
+    `job_runner.py` `_in_user_language()`: `report_language` doluysa
+    `translation.override()` ile zorlanıyor (PDF+e-posta dahil TÜM iş o
+    dilde), boşsa eski davranış (profil dili). `tezanaliz/admin.py`'deki
+    `BibliometricJobProxyAdmin`'e `report_language` list_display/list_filter
+    olarak eklendi. Canlı test: register→email doğrula→bibliometri sayfası
+    → form alanı 4 seçenekle (Aynı/TR/EN/DE) doğru render oluyor (ekran
+    görüntüsü yerine HTML'den doğrulandı). 2 yeni pytest (`report_language`
+    doluyken zorluyor, boşken profil diline düşüyor), `forum+bibliometrics`
+    117/117 geçti. EN/DE çevirileri (`Rapor Dili`/`Arayüz dili ile aynı`)
+    eklendi. **Grup A TAMAMEN BİTTİ.**
+  - [ ] Grup B (bibliometrix/VOSviewer kalitesinde yol haritası — veri kalitesi,
+    bilim haritalama, çıktılar, ürün/huni) — **kullanıcı kararı (28 Ekim 2026):
+    ERTELENDİ, yarına/sonraki oturuma bırakıldı.** Özet sunuldu (B1 veri
+    kalitesi → B2 bilim haritalama (en karmaşık: tematik harita, ortak atıf
+    ağları, konu modelleme) → B3 çıktılar (VOSviewer export, hazır yöntem
+    metni, PRISMA) → B4 ürün/huni). Ayrı planlama turu gerekiyor.
+  - [ ] **A7 tamamlanmamış kısım — gerçek openalex.org web CSV'si elde edildi
+    (28 Ekim 2026), henüz parser desteği yazılmadı.** Kullanıcı gerçek bir
+    "Export CSV" dosyası verdi (`works-2026-10-28T22-05-18.csv`, ~150 kayıt).
+    Analiz edildi: sütunlar `Title,Author,Year,Citation count,Open access,
+    Abstract` — yazar `|` ile ayrılmış (bazı kayıtlarda tutarsız, virgülle).
+    **Kritik eksiklik:** bu formatta dergi/DOI/kurum/ülke/anahtar kelime/
+    yayın türü HİÇ YOK — openalex.org'un web export'u yalnız bu 6 sütunu
+    veriyor. Yani bu formatla top_journals/top_institutions/country_
+    collaboration/keyword_cooccurrence/keyword_trend/publication_types
+    analizleri hep `skipped` düşecek; yalnız keyword_cloud (abstract
+    metninden) ve atıf/yazar/yıl bazlı analizler çalışır. DOI olmadığı için
+    tekilleştirme başlığa düşüyor (zaten desteklenen yol). Dosyada gerçek
+    tekrar eden kayıtlar da var (iyi test senaryosu). Plan: `detect_format`'a
+    yeni dal (`'citation count' in lower and 'open access' in lower` gibi
+    ayırt edici imza) + yeni `_parse_openalex_csv()` fonksiyonu (csv.DictReader,
+    scopus parser'ın pattern'i). Kullanıcıya bu kısıtlama bildirilecek,
+    onay sonrası uygulanacak.
 
 - [ ] **(27 Ekim 2026) GSC "Page indexing → Not found (404)" raporu — kök
   neden bulundu, henüz düzeltilmedi.** Kullanıcı Search Console'da iki URL

@@ -151,6 +151,85 @@ class EmailVerificationMiddleware:
         'profile_detail',
         'section_detail',
         'health_check',
+
+        # Dil motoru — eksikliği doğrulanmamış kullanıcının dil değiştirememesine
+        # neden oluyordu (28 Ekim 2026, kullanıcı raporu)
+        'set_language',
+
+        # Şifre sıfırlama/değiştirme (django.contrib.auth.views)
+        'password_reset',
+        'password_reset_done',
+        'password_reset_confirm',
+        'password_reset_complete',
+        'password_change',
+        'password_change_done',
+
+        # Herkese açık içerik/landing sayfaları (login_required değil)
+        'hangi_test',
+        'forum_index',
+        'blog_list',
+        'blog_detail',
+        'job_list',
+        'job_detail',
+        'service_page_list',
+        'service_page_detail',
+        'egitim',
+        'egitim_talebi',
+        'egitim_detay',
+        'gizlilik_politikasi',
+        'proje_talebi',
+        'ai_cozumler',
+        'referral_landing',
+        'liderboard',
+        'how_it_works',
+        'tableau_dashboard',
+        'success_stories',
+        'uzman_dizini',
+        'studyroom_list',
+        'studyroom_detail',
+        'donation_success',
+        'account_delete_confirm',
+        'account_restore',
+        'api_get_quiz_question',
+        'api_submit_quiz_answer',
+        'api_get_featured_story',
+
+        # Analiz konsolu (istatistik/urls_analiz.py)
+        'analiz_home',
+        'analiz_clear_session',
+        'hero_upload',
+        'analiz_console',
+
+        # Uluslararası tarama landing sayfaları (namespace'li, resolve().url_name
+        # namespace'i içermez — tüm bu app'lerde başka 'landing' adlı view yok)
+        'landing',
+
+        # İstatistik araçları — landing + status (istatistik:, namespace'siz)
+        'cronbach', 'cronbach_status',
+        'normallik', 'normallik_status',
+        'betimsel', 'betimsel_status',
+        'korelasyon', 'korelasyon_status',
+        'orneklem',
+        'ttesti', 'ttesti_status',
+        'anova', 'anova_status',
+        'mann_whitney', 'mann_whitney_status',
+        'kruskal_wallis', 'kruskal_wallis_status',
+        'ki_kare', 'ki_kare_status',
+        'lineer_regresyon', 'lineer_regresyon_status',
+        'lojistik_regresyon', 'lojistik_regresyon_status',
+        'mediation', 'mediation_status',
+        'path_analizi', 'path_analizi_status',
+        'moderation', 'moderation_status',
+        'afa', 'afa_status',
+        'wilcoxon', 'wilcoxon_status',
+        'friedman', 'friedman_status',
+        'tekrarli_anova', 'tekrarli_anova_status',
+        'manova', 'manova_status',
+        'sagkalim', 'sagkalim_status',
+        'roc', 'roc_status',
+        'karar_agaci', 'karar_agaci_status',
+        'svm', 'svm_status',
+        'kumeleme', 'kumeleme_status',
     ]
 
     # Bu URL prefix'leri her zaman izinli
