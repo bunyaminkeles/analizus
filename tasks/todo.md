@@ -32,17 +32,19 @@ maddelerde.
       web+nginx restart edildi. Prod `feature_intl_consulting_home` flag
       değeri hâlâ teyit edilmedi (kullanıcı vakit bulunca komutu çalıştıracak)
       — ama artık hangi değerde olursa olsun hero akışı doğru çalışıyor.
-    - [ ] `home.html:1279` + `home_intl.html:370,374` — "OpenAlex Tarama" kartı
-      `data-card-url="/openalex/"` / `href="/openalex/"` dil şartına bağlı
-      değil (oaipmh/yoktez/trdizin gibi sarmalanmamış)
-    - [ ] `egitim.html:199,230` — sabit `/analiz/`, `/tarama/` (F9, bilinen)
-    - [ ] `home_intl.html:543` — `fetch('/analiz/hero-upload/'...)` (A1'in yan etkisi)
-    - [ ] `studyroom_detail.html:583,624` — @mention/yazar linki `href="/profile/${...}/"` (JS, öneksiz)
-    - [ ] `send_message.html:590` — @mention linki aynı sorun
-    - [ ] `liderboard.html:53,80` — `href="/profil/..."` (yanlış path + öneksiz, muhtemelen zaten 404)
-    - [ ] `analiz_console_base.html:194` — `fetch('/analiz/clear-session/'...)` (25 araç ortak base şablonu)
-    - [ ] `profile_private.html:21` — boş geçmişte `location.href='/'`
-    - [ ] (düşük) `trdizin/services/job_runner.py` — e-postada mutlak `analizus.com/...` link, `reverse()`+dil kullanılmamış
+    - [x] TAMAMLANDI: `home.html:774,782` + `home_intl.html:370,374` — "OpenAlex
+      Tarama" kartı `{% url 'openalex:landing' %}` ile düzeltildi (data-card-url + href)
+    - [x] TAMAMLANDI (A1 ile birlikte): `home_intl.html:543` fetch satırı düzeltildi
+    - [x] TAMAMLANDI: `studyroom_detail.html` — `PROFILE_URL_TEMPLATE` sentinel
+      sabiti eklendi (`{% url "profile_detail" "__USERNAME__" %}` + JS `.replace()`,
+      STATUS_TEMPLATE pattern'iyle aynı yöntem), `appendRoomPost` + `renderMentions` düzeltildi
+    - [x] TAMAMLANDI: `send_message.html` — aynı `PROFILE_URL_TEMPLATE` deseni, `renderMentions` düzeltildi
+    - [x] TAMAMLANDI: `liderboard.html:53,80` — `{% url 'profile_detail' ... %}` ile düzeltildi (yanlış "profil" path'i de düzelmiş oldu)
+    - [x] TAMAMLANDI: `analiz_console_base.html:194` — `{% url "analiz_clear_session" %}` ile düzeltildi
+    - [x] TAMAMLANDI: `profile_private.html:21` — `{% url "home" %}` ile düzeltildi
+    - [x] TAMAMLANDI: `trdizin/services/job_runner.py:153` — `reverse('proje_talebi')` ile düzeltildi (içerik Türkçe kalıyor, TR Dizin zaten TR'ye özgü — i18n gerekmiyor)
+    - [ ] `egitim.html:199,230` — sabit `/analiz/`, `/tarama/` (F9) — HENÜZ DOKUNULMADI, ayrı onay bekliyor
+    - Tüm düzeltmeler reverse() (tr/en/de) + `get_template()` parse testi + canlı curl ile doğrulandı, web+nginx restart edildi
     - Temiz: e-posta şablonları, `base.html`/`partials/`, `static/js/*.js` (yalnız `/api/`), market şablonları, `HttpResponseRedirect('/...')` kalıbı yok
   - [ ] A3: `next` kaybı — `forum/views.py` `register`/`verification_pending`/
     `verify_email`/`onboarding` view'larında session'a yazılıp onboarding

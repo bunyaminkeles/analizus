@@ -191,7 +191,7 @@ function axSidebarToggle() {
 })();
 
 function axClearSession() {
-  fetch('/analiz/clear-session/', {
+  fetch('{% url "analiz_clear_session" %}', {
     method: 'POST',
     headers: {'X-CSRFToken': '{{ csrf_token }}', 'X-Requested-With': 'XMLHttpRequest'},
   }).then(() => window.location.reload());

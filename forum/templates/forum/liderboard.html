@@ -50,7 +50,7 @@
             <span class="ax-ldr-list__rank">
               {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}
             </span>
-            <a href="/profil/{{ row.user__username }}/" class="ax-ldr-list__name">{{ row.user__username }}</a>
+            <a href="{% url 'profile_detail' row.user__username %}" class="ax-ldr-list__name">{{ row.user__username }}</a>
             <span class="ax-ldr-list__score">{{ row.weekly_correct }} doğru</span>
           </li>
           {% endfor %}
@@ -77,7 +77,7 @@
             <span class="ax-ldr-list__rank">
               {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}
             </span>
-            <a href="/profil/{{ profile.user.username }}/" class="ax-ldr-list__name">{{ profile.user.username }}</a>
+            <a href="{% url 'profile_detail' profile.user.username %}" class="ax-ldr-list__name">{{ profile.user.username }}</a>
             <span class="ax-ldr-list__score">{{ profile.total_score }} puan</span>
           </li>
           {% empty %}

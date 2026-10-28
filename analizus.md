@@ -3049,9 +3049,18 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   + `home_intl.html:543` hero-upload fetch/redirect'leri `{% url %}` ile
   düzeltildi — flag değerinden bağımsız güvenli (TR no-op, EN/DE fix),
   reverse() tr/en/de doğrulandı, web+nginx restart edildi. Prod flag değeri
-  hâlâ teyit edilmedi ama artık önemi yok. Diğer 7 düzeltme (mention linkleri,
-  liderboard, OpenAlex kart, analiz_console_base, profile_private, trdizin
-  e-posta) kullanıcı onayı bekliyor. Sırada: o düzeltmeler ya da A3.
+  hâlâ teyit edilmedi ama artık önemi yok.
+  **Kalan 7 düzeltme de TAMAMLANDI (28 Ekim 2026):** OpenAlex kart linki
+  (`home.html`+`home_intl.html` → `{% url 'openalex:landing' %}`), çalışma
+  odası + özel mesaj @mention/yazar linkleri (`studyroom_detail.html`,
+  `send_message.html` — yeni `PROFILE_URL_TEMPLATE` sentinel deseni, mevcut
+  `STATUS_TEMPLATE.replace()` konvansiyonuyla aynı yöntem), `liderboard.html`
+  (yanlış "profil" path'i de bu arada düzeldi), `analiz_console_base.html`
+  clear-session fetch'i, `profile_private.html` geri dön linki, `trdizin`
+  e-postasındaki mutlak link (`reverse('proje_talebi')` — içerik Türkçe
+  kalıyor, TR Dizin zaten TR'ye özgü). Tümü reverse() (tr/en/de) +
+  `get_template()` parse testi + canlı curl ile doğrulandı. Tek açık kalan:
+  `egitim.html:199,230` (F9) — henüz dokunulmadı. Sırada: A3.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

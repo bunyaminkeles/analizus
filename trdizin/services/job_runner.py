@@ -2,6 +2,7 @@ import logging
 import threading
 from datetime import timedelta
 from django.utils import timezone
+from django.urls import reverse
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.db import close_old_connections
@@ -150,7 +151,7 @@ def send_demo_email(job):
         f"Ekteki dosyada en yeni {len(job.demo_results)} makale yer almaktadır.\n",
         f"{'─'*40}",
         f"Tüm veriye ihtiyacınız varsa:",
-        f"  https://www.analizus.com/proje-talebi/?source=trdizin",
+        f"  {site_url}{reverse('proje_talebi')}?source=trdizin",
         f"  adresinden talep oluşturabilirsiniz.",
         f"\n---\nAnalizus - {site_url}",
     ]
