@@ -3083,8 +3083,20 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   `publication_growth_rate` artık tam sayı yıl etiketi kullanıyor (kısa
   dönemde AutoLocator'ın ürettiği 2021.5 gibi ondalık etiketler düzeldi),
   uzun dönemde (>15 yıl) etiketler sıklaştırılıyor. `bibliometrics/tests.py`
-  ilk kez eklendi (5 test). Sırada: A6 (kısa dönem uyarısı — eşik N=5 kararı
-  gerekiyor).
+  ilk kez eklendi (5 test).
+  **A6 TAMAMLANDI (eşik N=5, kullanıcı onayıyla):** zaman serisi 3-4 tam
+  yılsa büyüme oranı grafiğine + rapor kısıtlar bölümüne "küçük taban
+  etkisi" uyarısı eklendi. `analyzer.SHORT_SERIES_YEARS=5` tek kaynak,
+  `report_notes.py` oradan okuyor. EN/DE çevrildi (`makemessages`
+  flag'siz — `--no-location` yine devasa gereksiz diff ürettiği için geri
+  alındı, bkz. §26 dersi). 2 yeni pytest, toplam `forum+bibliometrics`
+  111/111 geçti. Ayrıca kullanıcı kararıyla **öncelikli yeni iş** eklendi
+  (A6'dan hemen sonra, Grup A'nın geri kalanından önce): demo PDF grafik
+  sayısı 3→10 (`SiteSettings` alanı olacak) + grafik başına AI yorumlama
+  (yalnız proje talebi formunda üretilecek, `openalex`'teki
+  `claude_summary_service` pattern'i — bu, `project_claude_ai_yorumu.md`
+  hafıza notundaki "Faz D — Bibliometrics" ile aynı iş). Detay ve dosya
+  listesi `tasks/todo.md`'de. Sırada: bu yeni iş, sonra A7.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

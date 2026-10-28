@@ -84,8 +84,19 @@ maddelerde.
     `publication_growth_rate` kullanıyor. 3 ve 20 yıllık sentetik veriyle
     görsel + `get_xticks()` testiyle doğrulandı. `bibliometrics/tests.py`
     eklendi (ilk kez — 5 test, hepsi geçti).
-  - [ ] A6: kısa dönem (<N yıl) CAGR/büyüme uyarısı — eşik kullanıcıya
-    sorulacak (öneri N=5)
+  - [x] A6 TAMAMLANDI (28 Ekim 2026, eşik N=5 kullanıcı onayıyla): Zaman
+    serisi 3-4 tam yıl ise (`publication_growth_rate`'in kendi 3 yıl
+    minimumuyla tutarlı) hem büyüme oranı grafiğindeki CAGR kutusuna hem
+    de rapor "Veri, Yöntem ve Kısıtlar" bölümüne "Veri N yıldan kısa bir
+    dönemi kapsıyor; büyüme oranları küçük taban etkisine açıktır." notu
+    eklendi. Yeni `SHORT_SERIES_YEARS=5` sabiti `analyzer.py`'de, eşik
+    `report_notes.py`'den `analyzer.SHORT_SERIES_YEARS` ile tek yerden
+    okunuyor (duplicate yok). EN/DE çevirisi eklendi (`makemessages`
+    **flag'siz** çalıştırıldı — `--no-location` tekrar denenip devasa
+    gereksiz diff ürettiği görülüp geri alındı, ders tekrar doğrulandı).
+    3/6 yıllık sentetik veri + EN/DE `translation.override` ile canlı
+    test edildi, 2 yeni pytest eklendi (toplam bibliometrics 7 test).
+    `pytest forum/tests.py bibliometrics/tests.py` 111/111 geçti.
   - [ ] **[ÖNCELİKLİ — A6'dan hemen sonra] Demo grafik sayısı + AI yorumlama
     (28 Ekim 2026, kullanıcı kararları alındı, henüz uygulanmadı).**
     Kararlar: (1) Demo PDF'teki grafik sayısı şu an sabit 3 (`figures[:3]`,

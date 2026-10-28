@@ -170,7 +170,15 @@ def _rules(source, last_year):
     return rules
 
 
-def _limitations(coverage, current_year_count, last_year, source=None):
+def _short_series_span(records, last_year):
+    """Tamamlanmış yıllardaki takvim yılı aralığı (publication_growth_rate ile aynı tanım) — A6."""
+    years = [r['year'] for r in records if r.get('year') and 1900 < r['year'] <= last_year]
+    if not years:
+        return 0
+    return max(years) - min(years) + 1
+
+
+def _limitations(coverage, current_year_count, last_year, source=None, records=None):
     is_pubmed = (source or {}).get('kind') == 'pubmed'
     limitations = [
         gettext('Sonuçlar yalnız bu veri kaynağındaki kayıtları yansıtır; kaynağın taramadığı dergi, '
@@ -178,6 +186,11 @@ def _limitations(coverage, current_year_count, last_year, source=None):
         gettext('Yazar, kurum ve dergi adları otomatik olarak birleştirilmedi: aynı yazar farklı '
                 'yazımlarla ayrı kişi, aynı adlı farklı yazarlar tek kişi olarak sayılmış olabilir.'),
     ]
+    span = _short_series_span(records or [], last_year)
+    if 3 <= span < analyzer.SHORT_SERIES_YEARS:
+        limitations.append(gettext(
+            'Veri {n} yıldan kısa bir dönemi kapsıyor; büyüme oranları küçük taban etkisine açıktır.'
+        ).format(n=analyzer.SHORT_SERIES_YEARS))
     if is_pubmed:
         limitations += [
             gettext('PubMed atıf sayısı sağlamadığından atıfa dayanan analizler (en çok atıf alan yayınlar, '
@@ -219,7 +232,7 @@ def build_report_notes(records, stats=None, skipped=None, source=None) -> dict:
         'coverage': coverage,
         'rules': _rules(source, last_year),
         'skipped': list(skipped or []),
-        'limitations': _limitations(coverage, current_year_count, last_year, source),
+        'limitations': _limitations(coverage, current_year_count, last_year, source, records),
         'source_warnings': warnings,
         'partial_year': partial_year,
     }

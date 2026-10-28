@@ -759,6 +759,10 @@ def annual_citation_trend(records: list[dict]):
 
 # ─────────────────────────── 11. Büyüme Oranı ───────────────────────────
 
+# Bu eşikten kısa zaman serilerinde büyüme oranı/CAGR küçük taban etkisine açıktır (A6)
+SHORT_SERIES_YEARS = 5
+
+
 def publication_growth_rate(records: list[dict]):
     years = [r['year'] for r in records if r.get('year') and 1900 < r['year'] <= _last_complete_year()]
     if not years:
@@ -798,8 +802,12 @@ def publication_growth_rate(records: list[dict]):
     ax.legend(fontsize=11)
     ax.grid(axis='y', zorder=0)
 
-    ax.text(0.98, 0.97,
-            f'CAGR ({sorted_years[0]}–{sorted_years[-1]}): {cagr:+.1f}%',
+    cagr_text = f'CAGR ({sorted_years[0]}–{sorted_years[-1]}): {cagr:+.1f}%'
+    if len(sorted_years) < SHORT_SERIES_YEARS:
+        cagr_text += '\n' + gettext(
+            'Veri {n} yıldan kısa bir dönemi kapsıyor; büyüme oranları küçük '
+            'taban etkisine açıktır.').format(n=SHORT_SERIES_YEARS)
+    ax.text(0.98, 0.97, cagr_text,
             transform=ax.transAxes, fontsize=11, va='top', ha='right',
             bbox=dict(boxstyle='round,pad=0.5', facecolor='#f1f5f9',
                       edgecolor='#cbd5e0', alpha=0.95))
