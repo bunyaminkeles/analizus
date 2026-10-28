@@ -18,6 +18,7 @@ class BibliometricJob(models.Model):
         ('wos_txt', 'Web of Science Plain Text (ISI)'),
         ('csv_wos', 'Web of Science Tab-Delimited'),
         ('csv_scopus', 'Scopus CSV'),
+        ('csv_openalex', 'OpenAlex Web CSV'),
         ('csv_auto', 'CSV (Otomatik)'),
         ('openalex_json', 'OpenAlex (Otomatik)'),
         ('openalex_txt', 'OpenAlex TXT'),

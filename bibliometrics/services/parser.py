@@ -28,7 +28,8 @@ EMPTY_RECORD = {
 def detect_format(content: str) -> str:
     """
     Dosya içeriğine göre formatı tahmin eder.
-    Returns: 'bibtex' | 'wos_txt' | 'csv_wos' | 'csv_scopus' | 'openalex_txt' | 'csv_auto'
+    Returns: 'bibtex' | 'wos_txt' | 'csv_wos' | 'csv_scopus' | 'csv_openalex' |
+    'openalex_txt' | 'pubmed_txt' | 'trdizin_txt' | 'csv_auto'
     """
     stripped = content.strip()
 
@@ -73,6 +74,10 @@ def detect_format(content: str) -> str:
         lower = first_line.lower()
         if 'authors' in lower and 'title' in lower:
             return 'csv_scopus'
+        # openalex.org web sitesi "Export CSV": Title,Author,Year,Citation count,
+        # Open access,Abstract — dergi/DOI/kurum/ülke/anahtar kelime/yayın türü yok (A7)
+        if 'citation count' in lower and 'open access' in lower:
+            return 'csv_openalex'
 
     return 'csv_auto'
 
@@ -94,6 +99,8 @@ def parse_file(content: str, fmt: str = None, stats: dict = None) -> tuple[list[
         records = _parse_wos_csv(content)
     elif fmt == 'csv_scopus':
         records = _parse_scopus_csv(content)
+    elif fmt == 'csv_openalex':
+        records = _parse_openalex_csv(content)
     elif fmt == 'trdizin_txt':
         records = parse_trdizin_txt(content, stats)
     elif fmt == 'openalex_txt':
@@ -427,6 +434,36 @@ def _parse_scopus_csv(content: str) -> list[dict]:
     return records
 
 
+def _parse_openalex_csv(content: str) -> list[dict]:
+    """
+    openalex.org web sitesinin "Export CSV" özelliğiyle indirilen format (A7).
+    Yalnızca Title/Author/Year/Citation count/Open access/Abstract sütunları var —
+    dergi/DOI/kurum/ülke/anahtar kelime/yayın türü HİÇ YOK (OpenAlex API/JSON
+    köprüsünden farklı, web export'un gerçek kısıtı). Yazarlar '|' ile ayrılmış
+    (bazı kayıtlarda tutarsız — '|' yoksa virgülle ayrılmış kabul edilir).
+    """
+    import csv
+    records = []
+    reader = csv.DictReader(io.StringIO(content))
+    for row in reader:
+        row_lower = {(k or '').strip().lower(): v for k, v in row.items()}
+        rec = {k: (v.copy() if isinstance(v, list) else v) for k, v in EMPTY_RECORD.items()}
+
+        rec['title'] = _clean(row_lower.get('title', ''))
+        rec['year'] = _safe_int(row_lower.get('year', ''))
+        rec['abstract'] = _clean(row_lower.get('abstract', ''))
+        rec['cited_by'] = _safe_int(row_lower.get('citation count', ''))
+
+        au_raw = (row_lower.get('author', '') or '').strip()
+        if '|' in au_raw:
+            rec['authors'] = [a.strip() for a in au_raw.split('|') if a.strip()]
+        else:
+            rec['authors'] = _split_author_list(au_raw)
+
+        records.append(rec)
+    return records
+
+
 # ─────────────────────────── Genel CSV ───────────────────────────
 
 def _parse_generic_csv(content: str) -> list[dict]:
@@ -443,7 +480,7 @@ def _parse_generic_csv(content: str) -> list[dict]:
         'year': ['year', 'yıl', 'py', 'publication year'],
         'journal': ['journal', 'source', 'source title', 'dergi', 'so'],
         'abstract': ['abstract', 'özet', 'ab'],
-        'authors': ['authors', 'yazarlar', 'au'],
+        'authors': ['authors', 'author', 'yazarlar', 'au'],
         'cited_by': ['cited by', 'citation count', 'tc', 'atıf'],
         'doi': ['doi', 'di'],
         'keywords': ['author keywords', 'keywords', 'anahtar kelimeler', 'de'],

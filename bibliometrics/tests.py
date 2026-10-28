@@ -20,7 +20,7 @@ from bibliometrics.services.analyzer import (
     SHORT_SERIES_YEARS,
 )
 from bibliometrics.services.report_notes import build_report_notes
-from bibliometrics.services.parser import parse_openalex_txt, parse_pubmed_txt
+from bibliometrics.services.parser import parse_openalex_txt, parse_pubmed_txt, detect_format, parse_file
 from bibliometrics.services.pdf_builder import _demo_cta_text
 from bibliometrics.models import BibliometricJob
 from bibliometrics.services.job_runner import _in_user_language
@@ -178,3 +178,31 @@ def test_report_language_blank_falls_back_to_profile_language():
     seen = {}
     _in_user_language(str(job_default.id), lambda job_id: seen.update(lang=translation.get_language()))
     assert seen['lang'] == 'tr'
+
+
+OPENALEX_WEB_CSV_SAMPLE = (
+    'Title,Author,Year,Citation count,Open access,Abstract\n'
+    '"Test Başlık, Virgüllü",Ahmet Yılmaz|Mehmet Demir,2023,5,Open Access,"Test özeti."\n'
+    'İkinci Başlık,Ayşe Kaya,2023,0,NOT Open Access,\n'
+)
+
+
+def test_detect_format_openalex_web_csv():
+    """openalex.org'un gerçek 'Export CSV' formatı (A7) — dergi/DOI/kurum/ülke/
+    anahtar kelime hiç yok, yazarlar '|' ile ayrılmış."""
+    assert detect_format(OPENALEX_WEB_CSV_SAMPLE) == 'csv_openalex'
+
+
+def test_parse_openalex_csv_splits_pipe_separated_authors():
+    recs, fmt = parse_file(OPENALEX_WEB_CSV_SAMPLE)
+    assert fmt == 'csv_openalex'
+    assert len(recs) == 2
+    rec = next(r for r in recs if 'Virgüllü' in r['title'])
+    assert rec['authors'] == ['Ahmet Yılmaz', 'Mehmet Demir']
+    assert rec['year'] == 2023
+    assert rec['cited_by'] == 5
+    assert rec['abstract'] == 'Test özeti.'
+    # Bu formatta hiç olmayan alanlar boş kalmalı
+    assert rec['journal'] == ''
+    assert rec['doi'] == ''
+    assert rec['keywords'] == []
