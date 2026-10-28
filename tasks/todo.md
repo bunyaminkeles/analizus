@@ -10,6 +10,18 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(28 Ekim 2026) OpenAlex sayfalama (pagination) 401 Unauthorized hatası
+  — araştırılmadı, bibliometri işinden bağımsız.** Render (dev/staging)
+  loglarında görüldü: bir arama job'ı (`d0855985-...`) cursor ile sayfalama
+  yaparken OpenAlex API'den 3 deneme boyunca 401 aldı ("OpenAlex pagination
+  hatası: 401"), bu yüzden toplam 2890 bulunan kayıttan yalnızca ilk sayfa
+  (200) çekilebildi; kullanıcı 1000 kayıt istemişti, 200/1000 ile kaldı
+  (parser sonrası net 199). İlk sayfa isteği başarılı olduğuna göre
+  `OPENALEX_API_KEY`/`mailto` muhtemelen yalnızca cursor'lu (sayfalanmış)
+  isteklerde eksik/düşüyor — `openalex/services/scraper.py` `build_api_params`
+  ve `_fetch_page` cursor akışı incelenmeli. Kullanıcı kararı: şimdilik not,
+  araştırma ayrı görev olarak sorulacak.
+
 - [ ] **(28 Ekim 2026) Bibliometri — Grup A hata düzeltmeleri (plan onaylandı,
   henüz uygulanmadı).** Kaynak: `bibliometri_durum_ve_gelistirme_prompt.md`
   (gerçek vaka: d4yu/user 777, kayıt→doğrulama→onboarding huninde `next`
