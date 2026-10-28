@@ -20,8 +20,30 @@ maddelerde.
     tr/en/de doğrulandı (`/analiz/`, `/en/analiz/`, `/de/analiz/`), web+nginx
     restart edildi. NOT: aynı fonksiyonda satır 543 `fetch('/analiz/hero-upload/'...)`
     de öneksiz — A2 taramasına dahil edilecek, bu adımda dokunulmadı.
-  - [ ] A2: i18n'de öneksiz sabit yol taraması (rapor), F9 (`egitim.html:199,230`)
-    doğrulandı
+  - [x] A2 TAMAMLANDI (28 Ekim 2026, rapor): 13 bulgu bulundu, düzeltmeler ayrı
+    onay bekliyor.
+    - [x] **TAMAMLANDI (28 Ekim 2026)** `forum/templates/forum/home.html:1280,1288`
+      — A1 ile BİREBİR AYNI hatanın düzeltmesi uygulandı (flag değerinden
+      bağımsız güvenli: TR için no-op, EN/DE için düzeltme). `fetch(...)` →
+      `{% url "hero_upload" %}`, redirect → `{% url "analiz_home" %}?from=hero`.
+      Aynı anda `home_intl.html:543`'teki fetch satırı da aynı deseple
+      düzeltildi (A1'in yan etkisiydi). reverse() tr/en/de doğrulandı
+      (`/analiz/hero-upload/`, `/en/analiz/hero-upload/`, `/de/analiz/hero-upload/`),
+      web+nginx restart edildi. Prod `feature_intl_consulting_home` flag
+      değeri hâlâ teyit edilmedi (kullanıcı vakit bulunca komutu çalıştıracak)
+      — ama artık hangi değerde olursa olsun hero akışı doğru çalışıyor.
+    - [ ] `home.html:1279` + `home_intl.html:370,374` — "OpenAlex Tarama" kartı
+      `data-card-url="/openalex/"` / `href="/openalex/"` dil şartına bağlı
+      değil (oaipmh/yoktez/trdizin gibi sarmalanmamış)
+    - [ ] `egitim.html:199,230` — sabit `/analiz/`, `/tarama/` (F9, bilinen)
+    - [ ] `home_intl.html:543` — `fetch('/analiz/hero-upload/'...)` (A1'in yan etkisi)
+    - [ ] `studyroom_detail.html:583,624` — @mention/yazar linki `href="/profile/${...}/"` (JS, öneksiz)
+    - [ ] `send_message.html:590` — @mention linki aynı sorun
+    - [ ] `liderboard.html:53,80` — `href="/profil/..."` (yanlış path + öneksiz, muhtemelen zaten 404)
+    - [ ] `analiz_console_base.html:194` — `fetch('/analiz/clear-session/'...)` (25 araç ortak base şablonu)
+    - [ ] `profile_private.html:21` — boş geçmişte `location.href='/'`
+    - [ ] (düşük) `trdizin/services/job_runner.py` — e-postada mutlak `analizus.com/...` link, `reverse()`+dil kullanılmamış
+    - Temiz: e-posta şablonları, `base.html`/`partials/`, `static/js/*.js` (yalnız `/api/`), market şablonları, `HttpResponseRedirect('/...')` kalıbı yok
   - [ ] A3: `next` kaybı — `forum/views.py` `register`/`verification_pending`/
     `verify_email`/`onboarding` view'larında session'a yazılıp onboarding
     sonunda okunacak (en hassas adım, auth akışı)

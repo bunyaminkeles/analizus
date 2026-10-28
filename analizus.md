@@ -3033,7 +3033,25 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   `{% url "analiz_home" %}?from=hero` — EN/DE'de dil öneki artık korunuyor
   (`reverse()` ile tr/en/de doğrulandı). `home.html` (TR) dokunulmadı.
   Not: aynı fonksiyonun satır 543'ündeki `fetch('/analiz/hero-upload/'...)`
-  de öneksiz — A2 (dil öneki taraması) adımına bırakıldı. Sırada A2.
+  de öneksiz — A2 (dil öneki taraması) adımına bırakıldı.
+  **A2 TAMAMLANDI (rapor, 13 bulgu, düzeltme yok):** en kritik bulgu —
+  `forum/templates/forum/home.html:1279,1288` A1 ile birebir aynı hero
+  hatasını taşıyor; `forum/views.py:359-362` `feature_intl_consulting_home`
+  flag'i (model varsayılan **False**) kapalıyken EN/DE kullanıcılar
+  `home_intl.html` değil `home.html`'i görüyor — prod flag değeri teyit
+  edilecek, sonra aynı tek satır düzeltme uygulanacak. Ayrıca: ana sayfa
+  "OpenAlex Tarama" kartı (`home.html`+`home_intl.html`) dil şartına
+  bağlı değil; çalışma odaları/DM @mention linkleri (`studyroom_detail.html`,
+  `send_message.html`) öneksiz; `liderboard.html` yanlış path (`/profil/`
+  vs gerçek `/profile/`); `analiz_console_base.html` clear-session fetch'i
+  öneksiz. Tüm liste + önem sırası `tasks/todo.md`'de.
+  **`home.html` kritik düzeltme UYGULANDI (28 Ekim 2026):** `home.html:1280,1288`
+  + `home_intl.html:543` hero-upload fetch/redirect'leri `{% url %}` ile
+  düzeltildi — flag değerinden bağımsız güvenli (TR no-op, EN/DE fix),
+  reverse() tr/en/de doğrulandı, web+nginx restart edildi. Prod flag değeri
+  hâlâ teyit edilmedi ama artık önemi yok. Diğer 7 düzeltme (mention linkleri,
+  liderboard, OpenAlex kart, analiz_console_base, profile_private, trdizin
+  e-posta) kullanıcı onayı bekliyor. Sırada: o düzeltmeler ya da A3.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

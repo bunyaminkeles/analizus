@@ -540,7 +540,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var formData = new FormData();
         formData.append('file', file);
 
-        fetch('/analiz/hero-upload/', {
+        fetch('{% url "hero_upload" %}', {
             method: 'POST',
             headers: { 'X-CSRFToken': csrfInput ? csrfInput.value : '' },
             body: formData,
