@@ -367,11 +367,11 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="ax-tool-card ax-tool-card--highlight" role="link" tabindex="0" data-card-url="/openalex/">
+                <div class="ax-tool-card ax-tool-card--highlight" role="link" tabindex="0" data-card-url="{% url 'openalex:landing' %}">
                     <div class="ax-tool-icon">🔍</div>
                     <h3 class="ax-tool-title">{% trans "Akademik Tarama" %}</h3>
                     <ul class="ax-tarama-list">
-                        <li><a href="/openalex/">{% trans "OpenAlex Tarama" %}</a></li>
+                        <li><a href="{% url 'openalex:landing' %}">{% trans "OpenAlex Tarama" %}</a></li>
                         {% if features.semanticscholar %}
                         <li><a href="{% url 'semanticscholar:landing' %}">{% trans "Semantic Scholar Tarama" %}</a></li>
                         {% endif %}
@@ -540,7 +540,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var formData = new FormData();
         formData.append('file', file);
 
-        fetch('/analiz/hero-upload/', {
+        fetch('{% url "hero_upload" %}', {
             method: 'POST',
             headers: { 'X-CSRFToken': csrfInput ? csrfInput.value : '' },
             body: formData,
@@ -548,7 +548,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
         .then(function (result) {
             if (result.ok && result.data.success) {
-                window.location.href = '/analiz/?from=hero';
+                window.location.href = '{% url "analiz_home" %}?from=hero';
             } else {
                 showError(result.data.error || '{% trans "Dosya yüklenemedi. Lütfen tekrar deneyin." %}');
                 dropzoneText.textContent = '{% trans "CSV veya Excel dosyanı buraya bırak" %}';

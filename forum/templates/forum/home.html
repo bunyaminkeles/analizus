@@ -771,7 +771,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="ax-tool-card ax-tool-card--highlight" role="link" tabindex="0" data-card-url="/openalex/">
+                <div class="ax-tool-card ax-tool-card--highlight" role="link" tabindex="0" data-card-url="{% url 'openalex:landing' %}">
                     <div class="ax-tool-icon">🔍</div>
                     <h3 class="ax-tool-title">{% trans "Akademik Tarama" %}</h3>
                     <ul class="ax-tarama-list">
@@ -779,7 +779,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                         <li><a href="/oaipmh/">{% trans "Üniversite Tezleri" %}</a></li>
                         <li><a href="/yoktez/">{% trans "YÖK Tez Tarama" %}</a></li>
                         {% endif %}
-                        <li><a href="/openalex/">{% trans "OpenAlex Tarama" %}</a></li>
+                        <li><a href="{% url 'openalex:landing' %}">{% trans "OpenAlex Tarama" %}</a></li>
                         {% if LANGUAGE_CODE == 'tr' %}
                         <li><a href="/trdizin/">{% trans "TR Dizin Tarama" %}</a></li>
                         {% endif %}
@@ -1277,7 +1277,7 @@ function copyText(text, btn) {
         var formData = new FormData();
         formData.append('file', file);
 
-        fetch('/analiz/hero-upload/', {
+        fetch('{% url "hero_upload" %}', {
             method: 'POST',
             headers: { 'X-CSRFToken': csrfInput ? csrfInput.value : '' },
             body: formData,
@@ -1285,7 +1285,7 @@ function copyText(text, btn) {
         .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
         .then(function (result) {
             if (result.ok && result.data.success) {
-                window.location.href = '/analiz/?from=hero';
+                window.location.href = '{% url "analiz_home" %}?from=hero';
             } else {
                 showError(result.data.error || '{% trans "Dosya yüklenemedi. Lütfen tekrar deneyin." %}');
                 dropzoneText.textContent = '{% trans "CSV veya Excel dosyanı buraya bırak" %}';

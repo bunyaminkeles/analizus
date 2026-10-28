@@ -2360,6 +2360,12 @@ with connection.cursor() as c:
 - **Destek Vektör Makinesi (SVM)** (mayıs 2026) — `svm.py`; SVC + StandardScaler; RBF/Linear/Poly kernel; C parametresi 0.1–10; permutation_importance (model-agnostik); büyük dataset otomatik örnekleme (5000 satır); PDF çıktısı
 - **Aracılık Analizi (Mediation)** (26 Ekim 2026, main'de canlı) — `mediation.py`; c/a/b/c' yolları (statsmodels OLS); dolaylı etki (a×b) bootstrap %95 GA (5000 yeniden örnekleme) + Sobel testi; tam/kısmi/aracılık-yok sınıflandırması; APA raporu
 - **Düzenleyici Değişken Analizi (Moderation)** (26 Ekim 2026, main'de canlı) — `moderation.py`; Y~Xc+Wc+Xc×Wc modeli (Aiken & West 1991 merkezleme); etkileşim katsayısı (b3) + ΔR² + basit eğimler (simple slopes) + matplotlib etkileşim grafiği; APA raporu
+- **Kümeleme Analizi (K-means / Hiyerarşik)** (26 Ekim 2026, main'de canlı) — `kumeleme.py`; `Makine Öğrenmesi` kategorisi; StandardScaler + sklearn KMeans / scipy hiyerarşik (linkage+fcluster); otomatik k seçimi (k=2-10 arası siluet skoruna göre); elbow+siluet grafiği (K-means) veya dendrogram (hiyerarşik); >2 değişkende PCA ile 2B scatter
+- **MANOVA (Çok Değişkenli Varyans Analizi)** (26 Ekim 2026, main'de canlı) — `manova.py`; `statsmodels.multivariate.manova.MANOVA` (Wilks' Λ, Pillai's Trace, Hotelling-Lawley, Roy's Largest Root); Box'ın M testi (kovaryans matrisi homojenliği) elle implemente edildi; "Fark Analizleri" kategorisi
+- **Sağkalım Analizi (Kaplan-Meier / Cox Regresyon)** (26 Ekim 2026, main'de canlı) — `sagkalim.py`; `statsmodels.duration` (SurvfuncRight + survdiff log-rank testi + PHReg Cox regresyon); Grambsch-Therneau orantılı tehlikeler varsayım testi ve Harrell's C-index elle implemente edildi; `lifelines` paketi pandas 3.1.0 ile çakıştığı için (ResolutionImpossible) kullanılmadı; NaN/Infinity değerler Postgres JSONField'a kaydedilmeden `_safe_round()` ile temizleniyor
+- **ROC Eğrisi / Tanısal Tarama Analizi** (26 Ekim 2026, main'de canlı) — `roc.py`; sklearn roc_curve/auc; AUC<0.5 olunca otomatik yön tersine çevrilir; Hanley-McNeil (1982) kapalı formül AUC standart hatası; DeLong testi (1988) ile iki test karşılaştırması; Youden J indeksi ile optimal kesim noktası
+- **Basit Path Analizi (Çoklu Paralel Aracı Değişken)** (27 Ekim 2026, main'de canlı) — `path_analizi.py`; `mediation.py`'nin çoklu-aracı uzantısı (Hayes PROCESS Model 4'ün çoklu aracı versiyonu — flexible genel path modeli veya `semopy` ile tam SEM DEĞİL, kullanıcı kararı); X → 2-5 paralel aracı M1..Mk (birbirinden bağımsız, aynı anda modellenir) → Y; her aracı için a/b yolları + dolaylı etki (a×b) bootstrap %95 GA (5000 yeniden örnekleme); toplam dolaylı etki (Σ a×b) ve c/c' üzerinden tam/kısmi/yok aracılık sınıflandırması; yeni kütüphane gerekmedi (statsmodels OLS zinciri yeterli)
+- **Güç Analizi (Post-hoc Power)** (27 Ekim 2026, main'de canlı) — ayrı araç değil, mevcut `orneklem` hesaplayıcısına "A Priori / Post-hoc" mod geçişi eklendi (kullanıcı kararı); `orneklem.py`'deki mevcut `_ttest_power`/`_anova_power`/`_correlation_power` fonksiyonları n sabitken doğrudan çağrılan yeni `calculate_post_hoc()` ile yeniden kullanıldı (binary search gerekmedi); elde edilmiş örneklem büyüklüğü + etki büyüklüğü + alfa ile ulaşılan istatistiksel güç (1-β) hesaplanıp 4 kademeli yorum (çok düşük/düşük/yeterli/çok yüksek güç) üretiliyor; istatistik araç sayısı 24→25
 - **Claude AI Yorumu — Faz A+B** (11 Ekim 2026, main'de canlı, Hetzner'de gerçek API çağrısıyla doğrulandı) —
   17 istatistik aracına (`orneklem` hariç) Claude ile üretilen ücretsiz akademik yorum eklendi; APA Formatında
   Raporlama kutusunun içine, APA cümlesinin altına yerleştirildi (ayrı kutu değil — kullanıcı isteğiyle revize
@@ -3018,6 +3024,46 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **28 Ekim 2026 — Bibliometri Grup A başladı, A1 tamamlandı (dev'de, henüz
+  push edilmedi).** Kaynak: `bibliometri_durum_ve_gelistirme_prompt.md`
+  (gerçek vaka: EN kullanıcı kayıt→onboarding huninde `next`/dil bağlamını
+  kaybedip Türkçe demo rapor aldı). Plan onaylandı, 9 maddelik sıra
+  `tasks/todo.md`'de. **A1:** `forum/templates/forum/home_intl.html:551`
+  hero dropzone yönlendirmesi sabit `/analiz/?from=hero` yerine
+  `{% url "analiz_home" %}?from=hero` — EN/DE'de dil öneki artık korunuyor
+  (`reverse()` ile tr/en/de doğrulandı). `home.html` (TR) dokunulmadı.
+  Not: aynı fonksiyonun satır 543'ündeki `fetch('/analiz/hero-upload/'...)`
+  de öneksiz — A2 (dil öneki taraması) adımına bırakıldı.
+  **A2 TAMAMLANDI (rapor, 13 bulgu, düzeltme yok):** en kritik bulgu —
+  `forum/templates/forum/home.html:1279,1288` A1 ile birebir aynı hero
+  hatasını taşıyor; `forum/views.py:359-362` `feature_intl_consulting_home`
+  flag'i (model varsayılan **False**) kapalıyken EN/DE kullanıcılar
+  `home_intl.html` değil `home.html`'i görüyor — prod flag değeri teyit
+  edilecek, sonra aynı tek satır düzeltme uygulanacak. Ayrıca: ana sayfa
+  "OpenAlex Tarama" kartı (`home.html`+`home_intl.html`) dil şartına
+  bağlı değil; çalışma odaları/DM @mention linkleri (`studyroom_detail.html`,
+  `send_message.html`) öneksiz; `liderboard.html` yanlış path (`/profil/`
+  vs gerçek `/profile/`); `analiz_console_base.html` clear-session fetch'i
+  öneksiz. Tüm liste + önem sırası `tasks/todo.md`'de.
+  **`home.html` kritik düzeltme UYGULANDI (28 Ekim 2026):** `home.html:1280,1288`
+  + `home_intl.html:543` hero-upload fetch/redirect'leri `{% url %}` ile
+  düzeltildi — flag değerinden bağımsız güvenli (TR no-op, EN/DE fix),
+  reverse() tr/en/de doğrulandı, web+nginx restart edildi. Prod flag değeri
+  hâlâ teyit edilmedi ama artık önemi yok.
+  **Kalan 7 düzeltme de TAMAMLANDI (28 Ekim 2026):** OpenAlex kart linki
+  (`home.html`+`home_intl.html` → `{% url 'openalex:landing' %}`), çalışma
+  odası + özel mesaj @mention/yazar linkleri (`studyroom_detail.html`,
+  `send_message.html` — yeni `PROFILE_URL_TEMPLATE` sentinel deseni, mevcut
+  `STATUS_TEMPLATE.replace()` konvansiyonuyla aynı yöntem), `liderboard.html`
+  (yanlış "profil" path'i de bu arada düzeldi), `analiz_console_base.html`
+  clear-session fetch'i, `profile_private.html` geri dön linki, `trdizin`
+  e-postasındaki mutlak link (`reverse('proje_talebi')` — içerik Türkçe
+  kalıyor, TR Dizin zaten TR'ye özgü). Tümü reverse() (tr/en/de) +
+  `get_template()` parse testi + canlı curl ile doğrulandı.
+  **`egitim.html:199,230` (F9) de TAMAMLANDI** — `{% url 'analiz_home' %}` /
+  `{% url 'tarama_hub' %}` ile düzeltildi (lokal `feature_training` flag'i
+  False olduğu için sayfa 404 veriyor, düzeltmeyle ilgisiz — reverse() +
+  `get_template()` ile doğrulandı). **A2 tamamen bitti.** Sırada: A3.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

@@ -527,6 +527,7 @@
 const csrfToken = '{{ csrf_token }}';
 const memberUsernames = [{% for m in members %}"{{ m.user.username }}"{% if not forloop.last %},{% endif %}{% endfor %}];
 const currentUsername = '{{ request.user.username }}';
+const PROFILE_URL_TEMPLATE = '{% url "profile_detail" "__USERNAME__" %}';
 
 // ── Yeni mesaj DOM'a ekle ──────────────────────────────────────────────────
 function getFileHtml(post) {
@@ -580,7 +581,7 @@ function appendRoomPost(post) {
   div.innerHTML = `
     <div class="rm-meta ${benim ? 'rm-meta--sag' : ''}">
       ${actionsHtml}
-      <a href="/profile/${post.author}/" class="rm-yazar">${escapeHtml(post.author)}</a>
+      <a href="${PROFILE_URL_TEMPLATE.replace('__USERNAME__', encodeURIComponent(post.author))}" class="rm-yazar">${escapeHtml(post.author)}</a>
     </div>
     <div class="rm-balon ${benim ? 'rm-balon--benim' : 'rm-balon--karsi'}">
       ${msgHtml}${getFileHtml(post)}
@@ -621,7 +622,7 @@ setInterval(() => {
 // @mention'ları tıklanabilir profile linki olarak render et
 function renderMentions(text) {
   return text.replace(/@(\w+)/g, (match, username) => {
-    return `<a href="/profile/${username}/" class="text-warning text-decoration-none fw-semibold">${match}</a>`;
+    return `<a href="${PROFILE_URL_TEMPLATE.replace('__USERNAME__', encodeURIComponent(username))}" class="text-warning text-decoration-none fw-semibold">${match}</a>`;
   });
 }
 

@@ -10,6 +10,64 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(28 Ekim 2026) Bibliometri — Grup A hata düzeltmeleri (plan onaylandı,
+  henüz uygulanmadı).** Kaynak: `bibliometri_durum_ve_gelistirme_prompt.md`
+  (gerçek vaka: d4yu/user 777, kayıt→doğrulama→onboarding huninde `next`
+  kayboldu, EN kullanıcı Türkçe demo rapor aldı). Sıra (her adım ayrı onayla,
+  plan dosyası: `/home/bunyamin/.claude/plans/functional-crunching-raven.md`):
+  - [x] A1 TAMAMLANDI (28 Ekim 2026): `forum/templates/forum/home_intl.html:551`
+    sabit `/analiz/?from=hero` → `{% url "analiz_home" %}?from=hero`; reverse()
+    tr/en/de doğrulandı (`/analiz/`, `/en/analiz/`, `/de/analiz/`), web+nginx
+    restart edildi. NOT: aynı fonksiyonda satır 543 `fetch('/analiz/hero-upload/'...)`
+    de öneksiz — A2 taramasına dahil edilecek, bu adımda dokunulmadı.
+  - [x] A2 TAMAMLANDI (28 Ekim 2026, rapor): 13 bulgu bulundu, düzeltmeler ayrı
+    onay bekliyor.
+    - [x] **TAMAMLANDI (28 Ekim 2026)** `forum/templates/forum/home.html:1280,1288`
+      — A1 ile BİREBİR AYNI hatanın düzeltmesi uygulandı (flag değerinden
+      bağımsız güvenli: TR için no-op, EN/DE için düzeltme). `fetch(...)` →
+      `{% url "hero_upload" %}`, redirect → `{% url "analiz_home" %}?from=hero`.
+      Aynı anda `home_intl.html:543`'teki fetch satırı da aynı deseple
+      düzeltildi (A1'in yan etkisiydi). reverse() tr/en/de doğrulandı
+      (`/analiz/hero-upload/`, `/en/analiz/hero-upload/`, `/de/analiz/hero-upload/`),
+      web+nginx restart edildi. Prod `feature_intl_consulting_home` flag
+      değeri hâlâ teyit edilmedi (kullanıcı vakit bulunca komutu çalıştıracak)
+      — ama artık hangi değerde olursa olsun hero akışı doğru çalışıyor.
+    - [x] TAMAMLANDI: `home.html:774,782` + `home_intl.html:370,374` — "OpenAlex
+      Tarama" kartı `{% url 'openalex:landing' %}` ile düzeltildi (data-card-url + href)
+    - [x] TAMAMLANDI (A1 ile birlikte): `home_intl.html:543` fetch satırı düzeltildi
+    - [x] TAMAMLANDI: `studyroom_detail.html` — `PROFILE_URL_TEMPLATE` sentinel
+      sabiti eklendi (`{% url "profile_detail" "__USERNAME__" %}` + JS `.replace()`,
+      STATUS_TEMPLATE pattern'iyle aynı yöntem), `appendRoomPost` + `renderMentions` düzeltildi
+    - [x] TAMAMLANDI: `send_message.html` — aynı `PROFILE_URL_TEMPLATE` deseni, `renderMentions` düzeltildi
+    - [x] TAMAMLANDI: `liderboard.html:53,80` — `{% url 'profile_detail' ... %}` ile düzeltildi (yanlış "profil" path'i de düzelmiş oldu)
+    - [x] TAMAMLANDI: `analiz_console_base.html:194` — `{% url "analiz_clear_session" %}` ile düzeltildi
+    - [x] TAMAMLANDI: `profile_private.html:21` — `{% url "home" %}` ile düzeltildi
+    - [x] TAMAMLANDI: `trdizin/services/job_runner.py:153` — `reverse('proje_talebi')` ile düzeltildi (içerik Türkçe kalıyor, TR Dizin zaten TR'ye özgü — i18n gerekmiyor)
+    - [x] TAMAMLANDI: `egitim.html:199,230` — `{% url 'analiz_home' %}` / `{% url 'tarama_hub' %}`
+      ile düzeltildi (F9). Not: lokal DB'de `feature_training` flag'i False — sayfa
+      404 veriyor ama bu düzeltmeyle ilgisizdir, `get_template()` parse testi + reverse()
+      doğrulaması yeterli görüldü.
+    - Tüm düzeltmeler reverse() (tr/en/de) + `get_template()` parse testi + canlı curl ile doğrulandı, web+nginx restart edildi
+    - Temiz: e-posta şablonları, `base.html`/`partials/`, `static/js/*.js` (yalnız `/api/`), market şablonları, `HttpResponseRedirect('/...')` kalıbı yok
+  - [ ] A3: `next` kaybı — `forum/views.py` `register`/`verification_pending`/
+    `verify_email`/`onboarding` view'larında session'a yazılıp onboarding
+    sonunda okunacak (en hassas adım, auth akışı)
+  - [ ] A5: `bibliometrics/services/analyzer.py` — `publication_trend`,
+    `annual_citation_trend`, `publication_growth_rate` grafiklerine
+    `ax.set_xticks()` eksik (ondalık yıl etiketi), `lotka_law`'daki pattern
+    uygulanacak
+  - [ ] A6: kısa dönem (<N yıl) CAGR/büyüme uyarısı — eşik kullanıcıya
+    sorulacak (öneri N=5)
+  - [ ] A7: OpenAlex web CSV format desteği — kullanıcı örnek dosya verecek,
+    `bibliometrics/services/parser.py` `detect_format`'a yeni dal
+  - [ ] A8: Demo PDF CTA — EN/DE'de proje talebi linkine yönlendirme
+  - [ ] A9: `bibliometrics/views.py:38,43` `promo_title`/`promo_description`
+    EN/DE çevirisi SEO için güçlendirilecek (`.po` + `compilemessages`)
+  - [ ] [Karar] A4: rapor dili — ayrı alan (migration) mı, yalnız arayüz
+    dili mi? A1+A3 bitince sorulacak
+  - Grup B (bibliometrix/VOSviewer kalitesinde yol haritası — veri kalitesi,
+    bilim haritalama, çıktılar, ürün/huni) Grup A bitince ayrı planlanacak.
+
 - [ ] **(27 Ekim 2026) GSC "Page indexing → Not found (404)" raporu — kök
   neden bulundu, henüz düzeltilmedi.** Kullanıcı Search Console'da iki URL
   kalıbı gördü: `/hizmetler/<slug>/` (EN/DE, ör. `nitel-analiz`,

@@ -342,6 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const messageForm = document.getElementById('message-form');
     const currentUserId = {{ request.user.id }};
     const receiverUsername = '{{ receiver.username }}';
+    const PROFILE_URL_TEMPLATE = '{% url "profile_detail" "__USERNAME__" %}';
 
     // ═══════════════════════════════════════════════════════════════════
     // SON MESAJ ID'sini TAKIP ET (polling için)
@@ -587,7 +588,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderMentions(text) {
-        return text.replace(/@(\w+)/g, '<a href="/profile/$1/" class="mention-link" title="@$1">@$1</a>');
+        return text.replace(/@(\w+)/g, (match, username) =>
+            `<a href="${PROFILE_URL_TEMPLATE.replace('__USERNAME__', encodeURIComponent(username))}" class="mention-link" title="@${username}">@${username}</a>`);
     }
 
     function linkifyUrls(text) {
