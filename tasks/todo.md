@@ -78,10 +78,12 @@ maddelerde.
     [taze/cihazdan bağımsız cookie ile]→onboarding→hedef sayfa; next'siz
     eski akış bozulmadı; dış domain next 3 noktada da reddedildi).
     `pytest forum/tests.py` 104/104 geçti.
-  - [ ] A5: `bibliometrics/services/analyzer.py` — `publication_trend`,
-    `annual_citation_trend`, `publication_growth_rate` grafiklerine
-    `ax.set_xticks()` eksik (ondalık yıl etiketi), `lotka_law`'daki pattern
-    uygulanacak
+  - [x] A5 TAMAMLANDI (28 Ekim 2026): `bibliometrics/services/analyzer.py`'ye
+    paylaşımlı `_set_integer_year_ticks()` helper'ı eklendi (lotka_law
+    pattern'i), `publication_trend`/`annual_citation_trend`/
+    `publication_growth_rate` kullanıyor. 3 ve 20 yıllık sentetik veriyle
+    görsel + `get_xticks()` testiyle doğrulandı. `bibliometrics/tests.py`
+    eklendi (ilk kez — 5 test, hepsi geçti).
   - [ ] A6: kısa dönem (<N yıl) CAGR/büyüme uyarısı — eşik kullanıcıya
     sorulacak (öneri N=5)
   - [ ] A7: OpenAlex web CSV format desteği — kullanıcı örnek dosya verecek,

@@ -3076,8 +3076,15 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   `verify_email()` → `onboarding()` zinciri boyunca `url_has_allowed_host_and_scheme`
   ile doğrulanarak taşınıyor. Uçtan uca canlı test edildi (taze/cihazdan
   bağımsız cookie ile tam zincir + next'siz eski akış + 3 noktada dış domain
-  reddi), `pytest forum/tests.py` 104/104 geçti. Sırada: A5 (grafik yıl
-  ekseni).
+  reddi), `pytest forum/tests.py` 104/104 geçti.
+  **A5 TAMAMLANDI:** `bibliometrics/services/analyzer.py`'ye paylaşımlı
+  `_set_integer_year_ticks()` helper'ı eklendi (mevcut `lotka_law` set_xticks
+  pattern'i genelleştirildi), `publication_trend`/`annual_citation_trend`/
+  `publication_growth_rate` artık tam sayı yıl etiketi kullanıyor (kısa
+  dönemde AutoLocator'ın ürettiği 2021.5 gibi ondalık etiketler düzeldi),
+  uzun dönemde (>15 yıl) etiketler sıklaştırılıyor. `bibliometrics/tests.py`
+  ilk kez eklendi (5 test). Sırada: A6 (kısa dönem uyarısı — eşik N=5 kararı
+  gerekiyor).
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
