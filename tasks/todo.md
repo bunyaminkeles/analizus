@@ -10,6 +10,22 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(29 Ekim 2026) Tarama araçlarının AI özet paragrafı DE/EN'de Türkçe
+  kalıyor — araştırılmadı, sıraya alındı.** Kullanıcı Semantic Scholar
+  aracında (muhtemelen diğer tarama araçlarında da) hem DE hem EN arayüzde
+  sonuç listesinin üstündeki otomatik özet paragrafının Türkçe çıktığını
+  gördü (ör. "Sorgu sonucunda toplam 0 kayıt bildirilmesine karşın..."). Kısa
+  araştırma: bu metin `forum/services/claude_service.py`
+  `generate_summary(lang=...)`'ten GELMİYOR — o fonksiyon doğru çalışıyor
+  (system_prompt'ta "Yanıtının tamamını {dil} dilinde yaz" var, openalex
+  job_runner'da `lang=translation.get_language()` ile doğru çağrılıyor).
+  `semanticscholar/services/job_runner.py` ve `views.py`'de `generate_summary`
+  çağrısı YOK — yani bu paragraf farklı bir mekanizmadan geliyor (muhtemelen
+  `forum/services/ai_service.py` — GroqService — ya da tarama araçları
+  arası paylaşımlı başka bir özet fonksiyonu, henüz bulunamadı). Sıradaki
+  adım: paragrafın tam kaynağını (hangi fonksiyon/şablon) bulup `lang`
+  parametresinin oraya doğru geçip geçmediğini kontrol etmek.
+
 - [x] **(28 Ekim 2026) TAMAMLANDI — Site genelinde çok satırlı Django `{# #}`
   yorumu site kullanıcılarına düz metin olarak sızıyordu.** Kullanıcı
   Render'da bibliometri sayfasında soluk/düşük kontrastlı bir metin fark
