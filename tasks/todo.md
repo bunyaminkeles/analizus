@@ -78,6 +78,27 @@ maddelerde.
     `AnonymousUser` olursa FK hatasıyla 500 riski). Bu turun kapsamı dışında
     bırakıldı, ayrı onayla ele alınmalı.
 
+- [ ] **(28 Ekim 2026) Admin Dashboard — rakamların tutarlılığı ve metinlerle
+  örtüşmesi kontrol edilmeli.** Kullanıcı ekran görüntüsünde `/admin/`
+  "Site yönetimi" dashboard'unu paylaştı (PLATFORM SAĞLIĞI 60/İyi, Toplam
+  Kullanıcı 140, Toplam Konu 124, Toplam Gönderi 247, Toplam Görüntülenme
+  93802, HİZMET PAZARI 0 açık ilan/0 bekleyen teklif/5 devam eden/23 bu ay
+  bitti/toplam 31 iş, GELİR ÖZETİ bağış/vitrin/bibliometrik/OpenAlex
+  ay/toplam tutarları, AKADEMİK SERVİSLER 4/24 OpenAlex, 8/65 YÖK Tez,
+  2/9 Bibliometrik, 0/0 Dizin Tezleri, İSTATİSTİK ARAÇLARI 49/129 toplam,
+  10/29 Cronbach α, 7/16 Normallik, 16/32 Betimleyici) ve her bir sayının
+  (ay/toplam ayrımı, kart başlığı, yüzde/renk eşiği gibi) hesaplandığı
+  sorguyla ve yanındaki etiket/metinle gerçekten örtüştüğünü doğrulamamızı
+  istedi — henüz incelenmedi. Kontrol edilecekler: hangi view/queryset
+  hangi kartı besliyor (muhtemelen admin dashboard view'ı, bkz.
+  [[project_admin_analitik_turu]]), "ay" filtresinin tarih aralığı doğru mu
+  (bu ay mı, son 30 gün mü), "toplam" gerçekten tüm zamanları mı kapsıyor,
+  PLATFORM SAĞLIĞI skorunun bileşenleri ("Büyüme + içerik + kuyruk")
+  etiketle tutarlı mı, HİZMET PAZARI "Bu Ay Bitti" ile "Toplam
+  tamamlandı" sayılarının tutarlılığı, N+1 sorgu riski olup olmadığı.
+  Kullanıcı kararı: önce bu TEK LİSTE'ye not edilsin, inceleme ayrı
+  görev olarak ele alınacak.
+
 - [ ] **(28 Ekim 2026) OpenAlex sayfalama (pagination) 401 Unauthorized hatası
   — araştırılmadı, bibliometri işinden bağımsız.** Render (dev/staging)
   loglarında görüldü: bir arama job'ı (`d0855985-...`) cursor ile sayfalama
