@@ -606,6 +606,11 @@ EMAIL_HOST = os.getenv('SMTP_HOST')
 EMAIL_PORT = int(os.getenv('SMTP_PORT', 465))
 EMAIL_HOST_USER = os.getenv('SMTP_USER')
 EMAIL_HOST_PASSWORD = os.getenv('SMTP_PASS')
+# Varsayılan (None) sonsuz bekler — SMTP sunucusuna ulaşılamazsa (yanlış/eksik
+# env var, ağ sorunu) EmailMessage.send() isteği süresiz kilitler; senkron
+# çağrıldığı yerlerde (ör. admin aksiyonu) tüm worker'ı tıkar (28 Ekim 2026,
+# Render'da gözlemlendi — bkz. analizus.md §26).
+EMAIL_TIMEOUT = 15
 if EMAIL_PORT == 587:
     EMAIL_USE_TLS = True
     EMAIL_USE_SSL = False

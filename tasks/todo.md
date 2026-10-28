@@ -28,6 +28,38 @@ maddelerde.
   bulunmadığı doğrulandı. `render_to_string()` ile içerik sızıntısı kalmadığı
   test edildi, `forum+bibliometrics` 117/117 geçti.
 
+- [x] **(28 Ekim 2026) TAMAMLANDI — `EMAIL_TIMEOUT` ayarı eklendi (Render'da
+  admin aksiyonu donup worker öldürüldü).** Kullanıcı admin panelinden
+  "Onayla ve Tam Rapor Emailini Gönder" aksiyonunu çalıştırdı, istek donup
+  kaldı; Render logu kanıtladı: ASGI worker "took too long to shut down and
+  was killed", ardından `[Errno 110] Connection timed out` (SMTP'ye
+  ulaşılamıyor). Kök neden: `EMAIL_BACKEND` SMTP, Django'nun varsayılan
+  `EMAIL_TIMEOUT` değeri `None` (sonsuz bekler) — `bibliometrics/services/
+  job_runner.py`'deki 3 e-posta gönderim yeri de (`send_order_results_email`
+  dahil) ham `EmailMessage().send()` kullanıyor, `EmailService.is_configured()`
+  koruması yok. Çözüm: `analizdestek/settings.py`'ye `EMAIL_TIMEOUT = 15`
+  eklendi — tek satır, proje genelindeki TÜM `.send()` çağrılarını kapsar,
+  sonsuz donma yerine ~15 saniyede hata fırlatır (mevcut try/except'ler
+  zaten yakalıyor). Kullanıcı kararıyla bu kadarı yeterli görüldü (SMTP'nin
+  Render'da neden ulaşılamaz olduğu ayrıca araştırılmadı — muhtemelen
+  env var eksik/yanlış, dev/staging ortamı). `forum+bibliometrics` 117/117 geçti.
+
+- [x] **(28 Ekim 2026) TAMAMLANDI — Bibliometri "Geçmiş Analizlerim" tablosu
+  analiz tamamlanınca sayfa yenilenmeden güncellenmiyordu.** Kullanıcı
+  gözlemi: canlı sonuç paneli işin bittiğini gösteriyor ama alttaki geçmiş
+  tablosu (sunucu tarafında sayfa yüklenirken render ediliyor) sayfa
+  yenilenene kadar yeni işi listelemiyor. `bibliometrics_job_status` view'ı
+  `original_filename` + `created_at` alanlarını da döndürecek şekilde
+  genişletildi; `showResults()` JS'i artık tamamlanan işi `#recentJobsBody`
+  tablosunun en üstüne canlı olarak ekliyor (aksiyon hücresi zaten
+  TR/EN'e göre doğru yapılandırılmış `orderBtn`'in klonu). Aynı taşımada:
+  demo PDF indirme linki (`downloadDemoBtn`, `data.demo_pdf_url`) de
+  bağlandı — daha önce `job.demo_pdf_url` backend'de vardı ama hiçbir
+  template'te kullanılmıyordu, "Demo Emaile Gönder" dışında indirme yolu
+  yoktu (diğer araçlarda — openalex, istatistik — olduğu gibi doğrudan
+  indirme linki eksikti). Django test client ile `job_status` endpoint'inin
+  yeni alanları döndürdüğü doğrulandı, `forum+bibliometrics` 117/117 geçti.
+
 - [x] **(28 Ekim 2026) TAMAMLANDI — E-posta doğrulama middleware'i (`EmailVerificationMiddleware`)
   aşırı engelleme hatası.** Kullanıcı raporu: `/verification-pending/`'e düşen
   doğrulanmamış kullanıcı hiçbir sayfaya gidemiyor, dil bile değiştiremiyordu.
