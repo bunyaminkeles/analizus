@@ -253,7 +253,7 @@
                 <th>{% trans "İşlem" %}</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="recentJobsBody">
               {% for job in recent_jobs %}
               <tr>
                 <td class="px-3">
@@ -414,6 +414,7 @@
     emailSent: '{% filter escapejs %}{% trans "Email gönderildi!" %}{% endfilter %}',
     sendDemo: '{% filter escapejs %}{% trans "Demo Emaile Gönder" %}{% endfilter %}',
     emailFailed: '{% filter escapejs %}{% trans "Email gönderilemedi." %}{% endfilter %}',
+    completedBadge: '{% filter escapejs %}{% trans "Tamamlandı" %}{% endfilter %}',
   };
   const fmt = (t, v) => t.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
   // Dile göre adresler (sentinel + replace — STATUS_BASE + id çift eğik çizgi tuzağı)
@@ -498,9 +499,37 @@
       }
     }
 
+    if (data.demo_pdf_url) {
+      downloadDemo.href = data.demo_pdf_url;
+      downloadDemo.classList.remove('d-none');
+    }
+
     if (data.demo_email_sent) {
       sendDemo.disabled = true;
       demoSent.classList.remove('d-none');
+    }
+
+    // "Geçmiş Analizlerim" tablosu sunucu tarafında sayfa yüklenirken render
+    // ediliyor — yeni tamamlanan iş sayfa yenilenmeden listede görünmüyordu,
+    // burada canlı olarak en üste ekleniyor.
+    const recentBody = document.getElementById('recentJobsBody');
+    if (recentBody && !recentBody.querySelector(`[data-job-id="${jobId}"]`)) {
+      const tr = document.createElement('tr');
+      tr.dataset.jobId = jobId;
+      tr.innerHTML =
+        '<td class="px-3"><span class="text-white small"></span></td>' +
+        '<td><span class="badge bg-secondary small"></span></td>' +
+        '<td class="text-white-50 small"></td>' +
+        '<td><span class="badge bg-success"></span></td>' +
+        '<td class="text-white-50 small"></td>' +
+        '<td></td>';
+      tr.children[0].querySelector('span').textContent = (data.original_filename || '').slice(0, 40);
+      tr.children[1].querySelector('span').textContent = data.file_format || '-';
+      tr.children[2].textContent = data.total_records;
+      tr.children[3].querySelector('span').textContent = T.completedBadge;
+      tr.children[4].textContent = data.created_at || '';
+      tr.children[5].appendChild(orderBtn.cloneNode(true));
+      recentBody.insertBefore(tr, recentBody.firstChild);
     }
   }
 

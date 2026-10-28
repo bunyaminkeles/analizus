@@ -28,6 +28,38 @@ maddelerde.
   bulunmadığı doğrulandı. `render_to_string()` ile içerik sızıntısı kalmadığı
   test edildi, `forum+bibliometrics` 117/117 geçti.
 
+- [x] **(28 Ekim 2026) TAMAMLANDI — `EMAIL_TIMEOUT` ayarı eklendi (Render'da
+  admin aksiyonu donup worker öldürüldü).** Kullanıcı admin panelinden
+  "Onayla ve Tam Rapor Emailini Gönder" aksiyonunu çalıştırdı, istek donup
+  kaldı; Render logu kanıtladı: ASGI worker "took too long to shut down and
+  was killed", ardından `[Errno 110] Connection timed out` (SMTP'ye
+  ulaşılamıyor). Kök neden: `EMAIL_BACKEND` SMTP, Django'nun varsayılan
+  `EMAIL_TIMEOUT` değeri `None` (sonsuz bekler) — `bibliometrics/services/
+  job_runner.py`'deki 3 e-posta gönderim yeri de (`send_order_results_email`
+  dahil) ham `EmailMessage().send()` kullanıyor, `EmailService.is_configured()`
+  koruması yok. Çözüm: `analizdestek/settings.py`'ye `EMAIL_TIMEOUT = 15`
+  eklendi — tek satır, proje genelindeki TÜM `.send()` çağrılarını kapsar,
+  sonsuz donma yerine ~15 saniyede hata fırlatır (mevcut try/except'ler
+  zaten yakalıyor). Kullanıcı kararıyla bu kadarı yeterli görüldü (SMTP'nin
+  Render'da neden ulaşılamaz olduğu ayrıca araştırılmadı — muhtemelen
+  env var eksik/yanlış, dev/staging ortamı). `forum+bibliometrics` 117/117 geçti.
+
+- [x] **(28 Ekim 2026) TAMAMLANDI — Bibliometri "Geçmiş Analizlerim" tablosu
+  analiz tamamlanınca sayfa yenilenmeden güncellenmiyordu.** Kullanıcı
+  gözlemi: canlı sonuç paneli işin bittiğini gösteriyor ama alttaki geçmiş
+  tablosu (sunucu tarafında sayfa yüklenirken render ediliyor) sayfa
+  yenilenene kadar yeni işi listelemiyor. `bibliometrics_job_status` view'ı
+  `original_filename` + `created_at` alanlarını da döndürecek şekilde
+  genişletildi; `showResults()` JS'i artık tamamlanan işi `#recentJobsBody`
+  tablosunun en üstüne canlı olarak ekliyor (aksiyon hücresi zaten
+  TR/EN'e göre doğru yapılandırılmış `orderBtn`'in klonu). Aynı taşımada:
+  demo PDF indirme linki (`downloadDemoBtn`, `data.demo_pdf_url`) de
+  bağlandı — daha önce `job.demo_pdf_url` backend'de vardı ama hiçbir
+  template'te kullanılmıyordu, "Demo Emaile Gönder" dışında indirme yolu
+  yoktu (diğer araçlarda — openalex, istatistik — olduğu gibi doğrudan
+  indirme linki eksikti). Django test client ile `job_status` endpoint'inin
+  yeni alanları döndürdüğü doğrulandı, `forum+bibliometrics` 117/117 geçti.
+
 - [x] **(28 Ekim 2026) TAMAMLANDI — E-posta doğrulama middleware'i (`EmailVerificationMiddleware`)
   aşırı engelleme hatası.** Kullanıcı raporu: `/verification-pending/`'e düşen
   doğrulanmamış kullanıcı hiçbir sayfaya gidemiyor, dil bile değiştiremiyordu.
@@ -45,6 +77,27 @@ maddelerde.
     yok; teorik olarak anonim kullanıcı yorum POST edebilir (`created_by`
     `AnonymousUser` olursa FK hatasıyla 500 riski). Bu turun kapsamı dışında
     bırakıldı, ayrı onayla ele alınmalı.
+
+- [ ] **(28 Ekim 2026) Admin Dashboard — rakamların tutarlılığı ve metinlerle
+  örtüşmesi kontrol edilmeli.** Kullanıcı ekran görüntüsünde `/admin/`
+  "Site yönetimi" dashboard'unu paylaştı (PLATFORM SAĞLIĞI 60/İyi, Toplam
+  Kullanıcı 140, Toplam Konu 124, Toplam Gönderi 247, Toplam Görüntülenme
+  93802, HİZMET PAZARI 0 açık ilan/0 bekleyen teklif/5 devam eden/23 bu ay
+  bitti/toplam 31 iş, GELİR ÖZETİ bağış/vitrin/bibliometrik/OpenAlex
+  ay/toplam tutarları, AKADEMİK SERVİSLER 4/24 OpenAlex, 8/65 YÖK Tez,
+  2/9 Bibliometrik, 0/0 Dizin Tezleri, İSTATİSTİK ARAÇLARI 49/129 toplam,
+  10/29 Cronbach α, 7/16 Normallik, 16/32 Betimleyici) ve her bir sayının
+  (ay/toplam ayrımı, kart başlığı, yüzde/renk eşiği gibi) hesaplandığı
+  sorguyla ve yanındaki etiket/metinle gerçekten örtüştüğünü doğrulamamızı
+  istedi — henüz incelenmedi. Kontrol edilecekler: hangi view/queryset
+  hangi kartı besliyor (muhtemelen admin dashboard view'ı, bkz.
+  [[project_admin_analitik_turu]]), "ay" filtresinin tarih aralığı doğru mu
+  (bu ay mı, son 30 gün mü), "toplam" gerçekten tüm zamanları mı kapsıyor,
+  PLATFORM SAĞLIĞI skorunun bileşenleri ("Büyüme + içerik + kuyruk")
+  etiketle tutarlı mı, HİZMET PAZARI "Bu Ay Bitti" ile "Toplam
+  tamamlandı" sayılarının tutarlılığı, N+1 sorgu riski olup olmadığı.
+  Kullanıcı kararı: önce bu TEK LİSTE'ye not edilsin, inceleme ayrı
+  görev olarak ele alınacak.
 
 - [ ] **(28 Ekim 2026) OpenAlex sayfalama (pagination) 401 Unauthorized hatası
   — araştırılmadı, bibliometri işinden bağımsız.** Render (dev/staging)

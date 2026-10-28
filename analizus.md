@@ -3152,6 +3152,17 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   türü hiç yok**, web export'un gerçek kısıtı bu. Plan: `detect_format`
   yeni dal + `_parse_openalex_csv()` (scopus parser pattern'i), kullanıcıya
   bu kısıtlamayı bildirip onay sonrası uygulanacak. Detay `tasks/todo.md`'de.
+  **Render canlı test sırasında 3 ayrı bulgu daha çıktı, hepsi düzeltildi:**
+  (1) Site genelinde çok satırlı Django `{# #}` yorumu 30+ araç + 5 sipariş
+  sayfasında düz metin olarak kullanıcıya sızıyordu (`{% comment %}`'a
+  çevrildi, CLAUDE.md'nin zaten bildiği kural ihlal edilmişti); (2) admin
+  "Onayla ve Tam Rapor Emailini Gönder" aksiyonu Render'da donup worker
+  öldürüldü (`[Errno 110] Connection timed out` — SMTP'ye ulaşılamıyor,
+  `EMAIL_TIMEOUT` hiç ayarlanmamıştı) → `settings.py`'ye `EMAIL_TIMEOUT=15`
+  eklendi (proje geneli, tek satır); (3) bibliometri "Geçmiş Analizlerim"
+  tablosu + demo PDF indirme linki sayfa yenilenmeden güncellenmiyordu →
+  `job_status` JSON genişletildi, JS ile canlı satır ekleme + indirme linki
+  bağlandı. `forum+bibliometrics` 117/117 geçti, henüz push edilmedi.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
