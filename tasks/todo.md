@@ -121,8 +121,37 @@ maddelerde.
     "taslak" etiketiyle ADMIN ONAYI bekleyecek, otomatik gönderilmeyecek
     (karar 28 Ekim 2026). `project_claude_ai_yorumu.md` hafıza notundaki
     "Faz D — Bibliometrics, en karmaşık" ile aynı iş.
-  - [ ] A7: OpenAlex web CSV format desteği — kullanıcı örnek dosya verecek,
-    `bibliometrics/services/parser.py` `detect_format`'a yeni dal
+  - [x] A7 KISMEN TAMAMLANDI (28 Ekim 2026) — kullanıcının verdiği örnek
+    dosya aslında openalex.org web CSV'si değil, **bizim OpenAlex aracımızın
+    ürettiği TXT çıktısıydı** (`openalex_txt` formatı, zaten desteklenen).
+    Ama test ederken **gerçek, ciddi bir hata bulundu ve düzeltildi**:
+    - **Kök neden:** `openalex/services/job_runner.py:25`'teki üretici
+      etiket hizasını dinamik hesaplıyor (`w = max(len(v) for v in L.values())`,
+      "Anahtar Kelimeler" eklendiğinden beri w=17), ama
+      `bibliometrics/services/parser.py` `parse_openalex_txt()` **sabit
+      14 karakterlik** önek bekliyordu (`'Başlık       :'` gibi, ayrıca
+      "Anahtar Kel." kısaltmasıyla) — üretici ile ayrıştırıcı birbirinden
+      kopmuştu. Sonuç: gerçek bir OpenAlex TXT dosyası yeniden yüklenince
+      TÜM kayıtlar sessizce "başlıksız" diye eleniyordu (0 kayıt çıkıyordu).
+    - **Düzeltme:** sabit genişlik string eşleştirmesi yerine esnek
+      boşluklu regex (`_val(label)` → `re.match(label + r'\s*:\s*(.*)$')`)
+      — dil/etiket uzunluğu ne olursa olsun çalışır, bu hata sınıfını
+      kalıcı olarak ortadan kaldırır. `parse_pubmed_txt`'e de AYNI düzeltme
+      uygulandı (şu an Türkçe'de tesadüfen doğru çalışıyordu ama aynı
+      kırılmaya karşı savunmasızdı — EN/DE'de etiket uzunluğu değişince
+      kırılırdı, önleyici olarak düzeltildi).
+    - **İkinci bulgu:** `parse_openalex_txt`'in anahtar kelime ayrıştırması
+      da bozuktu — `_split_keywords()` `;`/`|` ile ayırıyor ama üretici
+      `, ` ile birleştiriyor (bu TAM OLARAK `parse_pubmed_txt`'te zaten
+      fark edilip düzeltilmiş olan aynı hataydı, kod yorumunda duruyordu
+      ama openalex'e hiç uygulanmamıştı) — aynı düzeltme uygulandı.
+    - Gerçek dosya + üretici→ayrıştırıcı uçtan uca testle (4 yeni pytest)
+      doğrulandı, `forum+bibliometrics` 113/113 geçti.
+    - **Hâlâ eksik (A7'nin orijinal kapsamı):** openalex.org web sitesinin
+      kendi "Export → CSV" özelliğiyle indirilen gerçek CSV formatı hâlâ
+      desteklenmiyor (`csv_auto`'ya düşüyor) — bunun için openalex.org'dan
+      gerçekten indirilmiş bir CSV örneği hâlâ gerekiyor, bu TXT dosyası
+      onun yerini tutmuyor.
   - [ ] A8: Demo PDF CTA — EN/DE'de proje talebi linkine yönlendirme
   - [ ] A9: `bibliometrics/views.py:38,43` `promo_title`/`promo_description`
     EN/DE çevirisi SEO için güçlendirilecek (`.po` + `compilemessages`)

@@ -1,6 +1,7 @@
 """
 Bibliometri grafik üretimi için regresyon testleri.
-Kapsam: yıl ekseni tam sayı tick'leri (A5), kısa dönem uyarısı (A6).
+Kapsam: yıl ekseni tam sayı tick'leri (A5), kısa dönem uyarısı (A6),
+OpenAlex/PubMed TXT yeniden-yükleme (A7).
 """
 import matplotlib
 matplotlib.use('Agg')
@@ -12,6 +13,7 @@ from bibliometrics.services.analyzer import (
     SHORT_SERIES_YEARS,
 )
 from bibliometrics.services.report_notes import build_report_notes
+from bibliometrics.services.parser import parse_openalex_txt, parse_pubmed_txt
 
 
 def _records(years_counts):
@@ -70,3 +72,56 @@ def test_long_series_no_short_series_warning():
     assert 'küçük taban etkisine açıktır' not in chart_text
     notes = build_report_notes(recs)
     assert not any('küçük taban etkisine açıktır' in l for l in notes['limitations'])
+
+
+class _StubJob:
+    """openalex/pubmed job_runner'ın _generate_*_results_txt'inin ihtiyaç duyduğu
+    minimum arayüz — DB'ye bağımlı olmadan üretici+ayrıştırıcıyı uçtan uca test eder."""
+    total_results = 1
+
+    def get_query_summary(self):
+        return 'test sorgusu'
+
+
+def test_parse_openalex_txt_roundtrip_with_real_generator():
+    """Üretici (job_runner._generate_alex_results_txt) ile ayrıştırıcı (parse_openalex_txt)
+    birbirinden kopmasın diye uçtan uca test — A7'de bulunan kök neden: üretici etiket
+    hizasını dinamik (ljust) hesaplıyor, ayrıştırıcı sabit genişlik varsayıyordu."""
+    from openalex.services.job_runner import _generate_alex_results_txt
+    pub = {
+        'title': 'Test Başlık Yazısı',
+        'authors': 'Ahmet Yılmaz, Mehmet Demir',
+        'journal': 'Test Dergisi',
+        'year': 2024,
+        'doi': 'https://doi.org/10.1234/test',
+        'type': 'article',
+        'cited_by_count': 5,
+        'institutions': 'İstanbul Üniversitesi',
+        'keywords': ['anahtar bir', 'anahtar iki', 'anahtar üç'],
+    }
+    txt = _generate_alex_results_txt([pub], _StubJob())
+    recs = parse_openalex_txt(txt)
+    assert len(recs) == 1
+    r = recs[0]
+    assert r['title'] == 'Test Başlık Yazısı'
+    assert r['year'] == 2024
+    assert r['journal'] == 'Test Dergisi'
+    assert r['keywords'] == ['anahtar bir', 'anahtar iki', 'anahtar üç']
+    assert len(r['authors']) == 2
+
+
+def test_parse_pubmed_txt_robust_to_label_width_drift():
+    """Gelecekte etiket uzunluğu (ve dolayısıyla üreticinin ljust genişliği) değişse bile
+    ayrıştırıcı kırılmamalı — sabit genişlik varsayımı yerine regex kullanılıyor."""
+    content = (
+        '--- Yayın #1 ---\n'
+        'Başlık : Test Makale\n'
+        'Yazarlar : Ahmet Yılmaz\n'
+        'Yıl : 2023\n'
+        'Anahtar Kelimeler : test, örnek\n'
+    )
+    recs = parse_pubmed_txt(content)
+    assert len(recs) == 1
+    assert recs[0]['title'] == 'Test Makale'
+    assert recs[0]['year'] == 2023
+    assert recs[0]['keywords'] == ['test', 'örnek']

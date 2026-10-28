@@ -708,20 +708,22 @@ def parse_trdizin_txt(content: str, stats: dict = None) -> list[dict]:
 
 def parse_openalex_txt(content: str, stats: dict = None) -> list[dict]:
     """
-    OpenAlex job_runner tarafından üretilen TXT formatını parse eder.
+    OpenAlex job_runner tarafından üretilen TXT formatını parse eder. Etiket hizalama
+    genişliği üreticide dinamik (en uzun etikete göre ljust) — burada boşluk sayısından
+    bağımsız regex ile eşleştirilir (bkz. _val).
 
     Format:
         --- Yayın #N ---
-        Başlık       : ...
-        Yazarlar     : ...
-        Dergi/Kaynak : ...
-        Yıl          : ...
-        DOI          : ...
-        Tür          : ...
-        Atıf Sayısı  : ...
-        Kurumlar     : ...
-        Anahtar Kel. : ...
-        Özet         : ...
+        Başlık            : ...
+        Yazarlar          : ...
+        Dergi/Kaynak      : ...
+        Yıl               : ...
+        DOI               : ...
+        Tür               : ...
+        Atıf Sayısı       : ...
+        Kurumlar          : ...
+        Anahtar Kelimeler : ...
+        Özet              : ...
     """
     records = []
     current: dict | None = None
@@ -737,46 +739,51 @@ def parse_openalex_txt(content: str, stats: dict = None) -> list[dict]:
         if current is None:
             continue
 
-        def _val(prefix):
-            return line[len(prefix):].strip() if line.startswith(prefix) else None
+        def _val(label):
+            # job_runner etiketleri en uzun etikete göre dinamik hizalar (ljust) — sabit
+            # genişlik varsaymak kırılgan, boşluk sayısından bağımsız eşleştir.
+            m = re.match(r'^' + re.escape(label) + r'\s*:\s*(.*)$', line)
+            return m.group(1).strip() if m else None
 
-        v = _val('Başlık       :')
+        v = _val('Başlık')
         if v is not None:
             current['title'] = _clean(v)
             continue
-        v = _val('Yazarlar     :')
+        v = _val('Yazarlar')
         if v is not None:
             current['authors'] = [a.strip() for a in v.split(', ') if a.strip()]
             continue
-        v = _val('Dergi/Kaynak :')
+        v = _val('Dergi/Kaynak')
         if v is not None:
             current['journal'] = _clean(v)
             continue
-        v = _val('Yıl          :')
+        v = _val('Yıl')
         if v is not None:
             current['year'] = _safe_int(v) or None
             continue
-        v = _val('DOI          :')
+        v = _val('DOI')
         if v is not None:
             current['doi'] = _clean(v)
             continue
-        v = _val('Tür          :')
+        v = _val('Tür')
         if v is not None:
             current['pub_type'] = _clean(v)
             continue
-        v = _val('Atıf Sayısı  :')
+        v = _val('Atıf Sayısı')
         if v is not None:
             current['cited_by'] = _safe_int(v)
             continue
-        v = _val('Kurumlar     :')
+        v = _val('Kurumlar')
         if v is not None:
             current['institution'] = _clean(v)
             continue
-        v = _val('Anahtar Kel. :')
+        v = _val('Anahtar Kelimeler')
         if v is not None:
-            current['keywords'] = _split_keywords(v)
+            # job_runner ', '.join ile üretiyor — ';'/'|' ayıran _split_keywords uygun değil
+            # (parse_pubmed_txt'teki aynı düzeltme, bkz. aşağısı)
+            current['keywords'] = [kw.strip() for kw in v.split(',') if kw.strip()]
             continue
-        v = _val('Özet         :')
+        v = _val('Özet')
         if v is not None:
             current['abstract'] = _clean(v)
             continue
@@ -795,6 +802,9 @@ def parse_pubmed_txt(content: str, stats: dict = None) -> list[dict]:
     önceden indirdiği dosyayı bibliometri sayfasına manuel yeniden yüklemesi
     senaryosu — doğrudan köprü, ör. `/bibliometrics/from-pubmed/<id>/`, bunun
     yerine `parse_pubmed_json`'u JSON üzerinden kullanır).
+
+    Etiket hizalama genişliği üreticide dinamik (en uzun etikete göre ljust) — burada
+    boşluk sayısından bağımsız regex ile eşleştirilir (bkz. _val).
 
     Format (OpenAlex TXT ile aynı "--- Yayın #" başlığını paylaşır; PMID
     satırıyla ayırt edilir, bkz. detect_format):
@@ -832,47 +842,50 @@ def parse_pubmed_txt(content: str, stats: dict = None) -> list[dict]:
         if current is None:
             continue
 
-        def _val(prefix):
-            return line[len(prefix):].strip() if line.startswith(prefix) else None
+        def _val(label):
+            # job_runner etiketleri en uzun etikete göre dinamik hizalar (ljust) — sabit
+            # genişlik varsaymak kırılgan, boşluk sayısından bağımsız eşleştir.
+            m = re.match(r'^' + re.escape(label) + r'\s*:\s*(.*)$', line)
+            return m.group(1).strip() if m else None
 
-        v = _val('Başlık            :')
+        v = _val('Başlık')
         if v is not None:
             current['title'] = _clean(v)
             continue
-        v = _val('Yazarlar          :')
+        v = _val('Yazarlar')
         if v is not None:
             current['authors'] = [a.strip() for a in v.split(', ') if a.strip()]
             continue
-        v = _val('Dergi/Kaynak      :')
+        v = _val('Dergi/Kaynak')
         if v is not None:
             current['journal'] = _clean(v)
             continue
-        v = _val('Yıl               :')
+        v = _val('Yıl')
         if v is not None:
             current['year'] = _safe_int(v) or None
             continue
-        v = _val('DOI               :')
+        v = _val('DOI')
         if v is not None:
             current['doi'] = _clean(v)
             continue
-        v = _val('Tür               :')
+        v = _val('Tür')
         if v is not None:
             current['pub_type'] = _clean(v)
             continue
-        v = _val('Kurumlar          :')
+        v = _val('Kurumlar')
         if v is not None:
             current['institution'] = _clean(v)
             continue
-        v = _val('Anahtar Kelimeler :')
+        v = _val('Anahtar Kelimeler')
         if v is not None:
             # job_runner ', '.join ile üretiyor — ';'/'|' ayıran _split_keywords uygun değil
             current['keywords'] = [kw.strip() for kw in v.split(',') if kw.strip()]
             continue
-        v = _val('MeSH Terimleri    :')
+        v = _val('MeSH Terimleri')
         if v is not None:
             mesh_terms = [kw.strip() for kw in v.split(',') if kw.strip()]
             continue
-        v = _val('Özet              :')
+        v = _val('Özet')
         if v is not None:
             current['abstract'] = _clean(v)
             continue

@@ -3101,7 +3101,22 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   uçtan uca doğrulandı, 10 grafik demo PDF'e doğru girdi. AI yorumlama
   kullanıcı kararıyla ŞİMDİLİK ERTELENDİ (tasarım notu `tasks/todo.md`'de
   duruyor, ileride gerekirse "Faz D — Bibliometrics" olarak devam edilir).
-  Sırada: A7.
+  **A7 KISMEN TAMAMLANDI:** kullanıcının verdiği örnek dosya openalex.org
+  web CSV'si değil bizim OpenAlex aracımızın ürettiği TXT çıktısıydı, ama
+  test ederken gerçek bir hata bulundu — `openalex/services/job_runner.py`
+  etiket hizasını dinamik hesaplıyor (`w = max(len(v)...)`, "Anahtar
+  Kelimeler" eklenince w=17 oldu), `bibliometrics/services/parser.py`
+  `parse_openalex_txt()` sabit 14 karakter bekliyordu → üretici ile
+  ayrıştırıcı kopmuştu, gerçek TXT dosyaları yeniden yüklenince TÜM
+  kayıtlar "başlıksız" diye sessizce eleniyordu. Sabit genişlik yerine
+  esnek regex'e çevrildi (`parse_pubmed_txt`'e de önleyici olarak aynı
+  düzeltme uygulandı — EN/DE'de aynı kırılmaya açıktı). İkinci bulgu:
+  openalex'in anahtar kelime ayrıştırması `;`/`|` ile ayırıyordu ama
+  üretici `, ` ile birleştiriyor (pubmed'de zaten düzeltilmiş aynı hata,
+  openalex'e hiç uygulanmamıştı) — düzeltildi. Üretici→ayrıştırıcı uçtan
+  uca 4 yeni pytest, `forum+bibliometrics` 113/113 geçti. A7'nin orijinal
+  kapsamı (openalex.org'un gerçek web CSV export'u) hâlâ açık — gerçek
+  bir CSV örneği gerekiyor. Sırada: A8+A9.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
