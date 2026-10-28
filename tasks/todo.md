@@ -1,7 +1,38 @@
 # Çok Dilli Yayın (EN/DE) — YAYINDA
 
-**Durum:** 29 Eylül 2026 gece — EN/DE canlıda. Aşağıdaki "DEVAM NOKTASI"
-bölümünden başla.
+**Durum (29 Ekim 2026 gece):** Bibliometri Grup A (A1-A9) tamamen bitti,
+`main`'de canlı (Hetzner). Grup B (bibliometrix/VOSviewer yol haritası)
+kullanıcı kararıyla ertelendi. Bugünkü oturum şu 3 maddeyle bitti, **yarın
+buradan devam**:
+
+1. **[ÖNCELİKLİ] Araştırma Konusu Kümeleri (Topic Map) grafiği görsel
+   kalite sorunu — henüz incelenmedi.** Kullanıcı canlı PDF'te gördü: balon
+   grafikte devasa boş alan (sayfanın çoğu boş) + balonların içindeki
+   anahtar kelime etiketleri okunamıyor/üst üste biniyor ("çok kötü",
+   kullanıcının kendi ifadesi; `diğerleri yine güzel` — yalnız bu grafik
+   sorunlu). Kök neden adayı (henüz doğrulanmadı): `bibliometrics/services/
+   analyzer.py` `topic_map()` — (a) `figsize=(14,8)` sabit, satır sayısı
+   azken (ör. 1 satır/4 küme) devasa boş dikey alan bırakıyor — `rows`
+   değişkenine göre dinamik yükseklik gerekir; (b) balon etiketi
+   `'\n'.join(topic['keywords'][:5])` — bu veri setinde "anahtar kelime"ler
+   özetten çıkarılmış UZUN KELİME ÖBEKLERİ olabilir (tek kısa terim değil),
+   fontsize=7.5 ile küçük balona sığmıyor — etiket kısaltma/elips veya
+   balon başına daha az/daha kısa kelime gerekebilir. İlk adım: hangi job'ın
+   PDF'i olduğunu (OpenAlex köprüsü mü, CSV mi) ve o job'ın gerçek
+   `keywords` alanlarının içeriğini incelemek.
+2. **DE/EN tarama araçlarının otomatik özet paragrafı Türkçe kalıyor** —
+   kaynağı bulunamadı (`claude_service.generate_summary` değil, semanticscholar
+   job_runner/views'ta `generate_summary` çağrısı yok). Detay: aşağıdaki
+   "AÇIK İŞLER" listesinde 29 Ekim 2026 maddesi.
+3. **Grup B** (bibliometrix/VOSviewer kalitesinde yol haritası — B1 veri
+   kalitesi → B2 bilim haritalama → B3 çıktılar → B4 ürün/huni) — ayrı
+   planlama turu gerekiyor, plan dosyası:
+   `bibliometri_durum_ve_gelistirme_prompt.md` §4.
+
+Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
+sürebilir (~10 dk'ya kadar), bir dahaki "donmuş gibi görünen" deploy'da
+hemen paralel teşhis komutu çalıştırıp CPU'yu bölmeden önce birkaç dakika
+daha beklenmeli (29 Ekim 2026 dersi).
 
 ## DEVAM NOKTASI (bir sonraki oturum buradan başlasın)
 

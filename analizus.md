@@ -3163,6 +3163,27 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   tablosu + demo PDF indirme linki sayfa yenilenmeden güncellenmiyordu →
   `job_status` JSON genişletildi, JS ile canlı satır ekleme + indirme linki
   bağlandı. `forum+bibliometrics` 117/117 geçti, henüz push edilmedi.
+- **29 Ekim 2026 — A7 kapandı (openalex.org gerçek web CSV export'u artık
+  doğru ayrıştırılıyor), `main`'de canlı.** Kullanıcının gerçek
+  "Export CSV" dosyasıyla testinde bulundu: generic CSV fallback'in
+  COL_MAP'i yazar sütunu için yalnız çoğul "authors" arıyordu, bu formatın
+  tekil "Author" sütunu hiç eşleşmiyordu — tüm kayıtlarda yazar listesi
+  boştu. Çözüm: `detect_format`'a yeni `csv_openalex` dalı + özel
+  `_parse_openalex_csv()` (yazarları `|` ile doğru bölüyor). Gerçek veriyle
+  üretilen analiz sayısı 3'ten 6'ya çıktı. Migration var ama yalnız
+  `FORMAT_CHOICES` metadata (şema değişikliği yok). 4 yeni pytest.
+  **Ardından prod deploy sırasında yanıltıcı bir "donma" yaşandı:** Hetzner'de
+  yalnız 2 CPU var, teşhis için çalıştırılan manuel `collectstatic` komutu
+  deploy'un kendi (sessiz, aynı anda süren) collectstatic adımıyla aynı
+  2 çekirdek için yarıştı — gerçek bir donma değildi, ~10 dk sürüp kendi
+  kendine düzeldi (ders: bir sonraki "donmuş gibi" deploy'da hemen paralel
+  teşhis komutu çalıştırmadan önce birkaç dakika beklenmeli).
+  **Oturum sonu — 3 açık iş `tasks/todo.md`'nin başına not edildi:**
+  (1) [öncelikli] Araştırma Konusu Kümeleri (Topic Map) grafiğinin görsel
+  kalite sorunu (devasa boş alan + okunamayan balon etiketleri) — henüz
+  incelenmedi; (2) DE/EN tarama araçlarının otomatik özet paragrafının
+  Türkçe kalması — kaynağı bulunamadı; (3) Grup B — ayrı planlama turu
+  gerekiyor.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
