@@ -3063,7 +3063,21 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   **`egitim.html:199,230` (F9) de TAMAMLANDI** — `{% url 'analiz_home' %}` /
   `{% url 'tarama_hub' %}` ile düzeltildi (lokal `feature_training` flag'i
   False olduğu için sayfa 404 veriyor, düzeltmeyle ilgisiz — reverse() +
-  `get_template()` ile doğrulandı). **A2 tamamen bitti.** Sırada: A3.
+  `get_template()` ile doğrulandı). **A2 tamamen bitti.**
+  **A3 TAMAMLANDI (28 Ekim 2026) — kök neden düzeltildi, orijinal belgenin
+  varsayımından farklı çıktı:** `next` kaybının asıl nedeni session değil,
+  `templates/base.html`'deki site geneli Giriş/Kayıt Ol linklerinin (navbar,
+  mobil menü, AI asistan banner'ı — 6 yer) hiç `?next=` eklememesiydi
+  (yalnız `service_promo.html`'deki tanıtım CTA'sı doğru ekliyordu — curl ile
+  register formunu POST ederek test ettim, next doğru geldiğinde zaten
+  çalışıyordu). Düzeltme: `base.html` 6 yere `?next={{ request.path }}`
+  eklendi; `next` **doğrulama e-postasının linkine gömülüyor** (session'a
+  değil — kullanıcı linke farklı cihazdan tıklayabilir), `register()` →
+  `verify_email()` → `onboarding()` zinciri boyunca `url_has_allowed_host_and_scheme`
+  ile doğrulanarak taşınıyor. Uçtan uca canlı test edildi (taze/cihazdan
+  bağımsız cookie ile tam zincir + next'siz eski akış + 3 noktada dış domain
+  reddi), `pytest forum/tests.py` 104/104 geçti. Sırada: A5 (grafik yıl
+  ekseni).
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

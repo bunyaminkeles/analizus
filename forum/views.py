@@ -1260,10 +1260,18 @@ def register(request):
                 Profile.objects.filter(user=user).update(preferred_language=lang)
                 user.profile.preferred_language = lang
 
+            # next: açık yönlendirme koruması ile doğrula — doğrulama e-postasına
+            # gömülecek (session'a değil, farklı cihazdan tıklanabilir)
+            next_url = request.GET.get('next')
+            if next_url:
+                from django.utils.http import url_has_allowed_host_and_scheme
+                if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+                    next_url = None
+
             # E-posta doğrulama token'ı oluştur ve gönder
             from .services.email_service import EmailService
             verification = EmailVerification.create_for_user(user)
-            email_sent = EmailService.send_verification_email(user, verification)
+            email_sent = EmailService.send_verification_email(user, verification, next_url=next_url)
 
             if email_sent:
                 messages.success(request, gettext('Kayıt başarılı! Lütfen e-posta adresinizi doğrulayın. Doğrulama linki gönderildi.'))
@@ -1280,11 +1288,8 @@ def register(request):
             from istatistik.services.job_runner import move_session_dataset
             move_session_dataset(old_session_key, request.session.session_key)
 
-            next_url = request.GET.get('next')
             if next_url:
-                from django.utils.http import url_has_allowed_host_and_scheme
-                if url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
-                    return redirect(next_url)
+                return redirect(next_url)
             return redirect('verification_pending')
     else:
         form = RegisterForm()
@@ -2963,11 +2968,22 @@ def verify_email(request, token):
     if not request.user.is_authenticated:
         login(request, user)
 
+    # next: e-posta linkine gömülmüştü (session değil — farklı cihazdan tıklanmış olabilir)
+    next_url = request.GET.get('next')
+    if next_url:
+        from django.utils.http import url_has_allowed_host_and_scheme
+        if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+            next_url = None
+
     # Onboarding tamamlanmamışsa yönlendir
     if not profile.onboarding_completed:
-        return redirect('onboarding')
+        onboarding_url = reverse('onboarding')
+        if next_url:
+            from urllib.parse import quote
+            onboarding_url += f'?next={quote(next_url)}'
+        return redirect(onboarding_url)
 
-    return redirect('home')
+    return redirect(next_url or 'home')
 
 
 @login_required
@@ -4448,14 +4464,23 @@ def studyroom_approve(request, slug):
 def onboarding(request):
     profile = request.user.profile
 
+    # next: register/verify_email'den query string ile geldi (form action'sız,
+    # GET→POST arası otomatik korunuyor) — açık yönlendirme korumalı
+    next_url = request.GET.get('next')
+    if next_url:
+        from django.utils.http import url_has_allowed_host_and_scheme
+        if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+            next_url = None
+    destination = next_url or 'home'
+
     if profile.onboarding_completed:
-        return redirect('home')
+        return redirect(destination)
 
     if request.method == 'POST':
         if 'skip' in request.POST:
             profile.onboarding_completed = True
             profile.save(update_fields=['onboarding_completed'])
-            return redirect('home')
+            return redirect(destination)
 
         segment = request.POST.get('segment', '')
 
@@ -4465,7 +4490,7 @@ def onboarding(request):
         profile.save(update_fields=['segment', 'onboarding_completed'])
 
         messages.success(request, gettext('Hoş geldiniz!'))
-        return redirect('home')
+        return redirect(destination)
 
     segment_choices = Profile.SEGMENT_CHOICES
     capability_info = [

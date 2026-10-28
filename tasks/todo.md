@@ -61,9 +61,23 @@ maddelerde.
       doğrulaması yeterli görüldü.
     - Tüm düzeltmeler reverse() (tr/en/de) + `get_template()` parse testi + canlı curl ile doğrulandı, web+nginx restart edildi
     - Temiz: e-posta şablonları, `base.html`/`partials/`, `static/js/*.js` (yalnız `/api/`), market şablonları, `HttpResponseRedirect('/...')` kalıbı yok
-  - [ ] A3: `next` kaybı — `forum/views.py` `register`/`verification_pending`/
-    `verify_email`/`onboarding` view'larında session'a yazılıp onboarding
-    sonunda okunacak (en hassas adım, auth akışı)
+  - [x] A3 TAMAMLANDI (28 Ekim 2026): Gerçek kök neden session değil —
+    `templates/base.html`'deki SİTE GENELİ Giriş/Kayıt Ol linkleri (navbar,
+    mobil menü, AI asistan banner'ı — 6 yer) hiç `?next=` eklemiyordu (yalnız
+    `service_promo.html`'deki özel CTA ekliyordu). d4yu muhtemelen navbar'ı
+    kullandı, next hiç oluşmadı. Düzeltme: (1) `base.html` 6 yere
+    `?next={{ request.path }}` eklendi; (2) `next`, SESSION'a değil
+    **doğrulama e-postasının linkine gömülüyor** (`email_service.py`
+    `send_verification_email(next_url=...)`) — cihazdan bağımsız çalışır;
+    (3) `register()` next doğrulamasını e-posta göndermeden önceye aldı;
+    (4) `verify_email()` next'i `onboarding`'e `?next=` ile aktarıyor;
+    (5) `onboarding()`'deki 3 koşulsuz `redirect('home')` → doğrulanmış
+    `next` (form action'sız olduğu için GET→POST arası otomatik korunuyor).
+    Her adımda `url_has_allowed_host_and_scheme` ile açık yönlendirme
+    koruması. **Uçtan uca canlı test edildi** (register→verify-email
+    [taze/cihazdan bağımsız cookie ile]→onboarding→hedef sayfa; next'siz
+    eski akış bozulmadı; dış domain next 3 noktada da reddedildi).
+    `pytest forum/tests.py` 104/104 geçti.
   - [ ] A5: `bibliometrics/services/analyzer.py` — `publication_trend`,
     `annual_citation_trend`, `publication_growth_rate` grafiklerine
     `ax.set_xticks()` eksik (ondalık yıl etiketi), `lotka_law`'daki pattern
