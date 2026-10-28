@@ -548,7 +548,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
         .then(function (result) {
             if (result.ok && result.data.success) {
-                window.location.href = '/analiz/?from=hero';
+                window.location.href = '{% url "analiz_home" %}?from=hero';
             } else {
                 showError(result.data.error || '{% trans "Dosya yüklenemedi. Lütfen tekrar deneyin." %}');
                 dropzoneText.textContent = '{% trans "CSV veya Excel dosyanı buraya bırak" %}';

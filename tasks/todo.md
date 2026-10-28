@@ -10,6 +10,37 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(28 Ekim 2026) Bibliometri — Grup A hata düzeltmeleri (plan onaylandı,
+  henüz uygulanmadı).** Kaynak: `bibliometri_durum_ve_gelistirme_prompt.md`
+  (gerçek vaka: d4yu/user 777, kayıt→doğrulama→onboarding huninde `next`
+  kayboldu, EN kullanıcı Türkçe demo rapor aldı). Sıra (her adım ayrı onayla,
+  plan dosyası: `/home/bunyamin/.claude/plans/functional-crunching-raven.md`):
+  - [x] A1 TAMAMLANDI (28 Ekim 2026): `forum/templates/forum/home_intl.html:551`
+    sabit `/analiz/?from=hero` → `{% url "analiz_home" %}?from=hero`; reverse()
+    tr/en/de doğrulandı (`/analiz/`, `/en/analiz/`, `/de/analiz/`), web+nginx
+    restart edildi. NOT: aynı fonksiyonda satır 543 `fetch('/analiz/hero-upload/'...)`
+    de öneksiz — A2 taramasına dahil edilecek, bu adımda dokunulmadı.
+  - [ ] A2: i18n'de öneksiz sabit yol taraması (rapor), F9 (`egitim.html:199,230`)
+    doğrulandı
+  - [ ] A3: `next` kaybı — `forum/views.py` `register`/`verification_pending`/
+    `verify_email`/`onboarding` view'larında session'a yazılıp onboarding
+    sonunda okunacak (en hassas adım, auth akışı)
+  - [ ] A5: `bibliometrics/services/analyzer.py` — `publication_trend`,
+    `annual_citation_trend`, `publication_growth_rate` grafiklerine
+    `ax.set_xticks()` eksik (ondalık yıl etiketi), `lotka_law`'daki pattern
+    uygulanacak
+  - [ ] A6: kısa dönem (<N yıl) CAGR/büyüme uyarısı — eşik kullanıcıya
+    sorulacak (öneri N=5)
+  - [ ] A7: OpenAlex web CSV format desteği — kullanıcı örnek dosya verecek,
+    `bibliometrics/services/parser.py` `detect_format`'a yeni dal
+  - [ ] A8: Demo PDF CTA — EN/DE'de proje talebi linkine yönlendirme
+  - [ ] A9: `bibliometrics/views.py:38,43` `promo_title`/`promo_description`
+    EN/DE çevirisi SEO için güçlendirilecek (`.po` + `compilemessages`)
+  - [ ] [Karar] A4: rapor dili — ayrı alan (migration) mı, yalnız arayüz
+    dili mi? A1+A3 bitince sorulacak
+  - Grup B (bibliometrix/VOSviewer kalitesinde yol haritası — veri kalitesi,
+    bilim haritalama, çıktılar, ürün/huni) Grup A bitince ayrı planlanacak.
+
 - [ ] **(27 Ekim 2026) GSC "Page indexing → Not found (404)" raporu — kök
   neden bulundu, henüz düzeltilmedi.** Kullanıcı Search Console'da iki URL
   kalıbı gördü: `/hizmetler/<slug>/` (EN/DE, ör. `nitel-analiz`,

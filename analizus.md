@@ -3024,6 +3024,16 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **28 Ekim 2026 — Bibliometri Grup A başladı, A1 tamamlandı (dev'de, henüz
+  push edilmedi).** Kaynak: `bibliometri_durum_ve_gelistirme_prompt.md`
+  (gerçek vaka: EN kullanıcı kayıt→onboarding huninde `next`/dil bağlamını
+  kaybedip Türkçe demo rapor aldı). Plan onaylandı, 9 maddelik sıra
+  `tasks/todo.md`'de. **A1:** `forum/templates/forum/home_intl.html:551`
+  hero dropzone yönlendirmesi sabit `/analiz/?from=hero` yerine
+  `{% url "analiz_home" %}?from=hero` — EN/DE'de dil öneki artık korunuyor
+  (`reverse()` ile tr/en/de doğrulandı). `home.html` (TR) dokunulmadı.
+  Not: aynı fonksiyonun satır 543'ündeki `fetch('/analiz/hero-upload/'...)`
+  de öneksiz — A2 (dil öneki taraması) adımına bırakıldı. Sırada A2.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
