@@ -10,6 +10,42 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(28 Ekim 2026) TAMAMLANDI — Site genelinde çok satırlı Django `{# #}`
+  yorumu site kullanıcılarına düz metin olarak sızıyordu.** Kullanıcı
+  Render'da bibliometri sayfasında soluk/düşük kontrastlı bir metin fark
+  etti ("renk uyumu sorunu" sandı), tarayıcı çeviri eklentisiyle seçince
+  gerçek içerik ortaya çıktı: `{# Ortak S3 saklama süresi uyarısı... #}`
+  — Django'nun `{# #}` yorum etiketi **TEK SATIR** için tasarlanmış (CLAUDE.md
+  kuralı), çok satıra yayılınca yorum olarak PARSE EDİLMİYOR, ham metin
+  olarak render ediliyor. İki dosyada bulundu ve düzeltildi
+  (`{% comment %}...{% endcomment %}`'a çevrildi):
+  - `templates/partials/_s3_retention_notice.html` — 30+ araç sayfasında
+    kullanılıyor (tüm istatistik araçları + tarama araçları + bibliometri)
+  - `templates/partials/order_payment.html` — 5 **sipariş/ödeme sayfasında**
+    kullanılıyor (openalex, bibliometrics, trdizin, oaipmh, semanticscholar
+    — gerçek müşteri IBAN ödeme sayfaları, daha yüksek risk)
+  Tüm template'lerde aynı hata kalıbı taranıp (regex ile) başka yer
+  bulunmadığı doğrulandı. `render_to_string()` ile içerik sızıntısı kalmadığı
+  test edildi, `forum+bibliometrics` 117/117 geçti.
+
+- [x] **(28 Ekim 2026) TAMAMLANDI — E-posta doğrulama middleware'i (`EmailVerificationMiddleware`)
+  aşırı engelleme hatası.** Kullanıcı raporu: `/verification-pending/`'e düşen
+  doğrulanmamış kullanıcı hiçbir sayfaya gidemiyor, dil bile değiştiremiyordu.
+  Kök neden: `forum/middleware.py` ALLOWED_URLS whitelist'i ilk eklendiğinden
+  beri güncellenmemiş, zamanla eklenen blog/hizmetler/eğitim/istatistik
+  araçları/dil seçici (`set_language`)/şifre sıfırlama gibi herkese-açık
+  sayfalar listeye hiç girmemişti. Düzeltme: whitelist tamamlandı (mimari
+  aynı kaldı) + 3 ek tutarsızlık giderildi — `topic_detail`/`new_topic`
+  POST kollarına ve `api_ai_chat`/`ai_suggest_answer`'a view-içi
+  `email_verified` kontrolü eklendi (AI widget artık `/api/` önek
+  muafiyetini bypass edemiyor). `forum/tests.py` 104/104 geçti, Django test
+  Client ile atomic-rollback senaryosuyla manuel doğrulandı. Plan:
+  `/home/bunyamin/.claude/plans/swift-yawning-perlis.md`.
+  - [ ] **Ertelendi — ayrı görev:** `topic_detail` view'ında `login_required`
+    yok; teorik olarak anonim kullanıcı yorum POST edebilir (`created_by`
+    `AnonymousUser` olursa FK hatasıyla 500 riski). Bu turun kapsamı dışında
+    bırakıldı, ayrı onayla ele alınmalı.
+
 - [ ] **(28 Ekim 2026) OpenAlex sayfalama (pagination) 401 Unauthorized hatası
   — araştırılmadı, bibliometri işinden bağımsız.** Render (dev/staging)
   loglarında görüldü: bir arama job'ı (`d0855985-...`) cursor ile sayfalama
