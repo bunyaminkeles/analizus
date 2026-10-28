@@ -117,7 +117,7 @@ def pubmed_landing(request):
                 'value_placeholder': gettext('Değer girin...'),
                 'remove_rule': gettext('Kriteri kaldır'),
                 'biblio_starting': gettext('Başlatılıyor...'),
-                'biblio_started': gettext('Bibliometrik analiz kuyruğa alındı. Demo rapor (3 grafik PDF) hazır olduğunda e-postanıza gönderilecek.'),
+                'biblio_started': gettext('Bibliometrik analiz kuyruğa alındı. Demo rapor (10 grafik PDF) hazır olduğunda e-postanıza gönderilecek.'),
                 'biblio_exists': gettext('Bu arama için zaten bir analiz mevcut.'),
                 'biblio_link': gettext('Bibliometrik analizlerim'),
             },

@@ -51,7 +51,7 @@
               <i class="bi bi-envelope-paper text-warning me-2 mt-1"></i>
               <div>
                 <div class="text-white fw-semibold small">{% trans "Email ile Teslim" %}</div>
-                <div class="text-white-50 x-small">{% if LANGUAGE_CODE == 'tr' %}{% trans "Demo (3 grafik) ücretsiz · Tam rapor kayıt sayısına göre ücretli" %}{% else %}{% trans "Demo (3 grafik) ücretsiz · Tam rapor için proje talebi" %}{% endif %}</div>
+                <div class="text-white-50 x-small">{% if LANGUAGE_CODE == 'tr' %}{% blocktrans with n=demo_grafik_sayisi %}Demo ({{ n }} grafik) ücretsiz · Tam rapor kayıt sayısına göre ücretli{% endblocktrans %}{% else %}{% blocktrans with n=demo_grafik_sayisi %}Demo ({{ n }} grafik) ücretsiz · Tam rapor için proje talebi{% endblocktrans %}{% endif %}</div>
               </div>
             </div>
           </div>
@@ -146,7 +146,7 @@
       <div class="card-body p-4">
         <p class="text-white-50 mb-3">
           <span id="formatBadge" class="badge bg-secondary me-2"></span>
-          {% if LANGUAGE_CODE == 'tr' %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor (17 analize kadar) için sipariş oluşturunuz." %}{% else %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor için proje talebi bırakın." %}{% endif %}
+          {% if LANGUAGE_CODE == 'tr' %}{% blocktrans with n=demo_grafik_sayisi %}Bibliometrik analiziniz tamamlandı. Demo raporu ({{ n }} grafik) ücretsiz alabilirsiniz. Tam rapor (17 analize kadar) için sipariş oluşturunuz.{% endblocktrans %}{% else %}{% blocktrans with n=demo_grafik_sayisi %}Bibliometrik analiziniz tamamlandı. Demo raporu ({{ n }} grafik) ücretsiz alabilirsiniz. Tam rapor için proje talebi bırakın.{% endblocktrans %}{% endif %}
         </p>
 
         {% include "partials/_s3_retention_notice.html" %}

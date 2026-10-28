@@ -152,9 +152,32 @@ maddelerde.
       desteklenmiyor (`csv_auto`'ya düşüyor) — bunun için openalex.org'dan
       gerçekten indirilmiş bir CSV örneği hâlâ gerekiyor, bu TXT dosyası
       onun yerini tutmuyor.
-  - [ ] A8: Demo PDF CTA — EN/DE'de proje talebi linkine yönlendirme
-  - [ ] A9: `bibliometrics/views.py:38,43` `promo_title`/`promo_description`
-    EN/DE çevirisi SEO için güçlendirilecek (`.po` + `compilemessages`)
+  - [x] A8+A9 TAMAMLANDI (28 Ekim 2026):
+    - **A8:** `bibliometrics/services/pdf_builder.py`'ye `_demo_cta_text()`
+      eklendi — TR'de mevcut "sipariş oluşturunuz" metni korunuyor, EN/DE'de
+      `reverse('proje_talebi')` ile dil önekli proje talebi linkine
+      yönlendiriyor ("analizus.com/en/proje-talebi/" vb., sorgu parametreleri
+      okunurluk için PDF düz metnine eklenmedi). `_fit_text` ile taşma
+      koruması eklendi, kapak PNG'ye render edilip görsel doğrulandı.
+    - **A9:** `promo_title` paylaşımlı "Bibliometrik Analiz" msgid'ini
+      kullanıyordu (navbar/mobil menü/ana sayfa/onboarding'de de aynı
+      çeviri) — doğrudan retranslate etmek o yerleri de bozardı. `pgettext('seo_title', ...)`
+      ile bağlamlı çeviriye geçirildi (TR çıktısı aynı kalıyor, context-free
+      kullanım yerleri etkilenmedi — ayrıca doğrulandı), EN/DE SEO'ya
+      güçlendirildi ("Bibliometric Analysis from Scopus, WoS & OpenAlex
+      Data – Automated Report").
+    - **Yan bulgu (A8/A9 sırasında, demo sayısı 3→10 işinin devamı):**
+      `bibliometrics/views.py`, `bibliometrics/templates/bibliometrics/landing.html`,
+      `openalex/templates/openalex/landing.html` (2 yer) ve `pubmed/views.py`
+      + `pubmed/templates/pubmed/landing.html`'de TOPLAM 6 yerde daha sabit
+      "(3 grafik)" referansı bulundu (demo sayısı değişince stale kalmışlar).
+      bibliometrics'teki 3 yer `SiteSettings.bibliometri_demo_grafik_sayisi`'nden
+      dinamik okuyor artık (`{% blocktrans with n=... %}`); openalex/pubmed'deki
+      3 yer basitçe "10" olarak güncellendi (bu ikisi bibliometri'nin
+      SiteSettings'ine bağlı değil, ayrı app'ler — sabit metin olarak
+      bırakıldı, ileride admin 10'u değiştirirse bu 3 yer elle güncellenmeli).
+    - 2 yeni pytest (`_demo_cta_text` tr/en/de), `forum+bibliometrics`
+      113/113 geçti. EN/DE çevirileri eklendi, `compilemessages` hatasız.
   - [ ] [Karar] A4: rapor dili — ayrı alan (migration) mı, yalnız arayüz
     dili mi? A1+A3 bitince sorulacak
   - Grup B (bibliometrix/VOSviewer kalitesinde yol haritası — veri kalitesi,

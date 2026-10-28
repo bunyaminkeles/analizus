@@ -6,7 +6,7 @@ from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib import messages
-from django.utils.translation import gettext
+from django.utils.translation import gettext, pgettext
 from django_ratelimit.decorators import ratelimit
 
 from .forms import BibliometricUploadForm, BibliometricOrderForm
@@ -33,9 +33,14 @@ def feature_required(flag_name):
 @feature_required('bibliometrics')
 @ratelimit(key='user', rate='10/h', method='POST', block=True)
 def bibliometrics_landing(request):
+    from forum.models import SiteSettings
+    demo_n = SiteSettings.load().bibliometri_demo_grafik_sayisi
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
-            'promo_title': gettext('Bibliometrik Analiz'),
+            # pgettext: 'Bibliometrik Analiz' navbar/menü/ana sayfada da kullanılıyor (paylaşımlı
+            # msgid) — sayfa <title>'ı için EN/DE'yi SEO'ya ayrı güçlendirebilmek üzere bağlamlı
+            # çeviri (context'siz TR çıktısı aynı kalır, A9).
+            'promo_title': pgettext('seo_title', 'Bibliometrik Analiz'),
             'promo_icon': 'bi-bar-chart-line-fill',
             'promo_color': 'info',
             'promo_cta_source': 'bibliometrics',
@@ -52,7 +57,7 @@ def bibliometrics_landing(request):
             'promo_steps': [
                 gettext('WoS, Scopus, BibTeX veya OpenAlex dosyanızı yükleyin.'),
                 gettext('Sistem otomatik olarak 17\'ye kadar farklı analiz çalıştırır.'),
-                gettext('Demo rapor (3 grafik) ücretsiz emailinize gelir.'),
+                gettext('Demo rapor ({n} grafik) ücretsiz emailinize gelir.').format(n=demo_n),
             ],
             'promo_gallery': [
                 {'img': 'img/biblio-ornek-yayin-trendi.webp', 'caption': gettext('Yayın Trendi'), 'width': 717, 'height': 638},
@@ -146,6 +151,7 @@ def bibliometrics_landing(request):
         'recent_jobs': recent_jobs,
         'form': BibliometricUploadForm(),
         'active_job_id': str(active_job.id) if active_job else None,
+        'demo_grafik_sayisi': demo_n,
     })
 
 

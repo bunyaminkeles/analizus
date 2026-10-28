@@ -1,10 +1,12 @@
 """
 Bibliometri grafik üretimi için regresyon testleri.
 Kapsam: yıl ekseni tam sayı tick'leri (A5), kısa dönem uyarısı (A6),
-OpenAlex/PubMed TXT yeniden-yükleme (A7).
+OpenAlex/PubMed TXT yeniden-yükleme (A7), demo CTA dil ayrımı (A8/A9).
 """
 import matplotlib
 matplotlib.use('Agg')
+
+from django.utils import translation
 
 from bibliometrics.services.analyzer import (
     publication_trend,
@@ -14,6 +16,7 @@ from bibliometrics.services.analyzer import (
 )
 from bibliometrics.services.report_notes import build_report_notes
 from bibliometrics.services.parser import parse_openalex_txt, parse_pubmed_txt
+from bibliometrics.services.pdf_builder import _demo_cta_text
 
 
 def _records(years_counts):
@@ -125,3 +128,22 @@ def test_parse_pubmed_txt_robust_to_label_width_drift():
     assert recs[0]['title'] == 'Test Makale'
     assert recs[0]['year'] == 2023
     assert recs[0]['keywords'] == ['test', 'örnek']
+
+
+def test_demo_cta_tr_has_no_proje_talebi_link():
+    """TR: sipariş sistemi var, proje talebi linkine yönlendirilmemeli (A8)."""
+    with translation.override('tr'):
+        text = _demo_cta_text()
+    assert 'proje-talebi' not in text
+    assert 'analizus.com' in text
+
+
+def test_demo_cta_en_de_link_to_proje_talebi_with_language_prefix():
+    """EN/DE: sipariş sistemi yok, proje talebine (dil önekiyle) yönlendirilmeli (A8)."""
+    with translation.override('en'):
+        en_text = _demo_cta_text()
+    with translation.override('de'):
+        de_text = _demo_cta_text()
+    assert '/en/proje-talebi/' in en_text
+    assert '/de/proje-talebi/' in de_text
+    assert en_text != de_text

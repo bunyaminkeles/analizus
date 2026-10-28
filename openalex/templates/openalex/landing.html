@@ -131,7 +131,7 @@
                                         </div>
                                     </div>
                                     <p class="text-white-50 small mb-2">
-                                        {% trans "Demo rapor (3 grafik) ücretsiz emaile gönderilir. Tam rapor (17 analize kadar) kayıt sayısına göre ücretlidir." %}
+                                        {% trans "Demo rapor (10 grafik) ücretsiz emaile gönderilir. Tam rapor (17 analize kadar) kayıt sayısına göre ücretlidir." %}
                                     </p>
                                     <div id="biblio-status" class="mt-2"></div>
                                 </div>
@@ -560,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     biblioBtn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> {% trans "Analiz Başlatıldı" %}';
                     biblioStatus.innerHTML = `
                         <div class="alert alert-success mt-2 mb-0 py-2">
-                            {% trans "Bibliometrik analiz kuyruğa alındı. Demo rapor (3 grafik PDF) hazır olduğunda e-postanıza gönderilecek." %}
+                            {% trans "Bibliometrik analiz kuyruğa alındı. Demo rapor (10 grafik PDF) hazır olduğunda e-postanıza gönderilecek." %}
                             <br><a href="{% url 'bibliometrics:landing' %}" class="alert-link">{% trans "Bibliometrik analizlerim" %} &rarr;</a>
                         </div>`;
                 } else if (data.status === 'exists') {

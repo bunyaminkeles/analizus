@@ -171,6 +171,18 @@ def _fit_text(text: str, font_name: str, font_size: float, max_width: float) -> 
         return text[:limit] + ('…' if len(text) > limit else '')
 
 
+def _demo_cta_text() -> str:
+    """Demo kapağındaki tam rapor çağrısı. TR: mevcut sipariş metni (sipariş sistemi var).
+    EN/DE: sipariş yok → proje talebi (kullanıcı kararı 27 Eylül 2026, A8). Sorgu parametreleri
+    (?source=&type=) PDF'teki düz metne eklenmiyor — tıklanabilir link değil, kısa/okunur kalsın."""
+    from django.utils.translation import get_language
+    from django.urls import reverse
+    if (get_language() or 'tr')[:2] == 'tr':
+        return gettext('Tam rapor için sipariş oluşturunuz → analizus.com')
+    return gettext('Tam rapor veya uzman incelemesi için proje talebi bırakın → analizus.com{path}').format(
+        path=reverse('proje_talebi'))
+
+
 def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: str, n_analyses: int = 0):
     _draw_page_background(c, width, height)
 
@@ -265,8 +277,8 @@ def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: s
         c.drawCentredString(width / 2, note_y + 27, gettext('Demo: {n} analiz içermektedir.').format(n=n_analyses))
         c.setFont(_FONT_NORMAL, 8)
         c.setFillColorRGB(*C_MUTED)
-        c.drawCentredString(width / 2, note_y + 12,
-                            gettext('Tam rapor için sipariş oluşturunuz → analizus.com'))
+        cta_text = _fit_text(_demo_cta_text(), _FONT_NORMAL, 8, card_w - 24)
+        c.drawCentredString(width / 2, note_y + 12, cta_text)
 
     _draw_footer(c, width)
 

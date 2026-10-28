@@ -3116,7 +3116,21 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   openalex'e hiç uygulanmamıştı) — düzeltildi. Üretici→ayrıştırıcı uçtan
   uca 4 yeni pytest, `forum+bibliometrics` 113/113 geçti. A7'nin orijinal
   kapsamı (openalex.org'un gerçek web CSV export'u) hâlâ açık — gerçek
-  bir CSV örneği gerekiyor. Sırada: A8+A9.
+  bir CSV örneği gerekiyor.
+  **A8+A9 TAMAMLANDI:** `pdf_builder.py`'ye `_demo_cta_text()` eklendi —
+  TR'de mevcut sipariş metni, EN/DE'de `reverse('proje_talebi')` ile dil
+  önekli proje talebi linki (A8). `promo_title`'ın paylaşımlı "Bibliometrik
+  Analiz" msgid'i navbar/ana sayfa/onboarding'de de kullanıldığından
+  doğrudan retranslate yerine `pgettext('seo_title', ...)` ile bağlamlı
+  çeviriye geçirildi (TR ve diğer kullanım yerleri etkilenmedi), EN/DE
+  SEO'ya güçlendirildi (A9). **Yan bulgu:** demo sayısı 3→10 değişince
+  stale kalan 6 ayrı "(3 grafik)" referansı daha bulundu
+  (`bibliometrics/views.py`+`landing.html`, `openalex/templates/.../landing.html`
+  2 yer, `pubmed/views.py`+`landing.html`) — bibliometrics'teki 3 yer artık
+  `SiteSettings`'ten dinamik okuyor, openalex/pubmed'deki 3 yer (ayrı
+  app'ler, bibliometri'nin SiteSettings'ine bağlı değil) "10" olarak sabit
+  güncellendi. 2 yeni pytest, `forum+bibliometrics` 113/113 geçti. Grup A
+  kalanı: yalnız [Karar] A4 (rapor dili). Sırada: A4 kararı, sonra Grup B.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
