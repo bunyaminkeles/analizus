@@ -3059,8 +3059,11 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   clear-session fetch'i, `profile_private.html` geri dön linki, `trdizin`
   e-postasındaki mutlak link (`reverse('proje_talebi')` — içerik Türkçe
   kalıyor, TR Dizin zaten TR'ye özgü). Tümü reverse() (tr/en/de) +
-  `get_template()` parse testi + canlı curl ile doğrulandı. Tek açık kalan:
-  `egitim.html:199,230` (F9) — henüz dokunulmadı. Sırada: A3.
+  `get_template()` parse testi + canlı curl ile doğrulandı.
+  **`egitim.html:199,230` (F9) de TAMAMLANDI** — `{% url 'analiz_home' %}` /
+  `{% url 'tarama_hub' %}` ile düzeltildi (lokal `feature_training` flag'i
+  False olduğu için sayfa 404 veriyor, düzeltmeyle ilgisiz — reverse() +
+  `get_template()` ile doğrulandı). **A2 tamamen bitti.** Sırada: A3.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

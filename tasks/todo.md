@@ -43,7 +43,10 @@ maddelerde.
     - [x] TAMAMLANDI: `analiz_console_base.html:194` — `{% url "analiz_clear_session" %}` ile düzeltildi
     - [x] TAMAMLANDI: `profile_private.html:21` — `{% url "home" %}` ile düzeltildi
     - [x] TAMAMLANDI: `trdizin/services/job_runner.py:153` — `reverse('proje_talebi')` ile düzeltildi (içerik Türkçe kalıyor, TR Dizin zaten TR'ye özgü — i18n gerekmiyor)
-    - [ ] `egitim.html:199,230` — sabit `/analiz/`, `/tarama/` (F9) — HENÜZ DOKUNULMADI, ayrı onay bekliyor
+    - [x] TAMAMLANDI: `egitim.html:199,230` — `{% url 'analiz_home' %}` / `{% url 'tarama_hub' %}`
+      ile düzeltildi (F9). Not: lokal DB'de `feature_training` flag'i False — sayfa
+      404 veriyor ama bu düzeltmeyle ilgisizdir, `get_template()` parse testi + reverse()
+      doğrulaması yeterli görüldü.
     - Tüm düzeltmeler reverse() (tr/en/de) + `get_template()` parse testi + canlı curl ile doğrulandı, web+nginx restart edildi
     - Temiz: e-posta şablonları, `base.html`/`partials/`, `static/js/*.js` (yalnız `/api/`), market şablonları, `HttpResponseRedirect('/...')` kalıbı yok
   - [ ] A3: `next` kaybı — `forum/views.py` `register`/`verification_pending`/
