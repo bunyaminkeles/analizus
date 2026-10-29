@@ -5,11 +5,11 @@
 başladı ve `dev`'de hızla ilerliyor (henüz `main`'e merge edilmedi — kullanıcı
 "merge et" demeden dokunulmayacak): **B1 (veri kalitesi) TAMAMEN BİTTİ**
 (B1-1 OpenAlex zenginleştirme, B1-2 tekilleştirme, B1-3 yazar birleştirme,
-B1-4 anahtar kelime normalizasyonu) ve **B2'den 3 madde tamamlandı** (B2-1
-Bradford Kanunu, B2-2 Louvain kümeleri + tablo, B2-3 Tematik Harita) — hepsi
-`dev`'e commit+push edildi, istatistik araç sayısı 17→19. **Yeni oturum
-buradan devam etsin: sıradaki B2-4 (tematik evrim — dönemler arası tema
-akışı), sonra B2-5..B2-8, B3, B4** (bkz. madde 3 altındaki detaylı liste ve
+B1-4 anahtar kelime normalizasyonu) ve **B2'den 4 madde tamamlandı** (B2-1
+Bradford Kanunu, B2-2 Louvain kümeleri + tablo, B2-3 Tematik Harita, B2-4
+Tematik Evrim) — B2-4 henüz commit edilmedi (kullanıcı onayı bekliyor),
+istatistik araç sayısı 17→20. **Yeni oturum buradan devam etsin: sıradaki B2-5..B2-8,
+sonra B3, B4** (bkz. madde 3 altındaki detaylı liste ve
 `bibliometri_durum_ve_gelistirme_prompt.md` §4). Ayrıca aşağıdaki 2 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
@@ -115,8 +115,30 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      sayısını 7+ dosyada (2 şablon, e-posta, admin/SiteSettings help_text,
      pdf_builder yorumu) elle güncellemeyi gerektiriyor — ileride tek bir
      `len(analyses)` kaynağına taşınabilir (ayrı refactor, şimdi yapılmadı).
-   - [ ] B2-4..B2-8 (bkz. plan dosyası §4 — tematik evrim, üç alan grafiği,
-     ülke işbirliği SCP/MCP, atıf ağları, konu modelleme)
+   - [x] **B2-4 TAMAMLANDI (29 Ekim 2026, dev'de, commit bekliyor):** Tematik
+     Evrim (dönemler arası tema akışı). `analyzer.py`'ye `thematic_evolution_periods()`
+     (yayın yılına göre otomatik dönemlendirme — kullanıcı kesim yılı girmiyor,
+     veri yeterliyse 3 değilse 2 dönem) + `thematic_evolution_themes()` (her
+     dönem `keyword_clusters()` (B2-2) ile BAĞIMSIZ kümelenir, ardışık
+     dönemler arası paylaşılan anahtar kelime sayısı akış ağırlığı) +
+     `thematic_evolution()` (el yapımı alüvyal/Sankey diyagramı — matplotlib
+     `PathPatch` + Bezier eğrili şeritler, `networkx`/plotly gerekmedi)
+     eklendi, 20. analiz olarak kaydedildi (istatistik araç sayısı 19→20,
+     tüm "N Analiz" referansları — 2 şablon, e-posta, admin/SiteSettings
+     help_text, pdf_builder yorumu — güncellendi). Tema büyüklüğü kasıtlı
+     olarak kelime kümesinin eleman SAYISI (frekans ağırlığı değil) seçildi:
+     iki dönemin kümeleri birbirinden bağımsız birer bölüntü olduğundan, bu
+     seçim akış şeritlerinin kutu yüksekliğini hiçbir zaman aşmamasını
+     matematiksel olarak garanti ediyor. Senkronize test verisiyle (köprü
+     tema + yalnız bir dönemde var olan temalar) görsel + pytest ile
+     doğrulandı. 5 yeni pytest, rapor "kurallar" metni EN/DE çevrildi. Yeni
+     paket/migration yok. `forum+bibliometrics` 155/155.
+     **Ders (tekrar düşülmesin):** `makemessages` çalıştırılırken yanlışlıkla
+     `--no-location` flag'i kullanıldı (önceki S3 turunda da aynı hata
+     yapılmıştı, bkz. ilgili not) — hemen fark edilip `git checkout` ile geri
+     alındı, flag'siz tekrar çalıştırıldı.
+   - [ ] B2-5..B2-8 (bkz. plan dosyası §4 — üç alan grafiği, ülke işbirliği
+     SCP/MCP, atıf ağları, konu modelleme)
    - [ ] B3-B4 (bkz. plan dosyası §4)
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
