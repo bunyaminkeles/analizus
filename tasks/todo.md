@@ -56,7 +56,17 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
      orada düzgün yapılacak. 7 yeni pytest (`canonical_author_key`,
      `_group_authors`, 3 fonksiyonun varyant birleştirmesi). Rapor "Kısıtlar"
      metni güncellendi (EN/DE). Migration yok. `forum+bibliometrics` 136/136.
-   - [ ] B1-4 (anahtar kelime normalizasyonu: küçük harf, tekil/çoğul, tire/boşluk)
+   - [x] **B1-4 TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi) — B1 (Veri
+     kalitesi) TAMAMEN BİTTİ:** Anahtar kelime normalizasyonu. `normalize_keywords`:
+     tire ile boşluk artık eşdeğer sayılıyor ("COVID-19" ~ "COVID 19"); TR
+     lemmatization kelimeyi değiştirmediyse (muhtemelen yabancı kelime) basit
+     bir çoğul→tekil kuralı devreye giriyor (`_simple_depluralize`: cats→cat,
+     boxes→box, studies→study). **Yan bulgu (düzeltilmedi, kapsam dışı):** lokal
+     dev ortamında zeyrek'in TR lemmatization'ı NLTK `punkt_tab` kaynağı eksik
+     olduğu için sessizce başarısız oluyor (`except Exception: pass` ile orijinal
+     kelimeyi döndürüyor) — prod'da durum doğrulanmadı, ayrı bir inceleme
+     gerektirir. 4 yeni pytest, rapor "Uygulanan kurallar" metni EN/DE
+     güncellendi, migration yok. `forum+bibliometrics` 139/139.
    - [ ] B2-B4 (bkz. plan dosyası §4)
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
@@ -71,6 +81,21 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(29 Ekim 2026) Bibliometri Grup B / B1-4 sırasında çıkan yan bulgu:
+  zeyrek'in Türkçe lemmatization'ı lokal dev ortamında sessizce başarısız
+  oluyor — araştırılmadı.** `bibliometrics/services/analyzer.py`
+  `lemmatize_word()` içindeki `analyzer.lemmatize(word)` çağrısı NLTK
+  `punkt_tab` (tokenizers/punkt_tab/turkish/) kaynağı eksik olduğu için
+  `LookupError` fırlatıyor; fonksiyon bunu `except Exception: pass` ile
+  yutup kelimeyi değiştirmeden döndürüyor — yani lokal'de anahtar kelime
+  kök indirgemesi (TR için) hiç çalışmıyor olabilir (ör. "kediler" "kedi"ye
+  inmiyor). Production'da (Hetzner) bu NLTK verisinin mevcut olup olmadığı
+  DOĞRULANMADI — eğer orada da eksikse canlı raporlardaki Türkçe anahtar
+  kelime/kelime bulutu analizleri sessizce beklenenden daha az "akıllı"
+  çalışıyor demektir (çoğul/tekil TR kelimeler ayrı sayılabilir). Sıradaki
+  adım: Hetzner'de `docker compose exec web python -c "import nltk;
+  nltk.data.find('tokenizers/punkt_tab/turkish/')"` ile kontrol, eksikse
+  Dockerfile/deploy.sh'a `nltk.download('punkt_tab')` eklenmesi.
 - [ ] **(29 Ekim 2026) Tarama araçlarının AI özet paragrafı DE/EN'de Türkçe
   kalıyor — araştırılmadı, sıraya alındı.** Kullanıcı Semantic Scholar
   aracında (muhtemelen diğer tarama araçlarında da) hem DE hem EN arayüzde

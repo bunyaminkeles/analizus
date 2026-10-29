@@ -3221,8 +3221,18 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   OpenAlex authorship listesi arasında konumsal eşleme güvenilir değil (isim
   benzerliğiyle eşleme gerekir — B2'nin "homonym çözümü" işi). 7 yeni pytest,
   rapor kısıtlar metni EN/DE güncellendi, migration yok.
-  `forum+bibliometrics` 136/136 geçti. Sırada: B1-4 (anahtar kelime
-  normalizasyonu).
+  `forum+bibliometrics` 136/136 geçti.
+  **B1-4 TAMAMLANDI (aynı gün, dev'de) — B1 (Veri kalitesi) TAMAMEN BİTTİ:**
+  Anahtar kelime normalizasyonu — `normalize_keywords`'ta tire/boşluk artık
+  eşdeğer ("COVID-19" ~ "COVID 19"), TR lemmatization kelimeyi değiştirmediyse
+  basit bir çoğul→tekil kuralı (`_simple_depluralize`) devreye giriyor
+  (cats→cat, boxes→box, studies→study). **Yan bulgu (kapsam dışı, todo'ya
+  yazıldı):** lokal dev'de zeyrek'in TR lemmatization'ı NLTK `punkt_tab`
+  kaynağı eksik olduğu için sessizce başarısız oluyor — prod'da doğrulanmadı.
+  4 yeni pytest, rapor metni EN/DE güncellendi, migration yok.
+  `forum+bibliometrics` 139/139 geçti. **Sırada Faz B2** (bilim haritalama —
+  Bradford kanunu, anahtar kelime eş-oluşum kümeleri, tematik harita, atıf
+  ağları; bkz. `bibliometri_durum_ve_gelistirme_prompt.md` §4).
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

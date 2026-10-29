@@ -56,17 +56,32 @@ def lemmatize_word(word: str) -> str:
         pass
     return word
 
+def _simple_depluralize(word: str) -> str:
+    """Zeyrek'in tanıyamadığı (muhtemelen yabancı dil, ör. İngilizce) tek kelimeler için
+    basit çoğul→tekil kuralı (B1-4) — kusursuz değil, pragmatik bir sezgisel kural
+    (anahtar kelime normalizasyonunun geri kalanıyla aynı düzey)."""
+    if len(word) > 4 and word.endswith('ies'):
+        return word[:-3] + 'y'
+    if len(word) > 4 and word.endswith(('ses', 'xes', 'zes', 'ches', 'shes')):
+        return word[:-2]
+    if len(word) > 3 and word.endswith('s') and not word.endswith('ss'):
+        return word[:-1]
+    return word
+
+
 def normalize_keywords(keywords: list[str]) -> list[str]:
     """
     Keyword listesini normalize eder:
+    - Küçük harf, tire/boşluk farkını yok say (B1-4: "COVID-19" ~ "COVID 19")
     - Stopword filtrele
-    - Tek kelime ise lemmatize et
+    - Tek kelime ise Türkçe lemmatize et; başarısızsa basit çoğul→tekil kuralı dene (B1-4)
     - Çok kelimeli ifadeleri olduğu gibi bırak (makine öğrenmesi vb.)
     """
     stopwords = _get_tr_stopwords()
     result = []
     for kw in keywords:
-        kw = kw.strip().lower()
+        kw = kw.strip().lower().replace('-', ' ')
+        kw = re.sub(r'\s+', ' ', kw).strip()
         if not kw or len(kw) < 2:
             continue
         if kw in stopwords:
@@ -75,7 +90,10 @@ def normalize_keywords(keywords: list[str]) -> list[str]:
         if ' ' in kw:
             result.append(kw)
         else:
-            result.append(lemmatize_word(kw))
+            lemma = lemmatize_word(kw)
+            if lemma == kw:
+                lemma = _simple_depluralize(kw)
+            result.append(lemma)
     return result
 
 def normalize_abstract_words(abstract: str) -> list[str]:

@@ -143,8 +143,10 @@ def _rules(source, last_year, stats=None):
                 'Araştırma Boşluğu Haritası) yalnız tamamlanmış yılları ({year} ve öncesi) kullanır; '
                 'içinde bulunulan yıl eksik olduğundan dahil edilmedi. Yayın olmayan yıllar 0 sayıldı.'
                 ).format(year=last_year),
-        gettext('Anahtar kelimeler küçük harfe çevrildi ve anlamsız sözcükler çıkarıldı; tek sözcüklü '
-                'Türkçe kelimeler kök biçimine indirildi, çok sözcüklü ifadeler olduğu gibi kullanıldı. '
+        gettext('Anahtar kelimeler küçük harfe çevrildi, tire ile boşluk aynı sayıldı (ör. "COVID-19" ve '
+                '"COVID 19" aynı anahtar kelime) ve anlamsız sözcükler çıkarıldı; tek sözcüklü Türkçe '
+                'kelimeler kök biçimine indirildi, kök bulunamayan tek sözcükler basit bir çoğul→tekil '
+                'kuralıyla (ör. "cats"→"cat") sadeleştirildi, çok sözcüklü ifadeler olduğu gibi kullanıldı. '
                 'Kelime bulutunda özetlerdeki en az 4 harfli sözcükler de kullanıldı.'),
     ]
     if source.get('kind') == 'openalex':

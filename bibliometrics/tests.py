@@ -23,7 +23,10 @@ from bibliometrics.services.analyzer import (
     top_authors,
     lotka_law,
     author_collaboration,
+    normalize_keywords,
+    _simple_depluralize,
 )
+import bibliometrics.services.analyzer as analyzer_module
 from bibliometrics.services.report_notes import build_report_notes
 from bibliometrics.services.parser import (
     parse_openalex_txt, parse_pubmed_txt, detect_format, parse_file,
@@ -429,3 +432,23 @@ def test_author_collaboration_merges_variants_into_one_node():
     ax = fig.axes[0]
     node_collection = max(ax.collections, key=lambda c: c.get_offsets().shape[0])
     assert node_collection.get_offsets().shape[0] == 3  # Smith (birleşik) + Kaya + Demir
+
+
+def test_simple_depluralize_basic_rules():
+    assert _simple_depluralize('cats') == 'cat'
+    assert _simple_depluralize('boxes') == 'box'
+    assert _simple_depluralize('studies') == 'study'
+    assert _simple_depluralize('glass') == 'glass'  # çift 's' — dokunulmaz
+    assert _simple_depluralize('bus') == 'bus'  # çok kısa — dokunulmaz
+
+
+def test_normalize_keywords_hyphen_and_space_are_equivalent():
+    """B1-4: 'COVID-19' ve 'COVID 19' aynı anahtar kelimeye normalize edilmeli."""
+    assert normalize_keywords(['COVID-19']) == normalize_keywords(['COVID 19'])
+
+
+def test_normalize_keywords_falls_back_to_depluralize_when_lemmatization_unchanged(monkeypatch):
+    """TR lemmatization kelimeyi değiştirmediyse (muhtemelen yabancı kelime) basit
+    çoğul→tekil kuralı devreye girer (B1-4)."""
+    monkeypatch.setattr(analyzer_module, 'lemmatize_word', lambda w: w)
+    assert normalize_keywords(['cats']) == ['cat']
