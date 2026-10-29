@@ -60,6 +60,9 @@ class BibliometricJob(models.Model):
 
     demo_pdf_url = models.URLField(max_length=500, blank=True, default='', verbose_name='Demo PDF URL (S3)')
     full_pdf_url = models.URLField(max_length=500, blank=True, default='', verbose_name='Tam Rapor PDF URL (S3)')
+    clean_data_xlsx_url = models.URLField(max_length=500, blank=True, default='', verbose_name='Temiz Veri XLSX URL (S3)')
+    clean_data_csv_url = models.URLField(max_length=500, blank=True, default='', verbose_name='Temiz Veri CSV URL (S3)')
+    vosviewer_export_url = models.URLField(max_length=500, blank=True, default='', verbose_name='VOSviewer Export ZIP URL (S3)')
 
     demo_email_sent = models.BooleanField(default=False)
 
@@ -82,16 +85,22 @@ class BibliometricJob(models.Model):
         self.status = 'running'
         self.save(update_fields=['status'])
 
-    def mark_completed(self, total_records, file_format, demo_pdf_url='', full_pdf_url=''):
+    def mark_completed(self, total_records, file_format, demo_pdf_url='', full_pdf_url='',
+                       clean_data_xlsx_url='', clean_data_csv_url='', vosviewer_export_url=''):
         self.status = 'completed'
         self.total_records = total_records
         self.file_format = file_format
         self.demo_pdf_url = demo_pdf_url
         self.full_pdf_url = full_pdf_url
+        self.clean_data_xlsx_url = clean_data_xlsx_url
+        self.clean_data_csv_url = clean_data_csv_url
+        self.vosviewer_export_url = vosviewer_export_url
         self.completed_at = timezone.now()
         self.save(update_fields=[
             'status', 'total_records', 'file_format',
-            'demo_pdf_url', 'full_pdf_url', 'completed_at',
+            'demo_pdf_url', 'full_pdf_url',
+            'clean_data_xlsx_url', 'clean_data_csv_url',
+            'vosviewer_export_url', 'completed_at',
         ])
 
     def mark_failed(self, error_msg):

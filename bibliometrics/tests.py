@@ -4,6 +4,9 @@ Kapsam: yıl ekseni tam sayı tick'leri (A5), kısa dönem uyarısı (A6),
 OpenAlex/PubMed TXT yeniden-yükleme (A7), demo CTA dil ayrımı (A8/A9),
 rapor dili seçimi (A4).
 """
+import csv
+import io
+
 import matplotlib
 matplotlib.use('Agg')
 
@@ -519,6 +522,35 @@ def test_bradford_law_figure_table_matches_zone_totals():
     assert cells[(1, 2)].get_text().get_text() == f'{totals[0]:,}'
 
 
+def test_bradford_law_caps_shown_journals_for_large_datasets():
+    """Canlı rapor hatası (ekran görüntüsüyle bildirildi): Bölge 1+2'de çok
+    sayıda dergi olduğunda (büyük/gerçek veri setleri) sabit genişlik (13")
+    + sınırsız büyüyen yükseklik (ör. 13x32) aşırı dar/uzun bir görüntü
+    üretip PDF'e sığdırılınca genişliğin yarısından fazlası boş kalıyordu.
+    Artık en fazla 40 dergi gösterilir, figsize buna göre sınırlı kalır."""
+    counts = {}
+    for i in range(5):
+        counts[f'Cekirdek {i}'] = 80 - i * 8
+    for i in range(300):
+        counts[f'Dergi {i}'] = max(1, 15 - i // 10)
+    records = _journal_records(counts)
+
+    zones, _ = bradford_zones(records)
+    assert len(zones[0]) + len(zones[1]) > 40  # senaryo gerçekten kırpma gerektiriyor
+
+    fig = bradford_law(records)
+    assert fig is not None
+    w, h = fig.get_size_inches()
+    assert h <= 19  # eskiden 70+ tane dergiyle 0.45 çarpanı ~32"ye çıkıyordu
+    assert len(fig.axes[0].patches) == 40  # tam olarak kırpma sınırı kadar çubuk
+
+    # Sağ paneldeki tablo, kırpılan kısımdan BAĞIMSIZ tam Bölge sayılarını göstermeli
+    table = fig.axes[1].tables[0]
+    cells = table.get_celld()
+    assert cells[(1, 1)].get_text().get_text() == str(len(zones[0]))
+    assert cells[(2, 1)].get_text().get_text() == str(len(zones[1]))
+
+
 _KEYWORD_TOPICS = {
     'A': ['machine learning', 'deep learning', 'neural network', 'classification'],
     'B': ['covid-19', 'public health', 'pandemic', 'vaccination'],
@@ -872,3 +904,282 @@ def test_topic_modeling_trend_single_year_returns_none():
     for r in records:
         r['year'] = 2020
     assert topic_modeling_trend(records) is None
+
+
+# ─────────────────────────── B3-1: Temiz Veri İndirme (XLSX/CSV) ───────────────────────────
+
+def _clean_export_records():
+    return [
+        {'title': 'Başlık Bir', 'authors': ['Ahmet Yılmaz', 'Mehmet Demir'], 'year': 2021,
+         'journal': 'Dergi A', 'keywords': ['makine öğrenmesi', 'yapay zeka'], 'abstract': 'Özet metni.',
+         'cited_by': 12, 'doi': '10.1/a', 'pub_type': 'article', 'country': 'TR', 'institution': 'ODTÜ',
+         'openalex_id': 'https://openalex.org/W1', 'referenced_works': ['https://openalex.org/W9'],
+         'author_ids': ['https://openalex.org/A1']},
+        {'title': 'İkinci Başlık', 'authors': [], 'year': None, 'journal': '', 'keywords': [],
+         'abstract': '', 'cited_by': 0, 'doi': '', 'pub_type': '', 'country': '', 'institution': '',
+         'openalex_id': '', 'referenced_works': [], 'author_ids': []},
+    ]
+
+
+def test_build_clean_xlsx_has_expected_rows_and_columns():
+    import openpyxl
+    from bibliometrics.services.export_builder import build_clean_xlsx
+
+    data = build_clean_xlsx(_clean_export_records())
+    wb = openpyxl.load_workbook(io.BytesIO(data))
+    ws = wb.active
+
+    header = [c.value for c in ws[1]]
+    assert header == [
+        'Başlık', 'Yazarlar', 'Yıl', 'Dergi', 'Anahtar Kelimeler', 'Özet',
+        'Atıf Sayısı', 'DOI', 'Yayın Türü', 'Ülke', 'Kurum', 'OpenAlex ID',
+    ]
+    assert ws.max_row == 3  # başlık + 2 kayıt
+
+    row1 = [c.value for c in ws[2]]
+    assert row1[0] == 'Başlık Bir'
+    assert row1[1] == 'Ahmet Yılmaz; Mehmet Demir'
+    assert row1[4] == 'makine öğrenmesi; yapay zeka'
+    assert row1[10] == 'ODTÜ'
+    assert row1[11] == 'https://openalex.org/W1'
+
+    row2 = [c.value for c in ws[3]]
+    # openpyxl boş string'i hücreye None olarak geri okur
+    assert row2[1] in (None, '')
+    assert row2[4] in (None, '')
+
+
+def test_build_clean_xlsx_empty_records_has_only_header():
+    import openpyxl
+    from bibliometrics.services.export_builder import build_clean_xlsx
+
+    wb = openpyxl.load_workbook(io.BytesIO(build_clean_xlsx([])))
+    assert wb.active.max_row == 1
+
+
+def test_build_clean_csv_has_bom_and_expected_rows():
+    from bibliometrics.services.export_builder import build_clean_csv
+
+    data = build_clean_csv(_clean_export_records())
+    assert data.startswith(b'\xef\xbb\xbf')
+
+    text = data.decode('utf-8-sig')
+    rows = list(csv.reader(io.StringIO(text)))
+    assert len(rows) == 3  # başlık + 2 kayıt
+    assert rows[0][0] == 'Başlık'
+    assert rows[1][1] == 'Ahmet Yılmaz; Mehmet Demir'
+    assert rows[2][0] == 'İkinci Başlık'
+
+
+def test_upload_clean_data_returns_both_urls(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    uploaded = {}
+
+    def fake_upload(data, key, content_type):
+        uploaded[key] = content_type
+        return f'https://s3.example.com/{key}'
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    xlsx_url, csv_url = job_runner._upload_clean_data(_clean_export_records(), 'job123')
+    assert xlsx_url == 'https://s3.example.com/bibliometrics/clean_data/job123.xlsx'
+    assert csv_url == 'https://s3.example.com/bibliometrics/clean_data/job123.csv'
+    assert uploaded['bibliometrics/clean_data/job123.xlsx'] == (
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    assert uploaded['bibliometrics/clean_data/job123.csv'] == 'text/csv'
+
+
+def test_upload_clean_data_tolerates_upload_failure(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    def fake_upload(data, key, content_type):
+        raise RuntimeError('S3 kapalı')
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    xlsx_url, csv_url = job_runner._upload_clean_data(_clean_export_records(), 'job456')
+    assert xlsx_url == '' and csv_url == ''
+
+
+# ─────────────────────────── B3-2: VOSviewer Export ───────────────────────────
+
+def _vosviewer_records():
+    """Yazar/ülke/anahtar kelime/referans çiftleri üzerinde en az 1 bağlantı
+    üretecek 2 kayıt — her 4 ağ fonksiyonu için de en az bir kenar."""
+    base = {
+        'authors': ['Ahmet Yılmaz', 'Mehmet Demir'],
+        'country': 'TR; US',
+        'keywords': ['makine öğrenmesi', 'yapay zeka'],
+        'referenced_works': ['https://openalex.org/W1', 'https://openalex.org/W2'],
+    }
+    return [
+        {**base, 'title': 'Birinci Makale', 'year': 2021},
+        {**base, 'title': 'İkinci Makale', 'year': 2022},
+    ]
+
+
+def test_graph_to_files_produces_expected_map_and_network_columns():
+    import networkx as nx
+    from bibliometrics.services.vosviewer_export import _graph_to_files
+
+    G = nx.Graph()
+    G.add_edge('Kelime A', 'Kelime B, Sanayi', weight=3)
+
+    map_text, network_text = _graph_to_files(G)
+
+    map_lines = map_text.strip('\n').split('\n')
+    assert map_lines[0] == 'id\tlabel\tweight<Occurrences>'
+    assert len(map_lines) == 3  # başlık + 2 düğüm
+    # virgüllü etiket çift tırnağa alınmış olmalı
+    assert any('"Kelime B, Sanayi"' in line for line in map_lines[1:])
+
+    network_lines = network_text.strip('\n').split('\n')
+    assert len(network_lines) == 1
+    id1, id2, w = network_lines[0].split('\t')
+    assert w == '3'
+
+
+def test_build_vosviewer_zip_contains_all_four_networks():
+    import zipfile
+    import io
+    from bibliometrics.services.vosviewer_export import build_vosviewer_zip
+
+    data = build_vosviewer_zip(_vosviewer_records())
+    assert data is not None
+
+    zf = zipfile.ZipFile(io.BytesIO(data))
+    names = set(zf.namelist())
+    assert 'OKUBENI.txt' in names
+    for prefix in ('anahtar_kelime_es_olusumu', 'yazar_isbirligi',
+                   'ulke_isbirligi', 'bibliyografik_eslesme'):
+        assert f'{prefix}_map.txt' in names
+        assert f'{prefix}_network.txt' in names
+
+
+def test_build_vosviewer_zip_returns_none_without_any_network_data():
+    from bibliometrics.services.vosviewer_export import build_vosviewer_zip
+
+    # Tek yazarlı, ülkesiz, anahtar kelimesiz, referanssız kayıtlar — hiçbir ağ kurulamaz
+    records = [{'authors': ['Tek Yazar'], 'title': f'Makale {i}', 'year': 2020} for i in range(5)]
+    assert build_vosviewer_zip(records) is None
+
+
+def test_upload_vosviewer_export_returns_url(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    uploaded = {}
+
+    def fake_upload(data, key, content_type):
+        uploaded[key] = content_type
+        return f'https://s3.example.com/{key}'
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    url = job_runner._upload_vosviewer_export(_vosviewer_records(), 'job789')
+    assert url == 'https://s3.example.com/bibliometrics/vosviewer/job789.zip'
+    assert uploaded['bibliometrics/vosviewer/job789.zip'] == 'application/zip'
+
+
+def test_upload_vosviewer_export_returns_empty_without_data(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    called = []
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', lambda *a, **k: called.append(1))
+
+    records = [{'authors': ['Tek Yazar'], 'title': f'Makale {i}', 'year': 2020} for i in range(5)]
+    url = job_runner._upload_vosviewer_export(records, 'job000')
+    assert url == ''
+    assert not called
+
+
+def test_upload_vosviewer_export_tolerates_upload_failure(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    def fake_upload(data, key, content_type):
+        raise RuntimeError('S3 kapalı')
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    url = job_runner._upload_vosviewer_export(_vosviewer_records(), 'job111')
+    assert url == ''
+
+
+def test_author_collaboration_graph_matches_chart_function_data():
+    from bibliometrics.services.analyzer import _author_collaboration_graph, author_collaboration
+
+    records = _vosviewer_records()
+    G = _author_collaboration_graph(records, min_collab=2)
+    assert G is not None
+    assert G.number_of_nodes() == 2 and G.number_of_edges() == 1
+    assert author_collaboration(records, min_collab=2) is not None
+
+
+def test_country_collaboration_graph_has_expected_edge():
+    from bibliometrics.services.analyzer import _country_collaboration_graph
+
+    G = _country_collaboration_graph(_vosviewer_records(), min_collab=2)
+    assert G is not None
+    assert G.number_of_nodes() == 2 and G.number_of_edges() == 1
+
+
+def test_bibliographic_coupling_graph_has_expected_edge():
+    from bibliometrics.services.analyzer import _bibliographic_coupling_graph
+
+    G = _bibliographic_coupling_graph(_vosviewer_records(), min_shared=2)
+    assert G is not None
+    assert G.number_of_nodes() == 2 and G.number_of_edges() == 1
+
+
+# ─────────────────────────── Topic Map — görsel kalite düzeltmesi ───────────────────────────
+# tasks/todo.md "[ÖNCELİKLİ] Topic Map görsel kalite sorunu": sabit figsize=(14,8) dikey
+# (A4) sayfada az küme olduğunda devasa boş alan bırakıyordu + uzun anahtar kelime
+# öbekleri (özetten çıkarılmış) balonun dışına taşıyordu. Bu testler regresyonu önler.
+
+def _topic_map_records(n_clusters: int):
+    pool = [
+        ['dijital pazarlama stratejileri', 'sosyal medya reklamciligi',
+         'marka sadakati olusturma', 'tuketici satin alma davranisi'],
+        ['makine ogrenmesi algoritmalari', 'derin sinir aglari',
+         'goruntu isleme teknikleri', 'yapay zeka etik sorunlari'],
+        ['iklim degisikligi etkileri', 'surdurulebilir kalkinma hedefleri',
+         'karbon ayak izi azaltma', 'yenilenebilir enerji kaynaklari'],
+        ['psikolojik dayaniklilik gelistirme', 'stres yonetimi teknikleri',
+         'ruh sagligi farkindaligi', 'bilissel davranissal terapi'],
+        ['egitim teknolojileri entegrasyonu', 'uzaktan ogretim yontemleri',
+         'ogrenci basarisi degerlendirme', 'dijital okuryazarlik becerileri'],
+    ]
+    records = []
+    for kws in pool[:n_clusters]:
+        for j in range(15):
+            records.append({'keywords': kws, 'year': 2019 + (j % 4)})
+    return records
+
+
+def test_topic_map_figure_aspect_not_excessively_wide_for_few_clusters():
+    """Eski sabit (14, 8) figsize — en/boy oranı 1.75 — dikey A4 sayfada yarıdan
+    fazla boş bırakıyordu. Az kümede bile artık makul bir en/boy oranı (≤1.5,
+    tek küme hariç — o zaten minimal/kaçınılmaz bir durum) olmalı."""
+    from bibliometrics.services.analyzer import topic_map
+    for n in (2, 3, 4, 5):
+        fig = topic_map(_topic_map_records(n), n_topics=n)
+        assert fig is not None
+        w, h = fig.get_size_inches()
+        assert w / h <= 1.5, f'n={n} için en/boy oranı çok geniş: {w}x{h}'
+
+
+def test_topic_map_figsize_scales_with_cluster_count():
+    """figsize artık sabit değil — küme (satır/sütun) sayısına göre değişmeli
+    (14x8 sabitine geri dönüş regresyonunu yakalar)."""
+    from bibliometrics.services.analyzer import topic_map
+    fig_few = topic_map(_topic_map_records(2), n_topics=2)
+    fig_many = topic_map(_topic_map_records(5), n_topics=5)
+    assert fig_few.get_size_inches().tolist() != fig_many.get_size_inches().tolist()
+    assert tuple(fig_few.get_size_inches()) != (14, 8)
+
+
+def test_topic_map_eight_clusters_still_produces_figure():
+    """Varsayılan n_topics=8 senaryosu (B2-2'den beri var olan davranış) regresyon olmadan çalışmalı."""
+    from bibliometrics.services.analyzer import topic_map
+    fig = topic_map(_topic_map_records(5), n_topics=8)
+    assert fig is not None

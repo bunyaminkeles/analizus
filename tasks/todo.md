@@ -7,36 +7,25 @@
 B1-4 anahtar kelime normalizasyonu; B2-1 Bradford Kanunu, B2-2 Louvain
 kümeleri + tablo, B2-3 Tematik Harita, B2-4 Tematik Evrim, B2-5 Üç Alan
 Grafiği, B2-6 SCP/MCP, B2-7 Bibliyografik Eşleşme + Yerel/Küresel Atıf,
-B2-8 Konu Modelleme NMF). B1..B2-7 kullanıcı isteğiyle `--no-ff` ile
-`main`'e merge edilip push edildi (Hetzner deploy tetiklendi, merge öncesi
-production'da aktif kullanıcı kontrolü yapıldı, boştu); **B2-8 henüz yalnız
+B2-8 Konu Modelleme NMF). B1+B2 (B1-1..B2-8 tamamı) kullanıcı isteğiyle
+`--no-ff` ile `main`'e merge edilip push edildi (Hetzner deploy tetiklendi,
+merge öncesi production'da aktif kullanıcı kontrolü yapıldı). İstatistik
+araç sayısı 17→26. **B3 (Çıktılar) başladı: B3-1 (Temiz Veri Seti İndirme
+XLSX/CSV) + B3-2 (VOSviewer map+network export) TAMAMLANDI, henüz yalnız
 `dev`'de, main'e merge edilmedi** — kullanıcı "merge et" demeden
-dokunulmayacak. İstatistik araç sayısı 17→26. **Yeni oturum buradan devam
-etsin: sıradaki B3, sonra B4** (bkz. madde 3 altındaki detaylı liste ve
+dokunulmayacak. **Yeni oturum buradan devam etsin: sıradaki B3-3 (hazır
+Yöntem metni + PRISMA diyagramı), sonra B3-4, sonra B4** (B3-2b — Biblioshiny
+WoS-plaintext export — R/bibliometrix ile test edilebildiğinde ayrı ele
+alınacak; bkz. madde 2 altındaki detaylı liste ve
 `bibliometri_durum_ve_gelistirme_prompt.md` §4).
-Ayrıca aşağıdaki 2 ayrı
+Ayrıca aşağıdaki 1 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
-1. **[ÖNCELİKLİ] Araştırma Konusu Kümeleri (Topic Map) grafiği görsel
-   kalite sorunu — henüz incelenmedi.** Kullanıcı canlı PDF'te gördü: balon
-   grafikte devasa boş alan (sayfanın çoğu boş) + balonların içindeki
-   anahtar kelime etiketleri okunamıyor/üst üste biniyor ("çok kötü",
-   kullanıcının kendi ifadesi; `diğerleri yine güzel` — yalnız bu grafik
-   sorunlu). Kök neden adayı (henüz doğrulanmadı): `bibliometrics/services/
-   analyzer.py` `topic_map()` — (a) `figsize=(14,8)` sabit, satır sayısı
-   azken (ör. 1 satır/4 küme) devasa boş dikey alan bırakıyor — `rows`
-   değişkenine göre dinamik yükseklik gerekir; (b) balon etiketi
-   `'\n'.join(topic['keywords'][:5])` — bu veri setinde "anahtar kelime"ler
-   özetten çıkarılmış UZUN KELİME ÖBEKLERİ olabilir (tek kısa terim değil),
-   fontsize=7.5 ile küçük balona sığmıyor — etiket kısaltma/elips veya
-   balon başına daha az/daha kısa kelime gerekebilir. İlk adım: hangi job'ın
-   PDF'i olduğunu (OpenAlex köprüsü mü, CSV mi) ve o job'ın gerçek
-   `keywords` alanlarının içeriğini incelemek.
-2. **DE/EN tarama araçlarının otomatik özet paragrafı Türkçe kalıyor** —
+1. **DE/EN tarama araçlarının otomatik özet paragrafı Türkçe kalıyor** —
    kaynağı bulunamadı (`claude_service.generate_summary` değil, semanticscholar
    job_runner/views'ta `generate_summary` çağrısı yok). Detay: aşağıdaki
    "AÇIK İŞLER" listesinde 29 Ekim 2026 maddesi.
-3. **Grup B** (bibliometrix/VOSviewer kalitesinde yol haritası — B1 veri
+2. **Grup B** (bibliometrix/VOSviewer kalitesinde yol haritası — B1 veri
    kalitesi → B2 bilim haritalama → B3 çıktılar → B4 ürün/huni), plan
    dosyası: `bibliometri_durum_ve_gelistirme_prompt.md` §4.
    - [x] **B1-1 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):**
@@ -246,7 +235,75 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      requirements'ta), migration yok. `forum+bibliometrics` 173/173.
      **Grup B'nin B1+B2 bölümü artık TAMAMEN BİTTİ (8/8); main'e merge
      henüz yapılmadı (kullanıcı istemedi).**
-   - [ ] B3-B4 (bkz. plan dosyası §4)
+   - [x] **B3-1 TAMAMLANDI (29 Ekim 2026, dev'de):** Temiz Veri Seti İndirme
+     (XLSX+CSV, herkese ücretsiz — kullanıcı kararı). Yeni
+     `bibliometrics/services/export_builder.py`; `BibliometricJob.
+     clean_data_xlsx_url`/`clean_data_csv_url` (migration `0008`);
+     `job_runner.py` her iki worker'a `_upload_clean_data()` eklendi (hata
+     toleranslı); `cleanup_expired_bibliometrics_s3_files()` yeni prefix;
+     `job_status` JSON + `landing.html` 3. kart + `order.html` blok. 5 yeni
+     pytest + gerçek job ile uçtan uca S3 doğrulaması (test nesneleri
+     sonra silindi). EN/DE çevrildi (polib ile 2 fuzzy düzeltildi).
+     `forum+bibliometrics` 178/178. Detay: `analizus.md` §27 (29 Ekim B3-1).
+   - [x] **B3-2 TAMAMLANDI (29 Ekim 2026, dev'de):** VOSviewer Uyumlu Dışa
+     Aktarım. Format resmi VOSviewer dokümanından doğrulandı (WebFetch);
+     x/y/cluster bilinçli olarak gönderilmiyor (VOSviewer kendi yerleşim/
+     kümelemesini çalıştırsın). 4 ağ (anahtar kelime eş-oluşumu, yazar
+     işbirliği, ülke işbirliği, bibliyografik eşleşme) — veri yoksa o ağ
+     atlanır. Refactor: `author_collaboration()`/`country_collaboration()`/
+     `bibliographic_coupling()` artık `_*_graph()` yardımcılarını çağırıyor
+     (davranış aynı, G dışa açıldı). **Refactor sırasında gerçek regresyon
+     bulundu+düzeltildi:** 2 fonksiyonda `import networkx as nx` yanlışlıkla
+     eksik kalmıştı (`NameError`) — `country_collaboration()`'ın hiç testi
+     olmadığı için yalnız `bibliographic_coupling` testi yakaladı. Yeni
+     `bibliometrics/services/vosviewer_export.py` (stdlib `zipfile`);
+     `BibliometricJob.vosviewer_export_url` (migration `0009`);
+     `_upload_vosviewer_export()` (B3-1 deseniyle aynı, hata toleranslı);
+     B3-1'in 3. kartına üçüncü buton. 9 yeni pytest + gerçek job uçtan uca
+     S3 doğrulaması. EN/DE çevrildi. `forum+bibliometrics` 187/187. **Kullanıcı
+     kararı: Biblioshiny (bibliometrix) WoS-plaintext export bu turda
+     YAPILMADI** (R/bibliometrix burada kurulu değil, gerçek yazılımla
+     doğrulanamıyor) — ayrı B3-2b olarak bekliyor. Detay: `analizus.md` §27
+     (29 Ekim B3-2).
+   - [ ] B3-2b (Biblioshiny/bibliometrix WoS-plaintext export) — R ile test
+     edilebildiğinde ele alınacak, ayrı onay/tur.
+   - [ ] B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı)
+   - [ ] B3-4 (grafik başına otomatik yorum cümlesi, kural tabanlı)
+   - [ ] B4 (ürün/huni) — bkz. plan dosyası §4
+   - [x] **Topic Map görsel kalite sorunu DÜZELTİLDİ (29 Ekim 2026, dev'de)**
+     (Grup B dışı, ayrı açık işti). Kök neden sentetik veriyle render edilip
+     doğrulandı: `topic_map()`'te sabit `figsize=(14,8)` (en/boy 1.75, geniş)
+     dikey A4 sayfa içeriğiyle (en/boy ~0.79) uyuşmuyordu — `pdf_builder.
+     _draw_figure_page()`'in en-boy-koruyan `drawImage` ölçeklemesi az küme/
+     satırda (ör. 1 satır) görüntünün dikey ~%55'ini boş bırakıyordu
+     (matematiksel olarak doğrulandı); ayrıca sabit fontsize=7.5 + kırpılmamış
+     uzun anahtar kelime öbekleri balon sınırlarını taşıyordu. Düzeltme:
+     `cols`/`rows`'a göre dinamik `figsize` (bradford_law()'daki dinamik
+     yükseklik deseniyle tutarlı) + `cols` artık `sqrt`'e dayalı (2-3 kümede
+     bile "tek geniş satır" yerine kareye yakın/dikey istiflenmiş düzen,
+     ≤2 kümede dikey tek sütun) + anahtar kelime etiketleri 11 karaktere
+     kırpılıp (`…` ile) küçültülmüş fontta (6.5) gösteriliyor. 1, 2, 3, 4,
+     5, 8 küme senaryolarıyla PNG render edilip görsel olarak doğrulandı
+     (hiçbiri taşmıyor, boşluk makul). 3 yeni pytest (en/boy oranı sınırı,
+     figsize artık sabit değil regresyonu, 8-küme senaryosu hâlâ çalışıyor).
+     `forum+bibliometrics` 190/190. Ayrı bir refactor/kaldırma gerekmedi —
+     sorun tamamen çözülebildi.
+   - [x] **Bradford Kanunu grafiği aynı sınıftan (ters yönde) bug DÜZELTİLDİ
+     (29 Ekim 2026, dev'de)** — kullanıcı canlı PDF'ten ekran görüntüsü
+     paylaştı ("Bradford's Law — Core Journal Zones" sayfası ekranın
+     ortasında okunamaz dar/ince bir şerit). Kök neden: `fig_height =
+     max(8, len(shown) * 0.45)` üst sınırsızdı — Bölge 1+2'de çok sayıda
+     dergi olan büyük veri setlerinde (sentetik olarak 1670 kayıt/305 dergi
+     ile yeniden üretildi, Bölge 1+2'de 72 dergi) `figsize=(13, 32.4)` gibi
+     aşırı dar/uzun bir görüntü üretip PDF'e sığdırılınca genişliğin
+     ~%49'u boş kalıyordu (hesapla doğrulandı — ekran görüntüsüyle birebir
+     eşleşti). Düzeltme: diğer analizlerdeki "top N" kırpma kalıbıyla
+     tutarlı şekilde en fazla **40 dergi** gösteriliyor (kırpılırsa başlığa
+     not eklenir), sağ paneldeki özet tablo kırpmadan bağımsız tam sayıları
+     gösterir. Aynı sentetik veriyle yeniden render edilip (13x32.4→13x18)
+     görsel doğrulandı. 1 yeni pytest + 4 mevcut test regresyon olmadan
+     geçti. EN/DE çevrildi (ayrıca ilgisiz bir fuzzy çeviri de fark edilip
+     düzeltildi). `forum+bibliometrics` 191/191.
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
 sürebilir (~10 dk'ya kadar), bir dahaki "donmuş gibi görünen" deploy'da

@@ -577,7 +577,9 @@ def top_institutions(records: list[dict], n: int = 10):
 
 # ─────────────────────────── 7. Yazar İşbirliği Ağı ───────────────────────────
 
-def author_collaboration(records: list[dict], max_authors: int = 35, min_collab: int = 2):
+def _author_collaboration_graph(records: list[dict], max_authors: int = 35, min_collab: int = 2):
+    """`author_collaboration()`'ın graf kurma kısmı (B3-2 — VOSviewer export'unun da
+    kullanabilmesi için çizimden ayrıldı, davranış birebir aynı)."""
     try:
         import networkx as nx
     except ImportError:
@@ -613,6 +615,16 @@ def author_collaboration(records: list[dict], max_authors: int = 35, min_collab:
     if G.number_of_nodes() > max_authors:
         top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_authors]
         G = G.subgraph([n for n, _ in top_nodes]).copy()
+
+    return G
+
+
+def author_collaboration(records: list[dict], max_authors: int = 35, min_collab: int = 2):
+    import networkx as nx
+
+    G = _author_collaboration_graph(records, max_authors, min_collab)
+    if G is None:
+        return None
 
     degrees = dict(G.degree())
     max_deg = max(degrees.values()) if degrees else 1
@@ -1172,7 +1184,10 @@ def keyword_trend(records: list[dict], top_n: int = 8):
 
 # ─────────────────────────── 15. Ülke İşbirliği Ağı ───────────────────────────
 
-def country_collaboration(records: list[dict], min_collab: int = 2, max_countries: int = 30):
+def _country_collaboration_graph(records: list[dict], min_collab: int = 2, max_countries: int = 30):
+    """`country_collaboration()`'ın graf kurma kısmı (B3-2 — VOSviewer export'u için
+    ayrıldı, davranış birebir aynı). Düğümler `_record_countries()`'in döndürdüğü
+    etkin dildeki ülke adı (çizimle aynı — `_country_label()` ISO-2'yi çevirir)."""
     try:
         import networkx as nx
     except ImportError:
@@ -1202,6 +1217,16 @@ def country_collaboration(records: list[dict], min_collab: int = 2, max_countrie
     if G.number_of_nodes() > max_countries:
         top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_countries]
         G = G.subgraph([n for n, _ in top_nodes]).copy()
+
+    return G
+
+
+def country_collaboration(records: list[dict], min_collab: int = 2, max_countries: int = 30):
+    import networkx as nx
+
+    G = _country_collaboration_graph(records, min_collab, max_countries)
+    if G is None:
+        return None
 
     degrees = dict(G.degree())
     max_deg = max(degrees.values()) if degrees else 1
@@ -1459,38 +1484,62 @@ def topic_map(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8)
     if not topic_data:
         return None
 
-    # Bubble chart
-    fig, ax = plt.subplots(figsize=(14, 8))
+    # Bubble chart. Önceki sürümde figsize sabit (14, 8) idi — PDF sayfası dikey
+    # (A4) olduğundan bu geniş/kısa en-boy oranı, az sayıda küme (az satır)
+    # olduğunda sayfanın yarısından fazlasını boş bırakıyordu (bkz. tasks/todo.md
+    # "Topic Map görsel kalite sorunu"). cols düşürülüp (4→3) figsize satır/sütun
+    # sayısına göre hesaplanarak dikey sayfaya daha yakın bir en-boy oranı elde
+    # edilir — bradford_law()'daki dinamik yükseklik deseniyle tutarlı.
+    import math
+    # sqrt tabanlı: az sayıda kümede bile satır sayısını büyütüp daha kareye
+    # yakın bir düzen üretir (ör. 2-3 küme "tek satır, çok geniş" yerine
+    # 2 satıra yayılır) — aksi halde tek satırlı düzenler dikey (A4) sayfada
+    # yine aşırı geniş/kısa görünüp boşluk bırakıyordu.
+    n = len(topic_data)
+    cols = 1 if n <= 2 else min(3, math.ceil(math.sqrt(n)))
+    rows = math.ceil(n / cols)
+
+    unit = 3.3
+    fig_w = max(6.5, cols * unit + 1.2)
+    fig_h = max(3.2, rows * unit + 1.3)
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
     ax.set_facecolor('#f8fafc')
     fig.patch.set_facecolor('white')
 
-    import math
-    cols = min(4, len(topic_data))
-    rows = math.ceil(len(topic_data) / cols)
+    # Balon boyutu dar bir aralıkta tutulur (çok küçük balon = metin taşması,
+    # çok büyük balon = gereksiz boşluk) — önceki sürümde 'size' doğrudan
+    # pub_count ile ölçekleniyordu ve uzun anahtar kelime öbekleriyle (özetten
+    # çıkarılmış olabilir, tek kısa terim olmayabilir) balonun dışına taşıyordu.
+    max_pub = max((t['size'] for t in topic_data), default=1) or 1
 
+    def _truncate(kw: str, max_len: int = 11) -> str:
+        return kw if len(kw) <= max_len else kw[:max_len - 1].rstrip() + '…'
+
+    pad = 0.35
     for idx, topic in enumerate(topic_data):
         col = idx % cols
         row = idx // cols
-        x = col * 3.5 + 1.5
-        y = (rows - row) * 2.5
+        x = col * unit + unit / 2
+        y = (rows - 1 - row + 0.5) * unit
 
-        size = 800 + topic['size'] * 15
+        size = 2400 + 900 * (topic['size'] / max_pub)
         color = PALETTE[idx % len(PALETTE)]
 
         ax.scatter(x, y, s=size, color=color, alpha=0.75, zorder=2,
                    edgecolors='white', linewidths=2)
 
-        label = '\n'.join(topic['keywords'][:5])
+        shown_kws = [_truncate(kw) for kw in topic['keywords'][:4]]
+        label = '\n'.join(shown_kws)
         ax.text(x, y, label, ha='center', va='center',
-                fontsize=7.5, fontweight='bold', color='white',
-                zorder=3, multialignment='center',
+                fontsize=6.5, fontweight='bold', color='white',
+                zorder=3, multialignment='center', linespacing=1.3,
                 bbox=dict(boxstyle='round,pad=0.1', fc='none', ec='none'))
 
-        ax.text(x, y - 1.1, gettext('Küme {n}').format(n=idx + 1) + f'  ({topic["n_kw"]} kw)',
+        ax.text(x, y - unit * 0.4, gettext('Küme {n}').format(n=idx + 1) + f'  ({topic["n_kw"]} kw)',
                 ha='center', va='top', fontsize=8.5, color='#475569')
 
-    ax.set_xlim(0, cols * 3.5 + 0.5)
-    ax.set_ylim(0, (rows + 0.5) * 2.5)
+    ax.set_xlim(0, cols * unit)
+    ax.set_ylim(-pad, rows * unit + pad)
     ax.axis('off')
     ax.set_title(gettext('Araştırma Konusu Kümeleri (Topic Map)'), pad=18)
     fig.tight_layout(pad=2.0)
@@ -1543,10 +1592,22 @@ def bradford_law(records: list[dict]):
 
     # Bölge 1 ve 2 tek tek gösterilir (çekirdeği oluşturan dergiler); Bölge 3
     # genelde çok kalabalık olduğundan yalnız tabloda sayı/toplamla özetlenir.
-    shown = zones[0] + zones[1]
+    # Büyük veri setlerinde (binlerce kayıt, yüzlerce dergi) Bölge 1+2 kendisi de
+    # çok kalabalık olabiliyor — sabit genişlik (13") + satır sayısıyla sınırsız
+    # büyüyen yükseklik aşırı dar/uzun bir görüntü üretip (ör. 13x32) PDF
+    # sayfasına en-boy korunarak sığdırılınca genişliğin yarısından fazlası boş
+    # kalıyordu (gerçek canlı rapor hatası — kullanıcı ekran görüntüsüyle bildirdi,
+    # bkz. tasks/todo.md). Diğer analizlerdeki "top N" kırpma kalıbıyla (ör.
+    # top_authors, max_authors=35) tutarlı şekilde en fazla MAX_SHOWN dergi
+    # gösterilir; Bölge 3 zaten tabloda özetlendiği gibi kırpılan kısım da
+    # tabloda (tam dergi/yayın sayısıyla) hâlâ doğru görünür.
+    MAX_SHOWN = 40
+    shown_all = zones[0] + zones[1]
+    shown = shown_all[:MAX_SHOWN]
+    n_hidden = len(shown_all) - len(shown)
     shown_names = [j[:45] + '…' if len(j) > 45 else j for j, _ in shown]
     shown_counts = [c for _, c in shown]
-    shown_colors = [zone_colors[0]] * len(zones[0]) + [zone_colors[1]] * len(zones[1])
+    shown_colors = ([zone_colors[0]] * len(zones[0]) + [zone_colors[1]] * len(zones[1]))[:MAX_SHOWN]
 
     fig_height = max(8, len(shown) * 0.45)
     fig, (ax1, ax2) = plt.subplots(
@@ -1561,7 +1622,10 @@ def bradford_law(records: list[dict]):
     ax1.set_yticklabels(shown_names, fontsize=9)
     ax1.invert_yaxis()
     ax1.set_xlabel(gettext('Yayın Sayısı'), fontsize=11, labelpad=8)
-    ax1.set_title(gettext('Bölge 1 ve 2 Dergileri'), fontsize=13, fontweight='bold')
+    title = gettext('Bölge 1 ve 2 Dergileri')
+    if n_hidden:
+        title += ' ' + gettext('(ilk {n}, en yüksek yayın sayısına göre)').format(n=MAX_SHOWN)
+    ax1.set_title(title, fontsize=13, fontweight='bold')
     ax1.grid(axis='x', zorder=1)
     _add_hbar_labels(ax1, bars)
     ax1.legend(handles=[mpatches.Patch(color=zone_colors[0], label=zone_labels[0]),
@@ -2125,13 +2189,9 @@ def scp_mcp_chart(records: list[dict], n: int = 10):
 
 # ─────────────────────────── 23. Bibliyografik Eşleşme Ağı ───────────────────────────
 
-def bibliographic_coupling(records: list[dict], min_shared: int = 2, max_nodes: int = 30):
-    """
-    Bibliyografik Eşleşme Ağı (B2-7, bibliometrix 'Bibliographic Coupling' eşdeğeri):
-    iki yayın, aynı eserlere atıf yapıyorsa (referenced_works kesişimi) bağlanır;
-    kenar ağırlığı paylaşılan referans sayısıdır. Yalnız referenced_works dolu
-    kayıtlar (B1-1 OpenAlex zenginleştirmesinden geçmiş, DOI'li) katılır.
-    """
+def _bibliographic_coupling_graph(records: list[dict], min_shared: int = 2, max_nodes: int = 30):
+    """`bibliographic_coupling()`'ın graf kurma kısmı (B3-2 — VOSviewer export'u için
+    ayrıldı, davranış birebir aynı — kısa/benzersiz başlık etiketleri dahil)."""
     try:
         import networkx as nx
     except ImportError:
@@ -2177,6 +2237,22 @@ def bibliographic_coupling(records: list[dict], min_shared: int = 2, max_nodes: 
         G = G.subgraph([n for n, _ in top_nodes]).copy()
         if G.number_of_nodes() == 0:
             return None
+
+    return G
+
+
+def bibliographic_coupling(records: list[dict], min_shared: int = 2, max_nodes: int = 30):
+    """
+    Bibliyografik Eşleşme Ağı (B2-7, bibliometrix 'Bibliographic Coupling' eşdeğeri):
+    iki yayın, aynı eserlere atıf yapıyorsa (referenced_works kesişimi) bağlanır;
+    kenar ağırlığı paylaşılan referans sayısıdır. Yalnız referenced_works dolu
+    kayıtlar (B1-1 OpenAlex zenginleştirmesinden geçmiş, DOI'li) katılır.
+    """
+    import networkx as nx
+
+    G = _bibliographic_coupling_graph(records, min_shared, max_nodes)
+    if G is None:
+        return None
 
     degrees = dict(G.degree())
     max_deg = max(degrees.values()) if degrees else 1

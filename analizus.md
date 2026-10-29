@@ -3262,6 +3262,141 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   sayısını 7+ dosyada elle güncelletiyor — ileride tek kaynağa (`len(analyses)`)
   taşınabilir, ayrı refactor. **Sırada B2-4** (tematik evrim — dönemler
   arası tema akışı; bkz. `bibliometri_durum_ve_gelistirme_prompt.md` §4).
+  **(Not: B2-4..B2-8 — Tematik Evrim, Üç Alan Grafiği, SCP/MCP, Bibliyografik
+  Eşleşme + Yerel/Küresel Atıf, Konu Modelleme NMF — sonraki oturumlarda
+  tamamlandı ve B1+B2 tüm Grup B `main`'e merge edildi; bu girdiye o alt
+  maddelerin ayrıntısı eklenmedi, detay `project_bibliometri_grup_b.md`
+  hafıza kaydında ve `tasks/todo.md`'de.)**
+- **29 Ekim 2026 — Bibliometri Grup B, B3-1 (Temiz Veri Seti İndirme —
+  XLSX/CSV) TAMAMLANDI, `dev`'de.** B3 ("Çıktılar" fazı, `bibliometri_durum_
+  ve_gelistirme_prompt.md` §4) 5 alt maddesinin ilki. Analize giren
+  (tekilleştirilmiş/zenginleştirilmiş) `records` listesi daha önce hiçbir
+  yerde saklanmıyordu — iş bitince bellekten siliniyordu; şimdi demo/tam PDF
+  ile aynı anda S3'e `bibliometrics/clean_data/{job.id}.xlsx`/`.csv` olarak
+  da yükleniyor (yeni `bibliometrics/services/export_builder.py`:
+  `build_clean_xlsx`/`build_clean_csv`, `openpyxl`/`csv` — yeni bağımlılık
+  yok). **Erişim: herkese ücretsiz**, analiz tamamlanır tamamlanmaz (demo PDF
+  ile aynı anda, sipariş/ödeme şartı yok — kullanıcı kararı). Sütunlar:
+  Başlık, Yazarlar, Yıl, Dergi, Anahtar Kelimeler, Özet, Atıf Sayısı, DOI,
+  Yayın Türü, Ülke, Kurum, OpenAlex ID (çoklu değerli alanlar `'; '` ile
+  birleştirildi — mevcut WoS/CSV kuralıyla tutarlı; `referenced_works`/
+  `author_ids` iç kullanım olduğu için dahil edilmedi). CSV UTF-8 BOM ile
+  (Excel'de Türkçe karakter bozulmasın). `BibliometricJob`'a
+  `clean_data_xlsx_url`/`clean_data_csv_url` (migration `0008`),
+  `mark_completed()` genişletildi, her iki worker'a (`_execute_job_body` +
+  `_execute_job_openalex_body`) `_upload_clean_data()` çağrısı eklendi
+  (hata olursa yalnız log + boş URL, job'ın tamamlanmasını engellemez).
+  `cleanup_expired_bibliometrics_s3_files()`'a yeni prefix + DB temizlik
+  eklendi (7 gün sonra link kalmaz). `job_status` JSON'una 2 yeni alan,
+  `landing.html`'e üçüncü sonuç kartı + `order.html`'e aynı küçük blok. 5
+  yeni pytest (export_builder birim testleri + `_upload_clean_data`
+  mock'lu başarı/hata), gerçek bir iş `_execute_job_body` ile uçtan uca
+  çalıştırılıp S3'ten indirilen XLSX/CSV içerik/sütun/satır sayısı elle
+  doğrulandı (test S3 nesneleri + job/user sonra silindi — paylaşımlı
+  prod bucket'ta iz bırakılmadı). Yeni msgid'ler EN/DE çevrildi (`polib` ile
+  2 fuzzy + 1 boş girdi düzeltildi — "OpenAlex ID" yanlışlıkla "Go to
+  OpenAlex"a fuzzy-eşleşmişti). `forum+bibliometrics` 178/178 geçti,
+  migration yok (ayrı admin flag istenmedi). **Sırada B3-2** (VOSviewer
+  map+network export + Biblioshiny formatı) — ayrı onay/tur.
+- **29 Ekim 2026 — Bibliometri Grup B, B3-2 (VOSviewer Uyumlu Dışa Aktarım)
+  TAMAMLANDI, `dev`'de.** VOSviewer format resmi dokümandan doğrulandı
+  (`https://app.vosviewer.com/docs/file-types/map-and-network-file-type/`):
+  map dosyası (tab-ayraçlı, başlıklı, `id`+`label` yeterli) + network
+  dosyası (başlıksız, `id1\tid2\tweight`); etikette virgül/noktalı virgül
+  varsa çift tırnağa alınır. **Bilinçli tasarım kararı:** x/y/cluster hiç
+  gönderilmiyor — VOSviewer kendi yerleşim+kümeleme algoritmasını
+  çalıştırsın diye (asıl katkımız zaten temizlenmiş/doğru ağırlıklandırılmış
+  kenar verisi: tekilleştirme, yazar adı birleştirme, anahtar kelime
+  normalizasyonu). **Kullanıcı kararı (AskUserQuestion):** Biblioshiny
+  (bibliometrix) uyumlu WoS-plaintext export bu turda YAPILMADI — burada
+  R/bibliometrix kurulu olmadığı için gerçek yazılımla doğrulanamıyor, ayrı
+  bir alt göreve (B3-2b) bırakıldı. 4 ağ dışa aktarılıyor: anahtar kelime
+  eş-oluşumu, yazar işbirliği, ülke işbirliği, bibliyografik eşleşme — her
+  biri varsa (veri yetersizse o ağ atlanır, ZIP'in geri kalanı yine üretilir)
+  bir `_map.txt`/`_network.txt` çifti. **Refactor (mimari ön-koşul):**
+  `author_collaboration()`/`country_collaboration()`/`bibliographic_coupling()`
+  yalnız `fig` döndürüyordu, networkx `G`'yi dışa açmıyordu (yalnız
+  `keyword_clusters()` zaten `(G, communities, all_kw)` döndürüyordu) — B2'nin
+  `_data()`+chart ayrımı kalıbıyla (`three_field_plot_data`/`scp_mcp_counts`
+  benzeri) her biri `_author_collaboration_graph()`/`_country_collaboration_graph()`/
+  `_bibliographic_coupling_graph()`'a ayrıldı (davranış birebir aynı — çizim
+  fonksiyonları artık bu yardımcıyı çağırıyor). **Gerçek regresyon bulundu ve
+  düzeltildi:** refactor sırasında `country_collaboration()`/`bibliographic_coupling()`
+  gövdesinde kalan `nx.spring_layout`/`nx.draw_networkx_*` çağrıları için
+  `import networkx as nx` satırı yanlışlıkla yeni yardımcıya taşınmış, asıl
+  fonksiyonda eksik kalmıştı (`NameError`) — `country_collaboration()`'ın
+  daha önce hiç pytest'i olmadığı için yalnız `bibliographic_coupling()`
+  testi bunu yakaladı; ikisi de düzeltildi, ayrıca `country_collaboration()`
+  için uçtan uca smoke-test elle çalıştırıldı. Yeni
+  `bibliometrics/services/vosviewer_export.py` (stdlib `zipfile` — yeni
+  bağımlılık yok), `BibliometricJob.vosviewer_export_url` (migration `0009`),
+  `job_runner.py`'ye `_upload_vosviewer_export()` (B3-1'deki hata-toleranslı
+  desenle aynı), `cleanup_expired_bibliometrics_s3_files()`'a yeni prefix,
+  `job_status` JSON + B3-1'in "Temiz Veri Seti" kartına üçüncü buton
+  (ayrı kart açılmadı). 9 yeni pytest (map/network dosya biçimi, ZIP
+  içeriği, veri yoksa `None`, 3 graf yardımcısının regresyon/birim testleri,
+  `_upload_vosviewer_export` mock'lu başarı/hata) + gerçek bir iş uçtan uca
+  çalıştırılıp S3'ten indirilen ZIP içeriği (yalnız keyword+author ağı
+  üretildi — bu sentetik veri setinde ülke/referanslı atıf verisi yoktu,
+  beklenen davranış) elle doğrulandı, test nesneleri silindi. EN/DE
+  çevrildi (`polib` ile "VOSviewer (ZIP)" fuzzy-eşleşmesi + OKUBENI.txt
+  içeriği düzeltildi). `forum+bibliometrics` 187/187 geçti. **Sırada B3-3**
+  (hazır Yöntem metni + PRISMA diyagramı) — ayrı onay/tur; B3-2b
+  (Biblioshiny) R ile test edilebildiğinde ele alınacak açık iş.
+- **29 Ekim 2026 — Topic Map (Araştırma Konusu Kümeleri) görsel kalite
+  sorunu DÜZELTİLDİ, `dev`'de.** Grup B'den bağımsız, daha önce "incelenmedi"
+  olarak kaydedilmiş açık bir işti; kullanıcı "düzelmiyorsa analizlerden
+  kaldır" talimatıyla ele alındı — **düzeltilebildi, kaldırılmadı**. Kök
+  neden sentetik veriyle (uzun, özetten çıkarılmış tarzda anahtar kelime
+  öbekleri + az sayıda küme) PNG render edilip görsel olarak doğrulandı,
+  sonra matematiksel olarak teyit edildi: `bibliometrics/services/analyzer.py`
+  `topic_map()`'te figsize **sabit** `(14, 8)` idi (en/boy 1.75 — geniş);
+  `pdf_builder.py` `_draw_figure_page()` görüntüyü en-boy oranını koruyarak
+  (`drawImage(..., preserveAspectRatio=True)`) dikey A4 içerik kutusuna
+  (en/boy ≈0.79) sığdırıyor — bu iki oran arasındaki uyumsuzluk, kaç küme
+  olursa olsun görüntünün dikeyde yalnız ~%45'ini kullanıp kalanını boş
+  bırakmasına neden oluyordu (hesapla doğrulandı); ayrıca sabit `fontsize=7.5`
+  + kırpılmamış uzun anahtar kelime öbekleri balon sınırlarını taşıp
+  okunamaz hale geliyordu. **Düzeltme:** `cols`/`rows`'a göre dinamik
+  `figsize` (`bradford_law()`'daki dinamik yükseklik deseniyle tutarlı
+  bir yaklaşım) + `cols` artık `ceil(sqrt(n))`'e dayalı (önceki `min(4,n)`
+  yerine) — 2-3 kümede bile "tek geniş satır" yerine kareye yakın/dikey
+  istiflenmiş bir düzen üretir, ≤2 kümede tek dikey sütuna geçer (yatay
+  2'li düzen hâlâ geniş kalıyordu) + anahtar kelime etiketleri artık 11
+  karaktere kırpılıp (`…` ile) küçültülmüş fontta (6.5) gösteriliyor, balon
+  boyutu da dar bir aralıkta tutuluyor (çok küçük/çok büyük balon riski
+  azaltıldı). 1, 2, 3, 4, 5 ve 8 küme senaryolarıyla PNG render edilip
+  tek tek görsel olarak incelendi (hiçbirinde taşma yok, boşluk makul —
+  8 kümelik varsayılan senaryoda neredeyse kare bir düzen, en iyi sonuç).
+  3 yeni pytest (en/boy oranı üst sınırı, figsize'ın artık sabit olmadığı
+  regresyon testi, varsayılan 8-küme senaryosunun hâlâ çalıştığı).
+  `forum+bibliometrics` 190/190 geçti. Migration/çeviri gerekmedi (yalnız
+  grafik çizim mantığı). `tasks/todo.md`'deki ayrı açık iş kapatıldı.
+- **29 Ekim 2026 — Bradford Kanunu grafiğinde aynı sınıftan ikinci bug
+  DÜZELTİLDİ, `dev`'de.** Kullanıcı canlı PDF'ten ekran görüntüsü paylaştı:
+  "Bradford's Law — Core Journal Zones" sayfasında grafik ekranın ortasında
+  okunamayacak kadar dar/ince bir dikey şerit halinde, sağda/solda devasa
+  boşlukla görünüyordu — Topic Map'teki boş alan bug'ıyla AYNI kök neden
+  sınıfı ama TERS yönde: `bradford_law()`'da `fig_height = max(8, len(shown)
+  * 0.45)` **üst sınırsız** büyüyordu; Bölge 1+2'de çok sayıda dergi olan
+  gerçek/büyük bir veri setinde (binlerce kayıt, yüzlerce dergi — sentetik
+  olarak yeniden üretildi: 1670 kayıt, 305 dergi, Bölge 1+2'de 72 dergi)
+  `figsize=(13, 32.4)` gibi aşırı dar/uzun bir görüntü üretiyordu; PDF'e
+  en-boy korunarak dikey A4 kutusuna sığdırılınca (hesapla doğrulandı)
+  genişliğin yalnız ~%51'i kullanılıp kalanı (sol+sağ) boş kalıyordu —
+  tam ekran görüntüsündeki görünüm. **Düzeltme:** diğer analizlerdeki
+  "top N" kırpma kalıbıyla (`top_authors` `max_authors=35` vb.) tutarlı
+  şekilde Bölge 1+2'den en fazla **40 dergi** gösteriliyor (kırpılırsa
+  başlığa "(ilk 40, en yüksek yayın sayısına göre)" notu eklenir); sağ
+  paneldeki özet tablo kırpmadan BAĞIMSIZ — her zaman tam Bölge dergi/yayın
+  sayılarını gösterir (zaten `zones[i]`'den okunuyordu, `shown`'dan değil).
+  Aynı sentetik veriyle yeniden render edilip (figsize 13x32.4→13x18) görsel
+  olarak doğrulandı — artık okunaklı, kenarlarda yalnız ~%8 (fark edilmeyen)
+  boşluk kalıyor. 1 yeni pytest (kırpma + tablo doğruluğu) + 4 mevcut
+  Bradford testi regresyon olmadan geçti. EN/DE çevrildi (`polib` ile yeni
+  msgid + ayrıca makemessages churn'ünde fuzzy-eşleşen ilgisiz bir
+  keyword_cooccurrence uyarı metni de fark edilip düzeltildi). `forum+
+  bibliometrics` 191/191 geçti. Migration yok.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
