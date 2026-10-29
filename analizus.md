@@ -3262,6 +3262,42 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   sayısını 7+ dosyada elle güncelletiyor — ileride tek kaynağa (`len(analyses)`)
   taşınabilir, ayrı refactor. **Sırada B2-4** (tematik evrim — dönemler
   arası tema akışı; bkz. `bibliometri_durum_ve_gelistirme_prompt.md` §4).
+  **(Not: B2-4..B2-8 — Tematik Evrim, Üç Alan Grafiği, SCP/MCP, Bibliyografik
+  Eşleşme + Yerel/Küresel Atıf, Konu Modelleme NMF — sonraki oturumlarda
+  tamamlandı ve B1+B2 tüm Grup B `main`'e merge edildi; bu girdiye o alt
+  maddelerin ayrıntısı eklenmedi, detay `project_bibliometri_grup_b.md`
+  hafıza kaydında ve `tasks/todo.md`'de.)**
+- **29 Ekim 2026 — Bibliometri Grup B, B3-1 (Temiz Veri Seti İndirme —
+  XLSX/CSV) TAMAMLANDI, `dev`'de.** B3 ("Çıktılar" fazı, `bibliometri_durum_
+  ve_gelistirme_prompt.md` §4) 5 alt maddesinin ilki. Analize giren
+  (tekilleştirilmiş/zenginleştirilmiş) `records` listesi daha önce hiçbir
+  yerde saklanmıyordu — iş bitince bellekten siliniyordu; şimdi demo/tam PDF
+  ile aynı anda S3'e `bibliometrics/clean_data/{job.id}.xlsx`/`.csv` olarak
+  da yükleniyor (yeni `bibliometrics/services/export_builder.py`:
+  `build_clean_xlsx`/`build_clean_csv`, `openpyxl`/`csv` — yeni bağımlılık
+  yok). **Erişim: herkese ücretsiz**, analiz tamamlanır tamamlanmaz (demo PDF
+  ile aynı anda, sipariş/ödeme şartı yok — kullanıcı kararı). Sütunlar:
+  Başlık, Yazarlar, Yıl, Dergi, Anahtar Kelimeler, Özet, Atıf Sayısı, DOI,
+  Yayın Türü, Ülke, Kurum, OpenAlex ID (çoklu değerli alanlar `'; '` ile
+  birleştirildi — mevcut WoS/CSV kuralıyla tutarlı; `referenced_works`/
+  `author_ids` iç kullanım olduğu için dahil edilmedi). CSV UTF-8 BOM ile
+  (Excel'de Türkçe karakter bozulmasın). `BibliometricJob`'a
+  `clean_data_xlsx_url`/`clean_data_csv_url` (migration `0008`),
+  `mark_completed()` genişletildi, her iki worker'a (`_execute_job_body` +
+  `_execute_job_openalex_body`) `_upload_clean_data()` çağrısı eklendi
+  (hata olursa yalnız log + boş URL, job'ın tamamlanmasını engellemez).
+  `cleanup_expired_bibliometrics_s3_files()`'a yeni prefix + DB temizlik
+  eklendi (7 gün sonra link kalmaz). `job_status` JSON'una 2 yeni alan,
+  `landing.html`'e üçüncü sonuç kartı + `order.html`'e aynı küçük blok. 5
+  yeni pytest (export_builder birim testleri + `_upload_clean_data`
+  mock'lu başarı/hata), gerçek bir iş `_execute_job_body` ile uçtan uca
+  çalıştırılıp S3'ten indirilen XLSX/CSV içerik/sütun/satır sayısı elle
+  doğrulandı (test S3 nesneleri + job/user sonra silindi — paylaşımlı
+  prod bucket'ta iz bırakılmadı). Yeni msgid'ler EN/DE çevrildi (`polib` ile
+  2 fuzzy + 1 boş girdi düzeltildi — "OpenAlex ID" yanlışlıkla "Go to
+  OpenAlex"a fuzzy-eşleşmişti). `forum+bibliometrics` 178/178 geçti,
+  migration yok (ayrı admin flag istenmedi). **Sırada B3-2** (VOSviewer
+  map+network export + Biblioshiny formatı) — ayrı onay/tur.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

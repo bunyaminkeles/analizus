@@ -4,6 +4,9 @@ Kapsam: yıl ekseni tam sayı tick'leri (A5), kısa dönem uyarısı (A6),
 OpenAlex/PubMed TXT yeniden-yükleme (A7), demo CTA dil ayrımı (A8/A9),
 rapor dili seçimi (A4).
 """
+import csv
+import io
+
 import matplotlib
 matplotlib.use('Agg')
 
@@ -872,3 +875,99 @@ def test_topic_modeling_trend_single_year_returns_none():
     for r in records:
         r['year'] = 2020
     assert topic_modeling_trend(records) is None
+
+
+# ─────────────────────────── B3-1: Temiz Veri İndirme (XLSX/CSV) ───────────────────────────
+
+def _clean_export_records():
+    return [
+        {'title': 'Başlık Bir', 'authors': ['Ahmet Yılmaz', 'Mehmet Demir'], 'year': 2021,
+         'journal': 'Dergi A', 'keywords': ['makine öğrenmesi', 'yapay zeka'], 'abstract': 'Özet metni.',
+         'cited_by': 12, 'doi': '10.1/a', 'pub_type': 'article', 'country': 'TR', 'institution': 'ODTÜ',
+         'openalex_id': 'https://openalex.org/W1', 'referenced_works': ['https://openalex.org/W9'],
+         'author_ids': ['https://openalex.org/A1']},
+        {'title': 'İkinci Başlık', 'authors': [], 'year': None, 'journal': '', 'keywords': [],
+         'abstract': '', 'cited_by': 0, 'doi': '', 'pub_type': '', 'country': '', 'institution': '',
+         'openalex_id': '', 'referenced_works': [], 'author_ids': []},
+    ]
+
+
+def test_build_clean_xlsx_has_expected_rows_and_columns():
+    import openpyxl
+    from bibliometrics.services.export_builder import build_clean_xlsx
+
+    data = build_clean_xlsx(_clean_export_records())
+    wb = openpyxl.load_workbook(io.BytesIO(data))
+    ws = wb.active
+
+    header = [c.value for c in ws[1]]
+    assert header == [
+        'Başlık', 'Yazarlar', 'Yıl', 'Dergi', 'Anahtar Kelimeler', 'Özet',
+        'Atıf Sayısı', 'DOI', 'Yayın Türü', 'Ülke', 'Kurum', 'OpenAlex ID',
+    ]
+    assert ws.max_row == 3  # başlık + 2 kayıt
+
+    row1 = [c.value for c in ws[2]]
+    assert row1[0] == 'Başlık Bir'
+    assert row1[1] == 'Ahmet Yılmaz; Mehmet Demir'
+    assert row1[4] == 'makine öğrenmesi; yapay zeka'
+    assert row1[10] == 'ODTÜ'
+    assert row1[11] == 'https://openalex.org/W1'
+
+    row2 = [c.value for c in ws[3]]
+    # openpyxl boş string'i hücreye None olarak geri okur
+    assert row2[1] in (None, '')
+    assert row2[4] in (None, '')
+
+
+def test_build_clean_xlsx_empty_records_has_only_header():
+    import openpyxl
+    from bibliometrics.services.export_builder import build_clean_xlsx
+
+    wb = openpyxl.load_workbook(io.BytesIO(build_clean_xlsx([])))
+    assert wb.active.max_row == 1
+
+
+def test_build_clean_csv_has_bom_and_expected_rows():
+    from bibliometrics.services.export_builder import build_clean_csv
+
+    data = build_clean_csv(_clean_export_records())
+    assert data.startswith(b'\xef\xbb\xbf')
+
+    text = data.decode('utf-8-sig')
+    rows = list(csv.reader(io.StringIO(text)))
+    assert len(rows) == 3  # başlık + 2 kayıt
+    assert rows[0][0] == 'Başlık'
+    assert rows[1][1] == 'Ahmet Yılmaz; Mehmet Demir'
+    assert rows[2][0] == 'İkinci Başlık'
+
+
+def test_upload_clean_data_returns_both_urls(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    uploaded = {}
+
+    def fake_upload(data, key, content_type):
+        uploaded[key] = content_type
+        return f'https://s3.example.com/{key}'
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    xlsx_url, csv_url = job_runner._upload_clean_data(_clean_export_records(), 'job123')
+    assert xlsx_url == 'https://s3.example.com/bibliometrics/clean_data/job123.xlsx'
+    assert csv_url == 'https://s3.example.com/bibliometrics/clean_data/job123.csv'
+    assert uploaded['bibliometrics/clean_data/job123.xlsx'] == (
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    assert uploaded['bibliometrics/clean_data/job123.csv'] == 'text/csv'
+
+
+def test_upload_clean_data_tolerates_upload_failure(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    def fake_upload(data, key, content_type):
+        raise RuntimeError('S3 kapalı')
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    xlsx_url, csv_url = job_runner._upload_clean_data(_clean_export_records(), 'job456')
+    assert xlsx_url == '' and csv_url == ''

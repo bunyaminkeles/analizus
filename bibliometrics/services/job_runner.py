@@ -48,6 +48,29 @@ def _execute_job_openalex(job_id: str) -> None:
     _in_user_language(job_id, _execute_job_openalex_body)
 
 
+def _upload_clean_data(records: list, job_id) -> tuple:
+    """Analize giren (temiz/zenginleştirilmiş) kayıtları XLSX+CSV olarak S3'e yükler (B3-1).
+    Hata olursa job'ın tamamlanmasını engellemez — yalnız log + boş URL."""
+    from forum.s3_utils import upload_bytes_to_s3
+    from bibliometrics.services.export_builder import build_clean_xlsx, build_clean_csv
+
+    xlsx_url = csv_url = ''
+    try:
+        xlsx_url = upload_bytes_to_s3(
+            build_clean_xlsx(records), f'bibliometrics/clean_data/{job_id}.xlsx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ) or ''
+    except Exception as e:
+        logger.warning(f'[bibliometrics] Temiz veri XLSX üretilemedi [{job_id}]: {e}')
+    try:
+        csv_url = upload_bytes_to_s3(
+            build_clean_csv(records), f'bibliometrics/clean_data/{job_id}.csv', 'text/csv',
+        ) or ''
+    except Exception as e:
+        logger.warning(f'[bibliometrics] Temiz veri CSV üretilemedi [{job_id}]: {e}')
+    return xlsx_url, csv_url
+
+
 def _execute_job_body(job_id: str) -> None:
     """Upload tipi analiz, senkron."""
     from bibliometrics.models import BibliometricJob
@@ -112,6 +135,7 @@ def _execute_job_body(job_id: str) -> None:
 
         demo_url = upload_bytes_to_s3(demo_pdf_bytes, f'bibliometrics/demo/{job.id}.pdf', 'application/pdf')
         full_url = upload_bytes_to_s3(full_pdf_bytes, f'bibliometrics/full/{job.id}.pdf', 'application/pdf')
+        clean_xlsx_url, clean_csv_url = _upload_clean_data(records, job.id)
 
         close_old_connections()
         job.mark_completed(
@@ -119,6 +143,8 @@ def _execute_job_body(job_id: str) -> None:
             file_format=fmt,
             demo_pdf_url=demo_url or '',
             full_pdf_url=full_url or '',
+            clean_data_xlsx_url=clean_xlsx_url,
+            clean_data_csv_url=clean_csv_url,
         )
         job._demo_pdf_bytes = demo_pdf_bytes
         logger.info(f'[bibliometrics] Job {job_id} tamamlandı. {len(records)} kayıt, {n_figures} analiz.')
@@ -217,6 +243,7 @@ def _execute_job_openalex_body(job_id: str) -> None:
 
         demo_url = upload_bytes_to_s3(demo_pdf_bytes, f'bibliometrics/demo/{job.id}.pdf', 'application/pdf')
         full_url = upload_bytes_to_s3(full_pdf_bytes, f'bibliometrics/full/{job.id}.pdf', 'application/pdf')
+        clean_xlsx_url, clean_csv_url = _upload_clean_data(records, job.id)
 
         close_old_connections()
         job.mark_completed(
@@ -224,6 +251,8 @@ def _execute_job_openalex_body(job_id: str) -> None:
             file_format=fmt,
             demo_pdf_url=demo_url or '',
             full_pdf_url=full_url or '',
+            clean_data_xlsx_url=clean_xlsx_url,
+            clean_data_csv_url=clean_csv_url,
         )
 
         logger.info(f'[bibliometrics] {job.source} job {job_id} tamamlandı. {len(records)} kayıt, {n_figures} analiz.')
@@ -482,7 +511,7 @@ def cleanup_expired_bibliometrics_s3_files(days=7):
     cutoff = timezone.now() - timedelta(days=days)
     deleted_count = sum(
         cleanup_s3_prefix(prefix, days)
-        for prefix in ['bibliometrics/demo/', 'bibliometrics/full/']
+        for prefix in ['bibliometrics/demo/', 'bibliometrics/full/', 'bibliometrics/clean_data/']
     )
 
     # DB'deki URL referanslarını da temizle
@@ -490,8 +519,8 @@ def cleanup_expired_bibliometrics_s3_files(days=7):
         BibliometricJob.objects.filter(
             created_at__lt=cutoff,
         ).exclude(
-            demo_pdf_url='', full_pdf_url=''
-        ).update(demo_pdf_url='', full_pdf_url='')
+            demo_pdf_url='', full_pdf_url='', clean_data_xlsx_url='', clean_data_csv_url='',
+        ).update(demo_pdf_url='', full_pdf_url='', clean_data_xlsx_url='', clean_data_csv_url='')
     except Exception as e:
         logger.error(f"DB temizlik hatası (bibliometrics): {e}")
 

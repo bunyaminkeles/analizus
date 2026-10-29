@@ -171,6 +171,8 @@ def bibliometrics_job_status(request, job_id):
     elif job.status == 'completed':
         data['demo_pdf_url'] = job.demo_pdf_url
         data['demo_email_sent'] = job.demo_email_sent
+        data['clean_data_xlsx_url'] = job.clean_data_xlsx_url
+        data['clean_data_csv_url'] = job.clean_data_csv_url
         data['original_filename'] = job.original_filename
         data['created_at'] = job.created_at.strftime('%d.%m.%Y %H:%M')
         price = BibliometricOrder.calculate_price(job.total_records)

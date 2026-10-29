@@ -7,13 +7,15 @@
 B1-4 anahtar kelime normalizasyonu; B2-1 Bradford Kanunu, B2-2 Louvain
 kümeleri + tablo, B2-3 Tematik Harita, B2-4 Tematik Evrim, B2-5 Üç Alan
 Grafiği, B2-6 SCP/MCP, B2-7 Bibliyografik Eşleşme + Yerel/Küresel Atıf,
-B2-8 Konu Modelleme NMF). B1..B2-7 kullanıcı isteğiyle `--no-ff` ile
-`main`'e merge edilip push edildi (Hetzner deploy tetiklendi, merge öncesi
-production'da aktif kullanıcı kontrolü yapıldı, boştu); **B2-8 henüz yalnız
-`dev`'de, main'e merge edilmedi** — kullanıcı "merge et" demeden
-dokunulmayacak. İstatistik araç sayısı 17→26. **Yeni oturum buradan devam
-etsin: sıradaki B3, sonra B4** (bkz. madde 3 altındaki detaylı liste ve
-`bibliometri_durum_ve_gelistirme_prompt.md` §4).
+B2-8 Konu Modelleme NMF). B1+B2 (B1-1..B2-8 tamamı) kullanıcı isteğiyle
+`--no-ff` ile `main`'e merge edilip push edildi (Hetzner deploy tetiklendi,
+merge öncesi production'da aktif kullanıcı kontrolü yapıldı). İstatistik
+araç sayısı 17→26. **B3 (Çıktılar) başladı: B3-1 (Temiz Veri Seti İndirme
+XLSX/CSV, herkese ücretsiz) TAMAMLANDI, henüz yalnız `dev`'de, main'e merge
+edilmedi** — kullanıcı "merge et" demeden dokunulmayacak. **Yeni oturum
+buradan devam etsin: sıradaki B3-2 (VOSviewer export + Biblioshiny
+formatı), sonra B3-3/B3-4, sonra B4** (bkz. madde 3 altındaki detaylı liste
+ve `bibliometri_durum_ve_gelistirme_prompt.md` §4).
 Ayrıca aşağıdaki 2 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
@@ -246,7 +248,21 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      requirements'ta), migration yok. `forum+bibliometrics` 173/173.
      **Grup B'nin B1+B2 bölümü artık TAMAMEN BİTTİ (8/8); main'e merge
      henüz yapılmadı (kullanıcı istemedi).**
-   - [ ] B3-B4 (bkz. plan dosyası §4)
+   - [x] **B3-1 TAMAMLANDI (29 Ekim 2026, dev'de):** Temiz Veri Seti İndirme
+     (XLSX+CSV, herkese ücretsiz — kullanıcı kararı). Yeni
+     `bibliometrics/services/export_builder.py`; `BibliometricJob.
+     clean_data_xlsx_url`/`clean_data_csv_url` (migration `0008`);
+     `job_runner.py` her iki worker'a `_upload_clean_data()` eklendi (hata
+     toleranslı); `cleanup_expired_bibliometrics_s3_files()` yeni prefix;
+     `job_status` JSON + `landing.html` 3. kart + `order.html` blok. 5 yeni
+     pytest + gerçek job ile uçtan uca S3 doğrulaması (test nesneleri
+     sonra silindi). EN/DE çevrildi (polib ile 2 fuzzy düzeltildi).
+     `forum+bibliometrics` 178/178. Detay: `analizus.md` §27 (29 Ekim B3-1).
+   - [ ] B3-2 (VOSviewer map+network export + Biblioshiny formatı) — sırada,
+     ayrı onay/tur.
+   - [ ] B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı)
+   - [ ] B3-4 (grafik başına otomatik yorum cümlesi, kural tabanlı)
+   - [ ] B4 (ürün/huni) — bkz. plan dosyası §4
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
 sürebilir (~10 dk'ya kadar), bir dahaki "donmuş gibi görünen" deploy'da
