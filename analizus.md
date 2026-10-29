@@ -3240,8 +3240,16 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   (2 şablon, e-posta, admin help_text) güncellendi. Tablo yüksekliği sabit
   tutuldu (Topic Map'teki boş alan sorunu tekrarlanmadı, görsel olarak
   doğrulandı). 5 yeni pytest, EN/DE çevrildi, migration yok.
-  `forum+bibliometrics` 143/143 geçti. **Sırada B2-2** (anahtar kelime
-  eş-oluşum ağı + Louvain kümeleri; bkz.
+  `forum+bibliometrics` 143/143 geçti.
+  **B2-2 TAMAMLANDI (aynı gün, dev'de):** Anahtar kelime eş-oluşum ağı +
+  Louvain kümeleri. Mevcut `greedy_modularity_communities` yerine sabit
+  seed'li `louvain_communities` kullanıldı (VOSviewer/bibliometrix eşitliği,
+  tekrarlanabilir kümeler), hesap `keyword_clusters()`'a ayrıldı. Grafik iki
+  panelli oldu: ağ + **küme başına ilk kelimeler tablosu** (eksik olan asıl
+  madde) + özet istatistik. 5 yeni pytest (3 ayrık konu grubuyla doğru
+  kümelenme + determinizm), rapor metni EN/DE güncellendi, yeni paket/migration
+  yok. `forum+bibliometrics` 147/147 geçti. **Sırada B2-3** (tematik harita —
+  Callon merkeziyet × yoğunluk kadranları; bkz.
   `bibliometri_durum_ve_gelistirme_prompt.md` §4).
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran

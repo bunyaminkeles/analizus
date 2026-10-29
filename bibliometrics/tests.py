@@ -27,6 +27,8 @@ from bibliometrics.services.analyzer import (
     _simple_depluralize,
     bradford_zones,
     bradford_law,
+    keyword_clusters,
+    keyword_cooccurrence,
 )
 import bibliometrics.services.analyzer as analyzer_module
 from bibliometrics.services.report_notes import build_report_notes
@@ -499,3 +501,56 @@ def test_bradford_law_figure_table_matches_zone_totals():
     # Satır 1 (ilk veri satırı, 0 başlık) → Bölge 1 dergi/yayın sayısı
     assert cells[(1, 1)].get_text().get_text() == str(len(zones[0]))
     assert cells[(1, 2)].get_text().get_text() == f'{totals[0]:,}'
+
+
+_KEYWORD_TOPICS = {
+    'A': ['machine learning', 'deep learning', 'neural network', 'classification'],
+    'B': ['covid-19', 'public health', 'pandemic', 'vaccination'],
+    'C': ['climate change', 'carbon emission', 'sustainability', 'renewable energy'],
+}
+
+
+def _topic_keyword_records(topics=_KEYWORD_TOPICS, per_topic=25, seed=3):
+    import random
+    rng = random.Random(seed)
+    records = []
+    for _ in range(per_topic * len(topics)):
+        topic = rng.choice(list(topics.keys()))
+        kws = rng.sample(topics[topic], k=rng.randint(2, 4))
+        records.append({'keywords': kws})
+    return records
+
+
+def test_keyword_clusters_separates_distinct_topics():
+    """B2-2: birbiriyle hiç eş geçmeyen 3 konu grubu 3 ayrı Louvain kümesine
+    ayrılmalı, her kümenin kelimeleri yalnız kendi konu grubundan olmalı."""
+    records = _topic_keyword_records()
+    G, communities, all_kw = keyword_clusters(records)
+    assert G is not None
+    assert len(communities) == 3
+    topic_sets = [set(normalize_keywords(v)) for v in _KEYWORD_TOPICS.values()]
+    for comm in communities:
+        assert any(comm <= topic_set for topic_set in topic_sets)
+
+
+def test_keyword_clusters_deterministic_with_fixed_seed():
+    """Louvain varsayılan olarak rastgele olabilir — sabit seed aynı sonucu vermeli."""
+    records = _topic_keyword_records()
+    _, communities1, _ = keyword_clusters(records)
+    _, communities2, _ = keyword_clusters(records)
+    assert communities1 == communities2
+
+
+def test_keyword_clusters_insufficient_data_returns_none():
+    G, communities, all_kw = keyword_clusters([{'keywords': []}])
+    assert G is None and communities is None and all_kw is None
+
+
+def test_keyword_cooccurrence_table_lists_all_clusters():
+    records = _topic_keyword_records()
+    _, communities, _ = keyword_clusters(records)
+    fig = keyword_cooccurrence(records)
+    assert fig is not None
+    table = fig.axes[1].tables[0]
+    n_data_rows = len({row for row, _ in table.get_celld().keys() if row > 0})
+    assert n_data_rows == len(communities)

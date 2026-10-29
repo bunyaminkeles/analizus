@@ -170,6 +170,9 @@ def _rules(source, last_year, stats=None):
             a=_default(analyzer.author_collaboration, 'max_authors'),
             k=_default(analyzer.keyword_cooccurrence, 'max_kw'),
             c=_default(analyzer.country_collaboration, 'max_countries')),
+        gettext('Anahtar kelime kümeleri (Küme 1, 2…) Louvain algoritmasıyla belirlendi (sabit başlangıç '
+                'değeriyle — aynı veri her çalıştırmada aynı kümeleri verir), en büyükten küçüğe '
+                'numaralandırıldı.'),
         gettext('Araştırma Boşluğu Haritası en az 3 yayında geçen en sık {n} anahtar kelimeyi kullanır. '
                 'Trend, son {y} tamamlanmış yıldaki yayınlarla önceki yayınların farkının toplam yayına '
                 'oranıdır; atıf etkisi, kelimenin geçtiği yayınların ortalama atıfıdır.').format(

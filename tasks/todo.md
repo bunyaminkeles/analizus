@@ -78,9 +78,22 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
      help_text) 18'e güncellendi. 5 yeni pytest, rapor "kurallar" metnine
      yöntem cümlesi eklendi, EN/DE çevrildi. Migration yok.
      `forum+bibliometrics` 143/143.
-   - [ ] B2-2..B2-8 (bkz. plan dosyası §4 — anahtar kelime eş-oluşum
-     kümeleri/Louvain, tematik harita, tematik evrim, üç alan grafiği,
-     ülke işbirliği SCP/MCP, atıf ağları, konu modelleme)
+   - [x] **B2-2 TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi):** Anahtar
+     kelime eş-oluşum ağı + Louvain kümeleri. `analyzer.py`'de mevcut
+     `greedy_modularity_communities` yerine sabit seed'li `louvain_communities`
+     kullanılacak şekilde değiştirildi (VOSviewer/bibliometrix eşitliği,
+     tekrarlanabilir kümeler); hesap `keyword_clusters()` (saf, test edilebilir)
+     fonksiyonuna ayrıldı. Grafik iki panelli hale getirildi (Bradford/
+     citation_analysis kalıbı): sol = ağ grafiği, sağ = **küme başına ilk
+     kelimeler tablosu** (eksik olan asıl madde) + toplam kelime/bağlantı/küme
+     özeti. Tablo metni taşmayacak şekilde kırpıldı, görsel olarak doğrulandı
+     (3 ayrık konu grubuyla sentetik veri → 3 doğru küme). 5 yeni pytest
+     (kümelerin doğru ayrıldığı + sabit seed'le determinizm dahil). Rapor
+     "kurallar" metnine Louvain açıklaması eklendi, EN/DE çevrildi. Yeni paket
+     yok (`networkx` zaten `requirements.txt`'te, `louvain_communities`
+     3.6.1'de mevcut). Migration yok. `forum+bibliometrics` 147/147.
+   - [ ] B2-3..B2-8 (bkz. plan dosyası §4 — tematik harita, tematik evrim,
+     üç alan grafiği, ülke işbirliği SCP/MCP, atıf ağları, konu modelleme)
    - [ ] B3-B4 (bkz. plan dosyası §4)
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş

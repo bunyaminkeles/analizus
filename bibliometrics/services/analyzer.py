@@ -933,11 +933,19 @@ def lotka_law(records: list[dict]):
 
 # ─────────────────────────── 13. Anahtar Kelime Eş-Oluşum Ağı ───────────────────────────
 
-def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int = 2):
+def keyword_clusters(records: list[dict], max_kw: int = 40, min_cooccur: int = 2):
+    """
+    Anahtar kelime eş-oluşum grafı + Louvain kümeleri (B2-2). VOSviewer/bibliometrix
+    eşitliği için sabit seed'li Louvain kullanılır (`networkx.algorithms.community.
+    louvain_communities`) — tekrarlanabilir kümeler, her çalıştırmada aynı sonuç.
+    Döner: (G, communities, all_kw) — communities büyükten küçüğe sıralı set listesi,
+    ya da veri yetersizse (None, None, None).
+    """
     try:
         import networkx as nx
+        from networkx.algorithms.community import louvain_communities
     except ImportError:
-        return None
+        return None, None, None
 
     # Önce en sık geçen anahtar kelimeleri bul
     all_kw = Counter()
@@ -947,7 +955,7 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
                 all_kw[k] += 1
 
     if not all_kw:
-        return None
+        return None, None, None
 
     top_kw_set = {kw for kw, _ in all_kw.most_common(80)}
 
@@ -971,58 +979,115 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
             G.add_edge(k1, k2, weight=w)
 
     if G.number_of_nodes() == 0:
-        return None
+        return None, None, None
 
     if G.number_of_nodes() > max_kw:
         top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_kw]
         G = G.subgraph([n for n, _ in top_nodes]).copy()
 
-    # Community detection (VOSviewer-style cluster renklendirmesi)
     try:
-        from networkx.algorithms.community import greedy_modularity_communities
-        communities = list(greedy_modularity_communities(G, weight='weight'))
-        node_community = {}
-        for i, comm in enumerate(communities):
-            for node in comm:
-                node_community[node] = i
+        communities = sorted(
+            (set(c) for c in louvain_communities(G, weight='weight', seed=42)),
+            key=len, reverse=True,
+        )
     except Exception:
-        node_community = {n: 0 for n in G.nodes()}
+        communities = [set(G.nodes())]
 
-    n_clusters = max(node_community.values()) + 1 if node_community else 1
+    return G, communities, all_kw
+
+
+def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int = 2):
+    import networkx as nx
+    G, communities, all_kw = keyword_clusters(records, max_kw, min_cooccur)
+    if G is None:
+        return None
+
+    node_community = {n: i for i, comm in enumerate(communities) for n in comm}
+    n_clusters = len(communities)
     cluster_colors = PALETTE[:n_clusters] if n_clusters <= len(PALETTE) else PALETTE
 
-    degrees = dict(G.degree())
     node_sizes = [300 + all_kw.get(n, 1) * 60 for n in G.nodes()]
     node_colors = [cluster_colors[node_community.get(n, 0) % len(cluster_colors)]
                    for n in G.nodes()]
     edge_weights = [G[u][v].get('weight', 1) for u, v in G.edges()]
 
-    fig, ax = plt.subplots(figsize=(12, 10))
-    ax.set_facecolor('#f8fafc')
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 10),
+                                   gridspec_kw={'width_ratios': [1.6, 1]})
+    ax1.set_facecolor('#f8fafc')
     fig.patch.set_facecolor('white')
 
     pos = nx.spring_layout(G, seed=42, k=2.5, weight='weight')
 
-    nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.25,
+    nx.draw_networkx_edges(G, pos, ax=ax1, alpha=0.25,
                            width=[min(w * 0.6, 4.0) for w in edge_weights],
                            edge_color='#94a3b8')
-    nx.draw_networkx_nodes(G, pos, ax=ax, node_size=node_sizes,
+    nx.draw_networkx_nodes(G, pos, ax=ax1, node_size=node_sizes,
                            node_color=node_colors, alpha=0.88,
                            linewidths=1.2, edgecolors='white')
-    nx.draw_networkx_labels(G, pos, ax=ax, font_size=7.5,
+    nx.draw_networkx_labels(G, pos, ax=ax1, font_size=7.5,
                             font_color='#1e293b', font_weight='bold')
 
-    # Cluster legend
     legend_patches = [
         mpatches.Patch(color=cluster_colors[i % len(cluster_colors)],
                        label=gettext('Küme {n}').format(n=i + 1))
         for i in range(min(n_clusters, 8))
     ]
-    ax.legend(handles=legend_patches, loc='lower right', fontsize=8,
+    ax1.legend(handles=legend_patches, loc='lower right', fontsize=8,
               framealpha=0.85, title=gettext('Araştırma Kümeleri'), title_fontsize=9)
+    ax1.set_title(gettext('Eş-Oluşum Ağı'), fontsize=13, fontweight='bold')
+    ax1.axis('off')
 
-    ax.set_title(gettext('Anahtar Kelime Eş-Oluşum Ağı (VOSviewer-style)'))
-    ax.axis('off')
+    # B2-2: küme başına ilk kelimeler tablosu
+    ax2.axis('off')
+    shown_clusters = communities[:8]
+
+    def _top_terms_label(comm):
+        terms = sorted(comm, key=lambda n: all_kw.get(n, 0), reverse=True)
+        label, shown_n = '', 0
+        for t in terms:
+            candidate = f'{label}, {t}' if label else t
+            if len(candidate) > 48 and shown_n > 0:
+                break
+            label, shown_n = candidate, shown_n + 1
+        if shown_n < len(terms):
+            label += '…'
+        return label
+
+    table_rows = [
+        [gettext('Küme {n}').format(n=i + 1), _top_terms_label(comm)]
+        for i, comm in enumerate(shown_clusters)
+    ]
+    table_frac = min(1.0, (len(table_rows) + 1) * 0.08)
+    tbl = ax2.table(
+        cellText=table_rows,
+        colLabels=[gettext('Küme'), gettext('İlk Kelimeler')],
+        cellLoc='left',
+        colWidths=[0.2, 0.8],
+        bbox=[0.0, 1 - table_frac, 1.0, table_frac],
+    )
+    tbl.auto_set_font_size(False)
+    tbl.set_fontsize(9)
+    for (row, col), cell in tbl.get_celld().items():
+        cell.set_edgecolor('#cbd5e0')
+        if row == 0:
+            cell.set_facecolor('#1e3a5f')
+            cell.set_text_props(color='white', fontweight='bold')
+        else:
+            cell.set_facecolor('white' if row % 2 else '#f8fafc')
+            if col == 0:
+                cell.set_text_props(color=cluster_colors[(row - 1) % len(cluster_colors)],
+                                    fontweight='bold')
+            else:
+                cell.set_text_props(color='#1e293b')
+
+    ax2.text(0.0, 1 - table_frac - 0.04,
+             gettext('Toplam {n} anahtar kelime, {e} bağlantı, {c} küme').format(
+                 n=G.number_of_nodes(), e=G.number_of_edges(), c=n_clusters),
+             transform=ax2.transAxes, fontsize=9, color='#475569', va='top')
+    ax2.set_title(gettext('Kümelere Göre İlk Kelimeler'), fontsize=13, fontweight='bold', pad=20)
+
+    fig.suptitle(gettext('Anahtar Kelime Eş-Oluşum Ağı ve Kümeler (VOSviewer-style)'),
+                fontsize=15, fontweight='bold', y=1.01)
     fig.tight_layout(pad=2.0)
     return fig
 
