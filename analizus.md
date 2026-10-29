@@ -3230,9 +3230,19 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   yazıldı):** lokal dev'de zeyrek'in TR lemmatization'ı NLTK `punkt_tab`
   kaynağı eksik olduğu için sessizce başarısız oluyor — prod'da doğrulanmadı.
   4 yeni pytest, rapor metni EN/DE güncellendi, migration yok.
-  `forum+bibliometrics` 139/139 geçti. **Sırada Faz B2** (bilim haritalama —
-  Bradford kanunu, anahtar kelime eş-oluşum kümeleri, tematik harita, atıf
-  ağları; bkz. `bibliometri_durum_ve_gelistirme_prompt.md` §4).
+  `forum+bibliometrics` 139/139 geçti.
+  **B2-1 TAMAMLANDI (aynı gün, dev'de):** Bradford Kanunu — dergiler yayın
+  sayısına göre sıralanıp toplam yayının üçte birini üreten ardışık gruplar
+  3 bölgeye ayrılıyor (çekirdek + 2 bölge). `bradford_zones()` (saf hesap)
+  + `bradford_law()` (tablo+grafik, `citation_analysis`'teki iki panel
+  kalıbı yeniden kullanıldı) eklendi, 18. analiz olarak `run_all_analyses`'a
+  kaydedildi — istatistik araç sayısı 17→18, tüm "17 Analiz" referansları
+  (2 şablon, e-posta, admin help_text) güncellendi. Tablo yüksekliği sabit
+  tutuldu (Topic Map'teki boş alan sorunu tekrarlanmadı, görsel olarak
+  doğrulandı). 5 yeni pytest, EN/DE çevrildi, migration yok.
+  `forum+bibliometrics` 143/143 geçti. **Sırada B2-2** (anahtar kelime
+  eş-oluşum ağı + Louvain kümeleri; bkz.
+  `bibliometri_durum_ve_gelistirme_prompt.md` §4).
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

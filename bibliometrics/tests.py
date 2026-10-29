@@ -25,6 +25,8 @@ from bibliometrics.services.analyzer import (
     author_collaboration,
     normalize_keywords,
     _simple_depluralize,
+    bradford_zones,
+    bradford_law,
 )
 import bibliometrics.services.analyzer as analyzer_module
 from bibliometrics.services.report_notes import build_report_notes
@@ -452,3 +454,48 @@ def test_normalize_keywords_falls_back_to_depluralize_when_lemmatization_unchang
     çoğul→tekil kuralı devreye girer (B1-4)."""
     monkeypatch.setattr(analyzer_module, 'lemmatize_word', lambda w: w)
     assert normalize_keywords(['cats']) == ['cat']
+
+
+def _journal_records(counts: dict):
+    recs = []
+    for journal, n in counts.items():
+        for _ in range(n):
+            recs.append({'journal': journal})
+    return recs
+
+
+def test_bradford_zones_splits_into_three_equal_thirds():
+    """B2-1: bölgeler yaklaşık eşit yayın sayısı taşımalı, az dergi çok yayın
+    üretiyorsa (çekirdek) Bölge 1'in dergi sayısı Bölge 3'ten belirgin az olmalı."""
+    counts = {f'J{i}': c for i, c in enumerate([30, 15, 10, 5, 5, 3, 3, 2, 2, 1])}
+    records = _journal_records(counts)
+    zones, totals = bradford_zones(records)
+    total = sum(counts.values())
+    assert sum(totals) == total
+    assert len(zones[0]) < len(zones[2])
+    # Her bölge toplamı hedef (total/3)'e yakın olmalı (son bölge kalanı taşır)
+    for t in totals[:2]:
+        assert abs(t - total / 3) <= max(counts.values())
+
+
+def test_bradford_zones_insufficient_journals_returns_none():
+    records = _journal_records({'J1': 5, 'J2': 3})  # yalnız 2 farklı dergi
+    zones, totals = bradford_zones(records)
+    assert zones is None and totals is None
+
+
+def test_bradford_law_returns_none_without_enough_journals():
+    assert bradford_law(_journal_records({'Tek Dergi': 10})) is None
+
+
+def test_bradford_law_figure_table_matches_zone_totals():
+    counts = {f'J{i}': c for i, c in enumerate([30, 15, 10, 5, 5, 3, 3, 2, 2, 1])}
+    records = _journal_records(counts)
+    zones, totals = bradford_zones(records)
+    fig = bradford_law(records)
+    assert fig is not None
+    table = fig.axes[1].tables[0]
+    cells = table.get_celld()
+    # Satır 1 (ilk veri satırı, 0 başlık) → Bölge 1 dergi/yayın sayısı
+    assert cells[(1, 1)].get_text().get_text() == str(len(zones[0]))
+    assert cells[(1, 2)].get_text().get_text() == f'{totals[0]:,}'

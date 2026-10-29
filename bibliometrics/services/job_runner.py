@@ -267,7 +267,7 @@ def _full_report_lines(site_url: str, job) -> list:
     from django.utils.translation import get_language
     lines = [
         '─' * 37,
-        gettext('TAM RAPOR (17 Analize Kadar)'),
+        gettext('TAM RAPOR (18 Analize Kadar)'),
         '─' * 37,
         '  • ' + gettext('Yayın Trendi + Büyüme Oranı'),
         '  • ' + gettext('En Verimli Yazarlar + Lotka Kanunu'),
@@ -280,7 +280,8 @@ def _full_report_lines(site_url: str, job) -> list:
         '  • ' + gettext('Yayın Türleri + Atıf Analizi + H-index'),
         '  • ' + gettext('Yıllık Atıf Trendi'),
         '  • ' + gettext('Araştırma Konusu Kümeleri (Topic Map)'),
-        '  • ' + gettext('Araştırma Boşluğu Haritası (Research Gap)') + '\n',
+        '  • ' + gettext('Araştırma Boşluğu Haritası (Research Gap)'),
+        '  • ' + gettext('Bradford Kanunu — Çekirdek Dergi Bölgeleri') + '\n',
     ]
     if (get_language() or 'tr')[:2] == 'tr':
         lines += [gettext('Sipariş oluşturmak için:'), f'  {site_url}/bibliometrics/siparis/{job.id}/\n']

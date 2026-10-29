@@ -256,6 +256,8 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
          gettext('Birlikte geçen en az 4 anahtar kelimeden oluşan küme bulunamadı.')),
         (gettext('Araştırma Boşluğu Haritası (Research Gap)'), lambda: research_gap(records),
          gettext('Yayın yılı bilgisi ve en az 3 yayında geçen en az 5 anahtar kelime gerekir.'), True),
+        (gettext('Bradford Kanunu — Çekirdek Dergi Bölgeleri'), lambda: bradford_law(records),
+         gettext('En az 3 farklı dergi/kaynak gerekir.')),
     ]
     citation_based = {
         gettext('En Çok Atıf Alan Yayınlar (Top 10)'), gettext('Atıf Analizi ve H-index'),
@@ -1404,6 +1406,112 @@ def topic_map(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8)
     ax.set_ylim(0, (rows + 0.5) * 2.5)
     ax.axis('off')
     ax.set_title(gettext('Araştırma Konusu Kümeleri (Topic Map)'), pad=18)
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 18. Bradford Kanunu ───────────────────────────
+
+def bradford_zones(records: list[dict]):
+    """
+    Bradford Kanunu (B2-1) hesaplaması: dergiler yayın sayısına göre azalan sırada
+    dizilip, toplam yayının üçte birini üreten ardışık dergi grupları 3 bölgeye
+    ayrılır. Bölge 1 (çekirdek) en az dergiyle aynı yayın miktarını üretir; Bölge 2
+    ve 3'te aynı miktar yayın için giderek daha fazla dergi gerekir — konunun az
+    sayıda "çekirdek" dergide yoğunlaştığını gösterir.
+    Döner: (zones: [[(dergi, yayın sayısı), ...] × 3], zone_totals: [int, int, int])
+    veya veri yetersizse (None, None).
+    """
+    journals = [r['journal'].strip() for r in records if r.get('journal', '').strip()]
+    if len(set(journals)) < 3:
+        return None, None
+
+    counter = Counter(journals)
+    ranked = counter.most_common()  # (dergi, yayın sayısı), azalan sırada
+    total = sum(c for _, c in ranked)
+    zone_target = total / 3
+
+    zones: list[list] = [[], [], []]
+    zone_totals = [0, 0, 0]
+    zone_idx = 0
+    for journal, count in ranked:
+        if zone_idx < 2 and zone_totals[zone_idx] >= zone_target:
+            zone_idx += 1
+        zones[zone_idx].append((journal, count))
+        zone_totals[zone_idx] += count
+
+    return zones, zone_totals
+
+
+def bradford_law(records: list[dict]):
+    """Bradford Kanunu grafiği — bölge hesabı için bkz. bradford_zones()."""
+    zones, zone_totals = bradford_zones(records)
+    if zones is None:
+        return None
+    total = sum(zone_totals)
+
+    zone_colors = [TREND_RED, PALETTE[1], PALETTE[9]]
+    zone_row_colors = ['#fee2e2', '#fef3c7', '#e0e7ff']
+    zone_labels = [gettext('Bölge 1 (Çekirdek)'), gettext('Bölge 2'), gettext('Bölge 3')]
+
+    # Bölge 1 ve 2 tek tek gösterilir (çekirdeği oluşturan dergiler); Bölge 3
+    # genelde çok kalabalık olduğundan yalnız tabloda sayı/toplamla özetlenir.
+    shown = zones[0] + zones[1]
+    shown_names = [j[:45] + '…' if len(j) > 45 else j for j, _ in shown]
+    shown_counts = [c for _, c in shown]
+    shown_colors = [zone_colors[0]] * len(zones[0]) + [zone_colors[1]] * len(zones[1])
+
+    fig_height = max(8, len(shown) * 0.45)
+    fig, (ax1, ax2) = plt.subplots(
+        1, 2, figsize=(13, fig_height),
+        gridspec_kw={'width_ratios': [1.3, 1]},
+    )
+
+    y_pos = range(len(shown_names))
+    bars = ax1.barh(y_pos, shown_counts, color=shown_colors, alpha=0.9,
+                    edgecolor='white', linewidth=0.5)
+    ax1.set_yticks(y_pos)
+    ax1.set_yticklabels(shown_names, fontsize=9)
+    ax1.invert_yaxis()
+    ax1.set_xlabel(gettext('Yayın Sayısı'), fontsize=11, labelpad=8)
+    ax1.set_title(gettext('Bölge 1 ve 2 Dergileri'), fontsize=13, fontweight='bold')
+    ax1.grid(axis='x', zorder=1)
+    _add_hbar_labels(ax1, bars)
+    ax1.legend(handles=[mpatches.Patch(color=zone_colors[0], label=zone_labels[0]),
+                        mpatches.Patch(color=zone_colors[1], label=zone_labels[1])],
+               fontsize=9, loc='lower right')
+
+    ax2.axis('off')
+    table_rows = [
+        [zone_labels[i], f'{len(zones[i]):,}', f'{zone_totals[i]:,}',
+         f'%{round(100 * zone_totals[i] / total)}']
+        for i in range(3)
+    ]
+    # Tablo yalnız 4 satır (başlık + 3 bölge) — sol panel uzun dergi listesiyle
+    # yükseldiğinde ax2 de yükselir; tablo sabit ~2.6" yükseklikte üstte tutulur,
+    # yoksa altında devasa boş alan kalır (Topic Map'teki boş alan sorunuyla aynı
+    # kalıptan kaçınma).
+    table_frac = min(1.0, 2.6 / fig_height)
+    tbl = ax2.table(
+        cellText=table_rows,
+        colLabels=[gettext('Bölge'), gettext('Dergi Sayısı'), gettext('Yayın Sayısı'), gettext('Pay')],
+        cellLoc='center',
+        colWidths=[0.32, 0.26, 0.26, 0.16],
+        bbox=[0.0, 1 - table_frac, 1.0, table_frac],
+    )
+    tbl.auto_set_font_size(False)
+    tbl.set_fontsize(10.5)
+    for (row, col), cell in tbl.get_celld().items():
+        if row == 0:
+            cell.set_facecolor('#1e3a5f')
+            cell.set_text_props(color='white', fontweight='bold')
+        else:
+            cell.set_facecolor(zone_row_colors[row - 1])
+            cell.set_text_props(color='#1e293b')
+        cell.set_edgecolor('#cbd5e0')
+    ax2.set_title(gettext('Bradford Bölgeleri Özeti'), fontsize=13, fontweight='bold', pad=20)
+
+    fig.suptitle(gettext('Bradford Kanunu — Çekirdek Dergi Bölgeleri'), fontsize=15, fontweight='bold', y=1.01)
     fig.tight_layout(pad=2.0)
     return fig
 

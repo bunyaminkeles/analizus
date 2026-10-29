@@ -175,6 +175,8 @@ def _rules(source, last_year, stats=None):
                 'oranıdır; atıf etkisi, kelimenin geçtiği yayınların ortalama atıfıdır.').format(
             n=_default(analyzer.research_gap, 'top_n'),
             y=_default(analyzer.research_gap, 'recent_years')),
+        gettext('Bradford Kanunu\'nda dergiler yayın sayısına göre sıralanıp, toplam yayının üçte birini '
+                'üreten art arda gelen dergi grupları 3 bölgeye ayrıldı (Bölge 1 = çekirdek).'),
     ]
     return rules
 

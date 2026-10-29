@@ -67,7 +67,21 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
      kelimeyi döndürüyor) — prod'da durum doğrulanmadı, ayrı bir inceleme
      gerektirir. 4 yeni pytest, rapor "Uygulanan kurallar" metni EN/DE
      güncellendi, migration yok. `forum+bibliometrics` 139/139.
-   - [ ] B2-B4 (bkz. plan dosyası §4)
+   - [x] **B2-1 TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi):** Bradford
+     Kanunu. `analyzer.py`'ye `bradford_zones()` (saf hesap, test edilebilir)
+     + `bradford_law()` (tablo+grafik, citation_analysis'teki iki panel
+     kalıbı) eklendi; `run_all_analyses`'a 18. analiz olarak kaydedildi
+     (istatistik araç sayısı 17→18). Tablo sabit ~2.6" yükseklikte üstte
+     sabitlendi (Topic Map'teki "devasa boş alan" sorunuyla aynı kalıba
+     düşülmedi — küçük/büyük veri setiyle görsel olarak doğrulandı). Tüm
+     "17 Analiz" referansları (2 şablon, e-posta metni, admin/SiteSettings
+     help_text) 18'e güncellendi. 5 yeni pytest, rapor "kurallar" metnine
+     yöntem cümlesi eklendi, EN/DE çevrildi. Migration yok.
+     `forum+bibliometrics` 143/143.
+   - [ ] B2-2..B2-8 (bkz. plan dosyası §4 — anahtar kelime eş-oluşum
+     kümeleri/Louvain, tematik harita, tematik evrim, üç alan grafiği,
+     ülke işbirliği SCP/MCP, atıf ağları, konu modelleme)
+   - [ ] B3-B4 (bkz. plan dosyası §4)
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
 sürebilir (~10 dk'ya kadar), bir dahaki "donmuş gibi görünen" deploy'da
