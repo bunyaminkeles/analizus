@@ -4,7 +4,9 @@ Beyaz/açık tema, çok renkli grafikler, profesyonel görünüm.
 Her fonksiyon (title, matplotlib.figure.Figure) tuple döndürür.
 """
 import io
+import re
 import logging
+import unicodedata
 from django.utils.translation import gettext
 from collections import Counter, defaultdict
 
@@ -54,17 +56,32 @@ def lemmatize_word(word: str) -> str:
         pass
     return word
 
+def _simple_depluralize(word: str) -> str:
+    """Zeyrek'in tanıyamadığı (muhtemelen yabancı dil, ör. İngilizce) tek kelimeler için
+    basit çoğul→tekil kuralı (B1-4) — kusursuz değil, pragmatik bir sezgisel kural
+    (anahtar kelime normalizasyonunun geri kalanıyla aynı düzey)."""
+    if len(word) > 4 and word.endswith('ies'):
+        return word[:-3] + 'y'
+    if len(word) > 4 and word.endswith(('ses', 'xes', 'zes', 'ches', 'shes')):
+        return word[:-2]
+    if len(word) > 3 and word.endswith('s') and not word.endswith('ss'):
+        return word[:-1]
+    return word
+
+
 def normalize_keywords(keywords: list[str]) -> list[str]:
     """
     Keyword listesini normalize eder:
+    - Küçük harf, tire/boşluk farkını yok say (B1-4: "COVID-19" ~ "COVID 19")
     - Stopword filtrele
-    - Tek kelime ise lemmatize et
+    - Tek kelime ise Türkçe lemmatize et; başarısızsa basit çoğul→tekil kuralı dene (B1-4)
     - Çok kelimeli ifadeleri olduğu gibi bırak (makine öğrenmesi vb.)
     """
     stopwords = _get_tr_stopwords()
     result = []
     for kw in keywords:
-        kw = kw.strip().lower()
+        kw = kw.strip().lower().replace('-', ' ')
+        kw = re.sub(r'\s+', ' ', kw).strip()
         if not kw or len(kw) < 2:
             continue
         if kw in stopwords:
@@ -73,7 +90,10 @@ def normalize_keywords(keywords: list[str]) -> list[str]:
         if ' ' in kw:
             result.append(kw)
         else:
-            result.append(lemmatize_word(kw))
+            lemma = lemmatize_word(kw)
+            if lemma == kw:
+                lemma = _simple_depluralize(kw)
+            result.append(lemma)
     return result
 
 def normalize_abstract_words(abstract: str) -> list[str]:
@@ -86,6 +106,55 @@ def normalize_abstract_words(abstract: str) -> list[str]:
             continue
         words.append(lemmatize_word(w))
     return words
+
+def _strip_accents(s: str) -> str:
+    return ''.join(c for c in unicodedata.normalize('NFKD', s) if not unicodedata.combining(c))
+
+
+def canonical_author_key(name: str) -> str:
+    """Yazar adı varyantlarını ('Smith, J.' / 'John Smith' / 'JOHN SMITH') tek anahtar
+    altında birleştirir: soyad + ilk adın baş harfi, aksan ve büyük/küçük harf yok
+    sayılır (B1-2 tekilleştirmedeki normalizasyonla aynı pragmatik düzey — mükemmel
+    değil, ör. çok parçalı soyadlarda yalnız son kelime soyad sayılır). OpenAlex
+    author ID'si henüz kullanılmıyor: CSV/BibTeX yazar listesiyle OpenAlex authorship
+    listesi arasında konumsal eşleme güvenilir değil, isim benzerliğiyle eşleme
+    gerekir — Faz B2'de (eş-atıf ağları, yazar ID ile homonym çözümü) ele alınacak.
+    """
+    name = _strip_accents(name).lower().strip()
+    name = re.sub(r'[.·]', '', name)
+    if ',' in name:
+        last, _, rest = name.partition(',')
+        first_initial = next((c for c in rest.strip() if c.isalpha()), '')
+    else:
+        parts = [p for p in re.split(r'\s+', name) if p]
+        if not parts:
+            return ''
+        last = parts[-1]
+        first_initial = parts[0][0] if parts[0][:1].isalpha() else ''
+    last = re.sub(r'[^a-z\s-]', '', last).strip()
+    if not last:
+        return ''
+    return f'{last} {first_initial}'.strip()
+
+
+def _group_authors(records: list[dict]):
+    """Her kayıttaki yazar adlarını kanonik anahtara göre gruplar.
+    Döner: (counts: {key: yayın sayısı}, display: {key: gösterilecek en uzun ad varyantı})."""
+    counts = Counter()
+    display = {}
+    for r in records:
+        for a in r.get('authors', []):
+            a = a.strip()
+            if not a:
+                continue
+            key = canonical_author_key(a)
+            if not key:
+                continue
+            counts[key] += 1
+            if key not in display or len(a) > len(display[key]):
+                display[key] = a
+    return counts, display
+
 
 import matplotlib
 matplotlib.use('Agg')
@@ -187,6 +256,10 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
          gettext('Birlikte geçen en az 4 anahtar kelimeden oluşan küme bulunamadı.')),
         (gettext('Araştırma Boşluğu Haritası (Research Gap)'), lambda: research_gap(records),
          gettext('Yayın yılı bilgisi ve en az 3 yayında geçen en az 5 anahtar kelime gerekir.'), True),
+        (gettext('Bradford Kanunu — Çekirdek Dergi Bölgeleri'), lambda: bradford_law(records),
+         gettext('En az 3 farklı dergi/kaynak gerekir.')),
+        (gettext('Tematik Harita (Callon Merkeziyet × Yoğunluk)'), lambda: thematic_map(records),
+         gettext('Anahtar kelime eş-oluşum ağında en az 2 küme gerekir.')),
     ]
     citation_based = {
         gettext('En Çok Atıf Alan Yayınlar (Top 10)'), gettext('Atıf Analizi ve H-index'),
@@ -286,16 +359,13 @@ def publication_trend(records: list[dict]):
 # ─────────────────────────── 2. En Verimli Yazarlar ───────────────────────────
 
 def top_authors(records: list[dict], n: int = 15):
-    author_count = Counter()
-    for r in records:
-        for a in r.get('authors', []):
-            if a:
-                author_count[a.strip()] += 1
+    author_count, display = _group_authors(records)
     if not author_count:
         return None
 
     top = author_count.most_common(n)
-    names, counts = zip(*top)
+    names = [display[key] for key, _ in top]
+    counts = [c for _, c in top]
     colors = [PALETTE[i % len(PALETTE)] for i in range(len(names))]
 
     fig, ax = plt.subplots(figsize=(9, max(10, len(names) * 0.75)))
@@ -496,23 +566,26 @@ def author_collaboration(records: list[dict], max_authors: int = 35, min_collab:
 
     G = nx.Graph()
     coauth_count = Counter()
+    _, display = _group_authors(records)
 
     for r in records:
-        authors = [a.strip() for a in r.get('authors', []) if a.strip()]
-        if len(authors) < 2:
+        keys = sorted(set(
+            canonical_author_key(a.strip()) for a in r.get('authors', []) if a.strip()
+        ) - {''})
+        if len(keys) < 2:
             continue
-        for i in range(len(authors)):
-            for j in range(i + 1, len(authors)):
-                pair = tuple(sorted([authors[i], authors[j]]))
+        for i in range(len(keys)):
+            for j in range(i + 1, len(keys)):
+                pair = tuple(sorted([keys[i], keys[j]]))
                 coauth_count[pair] += 1
 
     for (a1, a2), weight in coauth_count.items():
         if weight >= min_collab:
-            G.add_edge(a1, a2, weight=weight)
+            G.add_edge(display[a1], display[a2], weight=weight)
 
     if G.number_of_nodes() == 0:
         for (a1, a2), weight in coauth_count.most_common(60):
-            G.add_edge(a1, a2, weight=weight)
+            G.add_edge(display[a1], display[a2], weight=weight)
 
     if G.number_of_nodes() == 0:
         return None
@@ -820,11 +893,7 @@ def publication_growth_rate(records: list[dict]):
 # ─────────────────────────── 12. Lotka Kanunu ───────────────────────────
 
 def lotka_law(records: list[dict]):
-    author_count = Counter()
-    for r in records:
-        for a in r.get('authors', []):
-            if a.strip():
-                author_count[a.strip()] += 1
+    author_count, _ = _group_authors(records)
     if not author_count:
         return None
 
@@ -866,11 +935,19 @@ def lotka_law(records: list[dict]):
 
 # ─────────────────────────── 13. Anahtar Kelime Eş-Oluşum Ağı ───────────────────────────
 
-def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int = 2):
+def keyword_clusters(records: list[dict], max_kw: int = 40, min_cooccur: int = 2):
+    """
+    Anahtar kelime eş-oluşum grafı + Louvain kümeleri (B2-2). VOSviewer/bibliometrix
+    eşitliği için sabit seed'li Louvain kullanılır (`networkx.algorithms.community.
+    louvain_communities`) — tekrarlanabilir kümeler, her çalıştırmada aynı sonuç.
+    Döner: (G, communities, all_kw) — communities büyükten küçüğe sıralı set listesi,
+    ya da veri yetersizse (None, None, None).
+    """
     try:
         import networkx as nx
+        from networkx.algorithms.community import louvain_communities
     except ImportError:
-        return None
+        return None, None, None
 
     # Önce en sık geçen anahtar kelimeleri bul
     all_kw = Counter()
@@ -880,7 +957,7 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
                 all_kw[k] += 1
 
     if not all_kw:
-        return None
+        return None, None, None
 
     top_kw_set = {kw for kw, _ in all_kw.most_common(80)}
 
@@ -904,58 +981,115 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
             G.add_edge(k1, k2, weight=w)
 
     if G.number_of_nodes() == 0:
-        return None
+        return None, None, None
 
     if G.number_of_nodes() > max_kw:
         top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_kw]
         G = G.subgraph([n for n, _ in top_nodes]).copy()
 
-    # Community detection (VOSviewer-style cluster renklendirmesi)
     try:
-        from networkx.algorithms.community import greedy_modularity_communities
-        communities = list(greedy_modularity_communities(G, weight='weight'))
-        node_community = {}
-        for i, comm in enumerate(communities):
-            for node in comm:
-                node_community[node] = i
+        communities = sorted(
+            (set(c) for c in louvain_communities(G, weight='weight', seed=42)),
+            key=len, reverse=True,
+        )
     except Exception:
-        node_community = {n: 0 for n in G.nodes()}
+        communities = [set(G.nodes())]
 
-    n_clusters = max(node_community.values()) + 1 if node_community else 1
+    return G, communities, all_kw
+
+
+def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int = 2):
+    import networkx as nx
+    G, communities, all_kw = keyword_clusters(records, max_kw, min_cooccur)
+    if G is None:
+        return None
+
+    node_community = {n: i for i, comm in enumerate(communities) for n in comm}
+    n_clusters = len(communities)
     cluster_colors = PALETTE[:n_clusters] if n_clusters <= len(PALETTE) else PALETTE
 
-    degrees = dict(G.degree())
     node_sizes = [300 + all_kw.get(n, 1) * 60 for n in G.nodes()]
     node_colors = [cluster_colors[node_community.get(n, 0) % len(cluster_colors)]
                    for n in G.nodes()]
     edge_weights = [G[u][v].get('weight', 1) for u, v in G.edges()]
 
-    fig, ax = plt.subplots(figsize=(12, 10))
-    ax.set_facecolor('#f8fafc')
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 10),
+                                   gridspec_kw={'width_ratios': [1.6, 1]})
+    ax1.set_facecolor('#f8fafc')
     fig.patch.set_facecolor('white')
 
     pos = nx.spring_layout(G, seed=42, k=2.5, weight='weight')
 
-    nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.25,
+    nx.draw_networkx_edges(G, pos, ax=ax1, alpha=0.25,
                            width=[min(w * 0.6, 4.0) for w in edge_weights],
                            edge_color='#94a3b8')
-    nx.draw_networkx_nodes(G, pos, ax=ax, node_size=node_sizes,
+    nx.draw_networkx_nodes(G, pos, ax=ax1, node_size=node_sizes,
                            node_color=node_colors, alpha=0.88,
                            linewidths=1.2, edgecolors='white')
-    nx.draw_networkx_labels(G, pos, ax=ax, font_size=7.5,
+    nx.draw_networkx_labels(G, pos, ax=ax1, font_size=7.5,
                             font_color='#1e293b', font_weight='bold')
 
-    # Cluster legend
     legend_patches = [
         mpatches.Patch(color=cluster_colors[i % len(cluster_colors)],
                        label=gettext('Küme {n}').format(n=i + 1))
         for i in range(min(n_clusters, 8))
     ]
-    ax.legend(handles=legend_patches, loc='lower right', fontsize=8,
+    ax1.legend(handles=legend_patches, loc='lower right', fontsize=8,
               framealpha=0.85, title=gettext('Araştırma Kümeleri'), title_fontsize=9)
+    ax1.set_title(gettext('Eş-Oluşum Ağı'), fontsize=13, fontweight='bold')
+    ax1.axis('off')
 
-    ax.set_title(gettext('Anahtar Kelime Eş-Oluşum Ağı (VOSviewer-style)'))
-    ax.axis('off')
+    # B2-2: küme başına ilk kelimeler tablosu
+    ax2.axis('off')
+    shown_clusters = communities[:8]
+
+    def _top_terms_label(comm):
+        terms = sorted(comm, key=lambda n: all_kw.get(n, 0), reverse=True)
+        label, shown_n = '', 0
+        for t in terms:
+            candidate = f'{label}, {t}' if label else t
+            if len(candidate) > 48 and shown_n > 0:
+                break
+            label, shown_n = candidate, shown_n + 1
+        if shown_n < len(terms):
+            label += '…'
+        return label
+
+    table_rows = [
+        [gettext('Küme {n}').format(n=i + 1), _top_terms_label(comm)]
+        for i, comm in enumerate(shown_clusters)
+    ]
+    table_frac = min(1.0, (len(table_rows) + 1) * 0.08)
+    tbl = ax2.table(
+        cellText=table_rows,
+        colLabels=[gettext('Küme'), gettext('İlk Kelimeler')],
+        cellLoc='left',
+        colWidths=[0.2, 0.8],
+        bbox=[0.0, 1 - table_frac, 1.0, table_frac],
+    )
+    tbl.auto_set_font_size(False)
+    tbl.set_fontsize(9)
+    for (row, col), cell in tbl.get_celld().items():
+        cell.set_edgecolor('#cbd5e0')
+        if row == 0:
+            cell.set_facecolor('#1e3a5f')
+            cell.set_text_props(color='white', fontweight='bold')
+        else:
+            cell.set_facecolor('white' if row % 2 else '#f8fafc')
+            if col == 0:
+                cell.set_text_props(color=cluster_colors[(row - 1) % len(cluster_colors)],
+                                    fontweight='bold')
+            else:
+                cell.set_text_props(color='#1e293b')
+
+    ax2.text(0.0, 1 - table_frac - 0.04,
+             gettext('Toplam {n} anahtar kelime, {e} bağlantı, {c} küme').format(
+                 n=G.number_of_nodes(), e=G.number_of_edges(), c=n_clusters),
+             transform=ax2.transAxes, fontsize=9, color='#475569', va='top')
+    ax2.set_title(gettext('Kümelere Göre İlk Kelimeler'), fontsize=13, fontweight='bold', pad=20)
+
+    fig.suptitle(gettext('Anahtar Kelime Eş-Oluşum Ağı ve Kümeler (VOSviewer-style)'),
+                fontsize=15, fontweight='bold', y=1.01)
     fig.tight_layout(pad=2.0)
     return fig
 
@@ -1339,6 +1473,217 @@ def topic_map(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8)
     ax.set_ylim(0, (rows + 0.5) * 2.5)
     ax.axis('off')
     ax.set_title(gettext('Araştırma Konusu Kümeleri (Topic Map)'), pad=18)
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 18. Bradford Kanunu ───────────────────────────
+
+def bradford_zones(records: list[dict]):
+    """
+    Bradford Kanunu (B2-1) hesaplaması: dergiler yayın sayısına göre azalan sırada
+    dizilip, toplam yayının üçte birini üreten ardışık dergi grupları 3 bölgeye
+    ayrılır. Bölge 1 (çekirdek) en az dergiyle aynı yayın miktarını üretir; Bölge 2
+    ve 3'te aynı miktar yayın için giderek daha fazla dergi gerekir — konunun az
+    sayıda "çekirdek" dergide yoğunlaştığını gösterir.
+    Döner: (zones: [[(dergi, yayın sayısı), ...] × 3], zone_totals: [int, int, int])
+    veya veri yetersizse (None, None).
+    """
+    journals = [r['journal'].strip() for r in records if r.get('journal', '').strip()]
+    if len(set(journals)) < 3:
+        return None, None
+
+    counter = Counter(journals)
+    ranked = counter.most_common()  # (dergi, yayın sayısı), azalan sırada
+    total = sum(c for _, c in ranked)
+    zone_target = total / 3
+
+    zones: list[list] = [[], [], []]
+    zone_totals = [0, 0, 0]
+    zone_idx = 0
+    for journal, count in ranked:
+        if zone_idx < 2 and zone_totals[zone_idx] >= zone_target:
+            zone_idx += 1
+        zones[zone_idx].append((journal, count))
+        zone_totals[zone_idx] += count
+
+    return zones, zone_totals
+
+
+def bradford_law(records: list[dict]):
+    """Bradford Kanunu grafiği — bölge hesabı için bkz. bradford_zones()."""
+    zones, zone_totals = bradford_zones(records)
+    if zones is None:
+        return None
+    total = sum(zone_totals)
+
+    zone_colors = [TREND_RED, PALETTE[1], PALETTE[9]]
+    zone_row_colors = ['#fee2e2', '#fef3c7', '#e0e7ff']
+    zone_labels = [gettext('Bölge 1 (Çekirdek)'), gettext('Bölge 2'), gettext('Bölge 3')]
+
+    # Bölge 1 ve 2 tek tek gösterilir (çekirdeği oluşturan dergiler); Bölge 3
+    # genelde çok kalabalık olduğundan yalnız tabloda sayı/toplamla özetlenir.
+    shown = zones[0] + zones[1]
+    shown_names = [j[:45] + '…' if len(j) > 45 else j for j, _ in shown]
+    shown_counts = [c for _, c in shown]
+    shown_colors = [zone_colors[0]] * len(zones[0]) + [zone_colors[1]] * len(zones[1])
+
+    fig_height = max(8, len(shown) * 0.45)
+    fig, (ax1, ax2) = plt.subplots(
+        1, 2, figsize=(13, fig_height),
+        gridspec_kw={'width_ratios': [1.3, 1]},
+    )
+
+    y_pos = range(len(shown_names))
+    bars = ax1.barh(y_pos, shown_counts, color=shown_colors, alpha=0.9,
+                    edgecolor='white', linewidth=0.5)
+    ax1.set_yticks(y_pos)
+    ax1.set_yticklabels(shown_names, fontsize=9)
+    ax1.invert_yaxis()
+    ax1.set_xlabel(gettext('Yayın Sayısı'), fontsize=11, labelpad=8)
+    ax1.set_title(gettext('Bölge 1 ve 2 Dergileri'), fontsize=13, fontweight='bold')
+    ax1.grid(axis='x', zorder=1)
+    _add_hbar_labels(ax1, bars)
+    ax1.legend(handles=[mpatches.Patch(color=zone_colors[0], label=zone_labels[0]),
+                        mpatches.Patch(color=zone_colors[1], label=zone_labels[1])],
+               fontsize=9, loc='lower right')
+
+    ax2.axis('off')
+    table_rows = [
+        [zone_labels[i], f'{len(zones[i]):,}', f'{zone_totals[i]:,}',
+         f'%{round(100 * zone_totals[i] / total)}']
+        for i in range(3)
+    ]
+    # Tablo yalnız 4 satır (başlık + 3 bölge) — sol panel uzun dergi listesiyle
+    # yükseldiğinde ax2 de yükselir; tablo sabit ~2.6" yükseklikte üstte tutulur,
+    # yoksa altında devasa boş alan kalır (Topic Map'teki boş alan sorunuyla aynı
+    # kalıptan kaçınma).
+    table_frac = min(1.0, 2.6 / fig_height)
+    tbl = ax2.table(
+        cellText=table_rows,
+        colLabels=[gettext('Bölge'), gettext('Dergi Sayısı'), gettext('Yayın Sayısı'), gettext('Pay')],
+        cellLoc='center',
+        colWidths=[0.32, 0.26, 0.26, 0.16],
+        bbox=[0.0, 1 - table_frac, 1.0, table_frac],
+    )
+    tbl.auto_set_font_size(False)
+    tbl.set_fontsize(10.5)
+    for (row, col), cell in tbl.get_celld().items():
+        if row == 0:
+            cell.set_facecolor('#1e3a5f')
+            cell.set_text_props(color='white', fontweight='bold')
+        else:
+            cell.set_facecolor(zone_row_colors[row - 1])
+            cell.set_text_props(color='#1e293b')
+        cell.set_edgecolor('#cbd5e0')
+    ax2.set_title(gettext('Bradford Bölgeleri Özeti'), fontsize=13, fontweight='bold', pad=20)
+
+    fig.suptitle(gettext('Bradford Kanunu — Çekirdek Dergi Bölgeleri'), fontsize=15, fontweight='bold', y=1.01)
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 19. Tematik Harita ───────────────────────────
+
+def thematic_map_themes(records: list[dict], max_kw: int = 40, min_cooccur: int = 2):
+    """
+    Tematik harita (B2-3, Callon merkeziyet × yoğunluk) hesabı. `keyword_clusters()`
+    ile bulunan her Louvain kümesi (tema) için:
+    - Merkeziyet: temanın DİĞER temalarla dışa bağlantı gücü — 10 × (kümeyle diğer
+      kümeler arasındaki toplam eş-oluşum ağırlığı). Yüksekse tema alanın genelinde
+      önemli/merkezi.
+    - Yoğunluk: temanın İÇ tutarlılığı — 10 × (küme içi toplam eş-oluşum ağırlığı) /
+      küme büyüklüğü. Yüksekse tema kendi içinde olgun/gelişmiş.
+    Döner: (themes, mean_centrality, mean_density) — themes: [{'label', 'centrality',
+    'density', 'weight'}, ...], ya da veri yetersizse (None, None, None).
+    """
+    G, communities, all_kw = keyword_clusters(records, max_kw, min_cooccur)
+    if G is None or len(communities) < 2:
+        return None, None, None
+
+    node_cluster = {n: i for i, comm in enumerate(communities) for n in comm}
+    internal_weight = defaultdict(float)
+    external_weight = defaultdict(float)
+    for u, v, data in G.edges(data=True):
+        w = data.get('weight', 1)
+        cu, cv = node_cluster[u], node_cluster[v]
+        if cu == cv:
+            internal_weight[cu] += w
+        else:
+            external_weight[cu] += w
+            external_weight[cv] += w
+
+    themes = []
+    for i, comm in enumerate(communities):
+        top_terms = sorted(comm, key=lambda n: all_kw.get(n, 0), reverse=True)[:2]
+        themes.append({
+            'label': ' / '.join(top_terms),
+            'centrality': 10 * external_weight.get(i, 0),
+            'density': 10 * internal_weight.get(i, 0) / len(comm),
+            'weight': sum(all_kw.get(kw, 0) for kw in comm),
+        })
+
+    mean_centrality = sum(t['centrality'] for t in themes) / len(themes)
+    mean_density = sum(t['density'] for t in themes) / len(themes)
+    return themes, mean_centrality, mean_density
+
+
+def thematic_map(records: list[dict]):
+    """
+    Tematik harita grafiği: her tema merkeziyet (x) × yoğunluk (y) düzleminde bir
+    balon; ortalama değerler dört kadranı ayırır (bibliometrix/SciMAT kalıbı):
+    sağ-üst Motor, sol-üst Niş, sağ-alt Temel, sol-alt Gelişen/Azalan Temalar.
+    """
+    themes, mean_c, mean_d = thematic_map_themes(records)
+    if themes is None:
+        return None
+
+    max_weight = max(t['weight'] for t in themes) or 1
+    sizes = [300 + 2200 * t['weight'] / max_weight for t in themes]
+    colors = [PALETTE[i % len(PALETTE)] for i in range(len(themes))]
+
+    fig, ax = plt.subplots(figsize=(11, 10))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    xs = [t['centrality'] for t in themes]
+    ys = [t['density'] for t in themes]
+    x_pad = (max(xs) - min(xs)) * 0.25 or 1
+    y_pad = (max(ys) - min(ys)) * 0.25 or 1
+    x_min, x_max = min(0, min(xs) - x_pad), max(xs) + x_pad
+    y_min, y_max = min(0, min(ys) - y_pad), max(ys) + y_pad
+
+    # Kadran arka planı
+    ax.axvspan(mean_c, x_max, ymin=(mean_d - y_min) / (y_max - y_min), ymax=1,
+              color=TREND_RED, alpha=0.05, zorder=0)
+    ax.axvspan(x_min, mean_c, ymin=(mean_d - y_min) / (y_max - y_min), ymax=1,
+              color=PALETTE[1], alpha=0.05, zorder=0)
+    ax.axvspan(mean_c, x_max, ymin=0, ymax=(mean_d - y_min) / (y_max - y_min),
+              color=PALETTE[4], alpha=0.05, zorder=0)
+    ax.axvspan(x_min, mean_c, ymin=0, ymax=(mean_d - y_min) / (y_max - y_min),
+              color=PALETTE[9], alpha=0.05, zorder=0)
+
+    ax.axvline(mean_c, color='#94a3b8', linestyle='--', linewidth=1, zorder=1)
+    ax.axhline(mean_d, color='#94a3b8', linestyle='--', linewidth=1, zorder=1)
+
+    ax.scatter(xs, ys, s=sizes, c=colors, alpha=0.85, edgecolors='white',
+              linewidths=1.2, zorder=3)
+    for t, x, y in zip(themes, xs, ys):
+        ax.annotate(t['label'], (x, y), xytext=(0, 0), textcoords='offset points',
+                    ha='center', va='center', fontsize=8.5, fontweight='bold',
+                    color='#1e293b', zorder=4)
+
+    quadrant_kwargs = dict(fontsize=10.5, fontweight='bold', color='#475569', alpha=0.8)
+    ax.text(x_max, y_max, gettext('MOTOR TEMALAR'), ha='right', va='top', **quadrant_kwargs)
+    ax.text(x_min, y_max, gettext('NİŞ TEMALAR'), ha='left', va='top', **quadrant_kwargs)
+    ax.text(x_max, y_min, gettext('TEMEL TEMALAR'), ha='right', va='bottom', **quadrant_kwargs)
+    ax.text(x_min, y_min, gettext('GELİŞEN veya AZALAN TEMALAR'), ha='left', va='bottom', **quadrant_kwargs)
+
+    ax.set_xlim(x_min, x_max)
+    ax.set_ylim(y_min, y_max)
+    ax.set_xlabel(gettext('Merkeziyet (diğer temalarla bağlantı gücü)'), fontsize=11, labelpad=8)
+    ax.set_ylabel(gettext('Yoğunluk (tema içi tutarlılık)'), fontsize=11, labelpad=8)
+    ax.set_title(gettext('Tematik Harita (Callon Merkeziyet × Yoğunluk)'))
     fig.tight_layout(pad=2.0)
     return fig
 

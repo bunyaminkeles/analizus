@@ -132,17 +132,21 @@ def _source_warnings(records, source):
     return warnings, partial_year
 
 
-def _rules(source, last_year):
+def _rules(source, last_year, stats=None):
     """Uygulanan kurallar ve eşikler (kısa, tam cümleler)."""
+    stats = stats or {}
     rules = [
-        gettext('Başlığı olmayan kayıtlar çıkarıldı. Tekrar eden kayıtlar DOI\'ye göre, DOI yoksa başlığın '
-                'ilk 80 karakterine göre (büyük/küçük harf ayrımı yapılmadan) çıkarıldı.'),
+        gettext('Başlığı olmayan kayıtlar çıkarıldı. Tekrar eden kayıtlar DOI\'ye göre, DOI yoksa noktalama '
+                'yok sayılarak normalize edilmiş başlık ve yayın yılına göre (ikisi de bilinen kayıtlarda) '
+                'çıkarıldı.'),
         gettext('Zaman serileri (yayın trendi, büyüme oranı, anahtar kelime trendi, yıllık atıf trendi, '
                 'Araştırma Boşluğu Haritası) yalnız tamamlanmış yılları ({year} ve öncesi) kullanır; '
                 'içinde bulunulan yıl eksik olduğundan dahil edilmedi. Yayın olmayan yıllar 0 sayıldı.'
                 ).format(year=last_year),
-        gettext('Anahtar kelimeler küçük harfe çevrildi ve anlamsız sözcükler çıkarıldı; tek sözcüklü '
-                'Türkçe kelimeler kök biçimine indirildi, çok sözcüklü ifadeler olduğu gibi kullanıldı. '
+        gettext('Anahtar kelimeler küçük harfe çevrildi, tire ile boşluk aynı sayıldı (ör. "COVID-19" ve '
+                '"COVID 19" aynı anahtar kelime) ve anlamsız sözcükler çıkarıldı; tek sözcüklü Türkçe '
+                'kelimeler kök biçimine indirildi, kök bulunamayan tek sözcükler basit bir çoğul→tekil '
+                'kuralıyla (ör. "cats"→"cat") sadeleştirildi, çok sözcüklü ifadeler olduğu gibi kullanıldı. '
                 'Kelime bulutunda özetlerdeki en az 4 harfli sözcükler de kullanıldı.'),
     ]
     if source.get('kind') == 'openalex':
@@ -151,6 +155,11 @@ def _rules(source, last_year):
     elif source.get('kind') == 'pubmed':
         rules.append(gettext('Yazar anahtar kelimesi olmayan PubMed kayıtlarında MeSH terimleri anahtar '
                              'kelime yerine kullanıldı.'))
+    if stats.get('zenginlestirme_enriched'):
+        rules.append(gettext(
+            'DOI\'si olan kayıtlardan {n} tanesi OpenAlex ile zenginleştirildi: eksik atıf sayısı, '
+            'ülke, kurum ve/veya anahtar kelime bilgisi tamamlandı.'
+        ).format(n=_num(stats['zenginlestirme_enriched'])))
     rules += [
         gettext('Ülke ve kurum sayımında bir yayın, yazarlarının bulunduğu her ülke ve kurum için bir kez '
                 'sayıldı. Kurum grafiği yalnız ülke bilgisi hiç yoksa üretilir.'),
@@ -161,11 +170,19 @@ def _rules(source, last_year):
             a=_default(analyzer.author_collaboration, 'max_authors'),
             k=_default(analyzer.keyword_cooccurrence, 'max_kw'),
             c=_default(analyzer.country_collaboration, 'max_countries')),
+        gettext('Anahtar kelime kümeleri (Küme 1, 2…) Louvain algoritmasıyla belirlendi (sabit başlangıç '
+                'değeriyle — aynı veri her çalıştırmada aynı kümeleri verir), en büyükten küçüğe '
+                'numaralandırıldı.'),
         gettext('Araştırma Boşluğu Haritası en az 3 yayında geçen en sık {n} anahtar kelimeyi kullanır. '
                 'Trend, son {y} tamamlanmış yıldaki yayınlarla önceki yayınların farkının toplam yayına '
                 'oranıdır; atıf etkisi, kelimenin geçtiği yayınların ortalama atıfıdır.').format(
             n=_default(analyzer.research_gap, 'top_n'),
             y=_default(analyzer.research_gap, 'recent_years')),
+        gettext('Bradford Kanunu\'nda dergiler yayın sayısına göre sıralanıp, toplam yayının üçte birini '
+                'üreten art arda gelen dergi grupları 3 bölgeye ayrıldı (Bölge 1 = çekirdek).'),
+        gettext('Tematik Harita\'da her tema (anahtar kelime kümesi) merkeziyet (diğer temalarla bağlantı '
+                'gücü) ve yoğunluğuna (tema içi bağlantı gücü) göre konumlandırıldı; kadran sınırları tüm '
+                'temaların ortalama merkeziyet ve yoğunluğudur.'),
     ]
     return rules
 
@@ -183,8 +200,10 @@ def _limitations(coverage, current_year_count, last_year, source=None, records=N
     limitations = [
         gettext('Sonuçlar yalnız bu veri kaynağındaki kayıtları yansıtır; kaynağın taramadığı dergi, '
                 'dil ve yayın türleri kapsam dışıdır.'),
-        gettext('Yazar, kurum ve dergi adları otomatik olarak birleştirilmedi: aynı yazar farklı '
-                'yazımlarla ayrı kişi, aynı adlı farklı yazarlar tek kişi olarak sayılmış olabilir.'),
+        gettext('Yazar adları soyad ve ilk adın baş harfine göre birleştirildi (ör. "Smith, J." ve '
+                '"John Smith" aynı kişi sayılır); bu basit bir yaklaşımdır, aynı adlı farklı yazarlar '
+                'yanlışlıkla birleştirilmiş veya aynı yazarın farklı yazımları ayrı sayılmış olabilir. '
+                'Kurum ve dergi adları otomatik olarak birleştirilmedi.'),
     ]
     span = _short_series_span(records or [], last_year)
     if 3 <= span < analyzer.SHORT_SERIES_YEARS:
@@ -230,7 +249,7 @@ def build_report_notes(records, stats=None, skipped=None, source=None) -> dict:
     return {
         'flow': _data_flow(records, stats, source),
         'coverage': coverage,
-        'rules': _rules(source, last_year),
+        'rules': _rules(source, last_year, stats),
         'skipped': list(skipped or []),
         'limitations': _limitations(coverage, current_year_count, last_year, source, records),
         'source_warnings': warnings,

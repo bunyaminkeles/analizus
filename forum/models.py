@@ -1636,7 +1636,13 @@ class SiteSettings(models.Model):
     bibliometri_demo_grafik_sayisi = models.PositiveIntegerField(
         default=10,
         verbose_name="Bibliometri Demo Grafik Sayısı",
-        help_text="Bibliometri demo PDF'inde gösterilecek grafik sayısı (toplam en fazla 17 grafik üretilebilir). (default: 10)",
+        help_text="Bibliometri demo PDF'inde gösterilecek grafik sayısı (toplam en fazla 19 grafik üretilebilir). (default: 10)",
+    )
+    bibliometri_openalex_zenginlestirme_max_kayit = models.PositiveIntegerField(
+        default=2000,
+        verbose_name="Bibliometri OpenAlex Zenginleştirme Maks. Kayıt",
+        help_text="DOI'si olan kayıtlardan en fazla kaçı OpenAlex ile zenginleştirilsin (atıf, ülke, kurum, "
+                  "anahtar kelime). OpenAlex kaynaklı işlerde kullanılmaz (veri zaten taze). (default: 2000)",
     )
     uzman_dizini_min_puan = models.PositiveIntegerField(
         default=200,

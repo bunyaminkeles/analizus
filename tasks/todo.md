@@ -1,7 +1,128 @@
 # Çok Dilli Yayın (EN/DE) — YAYINDA
 
-**Durum:** 29 Eylül 2026 gece — EN/DE canlıda. Aşağıdaki "DEVAM NOKTASI"
-bölümünden başla.
+**Durum (29 Ekim 2026 gece):** Bibliometri Grup A (A1-A9) tamamen bitti,
+`main`'de canlı (Hetzner). Grup B (bibliometrix/VOSviewer yol haritası)
+başladı ve `dev`'de hızla ilerliyor (henüz `main`'e merge edilmedi — kullanıcı
+"merge et" demeden dokunulmayacak): **B1 (veri kalitesi) TAMAMEN BİTTİ**
+(B1-1 OpenAlex zenginleştirme, B1-2 tekilleştirme, B1-3 yazar birleştirme,
+B1-4 anahtar kelime normalizasyonu) ve **B2'den 3 madde tamamlandı** (B2-1
+Bradford Kanunu, B2-2 Louvain kümeleri + tablo, B2-3 Tematik Harita) — hepsi
+`dev`'e commit+push edildi, istatistik araç sayısı 17→19. **Yeni oturum
+buradan devam etsin: sıradaki B2-4 (tematik evrim — dönemler arası tema
+akışı), sonra B2-5..B2-8, B3, B4** (bkz. madde 3 altındaki detaylı liste ve
+`bibliometri_durum_ve_gelistirme_prompt.md` §4). Ayrıca aşağıdaki 2 ayrı
+açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
+
+1. **[ÖNCELİKLİ] Araştırma Konusu Kümeleri (Topic Map) grafiği görsel
+   kalite sorunu — henüz incelenmedi.** Kullanıcı canlı PDF'te gördü: balon
+   grafikte devasa boş alan (sayfanın çoğu boş) + balonların içindeki
+   anahtar kelime etiketleri okunamıyor/üst üste biniyor ("çok kötü",
+   kullanıcının kendi ifadesi; `diğerleri yine güzel` — yalnız bu grafik
+   sorunlu). Kök neden adayı (henüz doğrulanmadı): `bibliometrics/services/
+   analyzer.py` `topic_map()` — (a) `figsize=(14,8)` sabit, satır sayısı
+   azken (ör. 1 satır/4 küme) devasa boş dikey alan bırakıyor — `rows`
+   değişkenine göre dinamik yükseklik gerekir; (b) balon etiketi
+   `'\n'.join(topic['keywords'][:5])` — bu veri setinde "anahtar kelime"ler
+   özetten çıkarılmış UZUN KELİME ÖBEKLERİ olabilir (tek kısa terim değil),
+   fontsize=7.5 ile küçük balona sığmıyor — etiket kısaltma/elips veya
+   balon başına daha az/daha kısa kelime gerekebilir. İlk adım: hangi job'ın
+   PDF'i olduğunu (OpenAlex köprüsü mü, CSV mi) ve o job'ın gerçek
+   `keywords` alanlarının içeriğini incelemek.
+2. **DE/EN tarama araçlarının otomatik özet paragrafı Türkçe kalıyor** —
+   kaynağı bulunamadı (`claude_service.generate_summary` değil, semanticscholar
+   job_runner/views'ta `generate_summary` çağrısı yok). Detay: aşağıdaki
+   "AÇIK İŞLER" listesinde 29 Ekim 2026 maddesi.
+3. **Grup B** (bibliometrix/VOSviewer kalitesinde yol haritası — B1 veri
+   kalitesi → B2 bilim haritalama → B3 çıktılar → B4 ürün/huni), plan
+   dosyası: `bibliometri_durum_ve_gelistirme_prompt.md` §4.
+   - [x] **B1-1 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):**
+     DOI ile OpenAlex zenginleştirme. `bibliometrics/services/enrichment.py`
+     (yeni) + `openalex/services/scraper.py.fetch_works_by_dois()` (yeni,
+     mevcut arama koduna dokunulmadı) + `SiteSettings.
+     bibliometri_openalex_zenginlestirme_max_kayit` (default 2000, migration
+     `forum/0192`) + `job_runner.py`/`report_notes.py` entegrasyonu. 6 yeni
+     pytest + gerçek DOI ile manuel doğrulama. `forum+bibliometrics` 124/124.
+     Detay: `analizus.md` §27 (29 Ekim B1-1 maddesi).
+   - [x] **B1-2 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):** Tekilleştirme
+     iyileştirmesi. `parser.py._deduplicate_and_filter`: DOI yoksa artık
+     normalize edilmiş başlık (noktalama yok sayılır) + yayın yılı ile eşleşir
+     (yıl ikisinde de biliniyorsa farklı yıllar ayrı kayıt sayılır — ör. aynı
+     "Editöryal" başlığı farklı yıllarda yanlışlıkla birleşmez; yıl taraflardan
+     birinde eksikse eski davranış gibi yalnız başlığa güvenilir). 5 yeni
+     pytest. Rapor metni (`report_notes.py` "Uygulanan kurallar") EN/DE
+     güncellendi. Migration yok. `forum+bibliometrics` 129/129.
+   - [x] **B1-3 KISMEN TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):**
+     Yazar adı birleştirme — yalnız "Soyad + baş harf" normalizasyonu kısmı
+     (aksan/büyük-küçük harf yok sayılır). `analyzer.py`'ye `canonical_author_key()`
+     + `_group_authors()` eklendi; `top_authors`/`lotka_law`/`author_collaboration`
+     artık isim varyantlarını ("Smith, J." / "John Smith") tek kişi sayıyor.
+     **"OpenAlex author ID varsa onu kullan" kısmı BİLİNÇLİ OLARAK ERTELENDİ:**
+     CSV/BibTeX yazar listesi ile OpenAlex authorship listesi arasında konumsal
+     eşleme güvenilir değil (sıra/sayı farklı olabilir) — isim benzerliğiyle
+     eşleme gerekir, bu da Faz B2'nin ("yazar ID ile homonym çözümü") işi;
+     orada düzgün yapılacak. 7 yeni pytest (`canonical_author_key`,
+     `_group_authors`, 3 fonksiyonun varyant birleştirmesi). Rapor "Kısıtlar"
+     metni güncellendi (EN/DE). Migration yok. `forum+bibliometrics` 136/136.
+   - [x] **B1-4 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi) — B1 (Veri
+     kalitesi) TAMAMEN BİTTİ:** Anahtar kelime normalizasyonu. `normalize_keywords`:
+     tire ile boşluk artık eşdeğer sayılıyor ("COVID-19" ~ "COVID 19"); TR
+     lemmatization kelimeyi değiştirmediyse (muhtemelen yabancı kelime) basit
+     bir çoğul→tekil kuralı devreye giriyor (`_simple_depluralize`: cats→cat,
+     boxes→box, studies→study). **Yan bulgu (düzeltilmedi, kapsam dışı):** lokal
+     dev ortamında zeyrek'in TR lemmatization'ı NLTK `punkt_tab` kaynağı eksik
+     olduğu için sessizce başarısız oluyor (`except Exception: pass` ile orijinal
+     kelimeyi döndürüyor) — prod'da durum doğrulanmadı, ayrı bir inceleme
+     gerektirir. 4 yeni pytest, rapor "Uygulanan kurallar" metni EN/DE
+     güncellendi, migration yok. `forum+bibliometrics` 139/139.
+   - [x] **B2-1 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):** Bradford
+     Kanunu. `analyzer.py`'ye `bradford_zones()` (saf hesap, test edilebilir)
+     + `bradford_law()` (tablo+grafik, citation_analysis'teki iki panel
+     kalıbı) eklendi; `run_all_analyses`'a 18. analiz olarak kaydedildi
+     (istatistik araç sayısı 17→18). Tablo sabit ~2.6" yükseklikte üstte
+     sabitlendi (Topic Map'teki "devasa boş alan" sorunuyla aynı kalıba
+     düşülmedi — küçük/büyük veri setiyle görsel olarak doğrulandı). Tüm
+     "17 Analiz" referansları (2 şablon, e-posta metni, admin/SiteSettings
+     help_text) 18'e güncellendi. 5 yeni pytest, rapor "kurallar" metnine
+     yöntem cümlesi eklendi, EN/DE çevrildi. Migration yok.
+     `forum+bibliometrics` 143/143.
+   - [x] **B2-2 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):** Anahtar
+     kelime eş-oluşum ağı + Louvain kümeleri. `analyzer.py`'de mevcut
+     `greedy_modularity_communities` yerine sabit seed'li `louvain_communities`
+     kullanılacak şekilde değiştirildi (VOSviewer/bibliometrix eşitliği,
+     tekrarlanabilir kümeler); hesap `keyword_clusters()` (saf, test edilebilir)
+     fonksiyonuna ayrıldı. Grafik iki panelli hale getirildi (Bradford/
+     citation_analysis kalıbı): sol = ağ grafiği, sağ = **küme başına ilk
+     kelimeler tablosu** (eksik olan asıl madde) + toplam kelime/bağlantı/küme
+     özeti. Tablo metni taşmayacak şekilde kırpıldı, görsel olarak doğrulandı
+     (3 ayrık konu grubuyla sentetik veri → 3 doğru küme). 5 yeni pytest
+     (kümelerin doğru ayrıldığı + sabit seed'le determinizm dahil). Rapor
+     "kurallar" metnine Louvain açıklaması eklendi, EN/DE çevrildi. Yeni paket
+     yok (`networkx` zaten `requirements.txt`'te, `louvain_communities`
+     3.6.1'de mevcut). Migration yok. `forum+bibliometrics` 147/147.
+   - [x] **B2-3 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):** Tematik
+     Harita (Callon merkeziyet × yoğunluk). `analyzer.py`'ye `thematic_map_themes()`
+     (saf hesap: her Louvain kümesinin dışa bağlantı gücü = merkeziyet, iç
+     bağlantı gücü/büyüklük = yoğunluk) + `thematic_map()` (4 kadranlı balon
+     grafiği — Motor/Niş/Temel/Gelişen-Azalan Temalar, kadran sınırı = ortalama
+     değerler) eklendi, 19. analiz olarak kaydedildi (istatistik araç sayısı
+     18→19, tüm "N Analiz" referansları güncellendi). `keyword_clusters()`
+     (B2-2) üzerine inşa edildi — ayrı community detection YOK. Senkronize
+     test verisiyle (3 konu, biri izole) doğru davranış görsel + test ile
+     doğrulandı: izole küme merkeziyet=0, köprü kelimesi paylaşan iki küme
+     yüksek merkeziyet alıyor. 4 yeni pytest, rapor "kurallar" metni EN/DE
+     güncellendi. Yeni paket/migration yok. `forum+bibliometrics` 150/150.
+     **Not (B2-4+ için tekrarlayan bakım yükü):** her yeni analiz "N Analiz"
+     sayısını 7+ dosyada (2 şablon, e-posta, admin/SiteSettings help_text,
+     pdf_builder yorumu) elle güncellemeyi gerektiriyor — ileride tek bir
+     `len(analyses)` kaynağına taşınabilir (ayrı refactor, şimdi yapılmadı).
+   - [ ] B2-4..B2-8 (bkz. plan dosyası §4 — tematik evrim, üç alan grafiği,
+     ülke işbirliği SCP/MCP, atıf ağları, konu modelleme)
+   - [ ] B3-B4 (bkz. plan dosyası §4)
+
+Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
+sürebilir (~10 dk'ya kadar), bir dahaki "donmuş gibi görünen" deploy'da
+hemen paralel teşhis komutu çalıştırıp CPU'yu bölmeden önce birkaç dakika
+daha beklenmeli (29 Ekim 2026 dersi).
 
 ## DEVAM NOKTASI (bir sonraki oturum buradan başlasın)
 
@@ -10,6 +131,21 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(29 Ekim 2026) Bibliometri Grup B / B1-4 sırasında çıkan yan bulgu:
+  zeyrek'in Türkçe lemmatization'ı lokal dev ortamında sessizce başarısız
+  oluyor — araştırılmadı.** `bibliometrics/services/analyzer.py`
+  `lemmatize_word()` içindeki `analyzer.lemmatize(word)` çağrısı NLTK
+  `punkt_tab` (tokenizers/punkt_tab/turkish/) kaynağı eksik olduğu için
+  `LookupError` fırlatıyor; fonksiyon bunu `except Exception: pass` ile
+  yutup kelimeyi değiştirmeden döndürüyor — yani lokal'de anahtar kelime
+  kök indirgemesi (TR için) hiç çalışmıyor olabilir (ör. "kediler" "kedi"ye
+  inmiyor). Production'da (Hetzner) bu NLTK verisinin mevcut olup olmadığı
+  DOĞRULANMADI — eğer orada da eksikse canlı raporlardaki Türkçe anahtar
+  kelime/kelime bulutu analizleri sessizce beklenenden daha az "akıllı"
+  çalışıyor demektir (çoğul/tekil TR kelimeler ayrı sayılabilir). Sıradaki
+  adım: Hetzner'de `docker compose exec web python -c "import nltk;
+  nltk.data.find('tokenizers/punkt_tab/turkish/')"` ile kontrol, eksikse
+  Dockerfile/deploy.sh'a `nltk.download('punkt_tab')` eklenmesi.
 - [ ] **(29 Ekim 2026) Tarama araçlarının AI özet paragrafı DE/EN'de Türkçe
   kalıyor — araştırılmadı, sıraya alındı.** Kullanıcı Semantic Scholar
   aracında (muhtemelen diğer tarama araçlarında da) hem DE hem EN arayüzde

@@ -22,6 +22,8 @@ EMPTY_RECORD = {
     'pub_type': '',
     'country': '',
     'institution': '',
+    'referenced_works': [],
+    'author_ids': [],
 }
 
 
@@ -115,9 +117,26 @@ def parse_file(content: str, fmt: str = None, stats: dict = None) -> tuple[list[
     return records, fmt
 
 
+_TITLE_NOISE_RE = re.compile(r'[^a-z0-9çğıöşü ]+')
+
+
+def _normalize_title_key(title: str) -> str:
+    """Kaynaklar arası (WoS/Scopus/BibTeX/CSV) noktalama/tırnak farklarını yok sayan
+    başlık anahtarı: küçük harf, noktalama kaldırılır, boşluklar tek'e indirilir,
+    ilk 80 karakter alınır."""
+    t = _TITLE_NOISE_RE.sub(' ', title.lower())
+    t = re.sub(r'\s+', ' ', t).strip()
+    return t[:80]
+
+
 def _deduplicate_and_filter(records: list[dict], stats: dict = None) -> list[dict]:
     """
-    Boş başlıklı satırları atar ve DOI'ye göre tekrarları kaldırır.
+    Boş başlıklı satırları atar ve tekrarları kaldırır: önce DOI ile, DOI yoksa
+    normalize edilmiş başlık + yayın yılı ile (B1-2). Yıl ikisinde de varsa VE
+    farklıysa aynı başlık ayrı kayıt sayılır (ör. "Giriş"/"Editöryal" gibi genel
+    başlıkların farklı yıllarda yanlışlıkla tekilleştirilmesini önler); yıl
+    taraflardan birinde eksikse (kaynaklar arası eksik veri yaygın) eski davranış
+    gibi yalnız başlığa güvenilir.
     WoS/Scopus dosyalarında "atıf listesi" satırları veya boş separator
     satırları olabilir; bunlar başlıksız geldiği için filtrelenir.
     stats verilirse 'no_title' / 'duplicate' sayıları ÜZERİNE EKLENİR (art arda
@@ -125,12 +144,13 @@ def _deduplicate_and_filter(records: list[dict], stats: dict = None) -> list[dic
     """
     no_title = duplicate = 0
     seen_dois = set()
-    seen_titles = set()
+    seen_titles: dict[str, list] = {}
     result = []
 
     for r in records:
         title = r.get('title', '').strip()
         doi   = r.get('doi', '').strip().lower()
+        year  = r.get('year')
 
         # Başlıksız kayıtları at (separator/atıf listesi satırları)
         if not title:
@@ -144,12 +164,13 @@ def _deduplicate_and_filter(records: list[dict], stats: dict = None) -> list[dic
                 continue
             seen_dois.add(doi)
         else:
-            # DOI yoksa başlık ile (case-insensitive, ilk 80 karakter)
-            title_key = title.lower()[:80]
-            if title_key in seen_titles:
+            # DOI yoksa normalize başlık + yıl ile (B1-2)
+            title_key = _normalize_title_key(title)
+            years = seen_titles.get(title_key)
+            if years is not None and any(y is None or year is None or y == year for y in years):
                 duplicate += 1
                 continue
-            seen_titles.add(title_key)
+            seen_titles.setdefault(title_key, []).append(year)
 
         result.append(r)
 

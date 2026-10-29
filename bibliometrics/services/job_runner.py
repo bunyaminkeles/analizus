@@ -85,6 +85,9 @@ def _execute_job_body(job_id: str) -> None:
             job.mark_failed(gettext('Dosyadan kayıt okunamadı. Format desteklenmiyor olabilir.'))
             return
 
+        from bibliometrics.services.enrichment import enrich_records_with_openalex
+        enrich_records_with_openalex(records, stats)
+
         skipped = []
         time_series = []
         figures = run_all_analyses(records, skipped=skipped, time_series=time_series)
@@ -183,6 +186,10 @@ def _execute_job_openalex_body(job_id: str) -> None:
             job.mark_failed(gettext('Bibliometrik analiz için en az 100 kayıt gereklidir (bulunan: {count}).').format(count=len(records)))
             return
 
+        if is_pubmed:
+            from bibliometrics.services.enrichment import enrich_records_with_openalex
+            enrich_records_with_openalex(records, stats)
+
         skipped = []
         time_series = []
         # PubMed atıf sayısı vermez → atıfa dayanan analizler atlanır (kaynak nedeniyle)
@@ -260,7 +267,7 @@ def _full_report_lines(site_url: str, job) -> list:
     from django.utils.translation import get_language
     lines = [
         '─' * 37,
-        gettext('TAM RAPOR (17 Analize Kadar)'),
+        gettext('TAM RAPOR (19 Analize Kadar)'),
         '─' * 37,
         '  • ' + gettext('Yayın Trendi + Büyüme Oranı'),
         '  • ' + gettext('En Verimli Yazarlar + Lotka Kanunu'),
@@ -273,7 +280,9 @@ def _full_report_lines(site_url: str, job) -> list:
         '  • ' + gettext('Yayın Türleri + Atıf Analizi + H-index'),
         '  • ' + gettext('Yıllık Atıf Trendi'),
         '  • ' + gettext('Araştırma Konusu Kümeleri (Topic Map)'),
-        '  • ' + gettext('Araştırma Boşluğu Haritası (Research Gap)') + '\n',
+        '  • ' + gettext('Araştırma Boşluğu Haritası (Research Gap)'),
+        '  • ' + gettext('Bradford Kanunu — Çekirdek Dergi Bölgeleri'),
+        '  • ' + gettext('Tematik Harita (Callon Merkeziyet × Yoğunluk)') + '\n',
     ]
     if (get_language() or 'tr')[:2] == 'tr':
         lines += [gettext('Sipariş oluşturmak için:'), f'  {site_url}/bibliometrics/siparis/{job.id}/\n']

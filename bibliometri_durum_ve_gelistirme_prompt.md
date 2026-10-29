@@ -3,6 +3,12 @@
 > Hazırlanma: 28 Ekim 2026. Kaynak: canlı PageView + BibliometricJob kayıtları, S3 demo PDF'i,
 > sunucuda grep çıktıları. Tek doğru kaynak `analizus.md` (§14 Bibliometri, §25 kurallar, §26 bilinen
 > hatalar, §28 çok dil). Bu belge ile kod çelişirse bana söyle, varsayım yapma.
+>
+> **Durum güncellemesi (29 Ekim 2026):** Grup A (§3) TAMAMEN BİTTİ, `main`'de canlı. Grup B'ye (§4)
+> başlandı, `dev`'de (henüz `main`'e merge edilmedi): **B1 tamamen bitti** (B1-1..B1-4 — B1-3'ün yalnız
+> "Soyad+baş harf" kısmı, OpenAlex author ID eşlemesi bilinçli olarak B2'ye ertelendi). **B2'den 3/8
+> madde bitti:** B2-1 (Bradford Kanunu), B2-2 (Louvain kümeleri + tablo), B2-3 (Tematik Harita).
+> Sırada B2-4 (tematik evrim). Detay: `tasks/todo.md` başı, `analizus.md` §27 (29 Ekim girdileri).
 
 ## 0. Çalışma kuralları
 

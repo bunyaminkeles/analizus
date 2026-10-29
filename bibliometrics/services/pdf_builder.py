@@ -2,7 +2,7 @@
 PDF Rapor Oluşturucu (reportlab)
 - Beyaz arka plan, DejaVu font (Türkçe karakter desteği)
 - build_demo_pdf(figures):  çağıran taraf SiteSettings.bibliometri_demo_grafik_sayisi kadar önceden kırpar (default 10)
-- build_full_pdf(figures):  üretilebilen tüm grafikler (en fazla 17) → tam rapor PDF bytes
+- build_full_pdf(figures):  üretilebilen tüm grafikler (en fazla 19) → tam rapor PDF bytes
 """
 import io
 import os

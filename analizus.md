@@ -3163,6 +3163,105 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   tablosu + demo PDF indirme linki sayfa yenilenmeden güncellenmiyordu →
   `job_status` JSON genişletildi, JS ile canlı satır ekleme + indirme linki
   bağlandı. `forum+bibliometrics` 117/117 geçti, henüz push edilmedi.
+- **29 Ekim 2026 — A7 kapandı (openalex.org gerçek web CSV export'u artık
+  doğru ayrıştırılıyor), `main`'de canlı.** Kullanıcının gerçek
+  "Export CSV" dosyasıyla testinde bulundu: generic CSV fallback'in
+  COL_MAP'i yazar sütunu için yalnız çoğul "authors" arıyordu, bu formatın
+  tekil "Author" sütunu hiç eşleşmiyordu — tüm kayıtlarda yazar listesi
+  boştu. Çözüm: `detect_format`'a yeni `csv_openalex` dalı + özel
+  `_parse_openalex_csv()` (yazarları `|` ile doğru bölüyor). Gerçek veriyle
+  üretilen analiz sayısı 3'ten 6'ya çıktı. Migration var ama yalnız
+  `FORMAT_CHOICES` metadata (şema değişikliği yok). 4 yeni pytest.
+  **Ardından prod deploy sırasında yanıltıcı bir "donma" yaşandı:** Hetzner'de
+  yalnız 2 CPU var, teşhis için çalıştırılan manuel `collectstatic` komutu
+  deploy'un kendi (sessiz, aynı anda süren) collectstatic adımıyla aynı
+  2 çekirdek için yarıştı — gerçek bir donma değildi, ~10 dk sürüp kendi
+  kendine düzeldi (ders: bir sonraki "donmuş gibi" deploy'da hemen paralel
+  teşhis komutu çalıştırmadan önce birkaç dakika beklenmeli).
+  **Oturum sonu — 3 açık iş `tasks/todo.md`'nin başına not edildi:**
+  (1) [öncelikli] Araştırma Konusu Kümeleri (Topic Map) grafiğinin görsel
+  kalite sorunu (devasa boş alan + okunamayan balon etiketleri) — henüz
+  incelenmedi; (2) DE/EN tarama araçlarının otomatik özet paragrafının
+  Türkçe kalması — kaynağı bulunamadı; (3) Grup B — ayrı planlama turu
+  gerekiyor.
+- **29 Ekim 2026 — Bibliometri Grup B başladı, B1-1 (DOI ile OpenAlex
+  zenginleştirme) tamamlandı, dev'de (henüz push edilmedi).** Yüklenen/taranan
+  kayıtlarda DOI varsa OpenAlex'ten eksik atıf sayısı, ülke, kurum, anahtar
+  kelime çekilip dolduruluyor (mevcut değer varsa üzerine yazılmıyor); Faz
+  B2'nin (ortak atıf ağları, yazar ID ile homonym çözümü) kullanacağı ham
+  `referenced_works`/`author_ids` her zaman güncelleniyor. Yalnız `job.source
+  != 'openalex'` iken çalışır (OpenAlex kaynaklı işlerde veri zaten taze).
+  Yeni `SiteSettings.bibliometri_openalex_zenginlestirme_max_kayit` (default
+  2000, admin "Limitler" bölümünde) — iş başına en fazla kaç DOI'li kaydın
+  zenginleştirileceğini sınırlar (demo/tam rapor ayrımı yok, ikisi aynı iş
+  çalışmasından üretiliyor). Mimari: `openalex/services/scraper.py`'ye
+  YENİ, bağımsız `fetch_works_by_dois()` metodu eklendi (mevcut `_parse_work`/
+  `search`/canlı arama aracı koduna DOKUNULMADI); yeni `bibliometrics/services/
+  enrichment.py` ham veriyi işleyip kayda uyguluyor; `job_runner.py`'nin iki
+  worker'ına (upload + pubmed) tek satır çağrı eklendi; rapor "Uygulanan
+  kurallar" bölümüne zenginleştirme sayısını bildiren yeni cümle (EN/DE
+  çevrildi). Migration `forum/0192` (yalnız yeni SiteSettings alanı). 6 yeni
+  pytest (mock'lu, ağa gitmiyor) + gerçek bir DOI ile manuel doğrulama (atıf,
+  ülke, kurum, anahtar kelime, 35 referenced_work, 6 author_id başarıyla
+  çekildi). `forum+bibliometrics` 124/124 geçti.
+  **B1-2 TAMAMLANDI (aynı gün, dev'de):** Tekilleştirme iyileştirmesi —
+  `_deduplicate_and_filter`'da DOI yoksa artık normalize edilmiş başlık
+  (noktalama yok sayılır, WoS/Scopus/BibTeX arası format farklarını tolere
+  eder) + yayın yılı ile eşleşiyor; yıl ikisinde de biliniyorsa farklıysa ayrı
+  kayıt sayılıyor (genel başlıkların — "Editöryal" vb. — farklı yıllarda
+  yanlışlıkla birleşmesini önler), yıl taraflardan birinde eksikse eski
+  davranış (yalnız başlık) korunuyor. 5 yeni pytest, rapor metni EN/DE
+  güncellendi, migration yok. `forum+bibliometrics` 129/129 geçti.
+  **B1-3 KISMEN TAMAMLANDI (aynı gün, dev'de):** Yazar adı birleştirme —
+  yalnız "Soyad + baş harf" normalizasyonu (aksan/büyük-küçük harf yok
+  sayılır). `canonical_author_key()`/`_group_authors()` eklendi,
+  `top_authors`/`lotka_law`/`author_collaboration` artık "Smith, J."/"John
+  Smith" gibi varyantları tek kişi sayıyor. "OpenAlex author ID varsa onu
+  kullan" kısmı bilinçli olarak B2'ye ertelendi: CSV/BibTeX yazar listesiyle
+  OpenAlex authorship listesi arasında konumsal eşleme güvenilir değil (isim
+  benzerliğiyle eşleme gerekir — B2'nin "homonym çözümü" işi). 7 yeni pytest,
+  rapor kısıtlar metni EN/DE güncellendi, migration yok.
+  `forum+bibliometrics` 136/136 geçti.
+  **B1-4 TAMAMLANDI (aynı gün, dev'de) — B1 (Veri kalitesi) TAMAMEN BİTTİ:**
+  Anahtar kelime normalizasyonu — `normalize_keywords`'ta tire/boşluk artık
+  eşdeğer ("COVID-19" ~ "COVID 19"), TR lemmatization kelimeyi değiştirmediyse
+  basit bir çoğul→tekil kuralı (`_simple_depluralize`) devreye giriyor
+  (cats→cat, boxes→box, studies→study). **Yan bulgu (kapsam dışı, todo'ya
+  yazıldı):** lokal dev'de zeyrek'in TR lemmatization'ı NLTK `punkt_tab`
+  kaynağı eksik olduğu için sessizce başarısız oluyor — prod'da doğrulanmadı.
+  4 yeni pytest, rapor metni EN/DE güncellendi, migration yok.
+  `forum+bibliometrics` 139/139 geçti.
+  **B2-1 TAMAMLANDI (aynı gün, dev'de):** Bradford Kanunu — dergiler yayın
+  sayısına göre sıralanıp toplam yayının üçte birini üreten ardışık gruplar
+  3 bölgeye ayrılıyor (çekirdek + 2 bölge). `bradford_zones()` (saf hesap)
+  + `bradford_law()` (tablo+grafik, `citation_analysis`'teki iki panel
+  kalıbı yeniden kullanıldı) eklendi, 18. analiz olarak `run_all_analyses`'a
+  kaydedildi — istatistik araç sayısı 17→18, tüm "17 Analiz" referansları
+  (2 şablon, e-posta, admin help_text) güncellendi. Tablo yüksekliği sabit
+  tutuldu (Topic Map'teki boş alan sorunu tekrarlanmadı, görsel olarak
+  doğrulandı). 5 yeni pytest, EN/DE çevrildi, migration yok.
+  `forum+bibliometrics` 143/143 geçti.
+  **B2-2 TAMAMLANDI (aynı gün, dev'de):** Anahtar kelime eş-oluşum ağı +
+  Louvain kümeleri. Mevcut `greedy_modularity_communities` yerine sabit
+  seed'li `louvain_communities` kullanıldı (VOSviewer/bibliometrix eşitliği,
+  tekrarlanabilir kümeler), hesap `keyword_clusters()`'a ayrıldı. Grafik iki
+  panelli oldu: ağ + **küme başına ilk kelimeler tablosu** (eksik olan asıl
+  madde) + özet istatistik. 5 yeni pytest (3 ayrık konu grubuyla doğru
+  kümelenme + determinizm), rapor metni EN/DE güncellendi, yeni paket/migration
+  yok. `forum+bibliometrics` 147/147 geçti.
+  **B2-3 TAMAMLANDI (aynı gün, dev'de):** Tematik Harita (Callon merkeziyet
+  × yoğunluk) — `keyword_clusters()` (B2-2) üzerine inşa edildi, ayrı
+  community detection yok. `thematic_map_themes()` her Louvain kümesinin
+  dışa bağlantı gücünü (merkeziyet) ve iç bağlantı yoğunluğunu hesaplar,
+  `thematic_map()` 4 kadranlı balon grafiği üretir (Motor/Niş/Temel/
+  Gelişen-Azalan Temalar). 19. analiz olarak kaydedildi (18→19, tüm "N
+  Analiz" referansları güncellendi). Senkronize test verisiyle doğrulandı:
+  izole küme merkeziyet=0, köprü kelime paylaşan kümeler yüksek merkeziyet.
+  4 yeni pytest, rapor metni EN/DE güncellendi, yeni paket/migration yok.
+  `forum+bibliometrics` 150/150 geçti. **Not:** her yeni analiz "N Analiz"
+  sayısını 7+ dosyada elle güncelletiyor — ileride tek kaynağa (`len(analyses)`)
+  taşınabilir, ayrı refactor. **Sırada B2-4** (tematik evrim — dönemler
+  arası tema akışı; bkz. `bibliometri_durum_ve_gelistirme_prompt.md` §4).
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
