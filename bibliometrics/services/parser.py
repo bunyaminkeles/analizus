@@ -24,6 +24,7 @@ EMPTY_RECORD = {
     'institution': '',
     'referenced_works': [],
     'author_ids': [],
+    'openalex_id': '',
 }
 
 

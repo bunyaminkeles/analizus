@@ -186,6 +186,18 @@ def _rules(source, last_year, stats=None):
         gettext('Tematik Evrim\'de veri, yayın yılına göre eşit uzunlukta dönemlere ayrıldı (veri yeterliyse '
                 '3, değilse 2 dönem) ve her dönem ayrı ayrı kümelendi; dönemler arasındaki şeritler, ardışık '
                 'dönemlerdeki temaların paylaştığı anahtar kelime sayısını gösterir.'),
+        gettext('Üç Alan Grafiği\'nde yazar ve dergi kutuları yalnız gösterilen en sık anahtar kelimelerle '
+                'birlikte geçme sayısına göre; anahtar kelime kutuları ise kelimenin tüm veri setindeki '
+                'toplam frekansına göre boyutlandırıldı.'),
+        gettext('SCP/MCP grafiğinde yazarlarının tamamı tek ülkeden olan yayınlar "Tek Ülkeli (SCP)", '
+                'birden fazla ülkeden yazarı olan yayınlar ise adı geçen HER ülke için "Çok Ülkeli '
+                'İşbirliği (MCP)" sayıldı.'),
+        gettext('Bibliyografik Eşleşme Ağı ve Yerel/Küresel Atıf karşılaştırması yalnız DOI\'si olan ve '
+                'OpenAlex ile zenginleştirilmiş kayıtları kullanır; iki yayın aynı eserlere atıf yapıyorsa '
+                'bağlanır, kenar kalınlığı paylaşılan referans sayısıdır.'),
+        gettext('"Yerel atıf", bir yayının yalnız BU veri setindeki diğer kayıtlardan aldığı atıf '
+                'sayısıdır (derlemenin kendi iç etkisi); "küresel atıf" ise OpenAlex\'teki toplam atıf '
+                'sayısıdır ve her zaman yerel atıftan büyük veya eşittir.'),
     ]
     return rules
 

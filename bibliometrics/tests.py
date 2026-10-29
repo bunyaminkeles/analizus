@@ -34,6 +34,13 @@ from bibliometrics.services.analyzer import (
     thematic_evolution_periods,
     thematic_evolution_themes,
     thematic_evolution,
+    three_field_plot_data,
+    three_field_plot,
+    scp_mcp_counts,
+    scp_mcp_chart,
+    bibliographic_coupling,
+    local_citation_counts,
+    local_global_citations,
 )
 import matplotlib.patches as mpatches
 import bibliometrics.services.analyzer as analyzer_module
@@ -654,3 +661,140 @@ def test_thematic_evolution_figure_has_box_per_theme():
     assert fig is not None
     rects = [p for p in fig.axes[0].patches if isinstance(p, mpatches.Rectangle)]
     assert len(rects) == 4  # 2 tema x 2 dönem (3 dönem veriyle kurulamaz, 2'ye düşer)
+
+
+def _three_field_records():
+    """B2-5 test verisi: 2 yazar, 2+1 ortak anahtar kelime, 2 dergi."""
+    records = []
+    for _ in range(6):
+        records.append({'authors': ['Alice Smith'], 'keywords': ['alpha', 'shared'], 'journal': 'J1'})
+    for _ in range(5):
+        records.append({'authors': ['Bob Jones'], 'keywords': ['beta', 'shared'], 'journal': 'J2'})
+    return records
+
+
+def test_three_field_plot_data_builds_consistent_flows():
+    """B2-5: yazar/dergi kutu büyüklüğü akış toplamına tam oturmalı; anahtar kelime
+    kutu büyüklüğü (toplam frekans) her iki yöndeki akış toplamını da sınırlamalı."""
+    records = _three_field_records()
+    authors, keywords, journals, flows_ak, flows_kj = three_field_plot_data(records)
+    assert authors is not None
+    assert len(authors) == 2
+    assert len(journals) == 2
+    kw_labels = {k['label'] for k in keywords}
+    assert {'alpha', 'beta', 'shared'} <= kw_labels
+
+    shared_idx = next(i for i, k in enumerate(keywords) if k['label'] == 'shared')
+    assert keywords[shared_idx]['size'] == 11  # 6 + 5 — tüm kayıtlardaki toplam frekans
+
+    for a_idx, author in enumerate(authors):
+        total_out = sum(w for a, k, w in flows_ak if a == a_idx)
+        assert total_out == author['size']
+
+    for k_idx, kw in enumerate(keywords):
+        total_in = sum(w for a, k, w in flows_ak if k == k_idx)
+        total_out = sum(w for k2, j, w in flows_kj if k2 == k_idx)
+        assert total_in <= kw['size']
+        assert total_out <= kw['size']
+
+
+def test_three_field_plot_data_insufficient_returns_none():
+    records = [{'authors': ['Only One'], 'keywords': ['x'], 'journal': 'J1'}]
+    result = three_field_plot_data(records)
+    assert result == (None, None, None, None, None)
+
+
+def test_three_field_plot_figure_has_box_per_item():
+    records = _three_field_records()
+    authors, keywords, journals, _, _ = three_field_plot_data(records)
+    fig = three_field_plot(records)
+    assert fig is not None
+    rects = [p for p in fig.axes[0].patches if isinstance(p, mpatches.Rectangle)]
+    assert len(rects) == len(authors) + len(keywords) + len(journals)
+
+
+def test_scp_mcp_counts_classifies_single_and_multi_country():
+    """B2-6: tek ülkeli yayın SCP, birden fazla ülkeden yazarı olan yayın HER
+    ülke için MCP sayılmalı (genel ülke sayımındaki 'tam sayım' kuralıyla tutarlı)."""
+    records = (
+        [{'country': 'United States'}] * 5
+        + [{'country': 'United States, United Kingdom'}] * 3
+        + [{'country': 'United Kingdom'}] * 2
+    )
+    counts = scp_mcp_counts(records)
+    assert counts is not None
+    assert counts['United States'] == {'scp': 5, 'mcp': 3}
+    assert counts['United Kingdom'] == {'scp': 2, 'mcp': 3}
+
+
+def test_scp_mcp_counts_no_country_returns_none():
+    assert scp_mcp_counts([{'country': ''}, {}]) is None
+
+
+def test_scp_mcp_chart_bar_count_matches_top_n_countries():
+    records = (
+        [{'country': 'United States'}] * 5
+        + [{'country': 'United States, United Kingdom'}] * 3
+        + [{'country': 'United Kingdom'}] * 2
+        + [{'country': 'Germany'}] * 1
+    )
+    fig = scp_mcp_chart(records, n=2)
+    assert fig is not None
+
+
+def _coupling_records():
+    """B2-7 test verisi: A-B 2 paylaşılan referans (eşik üstü), C hiçbiriyle paylaşmıyor."""
+    return [
+        {'title': 'Paper A', 'referenced_works': ['w1', 'w2', 'w3']},
+        {'title': 'Paper B', 'referenced_works': ['w1', 'w2', 'w5']},
+        {'title': 'Paper C', 'referenced_works': ['w6', 'w7']},
+    ]
+
+
+def test_bibliographic_coupling_links_records_sharing_references():
+    """B2-7: A-B 2 referans paylaşıyor (eşik=2) → bağlı; C hiçbiriyle paylaşmadığı
+    için izole kalır ve grafiğe hiç düğüm olarak girmez (yalnız kenarla eklenir)."""
+    fig = bibliographic_coupling(_coupling_records(), min_shared=2)
+    assert fig is not None
+    ax = fig.axes[0]
+    node_collection = max(ax.collections, key=lambda c: c.get_offsets().shape[0])
+    assert node_collection.get_offsets().shape[0] == 2  # yalnız A ve B
+
+
+def test_bibliographic_coupling_insufficient_data_returns_none():
+    records = [{'title': 'Only One', 'referenced_works': ['w1', 'w2']}]
+    assert bibliographic_coupling(records) is None
+
+
+def test_bibliographic_coupling_no_shared_references_returns_none():
+    records = [
+        {'title': 'Paper A', 'referenced_works': ['w1', 'w2']},
+        {'title': 'Paper B', 'referenced_works': ['w3', 'w4']},
+    ]
+    assert bibliographic_coupling(records) is None
+
+
+def _local_citation_records():
+    """B2-7 test verisi: W1 iki kayıttan (W2, W3), W2 bir kayıttan (W3) yerel atıf alır."""
+    return [
+        {'title': 'Foundational Paper', 'openalex_id': 'W1', 'cited_by': 50, 'referenced_works': []},
+        {'title': 'Other Paper', 'openalex_id': 'W2', 'cited_by': 10, 'referenced_works': ['W1']},
+        {'title': 'Third Paper', 'openalex_id': 'W3', 'cited_by': 5, 'referenced_works': ['W1', 'W2']},
+    ]
+
+
+def test_local_citation_counts_counts_internal_references():
+    counts = local_citation_counts(_local_citation_records())
+    assert counts == {'W1': 2, 'W2': 1}  # W3'e hiç referans verilmedi, listede yok
+
+
+def test_local_citation_counts_insufficient_data_returns_none():
+    assert local_citation_counts([{'openalex_id': 'W1'}, {}]) is None
+
+
+def test_local_global_citations_figure_ranks_by_local_count():
+    fig = local_global_citations(_local_citation_records())
+    assert fig is not None
+    ax = fig.axes[0]
+    labels = [t.get_text() for t in ax.get_yticklabels()]
+    assert labels == ['Foundational Paper', 'Other Paper']  # Third Paper hiç yerel atıf almadı

@@ -262,10 +262,19 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
          gettext('Anahtar kelime eş-oluşum ağında en az 2 küme gerekir.')),
         (gettext('Tematik Evrim (Dönemler Arası Tema Akışı)'), lambda: thematic_evolution(records),
          gettext('Her dönemde yeterli kayıt ve anahtar kelime kümesi ile dönemler arasında paylaşılan tema gerekir.')),
+        (gettext('Üç Alan Grafiği (Yazar ↔ Anahtar Kelime ↔ Dergi)'), lambda: three_field_plot(records),
+         gettext('En az 2 yazar, 2 anahtar kelime ve 2 dergi arasında birlikte geçme akışı gerekir.')),
+        (gettext('Ülke İşbirliği: Tek Ülkeli ve Çok Ülkeli Yayınlar (SCP/MCP)'), lambda: scp_mcp_chart(records),
+         gettext('Ülke veya kurum bilgisi yok.')),
+        (gettext('Bibliyografik Eşleşme Ağı (Paylaşılan Referanslar)'), lambda: bibliographic_coupling(records),
+         gettext('Referans listesi (en az 2 kayıtta, paylaşılan referansla) yok.')),
+        (gettext('Yerel Atıf ve Küresel Atıf Karşılaştırması'), lambda: local_global_citations(records),
+         gettext('Bu veri setindeki kayıtlar arasında referans üzerinden iç atıf bulunamadı.')),
     ]
     citation_based = {
         gettext('En Çok Atıf Alan Yayınlar (Top 10)'), gettext('Atıf Analizi ve H-index'),
         gettext('Yıllık Atıf Trendi'), gettext('Araştırma Boşluğu Haritası (Research Gap)'),
+        gettext('Yerel Atıf ve Küresel Atıf Karşılaştırması'),
     }
     results = []
     for title, fn, reason, *is_series in analyses:
@@ -1862,6 +1871,417 @@ def thematic_evolution(records: list[dict]):
         spine.set_visible(False)
     ax.set_xlabel(gettext('Dönem'), fontsize=11, labelpad=10)
     ax.set_title(gettext('Tematik Evrim (Dönemler Arası Tema Akışı)'))
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 21. Üç Alan Grafiği ───────────────────────────
+
+def three_field_plot_data(records: list[dict], top_authors_n: int = 10,
+                          top_keywords_n: int = 10, top_journals_n: int = 10):
+    """
+    Üç Alan Grafiği hesabı (B2-5, bibliometrix 'Three Fields Plot' eşdeğeri):
+    Yazar ↔ Anahtar Kelime ↔ Dergi arasında birlikte-geçme akışı.
+    - Yazar/dergi kutu büyüklüğü: yalnız seçili (en sık) anahtar kelimelerle
+      birlikte geçme TOPLAMI — bu kelimelerle hiç ortak geçmeyen yazar/dergi
+      otomatik elenir, dolayısıyla akış toplamı kutu büyüklüğüne tam oturur.
+    - Anahtar kelime kutu büyüklüğü: TÜM kayıtlardaki toplam frekans (sol ve
+      sağ şeritler bu değeri BAĞIMSIZ olarak asla aşamaz — her ikisi de o
+      kelimenin geçtiği yayınların birer alt kümesidir, B2-4'teki ispatla
+      aynı mantık).
+    Döner: (authors, keywords, journals, flows_ak, flows_kj) ya da yetersizse
+    (None, None, None, None, None). authors/keywords/journals: [{'label','size'}, ...]
+    büyükten küçüğe sıralı. flows_ak: [(yazar_idx, kelime_idx, ağırlık), ...],
+    flows_kj: [(kelime_idx, dergi_idx, ağırlık), ...].
+    """
+    author_counts, author_display = _group_authors(records)
+    if len(author_counts) < 2:
+        return None, None, None, None, None
+
+    kw_counts = Counter()
+    for r in records:
+        for k in set(normalize_keywords(r.get('keywords', []))):
+            if len(k) > 2:
+                kw_counts[k] += 1
+    if len(kw_counts) < 2:
+        return None, None, None, None, None
+
+    journal_counts = Counter(r['journal'].strip() for r in records if r.get('journal', '').strip())
+    if len(journal_counts) < 2:
+        return None, None, None, None, None
+
+    top_keywords = {kw for kw, _ in kw_counts.most_common(top_keywords_n)}
+
+    author_kw_cooccur = Counter()
+    kw_journal_cooccur = Counter()
+    for r in records:
+        rec_kws = {k for k in normalize_keywords(r.get('keywords', [])) if k in top_keywords}
+        if not rec_kws:
+            continue
+        rec_authors = {canonical_author_key(a) for a in r.get('authors', []) if canonical_author_key(a)}
+        journal = r.get('journal', '').strip()
+        for k in rec_kws:
+            for a in rec_authors:
+                author_kw_cooccur[(a, k)] += 1
+            if journal:
+                kw_journal_cooccur[(k, journal)] += 1
+
+    author_flow_total = Counter()
+    for (a, k), w in author_kw_cooccur.items():
+        author_flow_total[a] += w
+    if len(author_flow_total) < 2:
+        return None, None, None, None, None
+
+    journal_flow_total = Counter()
+    for (k, j), w in kw_journal_cooccur.items():
+        journal_flow_total[j] += w
+    if len(journal_flow_total) < 2:
+        return None, None, None, None, None
+
+    top_author_keys = [a for a, _ in author_flow_total.most_common(top_authors_n)]
+    top_journal_keys = [j for j, _ in journal_flow_total.most_common(top_journals_n)]
+    keywords_list = sorted(top_keywords, key=lambda k: kw_counts[k], reverse=True)
+
+    author_index = {a: i for i, a in enumerate(top_author_keys)}
+    kw_index = {k: i for i, k in enumerate(keywords_list)}
+    journal_index = {j: i for i, j in enumerate(top_journal_keys)}
+
+    flows_ak = [(author_index[a], kw_index[k], w) for (a, k), w in author_kw_cooccur.items()
+                if a in author_index and k in kw_index]
+    flows_kj = [(kw_index[k], journal_index[j], w) for (k, j), w in kw_journal_cooccur.items()
+                if k in kw_index and j in journal_index]
+    if not flows_ak or not flows_kj:
+        return None, None, None, None, None
+
+    authors = [{'label': author_display.get(a, a), 'size': author_flow_total[a]} for a in top_author_keys]
+    keywords = [{'label': k, 'size': kw_counts[k]} for k in keywords_list]
+    journals = [{'label': j[:40] + '…' if len(j) > 40 else j, 'size': journal_flow_total[j]}
+                for j in top_journal_keys]
+
+    return authors, keywords, journals, flows_ak, flows_kj
+
+
+def three_field_plot(records: list[dict]):
+    """
+    Üç Alan Grafiği (B2-5): Yazar ↔ Anahtar Kelime ↔ Dergi arasında birlikte-geçme
+    akışı, alüvyal/Sankey benzeri 3 sütunlu diyagram (bibliometrix 'Three Fields
+    Plot' eşdeğeri). Çizim motoru `thematic_evolution()` ile aynı yapıdadır
+    (`_sankey_ribbon()` paylaşılır) ama orada test edilen kodu bozmamak için
+    ayrı tutulmuştur.
+    """
+    authors, keywords, journals, flows_ak, flows_kj = three_field_plot_data(records)
+    if authors is None:
+        return None
+
+    col_items = [authors, keywords, journals]
+    col_labels = [gettext('Yazarlar'), gettext('Anahtar Kelimeler'), gettext('Dergiler')]
+    flows = [(0, a, k, w) for a, k, w in flows_ak] + [(1, k, j, w) for k, j, w in flows_kj]
+
+    n_cols = 3
+    col_totals = [sum(it['size'] for it in items) for items in col_items]
+    max_total = max(col_totals)
+    gap = max_total * 0.04
+    # Sütun yüksekliği yalnız öğe büyüklükleri değil, aralarındaki boşlukları da
+    # içermeli — yazar/dergi sütunlarında öğe sayısı (B2-4'teki dönem sayısından
+    # farklı olarak) çift haneli olabiliyor, boşluklar toplamı max_total'ı aşıp
+    # en alttaki kutuyu görünür alanın dışına itebiliyordu.
+    canvas_height = max(total + max(0, len(items) - 1) * gap
+                       for total, items in zip(col_totals, col_items))
+
+    fig, ax = plt.subplots(figsize=(14, 10))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    col_x = [i * 2.6 for i in range(n_cols)]
+    box_width = 0.5
+
+    col_boxes = []
+    col_colors = []
+    for items in col_items:
+        y = canvas_height
+        boxes = []
+        colors = []
+        for idx, it in enumerate(items):
+            y_top = y
+            y_bot = y - it['size']
+            boxes.append((y_top, y_bot))
+            colors.append(PALETTE[idx % len(PALETTE)])
+            y = y_bot - gap
+        col_boxes.append(boxes)
+        col_colors.append(colors)
+
+    for i in range(n_cols - 1):
+        out_cursor = [b[0] for b in col_boxes[i]]
+        in_cursor = [b[0] for b in col_boxes[i + 1]]
+        layer_flows = sorted((f for f in flows if f[0] == i), key=lambda f: (f[1], f[2]))
+        for (_, a_idx, b_idx, w) in layer_flows:
+            y0_top = out_cursor[a_idx]
+            y0_bot = y0_top - w
+            out_cursor[a_idx] = y0_bot
+            y1_top = in_cursor[b_idx]
+            y1_bot = y1_top - w
+            in_cursor[b_idx] = y1_bot
+            _sankey_ribbon(ax, col_x[i] + box_width / 2, col_x[i + 1] - box_width / 2,
+                          y0_top, y0_bot, y1_top, y1_bot, color=col_colors[i][a_idx])
+
+    for items, boxes, colors, x in zip(col_items, col_boxes, col_colors, col_x):
+        for it, (y_top, y_bot), color in zip(items, boxes, colors):
+            ax.add_patch(mpatches.Rectangle((x - box_width / 2, y_bot), box_width,
+                                            y_top - y_bot, facecolor=color, alpha=0.85,
+                                            edgecolor='white', linewidth=1.2, zorder=3))
+            ax.annotate(it['label'], (x, (y_top + y_bot) / 2), ha='center', va='center',
+                       fontsize=8, fontweight='bold', color='#1e293b', zorder=4)
+
+    ax.set_xticks(col_x)
+    ax.set_xticklabels(col_labels, fontsize=11, fontweight='bold')
+    ax.set_xlim(col_x[0] - 1.8, col_x[-1] + 1.8)
+    ax.set_ylim(-gap, canvas_height + gap)
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.set_title(gettext('Üç Alan Grafiği (Yazar ↔ Anahtar Kelime ↔ Dergi)'))
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 22. SCP/MCP (Ülke İşbirliği) ───────────────────────────
+
+def scp_mcp_counts(records: list[dict]):
+    """
+    SCP/MCP hesabı (B2-6, bibliometrix 'Corresponding Author's Country' eşdeğeri):
+    her kayıt, yazarlarının bulunduğu farklı ülke sayısına göre SCP (Single Country
+    Publication — tek ülkeli) veya MCP (Multiple Country Publication — çok ülkeli
+    işbirliği) olarak sınıflandırılır. Çok ülkeli bir yayın, o yayında adı geçen HER
+    ülke için MCP olarak sayılır (ülke sayımındaki genel "tam sayım" kuralıyla
+    tutarlı — bkz. `_record_countries()`).
+    Döner: {ülke: {'scp': n, 'mcp': n}} ya da ülke bilgisi hiç yoksa None.
+    """
+    counts = defaultdict(lambda: {'scp': 0, 'mcp': 0})
+    for r in records:
+        countries = _record_countries(r)
+        if len(countries) == 1:
+            counts[countries[0]]['scp'] += 1
+        elif len(countries) > 1:
+            for c in countries:
+                counts[c]['mcp'] += 1
+    if not counts:
+        return None
+    return dict(counts)
+
+
+def scp_mcp_chart(records: list[dict], n: int = 10):
+    """
+    SCP/MCP yığılmış çubuk grafiği (B2-6): en üretken top-N ülke, tek ülkeli (SCP)
+    ve çok ülkeli işbirliği (MCP) yayın sayısına göre yığılmış yatay çubuklarla.
+    """
+    counts = scp_mcp_counts(records)
+    if counts is None:
+        return None
+
+    ranked = sorted(counts.items(), key=lambda kv: kv[1]['scp'] + kv[1]['mcp'], reverse=True)[:n]
+    if not ranked:
+        return None
+
+    countries = [c for c, _ in ranked]
+    scp_vals = [v['scp'] for _, v in ranked]
+    mcp_vals = [v['mcp'] for _, v in ranked]
+
+    fig, ax = plt.subplots(figsize=(9, max(10, len(countries) * 0.75)))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    y_pos = range(len(countries))
+    ax.barh(y_pos, scp_vals, color=PALETTE[0], alpha=0.9, height=0.7,
+           edgecolor='white', linewidth=0.5, label=gettext('Tek Ülkeli (SCP)'), zorder=2)
+    ax.barh(y_pos, mcp_vals, left=scp_vals, color=PALETTE[2], alpha=0.9, height=0.7,
+           edgecolor='white', linewidth=0.5, label=gettext('Çok Ülkeli İşbirliği (MCP)'), zorder=2)
+
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(countries, fontsize=10)
+    ax.invert_yaxis()
+    ax.set_xlabel(gettext('Yayın Sayısı'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('Ülke İşbirliği: Tek Ülkeli ve Çok Ülkeli Yayınlar (SCP/MCP)'))
+    ax.grid(axis='x', zorder=1)
+    ax.legend(loc='lower right', fontsize=9, frameon=True, framealpha=0.95, edgecolor='#cbd5e0')
+
+    for i, (s, m) in enumerate(zip(scp_vals, mcp_vals)):
+        total = s + m
+        if total > 0:
+            ax.text(total + max(total * 0.01, 0.1), i, f'{total:,}',
+                   ha='left', va='center', fontsize=9, color='#334155', fontweight='bold')
+
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 23. Bibliyografik Eşleşme Ağı ───────────────────────────
+
+def bibliographic_coupling(records: list[dict], min_shared: int = 2, max_nodes: int = 30):
+    """
+    Bibliyografik Eşleşme Ağı (B2-7, bibliometrix 'Bibliographic Coupling' eşdeğeri):
+    iki yayın, aynı eserlere atıf yapıyorsa (referenced_works kesişimi) bağlanır;
+    kenar ağırlığı paylaşılan referans sayısıdır. Yalnız referenced_works dolu
+    kayıtlar (B1-1 OpenAlex zenginleştirmesinden geçmiş, DOI'li) katılır.
+    """
+    try:
+        import networkx as nx
+    except ImportError:
+        logger.warning('networkx paketi yüklü değil')
+        return None
+
+    candidates = [r for r in records if r.get('referenced_works')]
+    if len(candidates) < 2:
+        return None
+
+    # Her kayıt için kısa, benzersiz düğüm etiketi (aynı kısaltma 2. kez çıkarsa "(2)" eklenir)
+    labels = []
+    seen = Counter()
+    for r in candidates:
+        title = (r.get('title') or '').strip() or gettext('(başlıksız)')
+        short = title[:45] + '…' if len(title) > 45 else title
+        seen[short] += 1
+        labels.append(f'{short} ({seen[short]})' if seen[short] > 1 else short)
+
+    ref_sets = [set(r['referenced_works']) for r in candidates]
+
+    coupling_count = Counter()
+    for i in range(len(candidates)):
+        for j in range(i + 1, len(candidates)):
+            shared = len(ref_sets[i] & ref_sets[j])
+            if shared > 0:
+                coupling_count[(labels[i], labels[j])] = shared
+
+    G = nx.Graph()
+    for (l1, l2), w in coupling_count.items():
+        if w >= min_shared:
+            G.add_edge(l1, l2, weight=w)
+
+    if G.number_of_nodes() == 0:
+        for (l1, l2), w in coupling_count.most_common(40):
+            G.add_edge(l1, l2, weight=w)
+
+    if G.number_of_nodes() == 0:
+        return None
+
+    if G.number_of_nodes() > max_nodes:
+        top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_nodes]
+        G = G.subgraph([n for n, _ in top_nodes]).copy()
+        if G.number_of_nodes() == 0:
+            return None
+
+    degrees = dict(G.degree())
+    max_deg = max(degrees.values()) if degrees else 1
+    min_deg = min(degrees.values()) if degrees else 0
+    span = (max_deg - min_deg) or 1
+
+    node_colors = [plt.cm.viridis(0.15 + 0.7 * (degrees[n] - min_deg) / span)
+                   for n in G.nodes()]
+    node_sizes = [300 + degrees[n] * 130 for n in G.nodes()]
+    edge_weights = [G[u][v].get('weight', 1) for u, v in G.edges()]
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    pos = nx.spring_layout(G, seed=42, k=3.0)
+
+    nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.35,
+                           width=[min(w * 0.6, 4.0) for w in edge_weights],
+                           edge_color='#94a3b8')
+    nx.draw_networkx_nodes(G, pos, ax=ax, node_size=node_sizes,
+                           node_color=node_colors, alpha=0.9,
+                           linewidths=0.8, edgecolors='white')
+
+    degree_threshold = sorted(degrees.values(), reverse=True)[min(14, len(degrees) - 1)]
+    label_dict = {n: n for n, d in degrees.items() if d >= degree_threshold}
+    nx.draw_networkx_labels(G, pos, labels=label_dict, ax=ax,
+                            font_size=7, font_color='#1e293b', font_weight='bold')
+
+    sm = plt.cm.ScalarMappable(cmap=plt.cm.viridis,
+                               norm=plt.Normalize(vmin=min_deg, vmax=max_deg))
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax, fraction=0.03, pad=0.02)
+    cbar.set_label(gettext('Paylaşılan Referans Sayısı'), fontsize=10)
+
+    ax.set_title(gettext('Bibliyografik Eşleşme Ağı (Paylaşılan Referanslar)'))
+    ax.axis('off')
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 24. Yerel / Küresel Atıf ───────────────────────────
+
+def local_citation_counts(records: list[dict]):
+    """
+    Her openalex_id'li kayıt için "yerel atıf" sayısı (bu veri setindeki diğer
+    kayıtlardan kaçının onu referenced_works üzerinden atıf yaptığı).
+    Döner: {openalex_id: yerel_atıf_sayısı} (hiç iç atıf yoksa None).
+    """
+    own_ids = {r['openalex_id']: r for r in records if r.get('openalex_id')}
+    if len(own_ids) < 2:
+        return None
+
+    local_count = Counter()
+    for r in records:
+        for ref in (r.get('referenced_works') or []):
+            if ref in own_ids:
+                local_count[ref] += 1
+
+    if not local_count:
+        return None
+    return dict(local_count)
+
+
+def local_global_citations(records: list[dict], n: int = 15):
+    """
+    Yerel Atıf vs Küresel Atıf (B2-7, bibliometrix 'Local Citations' eşdeğeri):
+    "küresel atıf" (cited_by) yayının OpenAlex genelindeki toplam atıf sayısıdır;
+    "yerel atıf" yalnız BU veri setindeki diğer kayıtlardan kaçının ona
+    referenced_works üzerinden atıf yaptığıdır (derlemenin kendi iç etkisi).
+    Yalnız openalex_id'si olan (B1-1 zenginleştirmesinden geçmiş) kayıtlar için
+    hesaplanabilir.
+    """
+    local_count = local_citation_counts(records)
+    if local_count is None:
+        return None
+
+    own_ids = {r['openalex_id']: r for r in records if r.get('openalex_id')}
+    ranked = sorted(local_count.items(), key=lambda kv: kv[1], reverse=True)[:n]
+
+    titles, local_vals, global_vals = [], [], []
+    for oid, local in ranked:
+        rec = own_ids[oid]
+        title = (rec.get('title') or '').strip() or gettext('(başlıksız)')
+        titles.append(title[:45] + '…' if len(title) > 45 else title)
+        local_vals.append(local)
+        global_vals.append(rec.get('cited_by') or 0)
+
+    # Küresel atıf (tüm literatür) her zaman yerel atıftan (bu küçük veri setindeki iç
+    # atıf) çok daha büyük olabilir — aynı eksende çift çubuk yerel çubuğu görünmez
+    # kılardı; bu yüzden sıralama yerel atfa göre, küresel sayı her çubuğun yanında
+    # metin olarak gösterilir (ölçek farkından bağımsız, her ikisi de okunabilir).
+    fig, ax = plt.subplots(figsize=(10, max(10, len(titles) * 0.8)))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    y_pos = list(range(len(titles)))
+    bars = ax.barh(y_pos, local_vals, color=PALETTE[2], alpha=0.9, height=0.7,
+                   edgecolor='white', linewidth=0.5, zorder=2)
+
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(titles, fontsize=9)
+    ax.invert_yaxis()
+    ax.set_xlabel(gettext('Yerel Atıf Sayısı (Bu Veri Setinde)'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('En Çok Yerel Atıf Alan Yayınlar (Top {n})').format(n=len(titles)))
+    ax.grid(axis='x', zorder=1)
+
+    max_local = max(local_vals) or 1
+    label_tmpl = gettext('{local} yerel · {glob} küresel atıf')
+    for bar, local, glob in zip(bars, local_vals, global_vals):
+        ax.text(bar.get_width() + max_local * 0.02, bar.get_y() + bar.get_height() / 2,
+               label_tmpl.format(local=f'{local:,}', glob=f'{glob:,}'),
+               ha='left', va='center', fontsize=8.5, color='#334155', fontweight='bold')
+
     fig.tight_layout(pad=2.0)
     return fig
 

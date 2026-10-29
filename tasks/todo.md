@@ -5,12 +5,14 @@
 başladı ve `dev`'de hızla ilerliyor (henüz `main`'e merge edilmedi — kullanıcı
 "merge et" demeden dokunulmayacak): **B1 (veri kalitesi) TAMAMEN BİTTİ**
 (B1-1 OpenAlex zenginleştirme, B1-2 tekilleştirme, B1-3 yazar birleştirme,
-B1-4 anahtar kelime normalizasyonu) ve **B2'den 4 madde tamamlandı** (B2-1
+B1-4 anahtar kelime normalizasyonu) ve **B2'den 7 madde tamamlandı** (B2-1
 Bradford Kanunu, B2-2 Louvain kümeleri + tablo, B2-3 Tematik Harita, B2-4
-Tematik Evrim) — hepsi `dev`'e commit edildi (henüz push edilmedi),
-istatistik araç sayısı 17→20. **Yeni oturum buradan devam etsin: sıradaki B2-5..B2-8,
-sonra B3, B4** (bkz. madde 3 altındaki detaylı liste ve
-`bibliometri_durum_ve_gelistirme_prompt.md` §4). Ayrıca aşağıdaki 2 ayrı
+Tematik Evrim, B2-5 Üç Alan Grafiği, B2-6 SCP/MCP, B2-7 Bibliyografik
+Eşleşme + Yerel/Küresel Atıf) — hepsi `dev`'e commit edildi (B2-1..B2-6 push
+edildi, B2-7 henüz push edilmedi), istatistik araç sayısı 17→24. **Yeni
+oturum buradan devam etsin: sıradaki B2-8, sonra B3, B4** (bkz. madde 3
+altındaki detaylı liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4).
+Ayrıca aşağıdaki 2 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
 1. **[ÖNCELİKLİ] Araştırma Konusu Kümeleri (Topic Map) grafiği görsel
@@ -137,8 +139,80 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      `--no-location` flag'i kullanıldı (önceki S3 turunda da aynı hata
      yapılmıştı, bkz. ilgili not) — hemen fark edilip `git checkout` ile geri
      alındı, flag'siz tekrar çalıştırıldı.
-   - [ ] B2-5..B2-8 (bkz. plan dosyası §4 — üç alan grafiği, ülke işbirliği
-     SCP/MCP, atıf ağları, konu modelleme)
+   - [x] **B2-5 TAMAMLANDI (29 Ekim 2026, dev'de, commit edildi):** Üç Alan
+     Grafiği (bibliometrix 'Three Fields Plot' eşdeğeri, Yazar ↔ Anahtar
+     Kelime ↔ Dergi). `analyzer.py`'ye `three_field_plot_data()` (saf hesap:
+     yazar/dergi kutu büyüklüğü yalnız gösterilen top-N anahtar kelimelerle
+     birlikte geçme toplamı; anahtar kelime kutu büyüklüğü TÜM veri setindeki
+     toplam frekans — B2-4'teki "akış kutuyu asla aşamaz" ispatıyla aynı
+     mantık) + `three_field_plot()` (3 sütunlu alüvyal/Sankey diyagramı,
+     B2-4'teki `_sankey_ribbon()` yeniden kullanıldı ama çizim döngüsü
+     KASITLI OLARAK AYRI fonksiyon — test edilmiş `thematic_evolution()`'a
+     dokunulmadı) eklendi, 21. analiz olarak kaydedildi (istatistik araç
+     sayısı 20→21, tüm "N Analiz" referansları güncellendi). **Görsel
+     doğrulamada bulunup düzeltilen gerçek bug:** 8+ öğeli sütunlarda
+     (yazar/dergi, B2-4'teki 2-4 dönemden farklı olarak çok daha fazla öğe
+     olabiliyor) öğeler arası boşlukların toplamı `max_total`'ı aşıp en alttaki
+     kutuyu grafik alanının dışına itiyordu — sütun yüksekliği hesabı
+     `canvas_height = max(toplam + (öğe_sayısı-1)×boşluk)` olarak düzeltildi
+     (yalnız bu fonksiyonda; `thematic_evolution` dokunulmadı, orada henüz
+     tetiklenmemiş gizli/latent aynı risk var — ileride öğe sayısı artarsa
+     akılda tutulmalı). Sentetik + rastgele (8 yazar × 9 kelime × 5 dergi)
+     veriyle görsel doğrulandı. 3 yeni pytest, rapor "kurallar" metni EN/DE
+     çevrildi. Yeni paket/migration yok. `forum+bibliometrics` 158/158.
+   - [x] **B2-6 TAMAMLANDI (29 Ekim 2026, dev'de, commit edildi):** Ülke
+     İşbirliği SCP/MCP (bibliometrix 'Corresponding Author's Country'
+     eşdeğeri). **Durum tespiti:** "Ülke İşbirliği Ağı" (network grafiği)
+     zaten mevcuttu (`country_collaboration()`, analiz #15) — eksik olan
+     asıl parça SCP/MCP yığılmış çubuktu. `analyzer.py`'ye `scp_mcp_counts()`
+     (saf hesap: her kayıt `_record_countries()` ile sınıflandırılır — 1
+     ülke → o ülke için SCP, 2+ ülke → listedeki HER ülke için MCP, mevcut
+     "tam sayım" kuralıyla tutarlı) + `scp_mcp_chart()` (top-10 ülke, yatay
+     yığılmış çubuk — `top_journals()`/`top_cited()` ile aynı görsel dil)
+     eklendi, 22. analiz olarak kaydedildi (istatistik araç sayısı 21→22,
+     tüm "N Analiz" referansları güncellendi). **Dünya haritası (plan
+     dosyasında zaten "opsiyonel" işaretliydi) kullanıcı kararıyla kapsam
+     dışı bırakıldı** — GeoJSON + matplotlib poligon ek karmaşıklık. Sentetik
+     veriyle (12 ülke, ağırlıklı rastgele SCP/MCP dağılımı) görsel doğrulandı
+     — bibliometrix'in gerçek SCP/MCP grafiğiyle aynı kalıp. 3 yeni pytest,
+     rapor "kurallar" metni EN/DE çevrildi. Yeni paket/migration yok.
+     `forum+bibliometrics` 161/161.
+   - [x] **B2-7 TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi):** Atıf
+     ağları. **Veri durumu netleştirildi (AskUserQuestion ile kullanıcıya
+     soruldu):** `referenced_works` yalnız DOI'li ve B1-1 OpenAlex
+     zenginleştirmesinden geçen kayıtlarda dolu; her kaydın KENDİ OpenAlex
+     ID'si hiçbir yerde saklanmıyordu — klasik "co-citation" (harici atıf
+     edilen eserler arası ağ) için düğümler yalnız ham ID ile etiketlenebilir
+     (başlık için yüzlerce ek API çağrısı gerekir) — kullanıcı bu nedenle en
+     dar/en değerli kapsamı seçti: **Bibliyografik Eşleşme (Bibliographic
+     Coupling) + Yerel/Küresel Atıf**, harici co-citation ağı YAPILMADI.
+     `enrichment.py`'ye `rec['openalex_id']` eklendi (B1-1 akışında, `work.
+     get('id')`) + `parser.py` `EMPTY_RECORD`'a `'openalex_id': ''` eklendi.
+     `analyzer.py`'ye `bibliographic_coupling()` (iki yayın aynı esere atıf
+     yapıyorsa bağlanır, kenar ağırlığı paylaşılan referans sayısı —
+     `country_collaboration()`/`author_collaboration()` ile aynı ağ çizim
+     kalıbı, Counter + fallback) + `local_citation_counts()`/
+     `local_global_citations()` (saf hesap + çizim ayrımı, `scp_mcp_counts`/
+     `scp_mcp_chart` kalıbıyla tutarlı — "yerel atıf" = bu veri setindeki
+     diğer kayıtlardan kaç tanesinin referenced_works'ünde bu kaydın
+     openalex_id'si geçtiği) eklendi, 23. ve 24. analiz olarak kaydedildi
+     (istatistik araç sayısı 22→24, tüm "N Analiz" referansları 7 dosyada
+     güncellendi). **Görsel doğrulamada bulunup düzeltilen gerçek tasarım
+     sorunu:** ilk tasarımda yerel/küresel atıf aynı eksende çift çubuk
+     olarak çiziliyordu — küresel atıf (tüm literatür) yerel atıftan
+     (küçük veri setindeki iç atıf) yapısal olarak çok büyük olduğundan
+     (gerçek veride de hep böyle olacak) yerel çubuk görünmez kalıyordu;
+     tasarım tek çubuğa (yerel atıf, sıralama ölçütü) + her çubuğun yanına
+     "{yerel} yerel · {küresel} küresel atıf" metin etiketine çevrildi —
+     ikisi de ölçek farkından bağımsız okunabilir. `local_global_citations`
+     bu nedenle `has_citations=False` (PubMed) kaynaklarda da atlanan
+     `citation_based` kümesine eklendi (küresel atıf her zaman 0 olurdu).
+     Sentetik veriyle (25 yayın × paylaşılan referans havuzu; 12 iç-atıflı
+     kayıt) görsel doğrulandı. 8 yeni pytest (ağ düğüm sayısı + yerel atıf
+     sıralaması + eşik altı/üstü durumlar), rapor "kurallar" metni (2 yeni
+     cümle) EN/DE çevrildi. Yeni paket yok, migration yok (openalex_id
+     kayıt içi bir alan, model değil). `forum+bibliometrics` 167/167.
+   - [ ] B2-8 (bkz. plan dosyası §4 — konu modelleme NMF/LDA)
    - [ ] B3-B4 (bkz. plan dosyası §4)
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
