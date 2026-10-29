@@ -2,9 +2,16 @@
 
 **Durum (29 Ekim 2026 gece):** Bibliometri Grup A (A1-A9) tamamen bitti,
 `main`'de canlı (Hetzner). Grup B (bibliometrix/VOSviewer yol haritası)
-başladı — B1-1 (DOI ile OpenAlex zenginleştirme) tamamlandı, `dev`'de,
-henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti,
-**yarın buradan devam**:
+başladı ve `dev`'de hızla ilerliyor (henüz `main`'e merge edilmedi — kullanıcı
+"merge et" demeden dokunulmayacak): **B1 (veri kalitesi) TAMAMEN BİTTİ**
+(B1-1 OpenAlex zenginleştirme, B1-2 tekilleştirme, B1-3 yazar birleştirme,
+B1-4 anahtar kelime normalizasyonu) ve **B2'den 3 madde tamamlandı** (B2-1
+Bradford Kanunu, B2-2 Louvain kümeleri + tablo, B2-3 Tematik Harita) — hepsi
+`dev`'e commit+push edildi, istatistik araç sayısı 17→19. **Yeni oturum
+buradan devam etsin: sıradaki B2-4 (tematik evrim — dönemler arası tema
+akışı), sonra B2-5..B2-8, B3, B4** (bkz. madde 3 altındaki detaylı liste ve
+`bibliometri_durum_ve_gelistirme_prompt.md` §4). Ayrıca aşağıdaki 2 ayrı
+açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
 1. **[ÖNCELİKLİ] Araştırma Konusu Kümeleri (Topic Map) grafiği görsel
    kalite sorunu — henüz incelenmedi.** Kullanıcı canlı PDF'te gördü: balon
@@ -28,7 +35,7 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
 3. **Grup B** (bibliometrix/VOSviewer kalitesinde yol haritası — B1 veri
    kalitesi → B2 bilim haritalama → B3 çıktılar → B4 ürün/huni), plan
    dosyası: `bibliometri_durum_ve_gelistirme_prompt.md` §4.
-   - [x] **B1-1 TAMAMLANDI (29 Ekim 2026, dev'de, henüz push edilmedi):**
+   - [x] **B1-1 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):**
      DOI ile OpenAlex zenginleştirme. `bibliometrics/services/enrichment.py`
      (yeni) + `openalex/services/scraper.py.fetch_works_by_dois()` (yeni,
      mevcut arama koduna dokunulmadı) + `SiteSettings.
@@ -44,7 +51,7 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
      birinde eksikse eski davranış gibi yalnız başlığa güvenilir). 5 yeni
      pytest. Rapor metni (`report_notes.py` "Uygulanan kurallar") EN/DE
      güncellendi. Migration yok. `forum+bibliometrics` 129/129.
-   - [x] **B1-3 KISMEN TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi):**
+   - [x] **B1-3 KISMEN TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):**
      Yazar adı birleştirme — yalnız "Soyad + baş harf" normalizasyonu kısmı
      (aksan/büyük-küçük harf yok sayılır). `analyzer.py`'ye `canonical_author_key()`
      + `_group_authors()` eklendi; `top_authors`/`lotka_law`/`author_collaboration`
@@ -56,7 +63,7 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
      orada düzgün yapılacak. 7 yeni pytest (`canonical_author_key`,
      `_group_authors`, 3 fonksiyonun varyant birleştirmesi). Rapor "Kısıtlar"
      metni güncellendi (EN/DE). Migration yok. `forum+bibliometrics` 136/136.
-   - [x] **B1-4 TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi) — B1 (Veri
+   - [x] **B1-4 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi) — B1 (Veri
      kalitesi) TAMAMEN BİTTİ:** Anahtar kelime normalizasyonu. `normalize_keywords`:
      tire ile boşluk artık eşdeğer sayılıyor ("COVID-19" ~ "COVID 19"); TR
      lemmatization kelimeyi değiştirmediyse (muhtemelen yabancı kelime) basit
@@ -67,7 +74,7 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
      kelimeyi döndürüyor) — prod'da durum doğrulanmadı, ayrı bir inceleme
      gerektirir. 4 yeni pytest, rapor "Uygulanan kurallar" metni EN/DE
      güncellendi, migration yok. `forum+bibliometrics` 139/139.
-   - [x] **B2-1 TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi):** Bradford
+   - [x] **B2-1 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):** Bradford
      Kanunu. `analyzer.py`'ye `bradford_zones()` (saf hesap, test edilebilir)
      + `bradford_law()` (tablo+grafik, citation_analysis'teki iki panel
      kalıbı) eklendi; `run_all_analyses`'a 18. analiz olarak kaydedildi
@@ -78,7 +85,7 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
      help_text) 18'e güncellendi. 5 yeni pytest, rapor "kurallar" metnine
      yöntem cümlesi eklendi, EN/DE çevrildi. Migration yok.
      `forum+bibliometrics` 143/143.
-   - [x] **B2-2 TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi):** Anahtar
+   - [x] **B2-2 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):** Anahtar
      kelime eş-oluşum ağı + Louvain kümeleri. `analyzer.py`'de mevcut
      `greedy_modularity_communities` yerine sabit seed'li `louvain_communities`
      kullanılacak şekilde değiştirildi (VOSviewer/bibliometrix eşitliği,
@@ -92,7 +99,7 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
      "kurallar" metnine Louvain açıklaması eklendi, EN/DE çevrildi. Yeni paket
      yok (`networkx` zaten `requirements.txt`'te, `louvain_communities`
      3.6.1'de mevcut). Migration yok. `forum+bibliometrics` 147/147.
-   - [x] **B2-3 TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi):** Tematik
+   - [x] **B2-3 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):** Tematik
      Harita (Callon merkeziyet × yoğunluk). `analyzer.py`'ye `thematic_map_themes()`
      (saf hesap: her Louvain kümesinin dışa bağlantı gücü = merkeziyet, iç
      bağlantı gücü/büyüklük = yoğunluk) + `thematic_map()` (4 kadranlı balon
