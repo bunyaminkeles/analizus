@@ -186,6 +186,9 @@ def _rules(source, last_year, stats=None):
         gettext('Tematik Evrim\'de veri, yayın yılına göre eşit uzunlukta dönemlere ayrıldı (veri yeterliyse '
                 '3, değilse 2 dönem) ve her dönem ayrı ayrı kümelendi; dönemler arasındaki şeritler, ardışık '
                 'dönemlerdeki temaların paylaştığı anahtar kelime sayısını gösterir.'),
+        gettext('Üç Alan Grafiği\'nde yazar ve dergi kutuları yalnız gösterilen en sık anahtar kelimelerle '
+                'birlikte geçme sayısına göre; anahtar kelime kutuları ise kelimenin tüm veri setindeki '
+                'toplam frekansına göre boyutlandırıldı.'),
     ]
     return rules
 

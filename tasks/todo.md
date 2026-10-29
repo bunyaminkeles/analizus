@@ -5,11 +5,11 @@
 başladı ve `dev`'de hızla ilerliyor (henüz `main`'e merge edilmedi — kullanıcı
 "merge et" demeden dokunulmayacak): **B1 (veri kalitesi) TAMAMEN BİTTİ**
 (B1-1 OpenAlex zenginleştirme, B1-2 tekilleştirme, B1-3 yazar birleştirme,
-B1-4 anahtar kelime normalizasyonu) ve **B2'den 4 madde tamamlandı** (B2-1
+B1-4 anahtar kelime normalizasyonu) ve **B2'den 5 madde tamamlandı** (B2-1
 Bradford Kanunu, B2-2 Louvain kümeleri + tablo, B2-3 Tematik Harita, B2-4
-Tematik Evrim) — hepsi `dev`'e commit edildi (henüz push edilmedi),
-istatistik araç sayısı 17→20. **Yeni oturum buradan devam etsin: sıradaki B2-5..B2-8,
-sonra B3, B4** (bkz. madde 3 altındaki detaylı liste ve
+Tematik Evrim, B2-5 Üç Alan Grafiği) — B2-5 henüz commit edilmedi (kullanıcı
+onayı bekliyor), istatistik araç sayısı 17→21. **Yeni oturum buradan devam etsin: sıradaki
+B2-6..B2-8, sonra B3, B4** (bkz. madde 3 altındaki detaylı liste ve
 `bibliometri_durum_ve_gelistirme_prompt.md` §4). Ayrıca aşağıdaki 2 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
@@ -137,8 +137,29 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      `--no-location` flag'i kullanıldı (önceki S3 turunda da aynı hata
      yapılmıştı, bkz. ilgili not) — hemen fark edilip `git checkout` ile geri
      alındı, flag'siz tekrar çalıştırıldı.
-   - [ ] B2-5..B2-8 (bkz. plan dosyası §4 — üç alan grafiği, ülke işbirliği
-     SCP/MCP, atıf ağları, konu modelleme)
+   - [x] **B2-5 TAMAMLANDI (29 Ekim 2026, dev'de, commit bekliyor):** Üç Alan
+     Grafiği (bibliometrix 'Three Fields Plot' eşdeğeri, Yazar ↔ Anahtar
+     Kelime ↔ Dergi). `analyzer.py`'ye `three_field_plot_data()` (saf hesap:
+     yazar/dergi kutu büyüklüğü yalnız gösterilen top-N anahtar kelimelerle
+     birlikte geçme toplamı; anahtar kelime kutu büyüklüğü TÜM veri setindeki
+     toplam frekans — B2-4'teki "akış kutuyu asla aşamaz" ispatıyla aynı
+     mantık) + `three_field_plot()` (3 sütunlu alüvyal/Sankey diyagramı,
+     B2-4'teki `_sankey_ribbon()` yeniden kullanıldı ama çizim döngüsü
+     KASITLI OLARAK AYRI fonksiyon — test edilmiş `thematic_evolution()`'a
+     dokunulmadı) eklendi, 21. analiz olarak kaydedildi (istatistik araç
+     sayısı 20→21, tüm "N Analiz" referansları güncellendi). **Görsel
+     doğrulamada bulunup düzeltilen gerçek bug:** 8+ öğeli sütunlarda
+     (yazar/dergi, B2-4'teki 2-4 dönemden farklı olarak çok daha fazla öğe
+     olabiliyor) öğeler arası boşlukların toplamı `max_total`'ı aşıp en alttaki
+     kutuyu grafik alanının dışına itiyordu — sütun yüksekliği hesabı
+     `canvas_height = max(toplam + (öğe_sayısı-1)×boşluk)` olarak düzeltildi
+     (yalnız bu fonksiyonda; `thematic_evolution` dokunulmadı, orada henüz
+     tetiklenmemiş gizli/latent aynı risk var — ileride öğe sayısı artarsa
+     akılda tutulmalı). Sentetik + rastgele (8 yazar × 9 kelime × 5 dergi)
+     veriyle görsel doğrulandı. 3 yeni pytest, rapor "kurallar" metni EN/DE
+     çevrildi. Yeni paket/migration yok. `forum+bibliometrics` 158/158.
+   - [ ] B2-6..B2-8 (bkz. plan dosyası §4 — ülke işbirliği SCP/MCP, atıf
+     ağları, konu modelleme)
    - [ ] B3-B4 (bkz. plan dosyası §4)
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş

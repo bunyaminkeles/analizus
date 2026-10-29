@@ -34,6 +34,8 @@ from bibliometrics.services.analyzer import (
     thematic_evolution_periods,
     thematic_evolution_themes,
     thematic_evolution,
+    three_field_plot_data,
+    three_field_plot,
 )
 import matplotlib.patches as mpatches
 import bibliometrics.services.analyzer as analyzer_module
@@ -654,3 +656,53 @@ def test_thematic_evolution_figure_has_box_per_theme():
     assert fig is not None
     rects = [p for p in fig.axes[0].patches if isinstance(p, mpatches.Rectangle)]
     assert len(rects) == 4  # 2 tema x 2 dönem (3 dönem veriyle kurulamaz, 2'ye düşer)
+
+
+def _three_field_records():
+    """B2-5 test verisi: 2 yazar, 2+1 ortak anahtar kelime, 2 dergi."""
+    records = []
+    for _ in range(6):
+        records.append({'authors': ['Alice Smith'], 'keywords': ['alpha', 'shared'], 'journal': 'J1'})
+    for _ in range(5):
+        records.append({'authors': ['Bob Jones'], 'keywords': ['beta', 'shared'], 'journal': 'J2'})
+    return records
+
+
+def test_three_field_plot_data_builds_consistent_flows():
+    """B2-5: yazar/dergi kutu büyüklüğü akış toplamına tam oturmalı; anahtar kelime
+    kutu büyüklüğü (toplam frekans) her iki yöndeki akış toplamını da sınırlamalı."""
+    records = _three_field_records()
+    authors, keywords, journals, flows_ak, flows_kj = three_field_plot_data(records)
+    assert authors is not None
+    assert len(authors) == 2
+    assert len(journals) == 2
+    kw_labels = {k['label'] for k in keywords}
+    assert {'alpha', 'beta', 'shared'} <= kw_labels
+
+    shared_idx = next(i for i, k in enumerate(keywords) if k['label'] == 'shared')
+    assert keywords[shared_idx]['size'] == 11  # 6 + 5 — tüm kayıtlardaki toplam frekans
+
+    for a_idx, author in enumerate(authors):
+        total_out = sum(w for a, k, w in flows_ak if a == a_idx)
+        assert total_out == author['size']
+
+    for k_idx, kw in enumerate(keywords):
+        total_in = sum(w for a, k, w in flows_ak if k == k_idx)
+        total_out = sum(w for k2, j, w in flows_kj if k2 == k_idx)
+        assert total_in <= kw['size']
+        assert total_out <= kw['size']
+
+
+def test_three_field_plot_data_insufficient_returns_none():
+    records = [{'authors': ['Only One'], 'keywords': ['x'], 'journal': 'J1'}]
+    result = three_field_plot_data(records)
+    assert result == (None, None, None, None, None)
+
+
+def test_three_field_plot_figure_has_box_per_item():
+    records = _three_field_records()
+    authors, keywords, journals, _, _ = three_field_plot_data(records)
+    fig = three_field_plot(records)
+    assert fig is not None
+    rects = [p for p in fig.axes[0].patches if isinstance(p, mpatches.Rectangle)]
+    assert len(rects) == len(authors) + len(keywords) + len(journals)
