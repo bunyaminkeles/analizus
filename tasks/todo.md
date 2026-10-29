@@ -16,31 +16,16 @@ XLSX/CSV) + B3-2 (VOSviewer map+network export) TAMAMLANDI, henüz yalnız
 dokunulmayacak. **Yeni oturum buradan devam etsin: sıradaki B3-3 (hazır
 Yöntem metni + PRISMA diyagramı), sonra B3-4, sonra B4** (B3-2b — Biblioshiny
 WoS-plaintext export — R/bibliometrix ile test edilebildiğinde ayrı ele
-alınacak; bkz. madde 3 altındaki detaylı liste ve
+alınacak; bkz. madde 2 altındaki detaylı liste ve
 `bibliometri_durum_ve_gelistirme_prompt.md` §4).
-Ayrıca aşağıdaki 2 ayrı
+Ayrıca aşağıdaki 1 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
-1. **[ÖNCELİKLİ] Araştırma Konusu Kümeleri (Topic Map) grafiği görsel
-   kalite sorunu — henüz incelenmedi.** Kullanıcı canlı PDF'te gördü: balon
-   grafikte devasa boş alan (sayfanın çoğu boş) + balonların içindeki
-   anahtar kelime etiketleri okunamıyor/üst üste biniyor ("çok kötü",
-   kullanıcının kendi ifadesi; `diğerleri yine güzel` — yalnız bu grafik
-   sorunlu). Kök neden adayı (henüz doğrulanmadı): `bibliometrics/services/
-   analyzer.py` `topic_map()` — (a) `figsize=(14,8)` sabit, satır sayısı
-   azken (ör. 1 satır/4 küme) devasa boş dikey alan bırakıyor — `rows`
-   değişkenine göre dinamik yükseklik gerekir; (b) balon etiketi
-   `'\n'.join(topic['keywords'][:5])` — bu veri setinde "anahtar kelime"ler
-   özetten çıkarılmış UZUN KELİME ÖBEKLERİ olabilir (tek kısa terim değil),
-   fontsize=7.5 ile küçük balona sığmıyor — etiket kısaltma/elips veya
-   balon başına daha az/daha kısa kelime gerekebilir. İlk adım: hangi job'ın
-   PDF'i olduğunu (OpenAlex köprüsü mü, CSV mi) ve o job'ın gerçek
-   `keywords` alanlarının içeriğini incelemek.
-2. **DE/EN tarama araçlarının otomatik özet paragrafı Türkçe kalıyor** —
+1. **DE/EN tarama araçlarının otomatik özet paragrafı Türkçe kalıyor** —
    kaynağı bulunamadı (`claude_service.generate_summary` değil, semanticscholar
    job_runner/views'ta `generate_summary` çağrısı yok). Detay: aşağıdaki
    "AÇIK İŞLER" listesinde 29 Ekim 2026 maddesi.
-3. **Grup B** (bibliometrix/VOSviewer kalitesinde yol haritası — B1 veri
+2. **Grup B** (bibliometrix/VOSviewer kalitesinde yol haritası — B1 veri
    kalitesi → B2 bilim haritalama → B3 çıktılar → B4 ürün/huni), plan
    dosyası: `bibliometri_durum_ve_gelistirme_prompt.md` §4.
    - [x] **B1-1 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):**
@@ -285,6 +270,24 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
    - [ ] B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı)
    - [ ] B3-4 (grafik başına otomatik yorum cümlesi, kural tabanlı)
    - [ ] B4 (ürün/huni) — bkz. plan dosyası §4
+   - [x] **Topic Map görsel kalite sorunu DÜZELTİLDİ (29 Ekim 2026, dev'de)**
+     (Grup B dışı, ayrı açık işti). Kök neden sentetik veriyle render edilip
+     doğrulandı: `topic_map()`'te sabit `figsize=(14,8)` (en/boy 1.75, geniş)
+     dikey A4 sayfa içeriğiyle (en/boy ~0.79) uyuşmuyordu — `pdf_builder.
+     _draw_figure_page()`'in en-boy-koruyan `drawImage` ölçeklemesi az küme/
+     satırda (ör. 1 satır) görüntünün dikey ~%55'ini boş bırakıyordu
+     (matematiksel olarak doğrulandı); ayrıca sabit fontsize=7.5 + kırpılmamış
+     uzun anahtar kelime öbekleri balon sınırlarını taşıyordu. Düzeltme:
+     `cols`/`rows`'a göre dinamik `figsize` (bradford_law()'daki dinamik
+     yükseklik deseniyle tutarlı) + `cols` artık `sqrt`'e dayalı (2-3 kümede
+     bile "tek geniş satır" yerine kareye yakın/dikey istiflenmiş düzen,
+     ≤2 kümede dikey tek sütun) + anahtar kelime etiketleri 11 karaktere
+     kırpılıp (`…` ile) küçültülmüş fontta (6.5) gösteriliyor. 1, 2, 3, 4,
+     5, 8 küme senaryolarıyla PNG render edilip görsel olarak doğrulandı
+     (hiçbiri taşmıyor, boşluk makul). 3 yeni pytest (en/boy oranı sınırı,
+     figsize artık sabit değil regresyonu, 8-küme senaryosu hâlâ çalışıyor).
+     `forum+bibliometrics` 190/190. Ayrı bir refactor/kaldırma gerekmedi —
+     sorun tamamen çözülebildi.
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
 sürebilir (~10 dk'ya kadar), bir dahaki "donmuş gibi görünen" deploy'da

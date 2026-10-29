@@ -1100,3 +1100,57 @@ def test_bibliographic_coupling_graph_has_expected_edge():
     G = _bibliographic_coupling_graph(_vosviewer_records(), min_shared=2)
     assert G is not None
     assert G.number_of_nodes() == 2 and G.number_of_edges() == 1
+
+
+# ─────────────────────────── Topic Map — görsel kalite düzeltmesi ───────────────────────────
+# tasks/todo.md "[ÖNCELİKLİ] Topic Map görsel kalite sorunu": sabit figsize=(14,8) dikey
+# (A4) sayfada az küme olduğunda devasa boş alan bırakıyordu + uzun anahtar kelime
+# öbekleri (özetten çıkarılmış) balonun dışına taşıyordu. Bu testler regresyonu önler.
+
+def _topic_map_records(n_clusters: int):
+    pool = [
+        ['dijital pazarlama stratejileri', 'sosyal medya reklamciligi',
+         'marka sadakati olusturma', 'tuketici satin alma davranisi'],
+        ['makine ogrenmesi algoritmalari', 'derin sinir aglari',
+         'goruntu isleme teknikleri', 'yapay zeka etik sorunlari'],
+        ['iklim degisikligi etkileri', 'surdurulebilir kalkinma hedefleri',
+         'karbon ayak izi azaltma', 'yenilenebilir enerji kaynaklari'],
+        ['psikolojik dayaniklilik gelistirme', 'stres yonetimi teknikleri',
+         'ruh sagligi farkindaligi', 'bilissel davranissal terapi'],
+        ['egitim teknolojileri entegrasyonu', 'uzaktan ogretim yontemleri',
+         'ogrenci basarisi degerlendirme', 'dijital okuryazarlik becerileri'],
+    ]
+    records = []
+    for kws in pool[:n_clusters]:
+        for j in range(15):
+            records.append({'keywords': kws, 'year': 2019 + (j % 4)})
+    return records
+
+
+def test_topic_map_figure_aspect_not_excessively_wide_for_few_clusters():
+    """Eski sabit (14, 8) figsize — en/boy oranı 1.75 — dikey A4 sayfada yarıdan
+    fazla boş bırakıyordu. Az kümede bile artık makul bir en/boy oranı (≤1.5,
+    tek küme hariç — o zaten minimal/kaçınılmaz bir durum) olmalı."""
+    from bibliometrics.services.analyzer import topic_map
+    for n in (2, 3, 4, 5):
+        fig = topic_map(_topic_map_records(n), n_topics=n)
+        assert fig is not None
+        w, h = fig.get_size_inches()
+        assert w / h <= 1.5, f'n={n} için en/boy oranı çok geniş: {w}x{h}'
+
+
+def test_topic_map_figsize_scales_with_cluster_count():
+    """figsize artık sabit değil — küme (satır/sütun) sayısına göre değişmeli
+    (14x8 sabitine geri dönüş regresyonunu yakalar)."""
+    from bibliometrics.services.analyzer import topic_map
+    fig_few = topic_map(_topic_map_records(2), n_topics=2)
+    fig_many = topic_map(_topic_map_records(5), n_topics=5)
+    assert fig_few.get_size_inches().tolist() != fig_many.get_size_inches().tolist()
+    assert tuple(fig_few.get_size_inches()) != (14, 8)
+
+
+def test_topic_map_eight_clusters_still_produces_figure():
+    """Varsayılan n_topics=8 senaryosu (B2-2'den beri var olan davranış) regresyon olmadan çalışmalı."""
+    from bibliometrics.services.analyzer import topic_map
+    fig = topic_map(_topic_map_records(5), n_topics=8)
+    assert fig is not None

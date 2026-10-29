@@ -3343,6 +3343,35 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   içeriği düzeltildi). `forum+bibliometrics` 187/187 geçti. **Sırada B3-3**
   (hazır Yöntem metni + PRISMA diyagramı) — ayrı onay/tur; B3-2b
   (Biblioshiny) R ile test edilebildiğinde ele alınacak açık iş.
+- **29 Ekim 2026 — Topic Map (Araştırma Konusu Kümeleri) görsel kalite
+  sorunu DÜZELTİLDİ, `dev`'de.** Grup B'den bağımsız, daha önce "incelenmedi"
+  olarak kaydedilmiş açık bir işti; kullanıcı "düzelmiyorsa analizlerden
+  kaldır" talimatıyla ele alındı — **düzeltilebildi, kaldırılmadı**. Kök
+  neden sentetik veriyle (uzun, özetten çıkarılmış tarzda anahtar kelime
+  öbekleri + az sayıda küme) PNG render edilip görsel olarak doğrulandı,
+  sonra matematiksel olarak teyit edildi: `bibliometrics/services/analyzer.py`
+  `topic_map()`'te figsize **sabit** `(14, 8)` idi (en/boy 1.75 — geniş);
+  `pdf_builder.py` `_draw_figure_page()` görüntüyü en-boy oranını koruyarak
+  (`drawImage(..., preserveAspectRatio=True)`) dikey A4 içerik kutusuna
+  (en/boy ≈0.79) sığdırıyor — bu iki oran arasındaki uyumsuzluk, kaç küme
+  olursa olsun görüntünün dikeyde yalnız ~%45'ini kullanıp kalanını boş
+  bırakmasına neden oluyordu (hesapla doğrulandı); ayrıca sabit `fontsize=7.5`
+  + kırpılmamış uzun anahtar kelime öbekleri balon sınırlarını taşıp
+  okunamaz hale geliyordu. **Düzeltme:** `cols`/`rows`'a göre dinamik
+  `figsize` (`bradford_law()`'daki dinamik yükseklik deseniyle tutarlı
+  bir yaklaşım) + `cols` artık `ceil(sqrt(n))`'e dayalı (önceki `min(4,n)`
+  yerine) — 2-3 kümede bile "tek geniş satır" yerine kareye yakın/dikey
+  istiflenmiş bir düzen üretir, ≤2 kümede tek dikey sütuna geçer (yatay
+  2'li düzen hâlâ geniş kalıyordu) + anahtar kelime etiketleri artık 11
+  karaktere kırpılıp (`…` ile) küçültülmüş fontta (6.5) gösteriliyor, balon
+  boyutu da dar bir aralıkta tutuluyor (çok küçük/çok büyük balon riski
+  azaltıldı). 1, 2, 3, 4, 5 ve 8 küme senaryolarıyla PNG render edilip
+  tek tek görsel olarak incelendi (hiçbirinde taşma yok, boşluk makul —
+  8 kümelik varsayılan senaryoda neredeyse kare bir düzen, en iyi sonuç).
+  3 yeni pytest (en/boy oranı üst sınırı, figsize'ın artık sabit olmadığı
+  regresyon testi, varsayılan 8-küme senaryosunun hâlâ çalıştığı).
+  `forum+bibliometrics` 190/190 geçti. Migration/çeviri gerekmedi (yalnız
+  grafik çizim mantığı). `tasks/todo.md`'deki ayrı açık iş kapatıldı.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/
