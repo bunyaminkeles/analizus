@@ -7,8 +7,8 @@ başladı ve `dev`'de hızla ilerliyor (henüz `main`'e merge edilmedi — kulla
 (B1-1 OpenAlex zenginleştirme, B1-2 tekilleştirme, B1-3 yazar birleştirme,
 B1-4 anahtar kelime normalizasyonu) ve **B2'den 5 madde tamamlandı** (B2-1
 Bradford Kanunu, B2-2 Louvain kümeleri + tablo, B2-3 Tematik Harita, B2-4
-Tematik Evrim, B2-5 Üç Alan Grafiği) — B2-5 henüz commit edilmedi (kullanıcı
-onayı bekliyor), istatistik araç sayısı 17→21. **Yeni oturum buradan devam etsin: sıradaki
+Tematik Evrim, B2-5 Üç Alan Grafiği) — hepsi `dev`'e commit edildi (henüz
+push edilmedi), istatistik araç sayısı 17→21. **Yeni oturum buradan devam etsin: sıradaki
 B2-6..B2-8, sonra B3, B4** (bkz. madde 3 altındaki detaylı liste ve
 `bibliometri_durum_ve_gelistirme_prompt.md` §4). Ayrıca aşağıdaki 2 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
@@ -137,7 +137,7 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      `--no-location` flag'i kullanıldı (önceki S3 turunda da aynı hata
      yapılmıştı, bkz. ilgili not) — hemen fark edilip `git checkout` ile geri
      alındı, flag'siz tekrar çalıştırıldı.
-   - [x] **B2-5 TAMAMLANDI (29 Ekim 2026, dev'de, commit bekliyor):** Üç Alan
+   - [x] **B2-5 TAMAMLANDI (29 Ekim 2026, dev'de, commit edildi):** Üç Alan
      Grafiği (bibliometrix 'Three Fields Plot' eşdeğeri, Yazar ↔ Anahtar
      Kelime ↔ Dergi). `analyzer.py`'ye `three_field_plot_data()` (saf hesap:
      yazar/dergi kutu büyüklüğü yalnız gösterilen top-N anahtar kelimelerle
