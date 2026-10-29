@@ -258,6 +258,8 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
          gettext('Yayın yılı bilgisi ve en az 3 yayında geçen en az 5 anahtar kelime gerekir.'), True),
         (gettext('Bradford Kanunu — Çekirdek Dergi Bölgeleri'), lambda: bradford_law(records),
          gettext('En az 3 farklı dergi/kaynak gerekir.')),
+        (gettext('Tematik Harita (Callon Merkeziyet × Yoğunluk)'), lambda: thematic_map(records),
+         gettext('Anahtar kelime eş-oluşum ağında en az 2 küme gerekir.')),
     ]
     citation_based = {
         gettext('En Çok Atıf Alan Yayınlar (Top 10)'), gettext('Atıf Analizi ve H-index'),
@@ -1577,6 +1579,111 @@ def bradford_law(records: list[dict]):
     ax2.set_title(gettext('Bradford Bölgeleri Özeti'), fontsize=13, fontweight='bold', pad=20)
 
     fig.suptitle(gettext('Bradford Kanunu — Çekirdek Dergi Bölgeleri'), fontsize=15, fontweight='bold', y=1.01)
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 19. Tematik Harita ───────────────────────────
+
+def thematic_map_themes(records: list[dict], max_kw: int = 40, min_cooccur: int = 2):
+    """
+    Tematik harita (B2-3, Callon merkeziyet × yoğunluk) hesabı. `keyword_clusters()`
+    ile bulunan her Louvain kümesi (tema) için:
+    - Merkeziyet: temanın DİĞER temalarla dışa bağlantı gücü — 10 × (kümeyle diğer
+      kümeler arasındaki toplam eş-oluşum ağırlığı). Yüksekse tema alanın genelinde
+      önemli/merkezi.
+    - Yoğunluk: temanın İÇ tutarlılığı — 10 × (küme içi toplam eş-oluşum ağırlığı) /
+      küme büyüklüğü. Yüksekse tema kendi içinde olgun/gelişmiş.
+    Döner: (themes, mean_centrality, mean_density) — themes: [{'label', 'centrality',
+    'density', 'weight'}, ...], ya da veri yetersizse (None, None, None).
+    """
+    G, communities, all_kw = keyword_clusters(records, max_kw, min_cooccur)
+    if G is None or len(communities) < 2:
+        return None, None, None
+
+    node_cluster = {n: i for i, comm in enumerate(communities) for n in comm}
+    internal_weight = defaultdict(float)
+    external_weight = defaultdict(float)
+    for u, v, data in G.edges(data=True):
+        w = data.get('weight', 1)
+        cu, cv = node_cluster[u], node_cluster[v]
+        if cu == cv:
+            internal_weight[cu] += w
+        else:
+            external_weight[cu] += w
+            external_weight[cv] += w
+
+    themes = []
+    for i, comm in enumerate(communities):
+        top_terms = sorted(comm, key=lambda n: all_kw.get(n, 0), reverse=True)[:2]
+        themes.append({
+            'label': ' / '.join(top_terms),
+            'centrality': 10 * external_weight.get(i, 0),
+            'density': 10 * internal_weight.get(i, 0) / len(comm),
+            'weight': sum(all_kw.get(kw, 0) for kw in comm),
+        })
+
+    mean_centrality = sum(t['centrality'] for t in themes) / len(themes)
+    mean_density = sum(t['density'] for t in themes) / len(themes)
+    return themes, mean_centrality, mean_density
+
+
+def thematic_map(records: list[dict]):
+    """
+    Tematik harita grafiği: her tema merkeziyet (x) × yoğunluk (y) düzleminde bir
+    balon; ortalama değerler dört kadranı ayırır (bibliometrix/SciMAT kalıbı):
+    sağ-üst Motor, sol-üst Niş, sağ-alt Temel, sol-alt Gelişen/Azalan Temalar.
+    """
+    themes, mean_c, mean_d = thematic_map_themes(records)
+    if themes is None:
+        return None
+
+    max_weight = max(t['weight'] for t in themes) or 1
+    sizes = [300 + 2200 * t['weight'] / max_weight for t in themes]
+    colors = [PALETTE[i % len(PALETTE)] for i in range(len(themes))]
+
+    fig, ax = plt.subplots(figsize=(11, 10))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    xs = [t['centrality'] for t in themes]
+    ys = [t['density'] for t in themes]
+    x_pad = (max(xs) - min(xs)) * 0.25 or 1
+    y_pad = (max(ys) - min(ys)) * 0.25 or 1
+    x_min, x_max = min(0, min(xs) - x_pad), max(xs) + x_pad
+    y_min, y_max = min(0, min(ys) - y_pad), max(ys) + y_pad
+
+    # Kadran arka planı
+    ax.axvspan(mean_c, x_max, ymin=(mean_d - y_min) / (y_max - y_min), ymax=1,
+              color=TREND_RED, alpha=0.05, zorder=0)
+    ax.axvspan(x_min, mean_c, ymin=(mean_d - y_min) / (y_max - y_min), ymax=1,
+              color=PALETTE[1], alpha=0.05, zorder=0)
+    ax.axvspan(mean_c, x_max, ymin=0, ymax=(mean_d - y_min) / (y_max - y_min),
+              color=PALETTE[4], alpha=0.05, zorder=0)
+    ax.axvspan(x_min, mean_c, ymin=0, ymax=(mean_d - y_min) / (y_max - y_min),
+              color=PALETTE[9], alpha=0.05, zorder=0)
+
+    ax.axvline(mean_c, color='#94a3b8', linestyle='--', linewidth=1, zorder=1)
+    ax.axhline(mean_d, color='#94a3b8', linestyle='--', linewidth=1, zorder=1)
+
+    ax.scatter(xs, ys, s=sizes, c=colors, alpha=0.85, edgecolors='white',
+              linewidths=1.2, zorder=3)
+    for t, x, y in zip(themes, xs, ys):
+        ax.annotate(t['label'], (x, y), xytext=(0, 0), textcoords='offset points',
+                    ha='center', va='center', fontsize=8.5, fontweight='bold',
+                    color='#1e293b', zorder=4)
+
+    quadrant_kwargs = dict(fontsize=10.5, fontweight='bold', color='#475569', alpha=0.8)
+    ax.text(x_max, y_max, gettext('MOTOR TEMALAR'), ha='right', va='top', **quadrant_kwargs)
+    ax.text(x_min, y_max, gettext('NİŞ TEMALAR'), ha='left', va='top', **quadrant_kwargs)
+    ax.text(x_max, y_min, gettext('TEMEL TEMALAR'), ha='right', va='bottom', **quadrant_kwargs)
+    ax.text(x_min, y_min, gettext('GELİŞEN veya AZALAN TEMALAR'), ha='left', va='bottom', **quadrant_kwargs)
+
+    ax.set_xlim(x_min, x_max)
+    ax.set_ylim(y_min, y_max)
+    ax.set_xlabel(gettext('Merkeziyet (diğer temalarla bağlantı gücü)'), fontsize=11, labelpad=8)
+    ax.set_ylabel(gettext('Yoğunluk (tema içi tutarlılık)'), fontsize=11, labelpad=8)
+    ax.set_title(gettext('Tematik Harita (Callon Merkeziyet × Yoğunluk)'))
     fig.tight_layout(pad=2.0)
     return fig
 

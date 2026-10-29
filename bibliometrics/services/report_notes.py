@@ -180,6 +180,9 @@ def _rules(source, last_year, stats=None):
             y=_default(analyzer.research_gap, 'recent_years')),
         gettext('Bradford Kanunu\'nda dergiler yayın sayısına göre sıralanıp, toplam yayının üçte birini '
                 'üreten art arda gelen dergi grupları 3 bölgeye ayrıldı (Bölge 1 = çekirdek).'),
+        gettext('Tematik Harita\'da her tema (anahtar kelime kümesi) merkeziyet (diğer temalarla bağlantı '
+                'gücü) ve yoğunluğuna (tema içi bağlantı gücü) göre konumlandırıldı; kadran sınırları tüm '
+                'temaların ortalama merkeziyet ve yoğunluğudur.'),
     ]
     return rules
 

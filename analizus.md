@@ -3248,9 +3248,20 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   panelli oldu: ağ + **küme başına ilk kelimeler tablosu** (eksik olan asıl
   madde) + özet istatistik. 5 yeni pytest (3 ayrık konu grubuyla doğru
   kümelenme + determinizm), rapor metni EN/DE güncellendi, yeni paket/migration
-  yok. `forum+bibliometrics` 147/147 geçti. **Sırada B2-3** (tematik harita —
-  Callon merkeziyet × yoğunluk kadranları; bkz.
-  `bibliometri_durum_ve_gelistirme_prompt.md` §4).
+  yok. `forum+bibliometrics` 147/147 geçti.
+  **B2-3 TAMAMLANDI (aynı gün, dev'de):** Tematik Harita (Callon merkeziyet
+  × yoğunluk) — `keyword_clusters()` (B2-2) üzerine inşa edildi, ayrı
+  community detection yok. `thematic_map_themes()` her Louvain kümesinin
+  dışa bağlantı gücünü (merkeziyet) ve iç bağlantı yoğunluğunu hesaplar,
+  `thematic_map()` 4 kadranlı balon grafiği üretir (Motor/Niş/Temel/
+  Gelişen-Azalan Temalar). 19. analiz olarak kaydedildi (18→19, tüm "N
+  Analiz" referansları güncellendi). Senkronize test verisiyle doğrulandı:
+  izole küme merkeziyet=0, köprü kelime paylaşan kümeler yüksek merkeziyet.
+  4 yeni pytest, rapor metni EN/DE güncellendi, yeni paket/migration yok.
+  `forum+bibliometrics` 150/150 geçti. **Not:** her yeni analiz "N Analiz"
+  sayısını 7+ dosyada elle güncelletiyor — ileride tek kaynağa (`len(analyses)`)
+  taşınabilir, ayrı refactor. **Sırada B2-4** (tematik evrim — dönemler
+  arası tema akışı; bkz. `bibliometri_durum_ve_gelistirme_prompt.md` §4).
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

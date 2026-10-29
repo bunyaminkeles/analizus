@@ -92,8 +92,24 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
      "kurallar" metnine Louvain açıklaması eklendi, EN/DE çevrildi. Yeni paket
      yok (`networkx` zaten `requirements.txt`'te, `louvain_communities`
      3.6.1'de mevcut). Migration yok. `forum+bibliometrics` 147/147.
-   - [ ] B2-3..B2-8 (bkz. plan dosyası §4 — tematik harita, tematik evrim,
-     üç alan grafiği, ülke işbirliği SCP/MCP, atıf ağları, konu modelleme)
+   - [x] **B2-3 TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi):** Tematik
+     Harita (Callon merkeziyet × yoğunluk). `analyzer.py`'ye `thematic_map_themes()`
+     (saf hesap: her Louvain kümesinin dışa bağlantı gücü = merkeziyet, iç
+     bağlantı gücü/büyüklük = yoğunluk) + `thematic_map()` (4 kadranlı balon
+     grafiği — Motor/Niş/Temel/Gelişen-Azalan Temalar, kadran sınırı = ortalama
+     değerler) eklendi, 19. analiz olarak kaydedildi (istatistik araç sayısı
+     18→19, tüm "N Analiz" referansları güncellendi). `keyword_clusters()`
+     (B2-2) üzerine inşa edildi — ayrı community detection YOK. Senkronize
+     test verisiyle (3 konu, biri izole) doğru davranış görsel + test ile
+     doğrulandı: izole küme merkeziyet=0, köprü kelimesi paylaşan iki küme
+     yüksek merkeziyet alıyor. 4 yeni pytest, rapor "kurallar" metni EN/DE
+     güncellendi. Yeni paket/migration yok. `forum+bibliometrics` 150/150.
+     **Not (B2-4+ için tekrarlayan bakım yükü):** her yeni analiz "N Analiz"
+     sayısını 7+ dosyada (2 şablon, e-posta, admin/SiteSettings help_text,
+     pdf_builder yorumu) elle güncellemeyi gerektiriyor — ileride tek bir
+     `len(analyses)` kaynağına taşınabilir (ayrı refactor, şimdi yapılmadı).
+   - [ ] B2-4..B2-8 (bkz. plan dosyası §4 — tematik evrim, üç alan grafiği,
+     ülke işbirliği SCP/MCP, atıf ağları, konu modelleme)
    - [ ] B3-B4 (bkz. plan dosyası §4)
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş

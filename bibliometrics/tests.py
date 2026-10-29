@@ -29,6 +29,8 @@ from bibliometrics.services.analyzer import (
     bradford_law,
     keyword_clusters,
     keyword_cooccurrence,
+    thematic_map_themes,
+    thematic_map,
 )
 import bibliometrics.services.analyzer as analyzer_module
 from bibliometrics.services.report_notes import build_report_notes
@@ -554,3 +556,38 @@ def test_keyword_cooccurrence_table_lists_all_clusters():
     table = fig.axes[1].tables[0]
     n_data_rows = len({row for row, _ in table.get_celld().keys() if row > 0})
     assert n_data_rows == len(communities)
+
+
+def test_thematic_map_themes_isolated_cluster_has_zero_centrality():
+    """B2-3: dışa hiç bağlantısı olmayan (izole) bir küme merkeziyet=0 almalı —
+    Callon merkeziyet tanımı: dışarıyla toplam eş-oluşum ağırlığı."""
+    # 'data' A ve B'yi köprüler; C (iklim) hiçbir ortak kelime paylaşmaz → izole.
+    topics = {
+        'A': ['machine learning', 'deep learning', 'neural network', 'classification', 'data'],
+        'B': ['covid-19', 'public health', 'pandemic', 'vaccination', 'data'],
+        'C': ['climate change', 'carbon emission', 'sustainability', 'renewable energy'],
+    }
+    records = _topic_keyword_records(topics, per_topic=60, seed=5)
+    themes, mean_c, mean_d = thematic_map_themes(records)
+    assert themes is not None
+    assert len(themes) == 3
+    isolated = next(t for t in themes if 'climate change' in t['label'] or 'carbon emission' in t['label'])
+    assert isolated['centrality'] == 0
+    assert all(t['centrality'] >= 0 and t['density'] >= 0 for t in themes)
+
+
+def test_thematic_map_themes_requires_at_least_two_clusters():
+    """Tek kümeyle merkeziyet (dışa bağlantı) tanımsız — None dönmeli."""
+    records = _topic_keyword_records({'A': _KEYWORD_TOPICS['A']}, per_topic=30, seed=1)
+    themes, mean_c, mean_d = thematic_map_themes(records)
+    assert themes is None
+
+
+def test_thematic_map_figure_has_one_bubble_per_theme():
+    records = _topic_keyword_records()
+    themes, _, _ = thematic_map_themes(records)
+    fig = thematic_map(records)
+    assert fig is not None
+    scatter = next(c for c in fig.axes[0].collections if hasattr(c, 'get_offsets')
+                   and c.get_offsets().shape[0] > 0)
+    assert scatter.get_offsets().shape[0] == len(themes)
