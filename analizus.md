@@ -2597,6 +2597,19 @@ with connection.cursor() as c:
   - PubMed modülü (Faz 1–3: 630a069, 289784b, d046c07) — `pubmed` app, arama sayfası TR/EN/DE, bibliometri köprüsü
     (13 analize kadar, atıf yok, ülke/kurum tahmini); `feature_pubmed` KAPALI başlar. §14, §15.
   - Tarama siparişi (4 araç ortak) + ilan vitrini fiyatları Site Ayarları → Fiyatlandırma'dan (e716e46). §20.
+- **Bibliometri Grup A+B — main'de canlı (en son 29 Ekim 2026, merge commit `19bdefd`):** Grup A (A1-A9: rapor
+  dili seçimi, OpenAlex/PubMed köprüsü iyileştirmeleri, demo CTA EN/DE); Grup B/B1 (veri kalitesi: DOI ile
+  OpenAlex zenginleştirme, tekilleştirme, yazar adı birleştirme, anahtar kelime normalizasyonu) ve B2 (bilim
+  haritalama: Bradford Kanunu, anahtar kelime Louvain kümeleri, Tematik Harita/Evrim, Üç Alan Grafiği, SCP/MCP,
+  Bibliyografik Eşleşme + Yerel/Küresel Atıf, Konu Modelleme NMF — istatistik araç sayısı 17→26) TAMAMEN BİTTİ;
+  B3 (Çıktılar) başladı — **B3-1 (Temiz Veri Seti İndirme, XLSX/CSV, herkese ücretsiz)** ve **B3-2 (VOSviewer
+  Uyumlu Dışa Aktarım — map+network dosyaları, format resmi VOSviewer dokümanından doğrulandı)** TAMAMLANDI.
+  Aynı turda ayrıca **Topic Map ve Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök neden sınıfı —
+  sabit/sınırsız `figsize`, PDF'e en-boy korunarak sığdırılınca devasa boşluk; kullanıcı ekran görüntüleriyle
+  bildirdi) düzeltildi. Sırada B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı), B3-4, B3-2b
+  (Biblioshiny — R/bibliometrix kurulu olmadığı için ertelendi), B4. Detay: aşağıdaki "Geçmiş Turlar
+  (Kronoloji)" 29 Ekim 2026 girdileri; plan dosyası `bibliometri_durum_ve_gelistirme_prompt.md` §4; görev
+  durumu `tasks/todo.md`.
 
 #### SEO
 
