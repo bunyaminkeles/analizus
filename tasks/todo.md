@@ -1,17 +1,19 @@
 # Çok Dilli Yayın (EN/DE) — YAYINDA
 
 **Durum (29 Ekim 2026 gece):** Bibliometri Grup A (A1-A9) tamamen bitti,
-`main`'de canlı (Hetzner). Grup B (bibliometrix/VOSviewer yol haritası)
-başladı ve `dev`'de hızla ilerliyor (henüz `main`'e merge edilmedi — kullanıcı
-"merge et" demeden dokunulmayacak): **B1 (veri kalitesi) TAMAMEN BİTTİ**
+`main`'de canlı (Hetzner). Grup B (bibliometrix/VOSviewer yol haritası):
+**B1 (veri kalitesi) ve B2 (bilim haritalama) TAMAMEN BİTTİ — 8/8**
 (B1-1 OpenAlex zenginleştirme, B1-2 tekilleştirme, B1-3 yazar birleştirme,
-B1-4 anahtar kelime normalizasyonu) ve **B2'den 7 madde tamamlandı** (B2-1
-Bradford Kanunu, B2-2 Louvain kümeleri + tablo, B2-3 Tematik Harita, B2-4
-Tematik Evrim, B2-5 Üç Alan Grafiği, B2-6 SCP/MCP, B2-7 Bibliyografik
-Eşleşme + Yerel/Küresel Atıf) — hepsi `dev`'e commit edildi (B2-1..B2-6 push
-edildi, B2-7 henüz push edilmedi), istatistik araç sayısı 17→24. **Yeni
-oturum buradan devam etsin: sıradaki B2-8, sonra B3, B4** (bkz. madde 3
-altındaki detaylı liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4).
+B1-4 anahtar kelime normalizasyonu; B2-1 Bradford Kanunu, B2-2 Louvain
+kümeleri + tablo, B2-3 Tematik Harita, B2-4 Tematik Evrim, B2-5 Üç Alan
+Grafiği, B2-6 SCP/MCP, B2-7 Bibliyografik Eşleşme + Yerel/Küresel Atıf,
+B2-8 Konu Modelleme NMF). B1..B2-7 kullanıcı isteğiyle `--no-ff` ile
+`main`'e merge edilip push edildi (Hetzner deploy tetiklendi, merge öncesi
+production'da aktif kullanıcı kontrolü yapıldı, boştu); **B2-8 henüz yalnız
+`dev`'de, main'e merge edilmedi** — kullanıcı "merge et" demeden
+dokunulmayacak. İstatistik araç sayısı 17→26. **Yeni oturum buradan devam
+etsin: sıradaki B3, sonra B4** (bkz. madde 3 altındaki detaylı liste ve
+`bibliometri_durum_ve_gelistirme_prompt.md` §4).
 Ayrıca aşağıdaki 2 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
@@ -212,7 +214,38 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      sıralaması + eşik altı/üstü durumlar), rapor "kurallar" metni (2 yeni
      cümle) EN/DE çevrildi. Yeni paket yok, migration yok (openalex_id
      kayıt içi bir alan, model değil). `forum+bibliometrics` 167/167.
-   - [ ] B2-8 (bkz. plan dosyası §4 — konu modelleme NMF/LDA)
+   - [x] **B2-8 TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi):** Konu
+     Modelleme. **İki tasarım kararı AskUserQuestion ile netleştirildi:**
+     (1) NMF + TF-IDF (determinist, nndsvd init + sabit seed — LDA'nın
+     küçük veri setlerinde daha fazla ayar gerektiren olasılıksal
+     yaklaşımına tercih edildi), (2) `research_gap()`'e DOKUNULMADI —
+     B2-8 tamamen bağımsız 2 yeni analiz olarak eklendi (plan dosyasındaki
+     "Research Gap'i bununla destekle" notu ileride ayrı görev olabilir).
+     `analyzer.py`'ye `topic_modeling_data()` (özetler `normalize_abstract_words()`
+     ile TR stopword filtreli/lemmatize edilip TF-IDF matrisine dönüştürülür +
+     sklearn'ün İngilizce stopword listesi, NMF ile gizli konulara ayrıştırılır,
+     her kayıt en baskın konusuna atanır — `topic_map()`'ten [anahtar kelime
+     eş-oluşum ağı] TAMAMEN FARKLI yöntem, özet METNİNİ kullanır) +
+     `topic_modeling_words_chart()` (konu başına panel, en belirleyici
+     kelimeler) + `topic_modeling_trend()` (konulara göre yıllık yayın payı,
+     yığılmış çubuk, zaman serisi) eklendi, 25. ve 26. analiz olarak
+     kaydedildi (istatistik araç sayısı 24→26, tüm "N Analiz" referansları
+     7 dosyada güncellendi). **İki ayrı analiz aynı pahalı NMF hesabını
+     paylaştığından** `run_all_analyses()`'te bir kez hesaplanıp iki
+     fonksiyona da geçiriliyor (gereksiz 2x fit önlendi). **Görsel
+     doğrulamada bulunup düzeltilen gerçek kalite sorunu:** istenen konu
+     sayısı (varsayılan 6) gerçek ayrışmadan fazla olduğunda, hiçbir
+     kaydın BASKIN konusu olmayan "gürültü" konuları (ortak akademik
+     kelimelerin — study/result/research vb. — kendi bileşeni) panelde
+     "(0 kayıt)" ile boş/anlamsız gösteriliyordu — `topic_modeling_data()`
+     artık 0 kayıtlı konuları çıkarıp kalanları yeniden numaralandırıyor.
+     Sentetik veriyle (4 net ayrışan konu kümesi + ortak gürültü kelimeleri,
+     60 kayıt) görsel doğrulandı. 6 yeni pytest (iki net kelime kümesinin
+     karışmadan ayrışması + yetersiz özet/yıl durumları), rapor "kurallar"
+     metni (1 yeni cümle) EN/DE çevrildi. Yeni paket yok (scikit-learn zaten
+     requirements'ta), migration yok. `forum+bibliometrics` 173/173.
+     **Grup B'nin B1+B2 bölümü artık TAMAMEN BİTTİ (8/8); main'e merge
+     henüz yapılmadı (kullanıcı istemedi).**
    - [ ] B3-B4 (bkz. plan dosyası §4)
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
