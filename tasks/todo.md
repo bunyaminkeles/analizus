@@ -7,7 +7,7 @@ başladı ve `dev`'de hızla ilerliyor (henüz `main`'e merge edilmedi — kulla
 (B1-1 OpenAlex zenginleştirme, B1-2 tekilleştirme, B1-3 yazar birleştirme,
 B1-4 anahtar kelime normalizasyonu) ve **B2'den 4 madde tamamlandı** (B2-1
 Bradford Kanunu, B2-2 Louvain kümeleri + tablo, B2-3 Tematik Harita, B2-4
-Tematik Evrim) — B2-4 henüz commit edilmedi (kullanıcı onayı bekliyor),
+Tematik Evrim) — hepsi `dev`'e commit edildi (henüz push edilmedi),
 istatistik araç sayısı 17→20. **Yeni oturum buradan devam etsin: sıradaki B2-5..B2-8,
 sonra B3, B4** (bkz. madde 3 altındaki detaylı liste ve
 `bibliometri_durum_ve_gelistirme_prompt.md` §4). Ayrıca aşağıdaki 2 ayrı
@@ -115,7 +115,7 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      sayısını 7+ dosyada (2 şablon, e-posta, admin/SiteSettings help_text,
      pdf_builder yorumu) elle güncellemeyi gerektiriyor — ileride tek bir
      `len(analyses)` kaynağına taşınabilir (ayrı refactor, şimdi yapılmadı).
-   - [x] **B2-4 TAMAMLANDI (29 Ekim 2026, dev'de, commit bekliyor):** Tematik
+   - [x] **B2-4 TAMAMLANDI (29 Ekim 2026, dev'de, commit edildi):** Tematik
      Evrim (dönemler arası tema akışı). `analyzer.py`'ye `thematic_evolution_periods()`
      (yayın yılına göre otomatik dönemlendirme — kullanıcı kesim yılı girmiyor,
      veri yeterliyse 3 değilse 2 dönem) + `thematic_evolution_themes()` (her
