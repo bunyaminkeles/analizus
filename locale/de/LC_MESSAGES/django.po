@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-29 23:10+0300\n"
+"POT-Creation-Date: 2026-10-29 23:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -219,7 +219,7 @@ msgid "Yayın yılı bilinen ve atıf almış yayın yok."
 msgstr "Keine zitierten Publikationen mit bekanntem Erscheinungsjahr."
 
 #: bibliometrics/services/analyzer.py:258
-#: bibliometrics/services/analyzer.py:1520
+#: bibliometrics/services/analyzer.py:1544
 #: bibliometrics/services/job_runner.py:334
 #: bibliometrics/templates/bibliometrics/landing.html:255
 #: openalex/templates/openalex/landing.html:128
@@ -249,7 +249,7 @@ msgstr ""
 "Publikationen vorkommen, erforderlich."
 
 #: bibliometrics/services/analyzer.py:262
-#: bibliometrics/services/analyzer.py:1626
+#: bibliometrics/services/analyzer.py:1665
 #: bibliometrics/services/job_runner.py:336
 #: bibliometrics/templates/bibliometrics/landing.html:257
 msgid "Bradford Kanunu — Çekirdek Dergi Bölgeleri"
@@ -260,20 +260,19 @@ msgid "En az 3 farklı dergi/kaynak gerekir."
 msgstr "Mindestens 3 verschiedene Zeitschriften/Quellen sind erforderlich."
 
 #: bibliometrics/services/analyzer.py:264
-#: bibliometrics/services/analyzer.py:1731
+#: bibliometrics/services/analyzer.py:1770
 #: bibliometrics/services/job_runner.py:337
 #: bibliometrics/templates/bibliometrics/landing.html:258
 msgid "Tematik Harita (Callon Merkeziyet × Yoğunluk)"
 msgstr "Thematische Karte (Callon-Zentralität × -Dichte)"
 
 #: bibliometrics/services/analyzer.py:265
-#, fuzzy
-#| msgid "Anahtar Kelime Eş-Oluşum Ağı ve Kümeler (VOSviewer-style)"
 msgid "Anahtar kelime eş-oluşum ağında en az 2 küme gerekir."
-msgstr "Schlagwort-Co-Occurrence-Netzwerk und Cluster (im VOSviewer-Stil)"
+msgstr ""
+"Im Schlagwort-Co-Occurrence-Netzwerk sind mindestens 2 Cluster erforderlich."
 
 #: bibliometrics/services/analyzer.py:266
-#: bibliometrics/services/analyzer.py:1907
+#: bibliometrics/services/analyzer.py:1946
 #: bibliometrics/templates/bibliometrics/landing.html:241
 msgid "Tematik Evrim (Dönemler Arası Tema Akışı)"
 msgstr "Thematische Entwicklung (Themenfluss über Zeitperioden)"
@@ -287,7 +286,7 @@ msgstr ""
 "ein zwischen den Perioden geteiltes Thema."
 
 #: bibliometrics/services/analyzer.py:268
-#: bibliometrics/services/analyzer.py:2076
+#: bibliometrics/services/analyzer.py:2115
 #: bibliometrics/templates/bibliometrics/landing.html:259
 msgid "Üç Alan Grafiği (Yazar ↔ Anahtar Kelime ↔ Dergi)"
 msgstr "Drei-Felder-Diagramm (Autor ↔ Schlagwort ↔ Zeitschrift)"
@@ -301,13 +300,13 @@ msgstr ""
 "gemeinsamem Vorkommen benötigt."
 
 #: bibliometrics/services/analyzer.py:270
-#: bibliometrics/services/analyzer.py:2137
+#: bibliometrics/services/analyzer.py:2176
 #: bibliometrics/templates/bibliometrics/landing.html:242
 msgid "Ülke İşbirliği: Tek Ülkeli ve Çok Ülkeli Yayınlar (SCP/MCP)"
 msgstr "Länderkooperation: Einzel- und Mehrländerpublikationen (SCP/MCP)"
 
 #: bibliometrics/services/analyzer.py:272
-#: bibliometrics/services/analyzer.py:2252
+#: bibliometrics/services/analyzer.py:2291
 #: bibliometrics/templates/bibliometrics/landing.html:243
 msgid "Bibliyografik Eşleşme Ağı (Paylaşılan Referanslar)"
 msgstr "Bibliografisches Kopplungsnetzwerk (Geteilte Referenzen)"
@@ -330,7 +329,7 @@ msgstr ""
 "Zitationen über Referenzen gefunden."
 
 #: bibliometrics/services/analyzer.py:276
-#: bibliometrics/services/analyzer.py:2445
+#: bibliometrics/services/analyzer.py:2484
 #: bibliometrics/templates/bibliometrics/landing.html:244
 msgid "Konu Modelleme (NMF) — Konu Başına En Belirleyici Kelimeler"
 msgstr "Themenmodellierung (NMF) — Charakteristischste Wörter pro Thema"
@@ -342,7 +341,7 @@ msgstr ""
 "erforderlich."
 
 #: bibliometrics/services/analyzer.py:279
-#: bibliometrics/services/analyzer.py:2480
+#: bibliometrics/services/analyzer.py:2519
 #: bibliometrics/templates/bibliometrics/landing.html:261
 msgid "Konulara Göre Yıllık Yayın Payı (NMF)"
 msgstr "Jährlicher Publikationsanteil nach Thema (NMF)"
@@ -372,7 +371,7 @@ msgstr "Publikationstrend"
 #: bibliometrics/services/analyzer.py:848
 #: bibliometrics/services/analyzer.py:904
 #: bibliometrics/services/analyzer.py:1171
-#: bibliometrics/services/analyzer.py:2478
+#: bibliometrics/services/analyzer.py:2517
 #: bibliometrics/services/export_builder.py:30
 #: makaleanaliz/templates/makaleanaliz/results.html:138 openalex/models.py:98
 #: openalex/services/job_runner.py:22 openalex/views.py:195
@@ -387,10 +386,10 @@ msgstr "Jahr"
 #: bibliometrics/services/analyzer.py:492
 #: bibliometrics/services/analyzer.py:570
 #: bibliometrics/services/analyzer.py:1172
-#: bibliometrics/services/analyzer.py:1588
-#: bibliometrics/services/analyzer.py:1609
-#: bibliometrics/services/analyzer.py:2136
-#: bibliometrics/services/analyzer.py:2479
+#: bibliometrics/services/analyzer.py:1624
+#: bibliometrics/services/analyzer.py:1648
+#: bibliometrics/services/analyzer.py:2175
+#: bibliometrics/services/analyzer.py:2518
 msgid "Yayın Sayısı"
 msgstr "Anzahl der Publikationen"
 
@@ -604,7 +603,7 @@ msgstr ""
 
 #: bibliometrics/services/analyzer.py:1066
 #: bibliometrics/services/analyzer.py:1091
-#: bibliometrics/services/analyzer.py:1514
+#: bibliometrics/services/analyzer.py:1538
 #, python-brace-format
 msgid "Küme {n}"
 msgstr "Cluster {n}"
@@ -692,67 +691,72 @@ msgstr "Publikationstrend  (← abnehmend  |  zunehmend →)"
 msgid "Atıf Etkisi  (↑ Yüksek)"
 msgstr "Zitationswirkung  (↑ hoch)"
 
-#: bibliometrics/services/analyzer.py:1567
+#: bibliometrics/services/analyzer.py:1591
 msgid "Bölge 1 (Çekirdek)"
 msgstr "Zone 1 (Kern)"
 
-#: bibliometrics/services/analyzer.py:1567
+#: bibliometrics/services/analyzer.py:1591
 msgid "Bölge 2"
 msgstr "Zone 2"
 
-#: bibliometrics/services/analyzer.py:1567
+#: bibliometrics/services/analyzer.py:1591
 msgid "Bölge 3"
 msgstr "Zone 3"
 
-#: bibliometrics/services/analyzer.py:1589
+#: bibliometrics/services/analyzer.py:1625
 msgid "Bölge 1 ve 2 Dergileri"
 msgstr "Zeitschriften der Zonen 1 und 2"
 
-#: bibliometrics/services/analyzer.py:1609
+#: bibliometrics/services/analyzer.py:1627
+#, python-brace-format
+msgid "(ilk {n}, en yüksek yayın sayısına göre)"
+msgstr "(oberste {n}, nach Anzahl der Publikationen)"
+
+#: bibliometrics/services/analyzer.py:1648
 msgid "Bölge"
 msgstr "Zone"
 
-#: bibliometrics/services/analyzer.py:1609
+#: bibliometrics/services/analyzer.py:1648
 msgid "Dergi Sayısı"
 msgstr "Anzahl Zeitschriften"
 
-#: bibliometrics/services/analyzer.py:1609
+#: bibliometrics/services/analyzer.py:1648
 msgid "Pay"
 msgstr "Anteil"
 
-#: bibliometrics/services/analyzer.py:1624
+#: bibliometrics/services/analyzer.py:1663
 msgid "Bradford Bölgeleri Özeti"
 msgstr "Zusammenfassung der Bradford-Zonen"
 
-#: bibliometrics/services/analyzer.py:1722
+#: bibliometrics/services/analyzer.py:1761
 msgid "MOTOR TEMALAR"
 msgstr "MOTORTHEMEN"
 
-#: bibliometrics/services/analyzer.py:1723
+#: bibliometrics/services/analyzer.py:1762
 msgid "NİŞ TEMALAR"
 msgstr "NISCHENTHEMEN"
 
-#: bibliometrics/services/analyzer.py:1724
+#: bibliometrics/services/analyzer.py:1763
 msgid "TEMEL TEMALAR"
 msgstr "GRUNDLAGENTHEMEN"
 
-#: bibliometrics/services/analyzer.py:1725
+#: bibliometrics/services/analyzer.py:1764
 msgid "GELİŞEN veya AZALAN TEMALAR"
 msgstr "AUFKOMMENDE ODER RÜCKLÄUFIGE THEMEN"
 
-#: bibliometrics/services/analyzer.py:1729
+#: bibliometrics/services/analyzer.py:1768
 msgid "Merkeziyet (diğer temalarla bağlantı gücü)"
 msgstr "Zentralität (Verbindungsstärke zu anderen Themen)"
 
-#: bibliometrics/services/analyzer.py:1730
+#: bibliometrics/services/analyzer.py:1769
 msgid "Yoğunluk (tema içi tutarlılık)"
 msgstr "Dichte (interner thematischer Zusammenhalt)"
 
-#: bibliometrics/services/analyzer.py:1906
+#: bibliometrics/services/analyzer.py:1945
 msgid "Dönem"
 msgstr "Periode"
 
-#: bibliometrics/services/analyzer.py:2011
+#: bibliometrics/services/analyzer.py:2050
 #: bibliometrics/services/export_builder.py:30
 #: openalex/services/job_runner.py:21 openalex/views.py:195
 #: pubmed/services/job_runner.py:19 pubmed/views.py:163
@@ -760,54 +764,54 @@ msgstr "Periode"
 msgid "Yazarlar"
 msgstr "Autor/innen"
 
-#: bibliometrics/services/analyzer.py:2011
+#: bibliometrics/services/analyzer.py:2050
 #: bibliometrics/services/export_builder.py:31
 #: openalex/services/job_runner.py:23 openalex/views.py:196
 #: pubmed/services/job_runner.py:21 pubmed/views.py:164
 msgid "Anahtar Kelimeler"
 msgstr "Schlagwörter"
 
-#: bibliometrics/services/analyzer.py:2011
+#: bibliometrics/services/analyzer.py:2050
 msgid "Dergiler"
 msgstr "Zeitschriften"
 
-#: bibliometrics/services/analyzer.py:2129
+#: bibliometrics/services/analyzer.py:2168
 msgid "Tek Ülkeli (SCP)"
 msgstr "Einzelland (SCP)"
 
-#: bibliometrics/services/analyzer.py:2131
+#: bibliometrics/services/analyzer.py:2170
 msgid "Çok Ülkeli İşbirliği (MCP)"
 msgstr "Mehrländerkooperation (MCP)"
 
-#: bibliometrics/services/analyzer.py:2170
-#: bibliometrics/services/analyzer.py:2300
+#: bibliometrics/services/analyzer.py:2209
+#: bibliometrics/services/analyzer.py:2339
 msgid "(başlıksız)"
 msgstr "(ohne Titel)"
 
-#: bibliometrics/services/analyzer.py:2250
+#: bibliometrics/services/analyzer.py:2289
 msgid "Paylaşılan Referans Sayısı"
 msgstr "Anzahl geteilter Referenzen"
 
-#: bibliometrics/services/analyzer.py:2320
+#: bibliometrics/services/analyzer.py:2359
 msgid "Yerel Atıf Sayısı (Bu Veri Setinde)"
 msgstr "Anzahl lokaler Zitationen (in diesem Datensatz)"
 
-#: bibliometrics/services/analyzer.py:2321
+#: bibliometrics/services/analyzer.py:2360
 #, python-brace-format
 msgid "En Çok Yerel Atıf Alan Yayınlar (Top {n})"
 msgstr "Am häufigsten lokal zitierte Publikationen (Top {n})"
 
-#: bibliometrics/services/analyzer.py:2325
+#: bibliometrics/services/analyzer.py:2364
 #, python-brace-format
 msgid "{local} yerel · {glob} küresel atıf"
 msgstr "{local} lokal · {glob} global Zitate"
 
-#: bibliometrics/services/analyzer.py:2437
+#: bibliometrics/services/analyzer.py:2476
 #, python-brace-format
 msgid "Konu {n} ({count} kayıt)"
 msgstr "Thema {n} ({count} Datensätze)"
 
-#: bibliometrics/services/analyzer.py:2475
+#: bibliometrics/services/analyzer.py:2514
 #, python-brace-format
 msgid "Konu {n}"
 msgstr "Thema {n}"

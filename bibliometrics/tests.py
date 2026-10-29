@@ -522,6 +522,35 @@ def test_bradford_law_figure_table_matches_zone_totals():
     assert cells[(1, 2)].get_text().get_text() == f'{totals[0]:,}'
 
 
+def test_bradford_law_caps_shown_journals_for_large_datasets():
+    """Canlı rapor hatası (ekran görüntüsüyle bildirildi): Bölge 1+2'de çok
+    sayıda dergi olduğunda (büyük/gerçek veri setleri) sabit genişlik (13")
+    + sınırsız büyüyen yükseklik (ör. 13x32) aşırı dar/uzun bir görüntü
+    üretip PDF'e sığdırılınca genişliğin yarısından fazlası boş kalıyordu.
+    Artık en fazla 40 dergi gösterilir, figsize buna göre sınırlı kalır."""
+    counts = {}
+    for i in range(5):
+        counts[f'Cekirdek {i}'] = 80 - i * 8
+    for i in range(300):
+        counts[f'Dergi {i}'] = max(1, 15 - i // 10)
+    records = _journal_records(counts)
+
+    zones, _ = bradford_zones(records)
+    assert len(zones[0]) + len(zones[1]) > 40  # senaryo gerçekten kırpma gerektiriyor
+
+    fig = bradford_law(records)
+    assert fig is not None
+    w, h = fig.get_size_inches()
+    assert h <= 19  # eskiden 70+ tane dergiyle 0.45 çarpanı ~32"ye çıkıyordu
+    assert len(fig.axes[0].patches) == 40  # tam olarak kırpma sınırı kadar çubuk
+
+    # Sağ paneldeki tablo, kırpılan kısımdan BAĞIMSIZ tam Bölge sayılarını göstermeli
+    table = fig.axes[1].tables[0]
+    cells = table.get_celld()
+    assert cells[(1, 1)].get_text().get_text() == str(len(zones[0]))
+    assert cells[(2, 1)].get_text().get_text() == str(len(zones[1]))
+
+
 _KEYWORD_TOPICS = {
     'A': ['machine learning', 'deep learning', 'neural network', 'classification'],
     'B': ['covid-19', 'public health', 'pandemic', 'vaccination'],

@@ -288,6 +288,22 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      figsize artık sabit değil regresyonu, 8-küme senaryosu hâlâ çalışıyor).
      `forum+bibliometrics` 190/190. Ayrı bir refactor/kaldırma gerekmedi —
      sorun tamamen çözülebildi.
+   - [x] **Bradford Kanunu grafiği aynı sınıftan (ters yönde) bug DÜZELTİLDİ
+     (29 Ekim 2026, dev'de)** — kullanıcı canlı PDF'ten ekran görüntüsü
+     paylaştı ("Bradford's Law — Core Journal Zones" sayfası ekranın
+     ortasında okunamaz dar/ince bir şerit). Kök neden: `fig_height =
+     max(8, len(shown) * 0.45)` üst sınırsızdı — Bölge 1+2'de çok sayıda
+     dergi olan büyük veri setlerinde (sentetik olarak 1670 kayıt/305 dergi
+     ile yeniden üretildi, Bölge 1+2'de 72 dergi) `figsize=(13, 32.4)` gibi
+     aşırı dar/uzun bir görüntü üretip PDF'e sığdırılınca genişliğin
+     ~%49'u boş kalıyordu (hesapla doğrulandı — ekran görüntüsüyle birebir
+     eşleşti). Düzeltme: diğer analizlerdeki "top N" kırpma kalıbıyla
+     tutarlı şekilde en fazla **40 dergi** gösteriliyor (kırpılırsa başlığa
+     not eklenir), sağ paneldeki özet tablo kırpmadan bağımsız tam sayıları
+     gösterir. Aynı sentetik veriyle yeniden render edilip (13x32.4→13x18)
+     görsel doğrulandı. 1 yeni pytest + 4 mevcut test regresyon olmadan
+     geçti. EN/DE çevrildi (ayrıca ilgisiz bir fuzzy çeviri de fark edilip
+     düzeltildi). `forum+bibliometrics` 191/191.
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
 sürebilir (~10 dk'ya kadar), bir dahaki "donmuş gibi görünen" deploy'da

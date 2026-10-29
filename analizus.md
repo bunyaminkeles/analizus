@@ -3372,6 +3372,31 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   regresyon testi, varsayılan 8-küme senaryosunun hâlâ çalıştığı).
   `forum+bibliometrics` 190/190 geçti. Migration/çeviri gerekmedi (yalnız
   grafik çizim mantığı). `tasks/todo.md`'deki ayrı açık iş kapatıldı.
+- **29 Ekim 2026 — Bradford Kanunu grafiğinde aynı sınıftan ikinci bug
+  DÜZELTİLDİ, `dev`'de.** Kullanıcı canlı PDF'ten ekran görüntüsü paylaştı:
+  "Bradford's Law — Core Journal Zones" sayfasında grafik ekranın ortasında
+  okunamayacak kadar dar/ince bir dikey şerit halinde, sağda/solda devasa
+  boşlukla görünüyordu — Topic Map'teki boş alan bug'ıyla AYNI kök neden
+  sınıfı ama TERS yönde: `bradford_law()`'da `fig_height = max(8, len(shown)
+  * 0.45)` **üst sınırsız** büyüyordu; Bölge 1+2'de çok sayıda dergi olan
+  gerçek/büyük bir veri setinde (binlerce kayıt, yüzlerce dergi — sentetik
+  olarak yeniden üretildi: 1670 kayıt, 305 dergi, Bölge 1+2'de 72 dergi)
+  `figsize=(13, 32.4)` gibi aşırı dar/uzun bir görüntü üretiyordu; PDF'e
+  en-boy korunarak dikey A4 kutusuna sığdırılınca (hesapla doğrulandı)
+  genişliğin yalnız ~%51'i kullanılıp kalanı (sol+sağ) boş kalıyordu —
+  tam ekran görüntüsündeki görünüm. **Düzeltme:** diğer analizlerdeki
+  "top N" kırpma kalıbıyla (`top_authors` `max_authors=35` vb.) tutarlı
+  şekilde Bölge 1+2'den en fazla **40 dergi** gösteriliyor (kırpılırsa
+  başlığa "(ilk 40, en yüksek yayın sayısına göre)" notu eklenir); sağ
+  paneldeki özet tablo kırpmadan BAĞIMSIZ — her zaman tam Bölge dergi/yayın
+  sayılarını gösterir (zaten `zones[i]`'den okunuyordu, `shown`'dan değil).
+  Aynı sentetik veriyle yeniden render edilip (figsize 13x32.4→13x18) görsel
+  olarak doğrulandı — artık okunaklı, kenarlarda yalnız ~%8 (fark edilmeyen)
+  boşluk kalıyor. 1 yeni pytest (kırpma + tablo doğruluğu) + 4 mevcut
+  Bradford testi regresyon olmadan geçti. EN/DE çevrildi (`polib` ile yeni
+  msgid + ayrıca makemessages churn'ünde fuzzy-eşleşen ilgisiz bir
+  keyword_cooccurrence uyarı metni de fark edilip düzeltildi). `forum+
+  bibliometrics` 191/191 geçti. Migration yok.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

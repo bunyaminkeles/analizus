@@ -1592,10 +1592,22 @@ def bradford_law(records: list[dict]):
 
     # Bölge 1 ve 2 tek tek gösterilir (çekirdeği oluşturan dergiler); Bölge 3
     # genelde çok kalabalık olduğundan yalnız tabloda sayı/toplamla özetlenir.
-    shown = zones[0] + zones[1]
+    # Büyük veri setlerinde (binlerce kayıt, yüzlerce dergi) Bölge 1+2 kendisi de
+    # çok kalabalık olabiliyor — sabit genişlik (13") + satır sayısıyla sınırsız
+    # büyüyen yükseklik aşırı dar/uzun bir görüntü üretip (ör. 13x32) PDF
+    # sayfasına en-boy korunarak sığdırılınca genişliğin yarısından fazlası boş
+    # kalıyordu (gerçek canlı rapor hatası — kullanıcı ekran görüntüsüyle bildirdi,
+    # bkz. tasks/todo.md). Diğer analizlerdeki "top N" kırpma kalıbıyla (ör.
+    # top_authors, max_authors=35) tutarlı şekilde en fazla MAX_SHOWN dergi
+    # gösterilir; Bölge 3 zaten tabloda özetlendiği gibi kırpılan kısım da
+    # tabloda (tam dergi/yayın sayısıyla) hâlâ doğru görünür.
+    MAX_SHOWN = 40
+    shown_all = zones[0] + zones[1]
+    shown = shown_all[:MAX_SHOWN]
+    n_hidden = len(shown_all) - len(shown)
     shown_names = [j[:45] + '…' if len(j) > 45 else j for j, _ in shown]
     shown_counts = [c for _, c in shown]
-    shown_colors = [zone_colors[0]] * len(zones[0]) + [zone_colors[1]] * len(zones[1])
+    shown_colors = ([zone_colors[0]] * len(zones[0]) + [zone_colors[1]] * len(zones[1]))[:MAX_SHOWN]
 
     fig_height = max(8, len(shown) * 0.45)
     fig, (ax1, ax2) = plt.subplots(
@@ -1610,7 +1622,10 @@ def bradford_law(records: list[dict]):
     ax1.set_yticklabels(shown_names, fontsize=9)
     ax1.invert_yaxis()
     ax1.set_xlabel(gettext('Yayın Sayısı'), fontsize=11, labelpad=8)
-    ax1.set_title(gettext('Bölge 1 ve 2 Dergileri'), fontsize=13, fontweight='bold')
+    title = gettext('Bölge 1 ve 2 Dergileri')
+    if n_hidden:
+        title += ' ' + gettext('(ilk {n}, en yüksek yayın sayısına göre)').format(n=MAX_SHOWN)
+    ax1.set_title(title, fontsize=13, fontweight='bold')
     ax1.grid(axis='x', zorder=1)
     _add_hbar_labels(ax1, bars)
     ax1.legend(handles=[mpatches.Patch(color=zone_colors[0], label=zone_labels[0]),
