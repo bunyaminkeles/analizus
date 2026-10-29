@@ -225,6 +225,9 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
     no_year     = gettext('Tamamlanmış yıllara ait yayın yılı bilgisi yok.')
     no_author   = gettext('Yazar bilgisi yok.')
     no_citation = gettext('Atıf almış yayın yok.')
+    # NMF konu modelleme hem kelime grafiğinde hem yıllık trend grafiğinde kullanılır —
+    # iki ayrı analiz için iki kez (pahalı) hesaplanmaması için burada bir kez üretilir.
+    _topic_data = topic_modeling_data(records)
     # (başlık, fonksiyon, üretilemezse neden[, True = zaman serisi]) — neden fonksiyonun None döndürdüğü koşulu anlatır
     analyses = [
         (gettext('Yıllara Göre Yayın Trendi'),              lambda: publication_trend(records), no_year, True),
@@ -270,6 +273,12 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
          gettext('Referans listesi (en az 2 kayıtta, paylaşılan referansla) yok.')),
         (gettext('Yerel Atıf ve Küresel Atıf Karşılaştırması'), lambda: local_global_citations(records),
          gettext('Bu veri setindeki kayıtlar arasında referans üzerinden iç atıf bulunamadı.')),
+        (gettext('Konu Modelleme (NMF) — Konu Başına En Belirleyici Kelimeler'),
+         lambda: topic_modeling_words_chart(records, _topic_data),
+         gettext('Yeterli uzunlukta özeti olan en az 20 kayıt gerekir.')),
+        (gettext('Konulara Göre Yıllık Yayın Payı (NMF)'),
+         lambda: topic_modeling_trend(records, _topic_data),
+         gettext('Konu modelleme için yeterli veri ve en az 2 farklı yayın yılı gerekir.'), True),
     ]
     citation_based = {
         gettext('En Çok Atıf Alan Yayınlar (Top 10)'), gettext('Atıf Analizi ve H-index'),
@@ -2282,6 +2291,160 @@ def local_global_citations(records: list[dict], n: int = 15):
                label_tmpl.format(local=f'{local:,}', glob=f'{glob:,}'),
                ha='left', va='center', fontsize=8.5, color='#334155', fontweight='bold')
 
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 25-26. Konu Modelleme (NMF) ───────────────────────────
+
+def topic_modeling_data(records: list[dict], n_topics: int = 6, top_words: int = 10,
+                        min_docs: int = 20):
+    """
+    Konu Modelleme (B2-8, bibliometrix/scikit-learn NMF eşdeğeri): özetlerden TF-IDF
+    matrisi kurulur (mevcut `normalize_abstract_words()` ile TR stopword filtreli ve
+    lemmatize edilmiş kelimeler + sklearn'ün İngilizce stopword listesi), NMF ile
+    n_topics gizli konuya ayrıştırılır. Her kayıt, en yüksek ağırlıklı konuya atanır.
+    `topic_map()`'ten (anahtar kelime eş-oluşum ağı + topluluk tespiti) farklı bir
+    yöntem: bu fonksiyon özet METNİNİ kullanır, anahtar kelime alanını değil.
+    Döner: (topics, assignments) — topics: [{'words': [...], 'weights': [...], 'size': n}],
+    assignments: [(yıl, konu_indeksi), ...] — özet yetersizse (None, None).
+    """
+    try:
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.decomposition import NMF
+    except ImportError:
+        logger.warning('scikit-learn paketi yüklü değil')
+        return None, None
+
+    docs, doc_records = [], []
+    for r in records:
+        words = normalize_abstract_words(r.get('abstract') or '')
+        if len(words) >= 15:
+            docs.append(' '.join(words))
+            doc_records.append(r)
+
+    if len(docs) < min_docs:
+        return None, None
+
+    min_df = 2 if len(docs) >= 20 else 1
+    vectorizer = TfidfVectorizer(max_df=0.85, min_df=min_df, stop_words='english',
+                                 max_features=1000)
+    try:
+        X = vectorizer.fit_transform(docs)
+    except ValueError:
+        return None, None
+
+    vocab = vectorizer.get_feature_names_out()
+    n_topics = min(n_topics, max(2, X.shape[1] // 2))
+    if n_topics < 2 or X.shape[1] < n_topics:
+        return None, None
+
+    model = NMF(n_components=n_topics, init='nndsvd', random_state=42, max_iter=500)
+    W = model.fit_transform(X)
+    H = model.components_
+
+    topics = []
+    for t in range(n_topics):
+        top_idx = H[t].argsort()[::-1][:top_words]
+        topics.append({
+            'words': [vocab[i] for i in top_idx],
+            'weights': [H[t][i] for i in top_idx],
+            'size': 0,
+        })
+
+    assignments = []
+    for i, r in enumerate(doc_records):
+        topic_idx = int(W[i].argmax())
+        topics[topic_idx]['size'] += 1
+        assignments.append((r.get('year'), topic_idx))
+
+    # Hiçbir kaydın BASKIN konusu olmayan konular (ör. ortak akademik kelimelerin
+    # kendi bileşeni — genel "study/method/result" gibi kelimeler gerçek bir alt
+    # konu değil, istenen konu sayısı gerçek ayrışmadan fazla istendiğinde çıkar)
+    # raporda yalnız boş panel olarak görünür — çıkarılıp kalanlar yeniden
+    # numaralandırılır (görsel doğrulamada bulundu).
+    keep = [i for i, t in enumerate(topics) if t['size'] > 0]
+    if not keep:
+        return None, None
+    remap = {old: new for new, old in enumerate(keep)}
+    topics = [topics[i] for i in keep]
+    assignments = [(year, remap[idx]) for year, idx in assignments]
+
+    return topics, assignments
+
+
+def topic_modeling_words_chart(records: list[dict], _data=None):
+    """Konu başına en belirleyici kelimeler (NMF ağırlığına göre), konu başına bir panel."""
+    import math
+    topics, _ = _data if _data is not None else topic_modeling_data(records)
+    if topics is None:
+        return None
+
+    n = len(topics)
+    cols = min(3, n)
+    rows = math.ceil(n / cols)
+
+    fig, axes = plt.subplots(rows, cols, figsize=(5.5 * cols, 4.2 * rows))
+    fig.patch.set_facecolor('white')
+    axes = axes.flatten()
+
+    for idx, topic in enumerate(topics):
+        ax = axes[idx]
+        ax.set_facecolor('#f8fafc')
+        words = topic['words'][::-1]
+        weights = topic['weights'][::-1]
+        ax.barh(range(len(words)), weights, color=PALETTE[idx % len(PALETTE)], alpha=0.9,
+               edgecolor='white', linewidth=0.5, zorder=2)
+        ax.set_yticks(range(len(words)))
+        ax.set_yticklabels(words, fontsize=9)
+        ax.set_title(gettext('Konu {n} ({count} kayıt)').format(n=idx + 1, count=topic['size']),
+                    fontsize=10, fontweight='bold')
+        ax.tick_params(axis='x', labelsize=8)
+        ax.grid(axis='x', alpha=0.5, zorder=1)
+
+    for idx in range(n, len(axes)):
+        axes[idx].axis('off')
+
+    fig.suptitle(gettext('Konu Modelleme (NMF) — Konu Başına En Belirleyici Kelimeler'),
+                fontsize=14, fontweight='bold')
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+def topic_modeling_trend(records: list[dict], _data=None):
+    """Konulara göre yıllık yayın payı — yığılmış çubuk (B2-8)."""
+    topics, assignments = _data if _data is not None else topic_modeling_data(records)
+    if topics is None:
+        return None
+
+    last_year = _last_complete_year()
+    year_topic_count = defaultdict(lambda: defaultdict(int))
+    for year, topic_idx in assignments:
+        if year and 1900 < year <= last_year:
+            year_topic_count[year][topic_idx] += 1
+
+    years = sorted(year_topic_count.keys())
+    if len(years) < 2:
+        return None
+
+    fig, ax = plt.subplots(figsize=(11, 7))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    bottom = [0] * len(years)
+    for t in range(len(topics)):
+        counts = [year_topic_count[y].get(t, 0) for y in years]
+        ax.bar(years, counts, bottom=bottom, color=PALETTE[t % len(PALETTE)], alpha=0.9,
+              edgecolor='white', linewidth=0.5, label=gettext('Konu {n}').format(n=t + 1), zorder=2)
+        bottom = [b + c for b, c in zip(bottom, counts)]
+
+    ax.set_xlabel(gettext('Yıl'), fontsize=12, labelpad=8)
+    ax.set_ylabel(gettext('Yayın Sayısı'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('Konulara Göre Yıllık Yayın Payı (NMF)'))
+    ax.legend(bbox_to_anchor=(1.01, 1), loc='upper left', fontsize=9,
+             frameon=True, framealpha=0.95, edgecolor='#cbd5e0')
+    ax.grid(axis='y', zorder=1)
+    _set_integer_year_ticks(ax, years)
     fig.tight_layout(pad=2.0)
     return fig
 

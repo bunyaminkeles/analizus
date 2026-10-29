@@ -41,6 +41,9 @@ from bibliometrics.services.analyzer import (
     bibliographic_coupling,
     local_citation_counts,
     local_global_citations,
+    topic_modeling_data,
+    topic_modeling_words_chart,
+    topic_modeling_trend,
 )
 import matplotlib.patches as mpatches
 import bibliometrics.services.analyzer as analyzer_module
@@ -798,3 +801,74 @@ def test_local_global_citations_figure_ranks_by_local_count():
     ax = fig.axes[0]
     labels = [t.get_text() for t in ax.get_yticklabels()]
     assert labels == ['Foundational Paper', 'Other Paper']  # Third Paper hiç yerel atıf almadı
+
+
+def _topic_modeling_records():
+    """B2-8 test verisi: 2 net ayrışan kelime kümesi (fizik vs malzeme), 20'şer kayıt."""
+    physics = [
+        'photon laser quantum entangled particle wave optical spin photon laser '
+        'quantum entangled particle wave optical spin',
+        'quantum photon spin entangled optical particle laser wave quantum photon '
+        'spin entangled optical particle laser wave',
+        'laser photon optical wave quantum particle entangled spin laser photon '
+        'optical wave quantum particle entangled spin',
+    ]
+    material = [
+        'polymer composite material strength fiber tensile bonding structural '
+        'polymer composite material strength fiber tensile bonding structural',
+        'composite polymer fiber structural tensile material strength bonding '
+        'composite polymer fiber structural tensile material strength bonding',
+        'fiber composite tensile polymer bonding structural strength material '
+        'fiber composite tensile polymer bonding structural strength material',
+    ]
+    records = []
+    for i in range(20):
+        records.append({'abstract': physics[i % 3], 'year': 2015 + (i % 5)})
+    for i in range(20):
+        records.append({'abstract': material[i % 3], 'year': 2015 + (i % 5)})
+    return records
+
+
+def test_topic_modeling_data_separates_distinct_vocabularies():
+    """B2-8: iki birbirinden bağımsız kelime kümesi, karışmadan 2 ayrı konuya ayrılmalı."""
+    topics, assignments = topic_modeling_data(_topic_modeling_records(), n_topics=2, top_words=8)
+    assert topics is not None
+    assert len(topics) == 2
+    assert sum(t['size'] for t in topics) == 40
+    assert len(assignments) == 40
+
+    physics_vocab = {'photon', 'laser', 'quantum', 'entangled', 'particle', 'wave', 'optical', 'spin'}
+    material_vocab = {'polymer', 'composite', 'material', 'strength', 'fiber', 'tensile', 'bonding',
+                       'structural'}
+    for t in topics:
+        words = set(t['words'])
+        assert words <= physics_vocab or words <= material_vocab
+
+
+def test_topic_modeling_data_insufficient_abstracts_returns_none():
+    records = [{'abstract': 'short text here', 'year': 2020}] * 5
+    topics, assignments = topic_modeling_data(records)
+    assert topics is None and assignments is None
+
+
+def test_topic_modeling_data_no_abstracts_returns_none():
+    topics, assignments = topic_modeling_data([{'abstract': ''}] * 30)
+    assert topics is None and assignments is None
+
+
+def test_topic_modeling_words_chart_has_subplot_per_topic():
+    fig = topic_modeling_words_chart(_topic_modeling_records())
+    assert fig is not None
+    assert len(fig.axes) >= 2
+
+
+def test_topic_modeling_trend_figure_not_none_with_multiyear_data():
+    fig = topic_modeling_trend(_topic_modeling_records())
+    assert fig is not None
+
+
+def test_topic_modeling_trend_single_year_returns_none():
+    records = _topic_modeling_records()
+    for r in records:
+        r['year'] = 2020
+    assert topic_modeling_trend(records) is None

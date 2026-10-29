@@ -198,6 +198,10 @@ def _rules(source, last_year, stats=None):
         gettext('"Yerel atıf", bir yayının yalnız BU veri setindeki diğer kayıtlardan aldığı atıf '
                 'sayısıdır (derlemenin kendi iç etkisi); "küresel atıf" ise OpenAlex\'teki toplam atıf '
                 'sayısıdır ve her zaman yerel atıftan büyük veya eşittir.'),
+        gettext('Konu Modelleme\'de yalnız özeti yeterli uzunlukta olan kayıtlar kullanıldı; özet '
+                'metinleri TF-IDF ile sayısallaştırılıp NMF (Non-negative Matrix Factorization) ile '
+                'gizli konulara ayrıştırıldı, her kayıt en baskın konusuna atandı. Bu yöntem anahtar '
+                'kelime tabanlı Tematik Harita\'dan farklıdır ve özet metninin kendisini kullanır.'),
     ]
     return rules
 
