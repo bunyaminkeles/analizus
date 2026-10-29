@@ -90,6 +90,41 @@ def _upload_vosviewer_export(records: list, job_id) -> str:
         return ''
 
 
+def _upload_method_text(records: list, stats: dict, source: dict, n_analyses: int, job_id) -> str:
+    """Tezine yapıştırılabilir Yöntem metnini .txt olarak S3'e yükler (B3-3).
+    Hata olursa job'ın tamamlanmasını engellemez — yalnız log + boş URL."""
+    from forum.s3_utils import upload_bytes_to_s3
+    from bibliometrics.services.method_text import build_method_text
+
+    try:
+        text = build_method_text(records, stats, source, n_analyses)
+        return upload_bytes_to_s3(
+            b'\xef\xbb\xbf' + text.encode('utf-8'),
+            f'bibliometrics/method_text/{job_id}.txt', 'text/plain; charset=utf-8',
+        ) or ''
+    except Exception as e:
+        logger.warning(f'[bibliometrics] Yöntem metni üretilemedi [{job_id}]: {e}')
+        return ''
+
+
+def _upload_prisma_diagram(flow: list, job_id) -> str:
+    """Kayıt akış diyagramını PNG olarak S3'e yükler (B3-3). Veri yoksa/hata olursa
+    boş döner — job'ın tamamlanmasını engellemez."""
+    from forum.s3_utils import upload_bytes_to_s3
+    from bibliometrics.services.prisma_diagram import build_prisma_png
+
+    try:
+        png_bytes = build_prisma_png(flow)
+        if not png_bytes:
+            return ''
+        return upload_bytes_to_s3(
+            png_bytes, f'bibliometrics/prisma/{job_id}.png', 'image/png',
+        ) or ''
+    except Exception as e:
+        logger.warning(f'[bibliometrics] PRISMA diyagramı üretilemedi [{job_id}]: {e}')
+        return ''
+
+
 def _execute_job_body(job_id: str) -> None:
     """Upload tipi analiz, senkron."""
     from bibliometrics.models import BibliometricJob
@@ -137,11 +172,12 @@ def _execute_job_body(job_id: str) -> None:
             job.mark_failed(gettext('Analizler üretilemedi. Veri yetersiz olabilir.'))
             return
 
-        notes = build_report_notes(records, stats=stats, skipped=skipped, source={
+        source = {
             'kind': 'file',
             'format': dict(BibliometricJob.FORMAT_CHOICES).get(fmt, fmt),
             'files': len(contents),
-        })
+        }
+        notes = build_report_notes(records, stats=stats, skipped=skipped, source=source)
         demo_n = SiteSettings.load().bibliometri_demo_grafik_sayisi
         demo_pdf_bytes = build_demo_pdf(figures[:demo_n], total_records=len(records), filename=job.original_filename,
                                         notes=notes, time_series=time_series)
@@ -156,6 +192,8 @@ def _execute_job_body(job_id: str) -> None:
         full_url = upload_bytes_to_s3(full_pdf_bytes, f'bibliometrics/full/{job.id}.pdf', 'application/pdf')
         clean_xlsx_url, clean_csv_url = _upload_clean_data(records, job.id)
         vosviewer_url = _upload_vosviewer_export(records, job.id)
+        method_text_url = _upload_method_text(records, stats, source, n_figures, job.id)
+        prisma_diagram_url = _upload_prisma_diagram(notes['flow'], job.id)
 
         close_old_connections()
         job.mark_completed(
@@ -166,6 +204,8 @@ def _execute_job_body(job_id: str) -> None:
             clean_data_xlsx_url=clean_xlsx_url,
             clean_data_csv_url=clean_csv_url,
             vosviewer_export_url=vosviewer_url,
+            method_text_url=method_text_url,
+            prisma_diagram_url=prisma_diagram_url,
         )
         job._demo_pdf_bytes = demo_pdf_bytes
         logger.info(f'[bibliometrics] Job {job_id} tamamlandı. {len(records)} kayıt, {n_figures} analiz.')
@@ -246,12 +286,14 @@ def _execute_job_openalex_body(job_id: str) -> None:
             return
 
         # Sınır çekim anındaki değil şimdiki ayar — admin arada değiştirmediyse aynıdır
-        notes = build_report_notes(records, stats=stats, skipped=skipped, source={
+        source = {
             'kind': 'pubmed' if is_pubmed else 'openalex',
             'found': search_job.total_results,
             'fetched': len(search_job.all_results),
             'max_records': SiteSettings.load().scrap_max_records or 5000,
-        })
+            'query': search_job.api_query,
+        }
+        notes = build_report_notes(records, stats=stats, skipped=skipped, source=source)
         demo_n = SiteSettings.load().bibliometri_demo_grafik_sayisi
         demo_pdf_bytes = build_demo_pdf(figures[:demo_n], total_records=len(records), filename=job.original_filename,
                                         notes=notes, time_series=time_series)
@@ -266,6 +308,8 @@ def _execute_job_openalex_body(job_id: str) -> None:
         full_url = upload_bytes_to_s3(full_pdf_bytes, f'bibliometrics/full/{job.id}.pdf', 'application/pdf')
         clean_xlsx_url, clean_csv_url = _upload_clean_data(records, job.id)
         vosviewer_url = _upload_vosviewer_export(records, job.id)
+        method_text_url = _upload_method_text(records, stats, source, n_figures, job.id)
+        prisma_diagram_url = _upload_prisma_diagram(notes['flow'], job.id)
 
         close_old_connections()
         job.mark_completed(
@@ -276,6 +320,8 @@ def _execute_job_openalex_body(job_id: str) -> None:
             clean_data_xlsx_url=clean_xlsx_url,
             clean_data_csv_url=clean_csv_url,
             vosviewer_export_url=vosviewer_url,
+            method_text_url=method_text_url,
+            prisma_diagram_url=prisma_diagram_url,
         )
 
         logger.info(f'[bibliometrics] {job.source} job {job_id} tamamlandı. {len(records)} kayıt, {n_figures} analiz.')
@@ -537,6 +583,7 @@ def cleanup_expired_bibliometrics_s3_files(days=7):
         for prefix in [
             'bibliometrics/demo/', 'bibliometrics/full/',
             'bibliometrics/clean_data/', 'bibliometrics/vosviewer/',
+            'bibliometrics/method_text/', 'bibliometrics/prisma/',
         ]
     )
 
@@ -546,10 +593,10 @@ def cleanup_expired_bibliometrics_s3_files(days=7):
             created_at__lt=cutoff,
         ).exclude(
             demo_pdf_url='', full_pdf_url='', clean_data_xlsx_url='', clean_data_csv_url='',
-            vosviewer_export_url='',
+            vosviewer_export_url='', method_text_url='', prisma_diagram_url='',
         ).update(
             demo_pdf_url='', full_pdf_url='', clean_data_xlsx_url='', clean_data_csv_url='',
-            vosviewer_export_url='',
+            vosviewer_export_url='', method_text_url='', prisma_diagram_url='',
         )
     except Exception as e:
         logger.error(f"DB temizlik hatası (bibliometrics): {e}")

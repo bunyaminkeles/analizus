@@ -1,6 +1,6 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~3806 satır; offset'ler 26 Ekim 2026'da doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~4309 satır; offset'ler 29 Ekim 2026'da doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
@@ -11,12 +11,12 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~3806 satır; offset
 | §10–11 | 817 | CSS/tasarım sistemi, WebSocket (route'lar) — Bootstrap Kaldırma Migrasyonu alt bölümü (Faz 3 sürüyor, 25 Ekim 2026: 19 dosya + `JobPostForm` migre edildi, yeni `.ax-btn--outline-info`/`.ax-alert--cyan`); CSS Değişkenleri notu — **tanımsız `--ax-color-primary` token'ı bulundu (`home.html:45,48`, henüz düzeltilmedi, bkz. §10 "CSS Değişkenleri")**, ayrıca ana sayfanın (`home.html`) `bundle.css` DIŞINDA 11 ayrı CSS dosyası (`hero.css`, `home_sections.css` vb.) yüklediği not edildi |
 | §12 | 1100 | İstatistik araçları (akış, PDF, polling, konsol düzeni: Nedir kartı → SSS → CTA, `tool_title`) |
 | §13–15 | 1317 | DM/oda mesajlaşma, bibliometri, akademik tarama (Google'ın gördüğü başlık = view `promo_title`; YÖK Tez üniversite filtresi, iş-spesifik `?job=<uuid>` link, "Son Aramalarım") |
-| §16–19 | 1599 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1856 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları, bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği, `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"), pazar akışı (pending → open), session, cron |
-| §24–25 | 2016 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
-| §26 | 2103 | Sık yapılan hatalar ve çözümleri — konuya göre 11 alt başlığa gruplandı (Sunucu/Docker/Deploy, Veritabanı/Migration, S3/Depolama, E-posta, Çeviri, CSS/Frontend/JS, AI Asistan, Admin Paneli, Tarama/Analiz Araçları, Güvenlik/Bot, Genel Süreç) |
-| §27 | 2283 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 26 Ekim 2026, Aracılık (Mediation) + Düzenleyici Değişken (Moderation) Analizi araçları TAMAMLANDI — her ikisi de `dev`→`main` ayrı merge ile canlıya alındı (139 yeni msgid EN/DE çevrildi); bir önceki tur: 26 Ekim 2026 İstatistik Araçları Denetimi (madde 12-25 + 4 ek bulgu düzeltildi, ax- tasarım migrasyonu envanteri 8 dosyaya düzeltildi, kalan tek iş o 8 dosyanın ax-'e taşınması)**) |
-| §28 | 3692 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §16–19 | 1632 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1907 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları, bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği, `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"), pazar akışı (pending → open), session, cron |
+| §24–25 | 2071 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
+| §26 | 2158 | Sık yapılan hatalar ve çözümleri — konuya göre 11 alt başlığa gruplandı (Sunucu/Docker/Deploy, Veritabanı/Migration, S3/Depolama, E-posta, Çeviri, CSS/Frontend/JS, AI Asistan, Admin Paneli, Tarama/Analiz Araçları, Güvenlik/Bot, Genel Süreç) |
+| §27 | 2338 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 29 Ekim 2026, Bibliometri Grup B — B1+B2 (8/8) + B3-1 (Temiz Veri Seti İndirme XLSX/CSV) + B3-2 (VOSviewer Uyumlu Dışa Aktarım) TAMAMLANDI, `--no-ff` ile `main`'e merge edilip push edildi (merge commit `19bdefd`, migration `0008`/`0009` Hetzner'de uygulandı, GitHub Actions deploy `success`); aynı oturumda ayrıca Topic Map ve Bradford Kanunu grafiklerindeki (aynı kök neden sınıfı: sabit/sınırsız figsize → PDF'e en-boy korunarak sığdırılınca devasa boşluk) görsel bug'lar da düzeltilip main'e alındı. Sırada B3-3 (hazır Yöntem metni + PRISMA diyagramı); bir önceki tur: 26 Ekim 2026 Aracılık (Mediation) + Düzenleyici Değişken (Moderation) analiz araçları**) |
+| §28 | 4195 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 

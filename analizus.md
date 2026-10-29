@@ -2597,6 +2597,19 @@ with connection.cursor() as c:
   - PubMed modülü (Faz 1–3: 630a069, 289784b, d046c07) — `pubmed` app, arama sayfası TR/EN/DE, bibliometri köprüsü
     (13 analize kadar, atıf yok, ülke/kurum tahmini); `feature_pubmed` KAPALI başlar. §14, §15.
   - Tarama siparişi (4 araç ortak) + ilan vitrini fiyatları Site Ayarları → Fiyatlandırma'dan (e716e46). §20.
+- **Bibliometri Grup A+B — main'de canlı (en son 29 Ekim 2026, merge commit `19bdefd`):** Grup A (A1-A9: rapor
+  dili seçimi, OpenAlex/PubMed köprüsü iyileştirmeleri, demo CTA EN/DE); Grup B/B1 (veri kalitesi: DOI ile
+  OpenAlex zenginleştirme, tekilleştirme, yazar adı birleştirme, anahtar kelime normalizasyonu) ve B2 (bilim
+  haritalama: Bradford Kanunu, anahtar kelime Louvain kümeleri, Tematik Harita/Evrim, Üç Alan Grafiği, SCP/MCP,
+  Bibliyografik Eşleşme + Yerel/Küresel Atıf, Konu Modelleme NMF — istatistik araç sayısı 17→26) TAMAMEN BİTTİ;
+  B3 (Çıktılar) başladı — **B3-1 (Temiz Veri Seti İndirme, XLSX/CSV, herkese ücretsiz)** ve **B3-2 (VOSviewer
+  Uyumlu Dışa Aktarım — map+network dosyaları, format resmi VOSviewer dokümanından doğrulandı)** TAMAMLANDI.
+  Aynı turda ayrıca **Topic Map ve Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök neden sınıfı —
+  sabit/sınırsız `figsize`, PDF'e en-boy korunarak sığdırılınca devasa boşluk; kullanıcı ekran görüntüleriyle
+  bildirdi) düzeltildi. Sırada B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı), B3-4, B3-2b
+  (Biblioshiny — R/bibliometrix kurulu olmadığı için ertelendi), B4. Detay: aşağıdaki "Geçmiş Turlar
+  (Kronoloji)" 29 Ekim 2026 girdileri; plan dosyası `bibliometri_durum_ve_gelistirme_prompt.md` §4; görev
+  durumu `tasks/todo.md`.
 
 #### SEO
 
@@ -3397,6 +3410,40 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   msgid + ayrıca makemessages churn'ünde fuzzy-eşleşen ilgisiz bir
   keyword_cooccurrence uyarı metni de fark edilip düzeltildi). `forum+
   bibliometrics` 191/191 geçti. Migration yok.
+- **29 Ekim 2026 — Bibliometri Grup B, B3-3 (Hazır Yöntem Metni + PRISMA
+  Akış Diyagramı) TAMAMLANDI, `dev`'de.** Kullanıcıya AskUserQuestion ile
+  soruldu: B3-1/B3-2 ile aynı teslim deseni seçildi — **ücretsiz indirme**
+  (TXT+PNG), `pdf_builder.py`'nin sayfalama mantığına dokunulmadı. Kullanıcı
+  ek talep bildirdi: metinde içeriğin otomatik üretildiği ve bir uzman
+  tarafından değerlendirilmediği açıkça belirtilsin — hem `.txt` dosyasının
+  son paragrafına hem kartın altındaki UI metnine eklendi. Yeni
+  `bibliometrics/services/method_text.py` (`build_method_text()` —
+  `report_notes.py`'nin kaynak-türüne-göre-tam-cümle-msgid desenini izler:
+  veri kaynağı cümlesi — dosya/OpenAlex+sorgu/PubMed+sorgu — kayıt akışı ve
+  tekilleştirme kuralı, zenginleştirme varsa ek cümle, kullanılan analiz
+  sayısı + yazılım (Python/pandas/networkx/scikit-learn/matplotlib), önerilen
+  yazılım kaynak gösterimi, son olarak uyarı paragrafı) ve `bibliometrics/
+  services/prisma_diagram.py` (`build_prisma_png()` — `report_notes.py`'nin
+  zaten hesapladığı `notes['flow']` listesini [(etiket, sayı), ...] dikey
+  kutu+ok PNG diyagramına çevirir, son kutu [analize giren] vurgulu renkte;
+  analyzer.py'nin global matplotlib rcParams'ından bağımsız kendi `Agg`
+  kurulumuyla). `job_runner.py`'ye `_upload_method_text()`/
+  `_upload_prisma_diagram()` (B3-1/B3-2'deki hata-toleranslı desenle aynı —
+  hata job'ı düşürmez), `BibliometricJob.method_text_url`/`prisma_diagram_url`
+  (migration `0010`), `cleanup_expired_bibliometrics_s3_files()`'a 2 yeni
+  prefix, `job_status` JSON + B3-1'in "Temiz Veri Seti" kartına 2 yeni buton
+  (landing.html+order.html, ayrı kart açılmadı). 16 yeni pytest (yöntem
+  metninin kaynak dallarına göre beklenen alt dizeleri, PRISMA PNG geçerliliği
+  ve boş `flow` → `None`, upload yardımcılarının başarı/hata toleransı) +
+  gerçek S3 round-trip (TXT okunup içerik Türkçe akademik dile uygunluğu
+  kontrol edildi, PNG 4 ve 5 adımlı senaryolarla render edilip gözle
+  doğrulandı — test nesneleri silindi) + Django test client ile
+  landing(TR/EN)/order/job_status render testi (yeni butonların/linklerin
+  göründüğü doğrulandı). EN/DE çevrildi (`polib` ile makemessages'ın
+  fuzzy-eşleştirdiği 5 girdi + 11 yeni boş girdi dolduruldu — ilgisiz eski
+  backlog [oda mesajı bildirimleri, sağkalım analizi, mediation vb. —
+  bu oturumda eklenmedi] kasıtlı olarak dokunulmadan bırakıldı,
+  `--no-location` kullanılmadı). `forum+bibliometrics` 203/203 geçti.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

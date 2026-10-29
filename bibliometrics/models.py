@@ -63,6 +63,8 @@ class BibliometricJob(models.Model):
     clean_data_xlsx_url = models.URLField(max_length=500, blank=True, default='', verbose_name='Temiz Veri XLSX URL (S3)')
     clean_data_csv_url = models.URLField(max_length=500, blank=True, default='', verbose_name='Temiz Veri CSV URL (S3)')
     vosviewer_export_url = models.URLField(max_length=500, blank=True, default='', verbose_name='VOSviewer Export ZIP URL (S3)')
+    method_text_url = models.URLField(max_length=500, blank=True, default='', verbose_name='Yöntem Metni URL (S3)')
+    prisma_diagram_url = models.URLField(max_length=500, blank=True, default='', verbose_name='PRISMA Diyagramı URL (S3)')
 
     demo_email_sent = models.BooleanField(default=False)
 
@@ -86,7 +88,8 @@ class BibliometricJob(models.Model):
         self.save(update_fields=['status'])
 
     def mark_completed(self, total_records, file_format, demo_pdf_url='', full_pdf_url='',
-                       clean_data_xlsx_url='', clean_data_csv_url='', vosviewer_export_url=''):
+                       clean_data_xlsx_url='', clean_data_csv_url='', vosviewer_export_url='',
+                       method_text_url='', prisma_diagram_url=''):
         self.status = 'completed'
         self.total_records = total_records
         self.file_format = file_format
@@ -95,12 +98,14 @@ class BibliometricJob(models.Model):
         self.clean_data_xlsx_url = clean_data_xlsx_url
         self.clean_data_csv_url = clean_data_csv_url
         self.vosviewer_export_url = vosviewer_export_url
+        self.method_text_url = method_text_url
+        self.prisma_diagram_url = prisma_diagram_url
         self.completed_at = timezone.now()
         self.save(update_fields=[
             'status', 'total_records', 'file_format',
             'demo_pdf_url', 'full_pdf_url',
             'clean_data_xlsx_url', 'clean_data_csv_url',
-            'vosviewer_export_url', 'completed_at',
+            'vosviewer_export_url', 'method_text_url', 'prisma_diagram_url', 'completed_at',
         ])
 
     def mark_failed(self, error_msg):

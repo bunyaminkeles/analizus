@@ -13,6 +13,7 @@ matplotlib.use('Agg')
 import pytest
 from django.contrib.auth.models import User
 from django.utils import translation
+from django.utils.translation import gettext
 
 from forum.models import Profile
 
@@ -1183,3 +1184,163 @@ def test_topic_map_eight_clusters_still_produces_figure():
     from bibliometrics.services.analyzer import topic_map
     fig = topic_map(_topic_map_records(5), n_topics=8)
     assert fig is not None
+
+
+# ─────────────────────────── B3-3: Yöntem Metni + PRISMA Diyagramı ───────────────────────────
+
+def _method_text_records():
+    return [{'title': f'Makale {i}', 'year': 2021} for i in range(5)]
+
+
+def test_build_method_text_file_source_has_expected_content():
+    from bibliometrics.services.method_text import build_method_text
+
+    text = build_method_text(
+        _method_text_records(), stats={'no_title': 2, 'duplicate': 1}, source={
+            'kind': 'file', 'format': 'Scopus CSV', 'files': 1,
+        }, n_analyses=26,
+    )
+    assert 'Scopus CSV' in text
+    assert '5' in text  # analize giren kayıt sayısı
+    assert '2' in text  # no_title
+    assert '1' in text  # duplicate
+    assert '26' in text  # n_analyses
+    assert 'Analizus' in text
+    assert 'otomatik olarak üretilmiştir' in text
+    assert 'bir uzman tarafından incelenip onaylanmamıştır' in text
+    assert 'OpenAlex' not in text  # dosya kaynağında sorgu/OpenAlex cümlesi olmamalı
+
+
+def test_build_method_text_openalex_with_query_mentions_query_and_cutoff():
+    from bibliometrics.services.method_text import build_method_text
+
+    text = build_method_text(
+        _method_text_records(), stats={'no_title': 0, 'duplicate': 0}, source={
+            'kind': 'openalex', 'found': 500, 'fetched': 300, 'max_records': 300,
+            'query': 'machine learning in education',
+        }, n_analyses=20,
+    )
+    assert 'OpenAlex' in text
+    assert 'machine learning in education' in text
+    assert '500' in text and '300' in text
+
+
+def test_build_method_text_openalex_without_query_omits_quote():
+    from bibliometrics.services.method_text import build_method_text
+
+    text = build_method_text(
+        _method_text_records(), stats={}, source={
+            'kind': 'openalex', 'found': 5, 'fetched': 5, 'max_records': 2000,
+        }, n_analyses=20,
+    )
+    assert 'OpenAlex' in text
+    assert '"' not in text.split('\n\n')[0]  # sorgu yok → ilk paragrafta tırnaklı sorgu olmamalı
+
+
+def test_build_method_text_pubmed_source():
+    from bibliometrics.services.method_text import build_method_text
+
+    text = build_method_text(
+        _method_text_records(), stats={}, source={
+            'kind': 'pubmed', 'found': 5, 'fetched': 5, 'max_records': 2000,
+        }, n_analyses=18,
+    )
+    assert 'PubMed' in text
+
+
+def test_build_method_text_includes_enrichment_sentence_only_when_present():
+    from bibliometrics.services.method_text import build_method_text
+
+    base_kwargs = dict(records=_method_text_records(), source={'kind': 'file', 'format': 'BibTeX'}, n_analyses=10)
+    without = build_method_text(stats={}, **base_kwargs)
+    with_enrichment = build_method_text(stats={'zenginlestirme_enriched': 3}, **base_kwargs)
+    assert 'zenginleştirilmiştir' not in without
+    assert 'zenginleştirilmiştir' in with_enrichment
+
+
+def test_build_prisma_png_returns_valid_png_bytes():
+    from bibliometrics.services.prisma_diagram import build_prisma_png
+
+    flow = [
+        (gettext('Dosyadan okunan kayıt'), 100),
+        (gettext('Başlığı olmadığı için çıkarılan'), 5),
+        (gettext('Tekrar olduğu için çıkarılan'), 3),
+        (gettext('Analize giren kayıt'), 92),
+    ]
+    png = build_prisma_png(flow)
+    assert png is not None
+    assert png.startswith(b'\x89PNG')
+
+
+def test_build_prisma_png_empty_flow_returns_none():
+    from bibliometrics.services.prisma_diagram import build_prisma_png
+    assert build_prisma_png([]) is None
+    assert build_prisma_png(None) is None
+
+
+def test_upload_method_text_returns_url(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    uploaded = {}
+
+    def fake_upload(data, key, content_type):
+        uploaded[key] = (data, content_type)
+        return f'https://s3.example.com/{key}'
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    url = job_runner._upload_method_text(
+        _method_text_records(), {}, {'kind': 'file', 'format': 'BibTeX'}, 10, 'job789',
+    )
+    assert url == 'https://s3.example.com/bibliometrics/method_text/job789.txt'
+    data, content_type = uploaded['bibliometrics/method_text/job789.txt']
+    assert content_type == 'text/plain; charset=utf-8'
+    assert data.startswith(b'\xef\xbb\xbf')
+
+
+def test_upload_method_text_tolerates_failure(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    def fake_upload(data, key, content_type):
+        raise RuntimeError('S3 kapalı')
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    url = job_runner._upload_method_text(
+        _method_text_records(), {}, {'kind': 'file', 'format': 'BibTeX'}, 10, 'job789',
+    )
+    assert url == ''
+
+
+def test_upload_prisma_diagram_returns_url(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    uploaded = {}
+
+    def fake_upload(data, key, content_type):
+        uploaded[key] = content_type
+        return f'https://s3.example.com/{key}'
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    flow = [(gettext('Dosyadan okunan kayıt'), 10), (gettext('Analize giren kayıt'), 9)]
+    url = job_runner._upload_prisma_diagram(flow, 'job789')
+    assert url == 'https://s3.example.com/bibliometrics/prisma/job789.png'
+    assert uploaded['bibliometrics/prisma/job789.png'] == 'image/png'
+
+
+def test_upload_prisma_diagram_empty_flow_returns_empty_string(monkeypatch):
+    from bibliometrics.services import job_runner
+    assert job_runner._upload_prisma_diagram([], 'job789') == ''
+
+
+def test_upload_prisma_diagram_tolerates_failure(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    def fake_upload(data, key, content_type):
+        raise RuntimeError('S3 kapalı')
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    flow = [(gettext('Dosyadan okunan kayıt'), 10), (gettext('Analize giren kayıt'), 9)]
+    assert job_runner._upload_prisma_diagram(flow, 'job789') == ''

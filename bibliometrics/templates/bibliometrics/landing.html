@@ -205,6 +205,9 @@
                     {% trans "Tekilleştirilmiş, zenginleştirilmiş kayıtlar (Excel/CSV)" %}
                     <strong class="text-info">{% trans "ÜCRETSİZ" %}</strong>
                   </p>
+                  <p class="text-white-50 mb-0" style="font-size:.75rem;">
+                    {% trans "Yöntem metni otomatik üretilir; bir uzman tarafından incelenmemiştir." %}
+                  </p>
                 </div>
                 <div class="d-flex gap-2">
                   <a href="#" target="_blank" class="btn btn-outline-info fw-bold d-none" id="downloadCleanXlsxBtn">
@@ -215,6 +218,12 @@
                   </a>
                   <a href="#" target="_blank" class="btn btn-outline-info fw-bold d-none" id="downloadVosviewerBtn">
                     <i class="bi bi-diagram-3 me-1"></i> {% trans "VOSviewer (ZIP)" %}
+                  </a>
+                  <a href="#" target="_blank" class="btn btn-outline-info fw-bold d-none" id="downloadMethodTextBtn">
+                    <i class="bi bi-file-earmark-text me-1"></i> {% trans "Yöntem Metni" %}
+                  </a>
+                  <a href="#" target="_blank" class="btn btn-outline-info fw-bold d-none" id="downloadPrismaBtn">
+                    <i class="bi bi-diagram-2 me-1"></i> {% trans "PRISMA Diyagramı" %}
                   </a>
                 </div>
               </div>
@@ -426,6 +435,8 @@
   const downloadCleanXlsx = document.getElementById('downloadCleanXlsxBtn');
   const downloadCleanCsv  = document.getElementById('downloadCleanCsvBtn');
   const downloadVosviewer = document.getElementById('downloadVosviewerBtn');
+  const downloadMethodText = document.getElementById('downloadMethodTextBtn');
+  const downloadPrisma     = document.getElementById('downloadPrismaBtn');
   const sendDemo   = document.getElementById('sendDemoBtn');
   const orderBtn   = document.getElementById('orderBtn');
   const demoSent   = document.getElementById('demoSentMsg');
@@ -555,6 +566,14 @@
     if (data.vosviewer_export_url) {
       downloadVosviewer.href = data.vosviewer_export_url;
       downloadVosviewer.classList.remove('d-none');
+    }
+    if (data.method_text_url) {
+      downloadMethodText.href = data.method_text_url;
+      downloadMethodText.classList.remove('d-none');
+    }
+    if (data.prisma_diagram_url) {
+      downloadPrisma.href = data.prisma_diagram_url;
+      downloadPrisma.classList.remove('d-none');
     }
 
     if (data.demo_email_sent) {
