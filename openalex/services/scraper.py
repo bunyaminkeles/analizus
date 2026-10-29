@@ -226,6 +226,35 @@ class OpenAlexScraper:
             'open_access': (work.get('open_access') or {}).get('is_oa', False),
         }
 
+    def fetch_works_by_dois(self, dois):
+        """
+        DOI listesinden ham OpenAlex work kayıtlarını toplu çeker (bibliometri zenginleştirmesi
+        için — _parse_work'ün ürettiği yapısal formatı DEĞİL, API'nin ham JSON'unu döner,
+        çağıran taraf ihtiyacı olan alanları kendi çıkarır).
+
+        Returns: {doi (küçük harf, https://doi.org/ önekisiz): work_json}
+        """
+        results = {}
+        with _openalex_semaphore:
+            for i in range(0, len(dois), 50):
+                batch = dois[i:i + 50]
+                doi_filter = '|'.join(f'https://doi.org/{d}' for d in batch)
+                params = {'filter': f'doi:{doi_filter}', 'per_page': MAX_PER_PAGE}
+                if self.api_key:
+                    params['api_key'] = self.api_key
+                try:
+                    data = self._fetch_page(params)
+                except Exception as e:
+                    logger.warning(f"OpenAlex zenginleştirme batch hatası: {redact_api_key(e)}")
+                    continue
+                for work in (data.get('results') or []):
+                    doi = (work.get('doi') or '').replace('https://doi.org/', '').lower()
+                    if doi:
+                        results[doi] = work
+                if i + 50 < len(dois):
+                    time.sleep(random.uniform(0.3, 0.6))
+        return results
+
     def search(self, query_parts, demo_limit=5, max_results=None):
         """
         Ana arama metodu. max_results: en fazla çekilecek kayıt (None → admin ayarı

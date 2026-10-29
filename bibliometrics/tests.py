@@ -24,6 +24,9 @@ from bibliometrics.services.parser import parse_openalex_txt, parse_pubmed_txt, 
 from bibliometrics.services.pdf_builder import _demo_cta_text
 from bibliometrics.models import BibliometricJob
 from bibliometrics.services.job_runner import _in_user_language
+from bibliometrics.services.enrichment import enrich_records_with_openalex, _apply_enrichment
+from forum.models import SiteSettings
+from openalex.services.scraper import OpenAlexScraper
 
 
 def _records(years_counts):
@@ -205,4 +208,112 @@ def test_parse_openalex_csv_splits_pipe_separated_authors():
     # Bu formatta hiç olmayan alanlar boş kalmalı
     assert rec['journal'] == ''
     assert rec['doi'] == ''
-    assert rec['keywords'] == []
+
+
+def _fake_work(doi, cited_by=7, country='US', institution='MIT', keywords=('deep learning',),
+                referenced_works=('https://openalex.org/W1',), author_id='https://openalex.org/A1'):
+    return {
+        'doi': f'https://doi.org/{doi}',
+        'cited_by_count': cited_by,
+        'keywords': [{'display_name': k} for k in keywords],
+        'concepts': [],
+        'referenced_works': list(referenced_works),
+        'authorships': [{
+            'author': {'id': author_id},
+            'institutions': [{'display_name': institution}],
+            'countries': [country],
+        }],
+    }
+
+
+def test_apply_enrichment_fills_missing_fields_only():
+    """Boş alanlar OpenAlex verisiyle doldurulur; dolu alanlara (kullanıcının kendi verisi) dokunulmaz."""
+    rec = {'doi': '10.1/x', 'cited_by': 0, 'country': '', 'institution': '', 'keywords': []}
+    work = _fake_work('10.1/x')
+    _apply_enrichment(rec, work)
+    assert rec['cited_by'] == 7
+    assert rec['country'] == 'US'
+    assert rec['institution'] == 'MIT'
+    assert rec['keywords'] == ['deep learning']
+    assert rec['referenced_works'] == ['https://openalex.org/W1']
+    assert rec['author_ids'] == ['https://openalex.org/A1']
+
+
+def test_apply_enrichment_does_not_overwrite_existing_values():
+    rec = {'doi': '10.1/x', 'cited_by': 99, 'country': 'TR', 'institution': 'ODTÜ', 'keywords': ['mevcut']}
+    _apply_enrichment(rec, _fake_work('10.1/x'))
+    assert rec['cited_by'] == 99
+    assert rec['country'] == 'TR'
+    assert rec['institution'] == 'ODTÜ'
+    assert rec['keywords'] == ['mevcut']
+    # Yeni alanlar (başka yerde doldurulmuyor) yine de güncellenir
+    assert rec['referenced_works'] == ['https://openalex.org/W1']
+
+
+@pytest.mark.django_db
+def test_enrich_records_skips_records_without_doi(monkeypatch):
+    called = {}
+
+    def fake_fetch(self, dois):
+        called['dois'] = dois
+        return {d.lower(): _fake_work(d) for d in dois}
+
+    monkeypatch.setattr(OpenAlexScraper, 'fetch_works_by_dois', fake_fetch)
+
+    records = [
+        {'doi': '10.1/a', 'cited_by': 0, 'country': '', 'institution': '', 'keywords': []},
+        {'doi': '', 'cited_by': 0, 'country': '', 'institution': '', 'keywords': []},
+    ]
+    stats = {}
+    enrich_records_with_openalex(records, stats)
+
+    assert stats['zenginlestirme_skipped_no_doi'] == 1
+    assert stats['zenginlestirme_enriched'] == 1
+    assert called['dois'] == ['10.1/a']
+    assert records[0]['cited_by'] == 7
+    assert records[1]['cited_by'] == 0  # DOI'siz kayıt dokunulmadan kaldı
+
+
+@pytest.mark.django_db
+def test_enrich_records_respects_max_kayit_limit(monkeypatch):
+    settings_obj = SiteSettings.load()
+    settings_obj.bibliometri_openalex_zenginlestirme_max_kayit = 1
+    settings_obj.save(update_fields=['bibliometri_openalex_zenginlestirme_max_kayit'])
+
+    called = {}
+
+    def fake_fetch(self, dois):
+        called['dois'] = dois
+        return {d.lower(): _fake_work(d) for d in dois}
+
+    monkeypatch.setattr(OpenAlexScraper, 'fetch_works_by_dois', fake_fetch)
+
+    records = [
+        {'doi': '10.1/a', 'cited_by': 0, 'country': '', 'institution': '', 'keywords': []},
+        {'doi': '10.1/b', 'cited_by': 0, 'country': '', 'institution': '', 'keywords': []},
+    ]
+    stats = {}
+    enrich_records_with_openalex(records, stats)
+
+    assert called['dois'] == ['10.1/a']
+    assert stats['zenginlestirme_enriched'] == 1
+    assert records[1]['cited_by'] == 0
+
+
+def test_fetch_works_by_dois_batches_and_normalizes_doi(monkeypatch):
+    """50'den fazla DOI iki ayrı istek halinde gönderilir; dönen anahtar küçük harf, önekisiz."""
+    seen_filters = []
+
+    def fake_fetch_page(self, params, cursor=None):
+        seen_filters.append(params['filter'])
+        return {'results': [{'doi': 'https://doi.org/10.1/A'}]}
+
+    monkeypatch.setattr(OpenAlexScraper, '_fetch_page', fake_fetch_page)
+
+    dois = [f'10.1/{i}' for i in range(60)]
+    result = OpenAlexScraper().fetch_works_by_dois(dois)
+
+    assert len(seen_filters) == 2  # 60 DOI → 50 + 10
+    assert '10.1/0' in seen_filters[0]
+    assert '10.1/59' in seen_filters[1]
+    assert '10.1/a' in result  # doi.org/10.1/A -> küçük harf

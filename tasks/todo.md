@@ -2,8 +2,9 @@
 
 **Durum (29 Ekim 2026 gece):** Bibliometri Grup A (A1-A9) tamamen bitti,
 `main`'de canlı (Hetzner). Grup B (bibliometrix/VOSviewer yol haritası)
-kullanıcı kararıyla ertelendi. Bugünkü oturum şu 3 maddeyle bitti, **yarın
-buradan devam**:
+başladı — B1-1 (DOI ile OpenAlex zenginleştirme) tamamlandı, `dev`'de,
+henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti,
+**yarın buradan devam**:
 
 1. **[ÖNCELİKLİ] Araştırma Konusu Kümeleri (Topic Map) grafiği görsel
    kalite sorunu — henüz incelenmedi.** Kullanıcı canlı PDF'te gördü: balon
@@ -25,9 +26,21 @@ buradan devam**:
    job_runner/views'ta `generate_summary` çağrısı yok). Detay: aşağıdaki
    "AÇIK İŞLER" listesinde 29 Ekim 2026 maddesi.
 3. **Grup B** (bibliometrix/VOSviewer kalitesinde yol haritası — B1 veri
-   kalitesi → B2 bilim haritalama → B3 çıktılar → B4 ürün/huni) — ayrı
-   planlama turu gerekiyor, plan dosyası:
-   `bibliometri_durum_ve_gelistirme_prompt.md` §4.
+   kalitesi → B2 bilim haritalama → B3 çıktılar → B4 ürün/huni), plan
+   dosyası: `bibliometri_durum_ve_gelistirme_prompt.md` §4.
+   - [x] **B1-1 TAMAMLANDI (29 Ekim 2026, dev'de, henüz push edilmedi):**
+     DOI ile OpenAlex zenginleştirme. `bibliometrics/services/enrichment.py`
+     (yeni) + `openalex/services/scraper.py.fetch_works_by_dois()` (yeni,
+     mevcut arama koduna dokunulmadı) + `SiteSettings.
+     bibliometri_openalex_zenginlestirme_max_kayit` (default 2000, migration
+     `forum/0192`) + `job_runner.py`/`report_notes.py` entegrasyonu. 6 yeni
+     pytest + gerçek DOI ile manuel doğrulama. `forum+bibliometrics` 124/124.
+     Detay: `analizus.md` §27 (29 Ekim B1-1 maddesi).
+   - [ ] B1-2 (tekilleştirme: DOI → normalize başlık+yıl sırası, elenen
+     kayıt raporu)
+   - [ ] B1-3 (yazar adı birleştirme: OpenAlex author ID varsa onu kullan)
+   - [ ] B1-4 (anahtar kelime normalizasyonu: küçük harf, tekil/çoğul, tire/boşluk)
+   - [ ] B2-B4 (bkz. plan dosyası §4)
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
 sürebilir (~10 dk'ya kadar), bir dahaki "donmuş gibi görünen" deploy'da

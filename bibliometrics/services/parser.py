@@ -22,6 +22,8 @@ EMPTY_RECORD = {
     'pub_type': '',
     'country': '',
     'institution': '',
+    'referenced_works': [],
+    'author_ids': [],
 }
 
 

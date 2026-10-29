@@ -3184,6 +3184,27 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   incelenmedi; (2) DE/EN tarama araçlarının otomatik özet paragrafının
   Türkçe kalması — kaynağı bulunamadı; (3) Grup B — ayrı planlama turu
   gerekiyor.
+- **29 Ekim 2026 — Bibliometri Grup B başladı, B1-1 (DOI ile OpenAlex
+  zenginleştirme) tamamlandı, dev'de (henüz push edilmedi).** Yüklenen/taranan
+  kayıtlarda DOI varsa OpenAlex'ten eksik atıf sayısı, ülke, kurum, anahtar
+  kelime çekilip dolduruluyor (mevcut değer varsa üzerine yazılmıyor); Faz
+  B2'nin (ortak atıf ağları, yazar ID ile homonym çözümü) kullanacağı ham
+  `referenced_works`/`author_ids` her zaman güncelleniyor. Yalnız `job.source
+  != 'openalex'` iken çalışır (OpenAlex kaynaklı işlerde veri zaten taze).
+  Yeni `SiteSettings.bibliometri_openalex_zenginlestirme_max_kayit` (default
+  2000, admin "Limitler" bölümünde) — iş başına en fazla kaç DOI'li kaydın
+  zenginleştirileceğini sınırlar (demo/tam rapor ayrımı yok, ikisi aynı iş
+  çalışmasından üretiliyor). Mimari: `openalex/services/scraper.py`'ye
+  YENİ, bağımsız `fetch_works_by_dois()` metodu eklendi (mevcut `_parse_work`/
+  `search`/canlı arama aracı koduna DOKUNULMADI); yeni `bibliometrics/services/
+  enrichment.py` ham veriyi işleyip kayda uyguluyor; `job_runner.py`'nin iki
+  worker'ına (upload + pubmed) tek satır çağrı eklendi; rapor "Uygulanan
+  kurallar" bölümüne zenginleştirme sayısını bildiren yeni cümle (EN/DE
+  çevrildi). Migration `forum/0192` (yalnız yeni SiteSettings alanı). 6 yeni
+  pytest (mock'lu, ağa gitmiyor) + gerçek bir DOI ile manuel doğrulama (atıf,
+  ülke, kurum, anahtar kelime, 35 referenced_work, 6 author_id başarıyla
+  çekildi). `forum+bibliometrics` 124/124 geçti. Sırada: B1 madde 2-4
+  (tekilleştirme, yazar/anahtar kelime normalizasyonu).
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

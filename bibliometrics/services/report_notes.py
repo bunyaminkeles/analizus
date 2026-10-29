@@ -132,8 +132,9 @@ def _source_warnings(records, source):
     return warnings, partial_year
 
 
-def _rules(source, last_year):
+def _rules(source, last_year, stats=None):
     """Uygulanan kurallar ve eşikler (kısa, tam cümleler)."""
+    stats = stats or {}
     rules = [
         gettext('Başlığı olmayan kayıtlar çıkarıldı. Tekrar eden kayıtlar DOI\'ye göre, DOI yoksa başlığın '
                 'ilk 80 karakterine göre (büyük/küçük harf ayrımı yapılmadan) çıkarıldı.'),
@@ -151,6 +152,11 @@ def _rules(source, last_year):
     elif source.get('kind') == 'pubmed':
         rules.append(gettext('Yazar anahtar kelimesi olmayan PubMed kayıtlarında MeSH terimleri anahtar '
                              'kelime yerine kullanıldı.'))
+    if stats.get('zenginlestirme_enriched'):
+        rules.append(gettext(
+            'DOI\'si olan kayıtlardan {n} tanesi OpenAlex ile zenginleştirildi: eksik atıf sayısı, '
+            'ülke, kurum ve/veya anahtar kelime bilgisi tamamlandı.'
+        ).format(n=_num(stats['zenginlestirme_enriched'])))
     rules += [
         gettext('Ülke ve kurum sayımında bir yayın, yazarlarının bulunduğu her ülke ve kurum için bir kez '
                 'sayıldı. Kurum grafiği yalnız ülke bilgisi hiç yoksa üretilir.'),
@@ -230,7 +236,7 @@ def build_report_notes(records, stats=None, skipped=None, source=None) -> dict:
     return {
         'flow': _data_flow(records, stats, source),
         'coverage': coverage,
-        'rules': _rules(source, last_year),
+        'rules': _rules(source, last_year, stats),
         'skipped': list(skipped or []),
         'limitations': _limitations(coverage, current_year_count, last_year, source, records),
         'source_warnings': warnings,

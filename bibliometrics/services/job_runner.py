@@ -85,6 +85,9 @@ def _execute_job_body(job_id: str) -> None:
             job.mark_failed(gettext('Dosyadan kayıt okunamadı. Format desteklenmiyor olabilir.'))
             return
 
+        from bibliometrics.services.enrichment import enrich_records_with_openalex
+        enrich_records_with_openalex(records, stats)
+
         skipped = []
         time_series = []
         figures = run_all_analyses(records, skipped=skipped, time_series=time_series)
@@ -182,6 +185,10 @@ def _execute_job_openalex_body(job_id: str) -> None:
         if len(records) < 100:
             job.mark_failed(gettext('Bibliometrik analiz için en az 100 kayıt gereklidir (bulunan: {count}).').format(count=len(records)))
             return
+
+        if is_pubmed:
+            from bibliometrics.services.enrichment import enrich_records_with_openalex
+            enrich_records_with_openalex(records, stats)
 
         skipped = []
         time_series = []
