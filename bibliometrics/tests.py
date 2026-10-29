@@ -31,7 +31,11 @@ from bibliometrics.services.analyzer import (
     keyword_cooccurrence,
     thematic_map_themes,
     thematic_map,
+    thematic_evolution_periods,
+    thematic_evolution_themes,
+    thematic_evolution,
 )
+import matplotlib.patches as mpatches
 import bibliometrics.services.analyzer as analyzer_module
 from bibliometrics.services.report_notes import build_report_notes
 from bibliometrics.services.parser import (
@@ -591,3 +595,62 @@ def test_thematic_map_figure_has_one_bubble_per_theme():
     scatter = next(c for c in fig.axes[0].collections if hasattr(c, 'get_offsets')
                    and c.get_offsets().shape[0] > 0)
     assert scatter.get_offsets().shape[0] == len(themes)
+
+
+def _two_period_bridge_records():
+    """B2-4 test verisi: eski dönemde A+B, yeni dönemde B+C — B köprü tema."""
+    topics_old = {'A': _KEYWORD_TOPICS['A'], 'B': _KEYWORD_TOPICS['B']}
+    topics_new = {'B': _KEYWORD_TOPICS['B'], 'C': _KEYWORD_TOPICS['C']}
+    old_records = _topic_keyword_records(topics_old, per_topic=60, seed=11)
+    for r in old_records:
+        r['year'] = 2010
+    new_records = _topic_keyword_records(topics_new, per_topic=60, seed=12)
+    for r in new_records:
+        r['year'] = 2020
+    return old_records + new_records
+
+
+def test_thematic_evolution_periods_insufficient_records_returns_none():
+    records = [{'year': 2020}] * 3
+    assert thematic_evolution_periods(records, n_periods=2, min_per_period=8) is None
+
+
+def test_thematic_evolution_periods_splits_by_year():
+    records = _two_period_bridge_records()
+    periods = thematic_evolution_periods(records, n_periods=2)
+    assert periods is not None
+    assert len(periods) == 2
+    assert len(periods[0][1]) == 120  # per_topic=60 * 2 konu
+    assert len(periods[1][1]) == 120
+
+
+def test_thematic_evolution_tracks_persisting_theme_and_detects_change():
+    """B2-4: ortak tema (B) iki dönem arasında köprüleniyorsa tek akış oluşmalı;
+    yalnız bir dönemde var olan temalar (A eski dönemde, C yeni dönemde) akışsız kalmalı."""
+    records = _two_period_bridge_records()
+    labels, themes, flows = thematic_evolution_themes(records, n_periods=2)
+    assert labels is not None
+    assert len(themes) == 2
+    assert len(themes[0]) == 2 and len(themes[1]) == 2
+
+    b_kw = set(normalize_keywords(_KEYWORD_TOPICS['B']))
+    b_old_idx = next(i for i, t in enumerate(themes[0]) if t['keywords'] == b_kw)
+    b_new_idx = next(i for i, t in enumerate(themes[1]) if t['keywords'] == b_kw)
+
+    assert len(flows) == 1
+    period_i, a_idx, b_idx, weight = flows[0]
+    assert period_i == 0 and a_idx == b_old_idx and b_idx == b_new_idx
+    assert weight == len(b_kw)
+
+
+def test_thematic_evolution_themes_insufficient_data_returns_none():
+    labels, themes, flows = thematic_evolution_themes([{'year': 2020, 'keywords': []}] * 20)
+    assert labels is None and themes is None and flows is None
+
+
+def test_thematic_evolution_figure_has_box_per_theme():
+    records = _two_period_bridge_records()
+    fig = thematic_evolution(records)
+    assert fig is not None
+    rects = [p for p in fig.axes[0].patches if isinstance(p, mpatches.Rectangle)]
+    assert len(rects) == 4  # 2 tema x 2 dönem (3 dönem veriyle kurulamaz, 2'ye düşer)

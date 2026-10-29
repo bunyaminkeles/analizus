@@ -183,6 +183,9 @@ def _rules(source, last_year, stats=None):
         gettext('Tematik Harita\'da her tema (anahtar kelime kümesi) merkeziyet (diğer temalarla bağlantı '
                 'gücü) ve yoğunluğuna (tema içi bağlantı gücü) göre konumlandırıldı; kadran sınırları tüm '
                 'temaların ortalama merkeziyet ve yoğunluğudur.'),
+        gettext('Tematik Evrim\'de veri, yayın yılına göre eşit uzunlukta dönemlere ayrıldı (veri yeterliyse '
+                '3, değilse 2 dönem) ve her dönem ayrı ayrı kümelendi; dönemler arasındaki şeritler, ardışık '
+                'dönemlerdeki temaların paylaştığı anahtar kelime sayısını gösterir.'),
     ]
     return rules
 

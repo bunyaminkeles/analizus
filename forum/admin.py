@@ -840,6 +840,23 @@ class DonationAdmin(ModelAdmin):
             count += 1
         self.message_user(request, f'{count} bağış onaylandı; Premium ve teşekkür e-postası gönderildi.')
 
+    def get_urls(self):
+        from django.urls import path
+        urls = super().get_urls()
+        custom = [
+            path('<int:pk>/quick-approve/', self.admin_site.admin_view(self.quick_approve_view), name='forum_donation_quick_approve'),
+        ]
+        return custom + urls
+
+    def quick_approve_view(self, request, pk):
+        from django.shortcuts import redirect
+        donation = Donation.objects.filter(pk=pk).exclude(status='completed').select_related('user__profile').first()
+        if donation:
+            donation.status = 'completed'
+            donation.save()
+            self.message_user(request, 'Bağış onaylandı; Premium ve teşekkür e-postası gönderildi.')
+        return redirect('/admin/')
+
     fieldsets = (
         ('Bağışçı Bilgileri', {
             'fields': ('user', 'name', 'email', 'is_anonymous')
@@ -996,7 +1013,7 @@ class SiteSettingsAdmin(ModelAdmin):
             'classes': ('collapse',),
         }),
         ('Limitler', {
-            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Bibliometri demo grafik sayısı: demo PDF\'inde gösterilecek grafik sayısı (toplam en fazla 19 üretilebilir, default 10). Bibliometri OpenAlex zenginleştirme: DOI\'si olan kayıtlardan en fazla kaçının OpenAlex ile zenginleştirileceği (atıf, ülke, kurum, anahtar kelime; OpenAlex kaynaklı işlerde kullanılmaz, default 2000). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir. Haftalık ilan hakkı (EN/DE): TR\'den tamamen ayrı pazar — kriter yok, referans bonusu uygulanmaz; Premium (bağış ile kazanılır) daha yüksek hak verir. İlan onayı: açıkken yeni ilan admin onayından sonra yayınlanır (İş İlanları → Onayla/Reddet). Uzman Dizini: /uzmanlar/ sayfasına girmek için gereken en az puan (ayrıca en az 3 uzmanlık alanı + e-posta doğrulaması şart, admin/staff hesapları otomatik dışarıda — tekil istisna Profil → Uzman Dizini: Zorla Göster/Gizle alanından).',
+            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Bibliometri demo grafik sayısı: demo PDF\'inde gösterilecek grafik sayısı (toplam en fazla 20 üretilebilir, default 10). Bibliometri OpenAlex zenginleştirme: DOI\'si olan kayıtlardan en fazla kaçının OpenAlex ile zenginleştirileceği (atıf, ülke, kurum, anahtar kelime; OpenAlex kaynaklı işlerde kullanılmaz, default 2000). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir. Haftalık ilan hakkı (EN/DE): TR\'den tamamen ayrı pazar — kriter yok, referans bonusu uygulanmaz; Premium (bağış ile kazanılır) daha yüksek hak verir. İlan onayı: açıkken yeni ilan admin onayından sonra yayınlanır (İş İlanları → Onayla/Reddet). Uzman Dizini: /uzmanlar/ sayfasına girmek için gereken en az puan (ayrıca en az 3 uzmanlık alanı + e-posta doğrulaması şart, admin/staff hesapları otomatik dışarıda — tekil istisna Profil → Uzman Dizini: Zorla Göster/Gizle alanından).',
             'fields': ('scrap_max_records', 'analiz_max_records', 'bibliometri_demo_grafik_sayisi',
                        'bibliometri_openalex_zenginlestirme_max_kayit',
                        'job_weekly_limit_free', 'job_weekly_limit_premium',

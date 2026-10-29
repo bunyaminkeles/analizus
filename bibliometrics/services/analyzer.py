@@ -260,6 +260,8 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
          gettext('En az 3 farklı dergi/kaynak gerekir.')),
         (gettext('Tematik Harita (Callon Merkeziyet × Yoğunluk)'), lambda: thematic_map(records),
          gettext('Anahtar kelime eş-oluşum ağında en az 2 küme gerekir.')),
+        (gettext('Tematik Evrim (Dönemler Arası Tema Akışı)'), lambda: thematic_evolution(records),
+         gettext('Her dönemde yeterli kayıt ve anahtar kelime kümesi ile dönemler arasında paylaşılan tema gerekir.')),
     ]
     citation_based = {
         gettext('En Çok Atıf Alan Yayınlar (Top 10)'), gettext('Atıf Analizi ve H-index'),
@@ -1684,6 +1686,182 @@ def thematic_map(records: list[dict]):
     ax.set_xlabel(gettext('Merkeziyet (diğer temalarla bağlantı gücü)'), fontsize=11, labelpad=8)
     ax.set_ylabel(gettext('Yoğunluk (tema içi tutarlılık)'), fontsize=11, labelpad=8)
     ax.set_title(gettext('Tematik Harita (Callon Merkeziyet × Yoğunluk)'))
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 20. Tematik Evrim ───────────────────────────
+
+def thematic_evolution_periods(records: list[dict], n_periods: int = 2, min_per_period: int = 8):
+    """
+    Kayıtları yayın yılına göre `n_periods` eşit yıl aralığına böler (B2-4, otomatik
+    dönemlendirme — kullanıcı kesim yılı girmiyor). Döner: [(dönem etiketi, dönem
+    kayıtları), ...] ya da her dönemde en az `min_per_period` kayıt yoksa None.
+    """
+    last_year = _last_complete_year()
+    years = sorted(r['year'] for r in records if r.get('year') and 1900 < r['year'] <= last_year)
+    if len(years) < min_per_period * n_periods:
+        return None
+
+    min_y, max_y = years[0], years[-1]
+    if max_y <= min_y:
+        return None
+
+    span = max_y - min_y + 1
+    cuts = [min_y + round(span * i / n_periods) for i in range(n_periods + 1)]
+    cuts[0], cuts[-1] = min_y, max_y + 1
+
+    periods = []
+    for i in range(n_periods):
+        lo, hi = cuts[i], cuts[i + 1]
+        if hi <= lo:
+            return None
+        label = str(lo) if hi - lo == 1 else f'{lo}–{hi - 1}'
+        period_records = [r for r in records if r.get('year') and lo <= r['year'] < hi]
+        if len(period_records) < min_per_period:
+            return None
+        periods.append((label, period_records))
+    return periods
+
+
+def thematic_evolution_themes(records: list[dict], n_periods: int = 2,
+                              max_kw: int = 40, min_cooccur: int = 2):
+    """
+    Tematik evrim hesabı (B2-4): her dönem `keyword_clusters()` ile BAĞIMSIZ kümelenir
+    (tema = küme); ardışık dönemler arasında paylaşılan anahtar kelime SAYISI akış (flow)
+    genişliğini belirler. Her temanın büyüklüğü ('size') kendi kelime kümesinin eleman
+    sayısıdır — iki ayrı dönemin kümeleri birbirinden bağımsız birer bölüntü (partition)
+    olduğundan, bir temadan çıkan/bir temaya giren akışların toplamı o temanın
+    büyüklüğünü asla aşamaz (şerit genişlikleri kutu yüksekliğine her zaman sığar).
+    Döner: (period_labels, period_themes, flows) ya da yetersizse (None, None, None).
+    period_themes: dönem başına [{'label', 'keywords', 'size'}, ...] (büyükten küçüğe sıralı).
+    flows: [(dönem_i, tema_a_idx, tema_b_idx, paylaşılan_kelime_sayısı), ...]
+    """
+    periods = thematic_evolution_periods(records, n_periods)
+    if periods is None:
+        return None, None, None
+
+    period_labels = []
+    period_themes = []
+    for label, period_records in periods:
+        G, communities, all_kw = keyword_clusters(period_records, max_kw, min_cooccur)
+        if G is None or not communities:
+            return None, None, None
+        themes = []
+        for comm in communities:
+            top_terms = sorted(comm, key=lambda n: all_kw.get(n, 0), reverse=True)[:2]
+            themes.append({
+                'label': ' / '.join(top_terms),
+                'keywords': set(comm),
+                'size': len(comm),
+            })
+        period_labels.append(label)
+        period_themes.append(themes)
+
+    flows = []
+    for i in range(len(period_themes) - 1):
+        for a_idx, theme_a in enumerate(period_themes[i]):
+            for b_idx, theme_b in enumerate(period_themes[i + 1]):
+                shared = theme_a['keywords'] & theme_b['keywords']
+                if shared:
+                    flows.append((i, a_idx, b_idx, len(shared)))
+
+    if not flows:
+        return None, None, None
+
+    return period_labels, period_themes, flows
+
+
+def _sankey_ribbon(ax, x0, x1, y0_top, y0_bot, y1_top, y1_bot, color, alpha=0.45):
+    """İki dönem kutusu arasında düz Bezier eğrili akış şeridi (B2-4)."""
+    from matplotlib.path import Path
+    xm = (x0 + x1) / 2
+    verts = [
+        (x0, y0_top), (xm, y0_top), (xm, y1_top), (x1, y1_top),
+        (x1, y1_bot), (xm, y1_bot), (xm, y0_bot), (x0, y0_bot),
+        (x0, y0_top),
+    ]
+    codes = [Path.MOVETO,
+             Path.CURVE4, Path.CURVE4, Path.CURVE4,
+             Path.LINETO,
+             Path.CURVE4, Path.CURVE4, Path.CURVE4,
+             Path.CLOSEPOLY]
+    ax.add_patch(mpatches.PathPatch(Path(verts, codes), facecolor=color,
+                                    edgecolor='none', alpha=alpha, zorder=2))
+
+
+def thematic_evolution(records: list[dict]):
+    """
+    Tematik Evrim grafiği (B2-4): dönemler arası tema akışı, alüvyal/Sankey benzeri
+    diyagram. Veri yeterliyse 3 dönem, değilse 2 dönem denenir (otomatik).
+    """
+    period_labels = period_themes = flows = None
+    for n_periods in (3, 2):
+        period_labels, period_themes, flows = thematic_evolution_themes(records, n_periods)
+        if period_labels is not None:
+            break
+    if period_labels is None:
+        return None
+
+    n_cols = len(period_labels)
+    col_totals = [sum(t['size'] for t in themes) for themes in period_themes]
+    max_total = max(col_totals)
+    gap = max_total * 0.04
+
+    fig, ax = plt.subplots(figsize=(4.5 + 3.3 * n_cols, 9))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    col_x = [i * 2.4 for i in range(n_cols)]
+    box_width = 0.5
+
+    col_boxes = []
+    col_colors = []
+    for themes in period_themes:
+        y = max_total
+        boxes = []
+        colors = []
+        for idx, t in enumerate(themes):
+            y_top = y
+            y_bot = y - t['size']
+            boxes.append((y_top, y_bot))
+            colors.append(PALETTE[idx % len(PALETTE)])
+            y = y_bot - gap
+        col_boxes.append(boxes)
+        col_colors.append(colors)
+
+    for i in range(n_cols - 1):
+        out_cursor = [b[0] for b in col_boxes[i]]
+        in_cursor = [b[0] for b in col_boxes[i + 1]]
+        col_flows = sorted((f for f in flows if f[0] == i), key=lambda f: (f[1], f[2]))
+        for (_, a_idx, b_idx, w) in col_flows:
+            y0_top = out_cursor[a_idx]
+            y0_bot = y0_top - w
+            out_cursor[a_idx] = y0_bot
+            y1_top = in_cursor[b_idx]
+            y1_bot = y1_top - w
+            in_cursor[b_idx] = y1_bot
+            _sankey_ribbon(ax, col_x[i] + box_width / 2, col_x[i + 1] - box_width / 2,
+                          y0_top, y0_bot, y1_top, y1_bot, color=col_colors[i][a_idx])
+
+    for themes, boxes, colors, x in zip(period_themes, col_boxes, col_colors, col_x):
+        for t, (y_top, y_bot), color in zip(themes, boxes, colors):
+            ax.add_patch(mpatches.Rectangle((x - box_width / 2, y_bot), box_width,
+                                            y_top - y_bot, facecolor=color, alpha=0.85,
+                                            edgecolor='white', linewidth=1.2, zorder=3))
+            ax.annotate(t['label'], (x, (y_top + y_bot) / 2), ha='center', va='center',
+                       fontsize=8, fontweight='bold', color='#1e293b', zorder=4,
+                       wrap=True)
+
+    ax.set_xticks(col_x)
+    ax.set_xticklabels(period_labels, fontsize=11, fontweight='bold')
+    ax.set_xlim(col_x[0] - 1.8, col_x[-1] + 1.8)
+    ax.set_ylim(-gap, max_total + gap)
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.set_xlabel(gettext('Dönem'), fontsize=11, labelpad=10)
+    ax.set_title(gettext('Tematik Evrim (Dönemler Arası Tema Akışı)'))
     fig.tight_layout(pad=2.0)
     return fig
 
