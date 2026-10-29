@@ -190,8 +190,10 @@ def _limitations(coverage, current_year_count, last_year, source=None, records=N
     limitations = [
         gettext('Sonuçlar yalnız bu veri kaynağındaki kayıtları yansıtır; kaynağın taramadığı dergi, '
                 'dil ve yayın türleri kapsam dışıdır.'),
-        gettext('Yazar, kurum ve dergi adları otomatik olarak birleştirilmedi: aynı yazar farklı '
-                'yazımlarla ayrı kişi, aynı adlı farklı yazarlar tek kişi olarak sayılmış olabilir.'),
+        gettext('Yazar adları soyad ve ilk adın baş harfine göre birleştirildi (ör. "Smith, J." ve '
+                '"John Smith" aynı kişi sayılır); bu basit bir yaklaşımdır, aynı adlı farklı yazarlar '
+                'yanlışlıkla birleştirilmiş veya aynı yazarın farklı yazımları ayrı sayılmış olabilir. '
+                'Kurum ve dergi adları otomatik olarak birleştirilmedi.'),
     ]
     span = _short_series_span(records or [], last_year)
     if 3 <= span < analyzer.SHORT_SERIES_YEARS:

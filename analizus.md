@@ -3211,8 +3211,18 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   kayıt sayılıyor (genel başlıkların — "Editöryal" vb. — farklı yıllarda
   yanlışlıkla birleşmesini önler), yıl taraflardan birinde eksikse eski
   davranış (yalnız başlık) korunuyor. 5 yeni pytest, rapor metni EN/DE
-  güncellendi, migration yok. `forum+bibliometrics` 129/129 geçti. Sırada:
-  B1-3 (yazar adı birleştirme), B1-4 (anahtar kelime normalizasyonu).
+  güncellendi, migration yok. `forum+bibliometrics` 129/129 geçti.
+  **B1-3 KISMEN TAMAMLANDI (aynı gün, dev'de):** Yazar adı birleştirme —
+  yalnız "Soyad + baş harf" normalizasyonu (aksan/büyük-küçük harf yok
+  sayılır). `canonical_author_key()`/`_group_authors()` eklendi,
+  `top_authors`/`lotka_law`/`author_collaboration` artık "Smith, J."/"John
+  Smith" gibi varyantları tek kişi sayıyor. "OpenAlex author ID varsa onu
+  kullan" kısmı bilinçli olarak B2'ye ertelendi: CSV/BibTeX yazar listesiyle
+  OpenAlex authorship listesi arasında konumsal eşleme güvenilir değil (isim
+  benzerliğiyle eşleme gerekir — B2'nin "homonym çözümü" işi). 7 yeni pytest,
+  rapor kısıtlar metni EN/DE güncellendi, migration yok.
+  `forum+bibliometrics` 136/136 geçti. Sırada: B1-4 (anahtar kelime
+  normalizasyonu).
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

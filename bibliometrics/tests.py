@@ -18,6 +18,11 @@ from bibliometrics.services.analyzer import (
     annual_citation_trend,
     publication_growth_rate,
     SHORT_SERIES_YEARS,
+    canonical_author_key,
+    _group_authors,
+    top_authors,
+    lotka_law,
+    author_collaboration,
 )
 from bibliometrics.services.report_notes import build_report_notes
 from bibliometrics.services.parser import (
@@ -354,3 +359,73 @@ def test_dedup_doi_takes_priority_over_title():
 
 def test_normalize_title_key_ignores_punctuation():
     assert _normalize_title_key('COVID-19: A Review!') == _normalize_title_key('covid 19 a review')
+
+
+def test_canonical_author_key_matches_name_variants():
+    """B1-3: 'Smith, J.' / 'John Smith' / 'JOHN SMITH' aynı kişi sayılmalı."""
+    key = canonical_author_key('John Smith')
+    assert canonical_author_key('Smith, J.') == key
+    assert canonical_author_key('JOHN SMITH') == key
+    assert canonical_author_key('Smith, J') == key
+
+
+def test_canonical_author_key_ignores_accents_and_case():
+    assert canonical_author_key('Şahin, A.') == canonical_author_key('ahmet sahin')
+
+
+def test_canonical_author_key_distinguishes_different_surnames():
+    assert canonical_author_key('John Smith') != canonical_author_key('John Doe')
+
+
+def test_group_authors_merges_name_variants():
+    records = [
+        {'authors': ['Smith, J.', 'Ayşe Kaya']},
+        {'authors': ['John Smith']},
+        {'authors': ['John Smith']},
+    ]
+    counts, display = _group_authors(records)
+    smith_key = canonical_author_key('John Smith')
+    assert counts[smith_key] == 3
+    assert display[smith_key] in ('John Smith', 'Smith, J.')
+    assert len(counts) == 2  # Smith + Kaya
+
+
+def test_top_authors_merges_variants_into_single_bar():
+    records = [
+        {'authors': ['Smith, J.']},
+        {'authors': ['John Smith']},
+        {'authors': ['John Smith']},
+        {'authors': ['Ayşe Kaya']},
+    ]
+    fig = top_authors(records, n=15)
+    ax = fig.axes[0]
+    labels = [t.get_text() for t in ax.get_yticklabels()]
+    assert len(labels) == 2
+    bars = [p.get_width() for p in ax.patches]
+    assert sorted(bars) == [1, 3]
+
+
+def test_lotka_law_merges_variants():
+    records = [
+        {'authors': ['Smith, J.']},
+        {'authors': ['John Smith']},
+        {'authors': ['John Smith']},
+        {'authors': ['Ayşe Kaya']},
+    ]
+    counts, _ = _group_authors(records)
+    assert sorted(counts.values()) == [1, 3]
+    fig = lotka_law(records)
+    assert fig is not None
+
+
+def test_author_collaboration_merges_variants_into_one_node():
+    """Aynı yazarın 'Smith, J.' / 'John Smith' varyantları tek düğüme birleşmeli."""
+    records = [
+        {'authors': ['Smith, J.', 'Ayşe Kaya']},
+        {'authors': ['John Smith', 'Mehmet Demir']},
+    ]
+    fig = author_collaboration(records, min_collab=1)
+    assert fig is not None
+    ax = fig.axes[0]
+    node_collection = max(ax.collections, key=lambda c: c.get_offsets().shape[0])
+    assert node_collection.get_offsets().shape[0] == 3  # Smith (birleşik) + Kaya + Demir

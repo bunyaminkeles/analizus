@@ -4,7 +4,9 @@ Beyaz/açık tema, çok renkli grafikler, profesyonel görünüm.
 Her fonksiyon (title, matplotlib.figure.Figure) tuple döndürür.
 """
 import io
+import re
 import logging
+import unicodedata
 from django.utils.translation import gettext
 from collections import Counter, defaultdict
 
@@ -86,6 +88,55 @@ def normalize_abstract_words(abstract: str) -> list[str]:
             continue
         words.append(lemmatize_word(w))
     return words
+
+def _strip_accents(s: str) -> str:
+    return ''.join(c for c in unicodedata.normalize('NFKD', s) if not unicodedata.combining(c))
+
+
+def canonical_author_key(name: str) -> str:
+    """Yazar adı varyantlarını ('Smith, J.' / 'John Smith' / 'JOHN SMITH') tek anahtar
+    altında birleştirir: soyad + ilk adın baş harfi, aksan ve büyük/küçük harf yok
+    sayılır (B1-2 tekilleştirmedeki normalizasyonla aynı pragmatik düzey — mükemmel
+    değil, ör. çok parçalı soyadlarda yalnız son kelime soyad sayılır). OpenAlex
+    author ID'si henüz kullanılmıyor: CSV/BibTeX yazar listesiyle OpenAlex authorship
+    listesi arasında konumsal eşleme güvenilir değil, isim benzerliğiyle eşleme
+    gerekir — Faz B2'de (eş-atıf ağları, yazar ID ile homonym çözümü) ele alınacak.
+    """
+    name = _strip_accents(name).lower().strip()
+    name = re.sub(r'[.·]', '', name)
+    if ',' in name:
+        last, _, rest = name.partition(',')
+        first_initial = next((c for c in rest.strip() if c.isalpha()), '')
+    else:
+        parts = [p for p in re.split(r'\s+', name) if p]
+        if not parts:
+            return ''
+        last = parts[-1]
+        first_initial = parts[0][0] if parts[0][:1].isalpha() else ''
+    last = re.sub(r'[^a-z\s-]', '', last).strip()
+    if not last:
+        return ''
+    return f'{last} {first_initial}'.strip()
+
+
+def _group_authors(records: list[dict]):
+    """Her kayıttaki yazar adlarını kanonik anahtara göre gruplar.
+    Döner: (counts: {key: yayın sayısı}, display: {key: gösterilecek en uzun ad varyantı})."""
+    counts = Counter()
+    display = {}
+    for r in records:
+        for a in r.get('authors', []):
+            a = a.strip()
+            if not a:
+                continue
+            key = canonical_author_key(a)
+            if not key:
+                continue
+            counts[key] += 1
+            if key not in display or len(a) > len(display[key]):
+                display[key] = a
+    return counts, display
+
 
 import matplotlib
 matplotlib.use('Agg')
@@ -286,16 +337,13 @@ def publication_trend(records: list[dict]):
 # ─────────────────────────── 2. En Verimli Yazarlar ───────────────────────────
 
 def top_authors(records: list[dict], n: int = 15):
-    author_count = Counter()
-    for r in records:
-        for a in r.get('authors', []):
-            if a:
-                author_count[a.strip()] += 1
+    author_count, display = _group_authors(records)
     if not author_count:
         return None
 
     top = author_count.most_common(n)
-    names, counts = zip(*top)
+    names = [display[key] for key, _ in top]
+    counts = [c for _, c in top]
     colors = [PALETTE[i % len(PALETTE)] for i in range(len(names))]
 
     fig, ax = plt.subplots(figsize=(9, max(10, len(names) * 0.75)))
@@ -496,23 +544,26 @@ def author_collaboration(records: list[dict], max_authors: int = 35, min_collab:
 
     G = nx.Graph()
     coauth_count = Counter()
+    _, display = _group_authors(records)
 
     for r in records:
-        authors = [a.strip() for a in r.get('authors', []) if a.strip()]
-        if len(authors) < 2:
+        keys = sorted(set(
+            canonical_author_key(a.strip()) for a in r.get('authors', []) if a.strip()
+        ) - {''})
+        if len(keys) < 2:
             continue
-        for i in range(len(authors)):
-            for j in range(i + 1, len(authors)):
-                pair = tuple(sorted([authors[i], authors[j]]))
+        for i in range(len(keys)):
+            for j in range(i + 1, len(keys)):
+                pair = tuple(sorted([keys[i], keys[j]]))
                 coauth_count[pair] += 1
 
     for (a1, a2), weight in coauth_count.items():
         if weight >= min_collab:
-            G.add_edge(a1, a2, weight=weight)
+            G.add_edge(display[a1], display[a2], weight=weight)
 
     if G.number_of_nodes() == 0:
         for (a1, a2), weight in coauth_count.most_common(60):
-            G.add_edge(a1, a2, weight=weight)
+            G.add_edge(display[a1], display[a2], weight=weight)
 
     if G.number_of_nodes() == 0:
         return None
@@ -820,11 +871,7 @@ def publication_growth_rate(records: list[dict]):
 # ─────────────────────────── 12. Lotka Kanunu ───────────────────────────
 
 def lotka_law(records: list[dict]):
-    author_count = Counter()
-    for r in records:
-        for a in r.get('authors', []):
-            if a.strip():
-                author_count[a.strip()] += 1
+    author_count, _ = _group_authors(records)
     if not author_count:
         return None
 

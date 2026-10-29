@@ -44,7 +44,18 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
      birinde eksikse eski davranış gibi yalnız başlığa güvenilir). 5 yeni
      pytest. Rapor metni (`report_notes.py` "Uygulanan kurallar") EN/DE
      güncellendi. Migration yok. `forum+bibliometrics` 129/129.
-   - [ ] B1-3 (yazar adı birleştirme: OpenAlex author ID varsa onu kullan)
+   - [x] **B1-3 KISMEN TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi):**
+     Yazar adı birleştirme — yalnız "Soyad + baş harf" normalizasyonu kısmı
+     (aksan/büyük-küçük harf yok sayılır). `analyzer.py`'ye `canonical_author_key()`
+     + `_group_authors()` eklendi; `top_authors`/`lotka_law`/`author_collaboration`
+     artık isim varyantlarını ("Smith, J." / "John Smith") tek kişi sayıyor.
+     **"OpenAlex author ID varsa onu kullan" kısmı BİLİNÇLİ OLARAK ERTELENDİ:**
+     CSV/BibTeX yazar listesi ile OpenAlex authorship listesi arasında konumsal
+     eşleme güvenilir değil (sıra/sayı farklı olabilir) — isim benzerliğiyle
+     eşleme gerekir, bu da Faz B2'nin ("yazar ID ile homonym çözümü") işi;
+     orada düzgün yapılacak. 7 yeni pytest (`canonical_author_key`,
+     `_group_authors`, 3 fonksiyonun varyant birleştirmesi). Rapor "Kısıtlar"
+     metni güncellendi (EN/DE). Migration yok. `forum+bibliometrics` 136/136.
    - [ ] B1-4 (anahtar kelime normalizasyonu: küçük harf, tekil/çoğul, tire/boşluk)
    - [ ] B2-B4 (bkz. plan dosyası §4)
 
