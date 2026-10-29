@@ -11,13 +11,16 @@ B2-8 Konu Modelleme NMF). B1+B2 (B1-1..B2-8 tamamı) kullanıcı isteğiyle
 `--no-ff` ile `main`'e merge edilip push edildi (Hetzner deploy tetiklendi,
 merge öncesi production'da aktif kullanıcı kontrolü yapıldı). İstatistik
 araç sayısı 17→26. **B3 (Çıktılar) başladı: B3-1 (Temiz Veri Seti İndirme
-XLSX/CSV) + B3-2 (VOSviewer map+network export) TAMAMLANDI, henüz yalnız
-`dev`'de, main'e merge edilmedi** — kullanıcı "merge et" demeden
-dokunulmayacak. **Yeni oturum buradan devam etsin: sıradaki B3-3 (hazır
-Yöntem metni + PRISMA diyagramı), sonra B3-4, sonra B4** (B3-2b — Biblioshiny
-WoS-plaintext export — R/bibliometrix ile test edilebildiğinde ayrı ele
-alınacak; bkz. madde 2 altındaki detaylı liste ve
-`bibliometri_durum_ve_gelistirme_prompt.md` §4).
+XLSX/CSV) + B3-2 (VOSviewer map+network export) + Topic Map/Bradford Kanunu
+görsel bug düzeltmeleri TAMAMLANDI — 29 Ekim 2026 `--no-ff` ile `main`'e
+merge edilip push edildi (merge commit `19bdefd`, GitHub Actions ile Hetzner
+deploy tetiklendi, migration `0008`/`0009` uygulandığı ve site 200 döndüğü
+doğrulandı; merge öncesi production'da 2 aktif kullanıcı vardı,
+kullanıcı kararıyla yine de devam edildi).** **Yeni oturum buradan devam
+etsin: sıradaki B3-3 (hazır Yöntem metni + PRISMA diyagramı), sonra B3-4,
+sonra B4** (B3-2b — Biblioshiny WoS-plaintext export — R/bibliometrix ile
+test edilebildiğinde ayrı ele alınacak; bkz. madde 2 altındaki detaylı
+liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4).
 Ayrıca aşağıdaki 1 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
