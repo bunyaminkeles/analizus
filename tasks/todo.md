@@ -16,9 +16,11 @@ görsel bug düzeltmeleri TAMAMLANDI — 29 Ekim 2026 `--no-ff` ile `main`'e
 merge edilip push edildi (merge commit `19bdefd`, GitHub Actions ile Hetzner
 deploy tetiklendi, migration `0008`/`0009` uygulandığı ve site 200 döndüğü
 doğrulandı; merge öncesi production'da 2 aktif kullanıcı vardı,
-kullanıcı kararıyla yine de devam edildi).** **Yeni oturum buradan devam
-etsin: sıradaki B3-3 (hazır Yöntem metni + PRISMA diyagramı), sonra B3-4,
-sonra B4** (B3-2b — Biblioshiny WoS-plaintext export — R/bibliometrix ile
+kullanıcı kararıyla yine de devam edildi).** **B3-3 (Yöntem Metni + PRISMA
+Diyagramı) de TAMAMLANDI (29 Ekim 2026, `dev`'de, henüz push/merge edilmedi)
+— ücretsiz indirme (B3-1/B3-2 ile aynı desen), detay madde 2 altında.
+Yeni oturum buradan devam etsin: sıradaki B3-4 (grafik başına otomatik
+yorum cümlesi), sonra B4** (B3-2b — Biblioshiny WoS-plaintext export — R/bibliometrix ile
 test edilebildiğinde ayrı ele alınacak; bkz. madde 2 altındaki detaylı
 liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4).
 Ayrıca aşağıdaki 1 ayrı
@@ -270,7 +272,28 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      (29 Ekim B3-2).
    - [ ] B3-2b (Biblioshiny/bibliometrix WoS-plaintext export) — R ile test
      edilebildiğinde ele alınacak, ayrı onay/tur.
-   - [ ] B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı)
+   - [x] **B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı) TAMAMLANDI
+     (29 Ekim 2026, `dev`'de, henüz push/merge edilmedi).** Kullanıcı kararı
+     (AskUserQuestion): B3-1/B3-2 ile aynı desen — **ücretsiz indirme**
+     (TXT+PNG), `pdf_builder.py`'ye dokunulmadı. Ek kullanıcı talebi: metinde
+     otomatik üretildiği ve uzman incelemesinden geçmediği açıkça belirtilsin
+     — hem `.txt` içine hem kart altına küçük uyarı eklendi. Yeni
+     `bibliometrics/services/method_text.py` (`build_method_text()` —
+     `report_notes.py`'nin tam-cümle-msgid desenini izler: kaynak cümlesi,
+     kayıt akışı/tekilleştirme, kullanılan analizler+yazılım, önerilen
+     kaynak gösterimi, uyarı paragrafı) ve `bibliometrics/services/
+     prisma_diagram.py` (`build_prisma_png()` — `notes['flow']`'u dikey
+     kutu+ok PNG'ye çevirir, son kutu vurgulu; analyzer.py'den bağımsız).
+     `job_runner.py`'ye `_upload_method_text()`/`_upload_prisma_diagram()`
+     (B3-1 deseniyle hata toleranslı), `BibliometricJob.method_text_url`/
+     `prisma_diagram_url` (migration `0010`), cleanup fonksiyonuna 2 yeni
+     prefix. B3-1'in kartına 2 yeni buton (landing.html+order.html).
+     16 yeni pytest + gerçek S3 round-trip (TXT okunup, PNG render edilip
+     gözle doğrulandı — 4 ve 5 adımlı akış senaryoları, test nesneleri
+     silindi) + Django test client ile landing(TR/EN)/order/job_status
+     render testi. EN/DE çevrildi (polib ile fuzzy-eşleşen 5 girdi +
+     11 boş girdi dolduruldu — `--no-location` kullanılmadı). `forum+
+     bibliometrics` 203/203. Detay: `analizus.md` §27 (29 Ekim B3-3).
    - [ ] B3-4 (grafik başına otomatik yorum cümlesi, kural tabanlı)
    - [ ] B4 (ürün/huni) — bkz. plan dosyası §4
    - [x] **Topic Map görsel kalite sorunu DÜZELTİLDİ (29 Ekim 2026, dev'de)**

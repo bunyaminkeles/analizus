@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-29 23:43+0300\n"
+"POT-Creation-Date: 2026-10-30 01:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,12 +80,12 @@ msgstr "No cited publications."
 
 #: bibliometrics/services/analyzer.py:233
 #: bibliometrics/services/analyzer.py:369
-#: bibliometrics/templates/bibliometrics/landing.html:232
+#: bibliometrics/templates/bibliometrics/landing.html:241
 msgid "Yıllara Göre Yayın Trendi"
 msgstr "Publication Trend by Year"
 
 #: bibliometrics/services/analyzer.py:234
-#: bibliometrics/templates/bibliometrics/landing.html:233
+#: bibliometrics/templates/bibliometrics/landing.html:242
 msgid "Yıllık Büyüme Oranı"
 msgstr "Annual Growth Rate"
 
@@ -94,19 +94,19 @@ msgid "En az 3 farklı yayın yılı gerekir."
 msgstr "At least 3 different publication years are required."
 
 #: bibliometrics/services/analyzer.py:236
-#: bibliometrics/templates/bibliometrics/landing.html:234
+#: bibliometrics/templates/bibliometrics/landing.html:243
 msgid "En Verimli Yazarlar (Top 15)"
 msgstr "Most Productive Authors (Top 15)"
 
 #: bibliometrics/services/analyzer.py:237
-#: bibliometrics/templates/bibliometrics/landing.html:235
+#: bibliometrics/templates/bibliometrics/landing.html:244
 msgid "Lotka Kanunu — Yazar Üretkenliği"
 msgstr "Lotka's Law — Author Productivity"
 
 #: bibliometrics/services/analyzer.py:238
 #: bibliometrics/services/analyzer.py:440
-#: bibliometrics/templates/bibliometrics/landing.html:236
-#: bibliometrics/templates/bibliometrics/landing.html:349
+#: bibliometrics/templates/bibliometrics/landing.html:245
+#: bibliometrics/templates/bibliometrics/landing.html:358
 #: bibliometrics/views.py:64 openalex/templates/openalex/landing.html:113
 msgid "Anahtar Kelime Bulutu"
 msgstr "Keyword Cloud"
@@ -116,7 +116,7 @@ msgid "Anahtar kelime veya özet bilgisi yok."
 msgstr "No keywords or abstracts available."
 
 #: bibliometrics/services/analyzer.py:240
-#: bibliometrics/templates/bibliometrics/landing.html:237
+#: bibliometrics/templates/bibliometrics/landing.html:246
 #: openalex/templates/openalex/landing.html:114
 msgid "Anahtar Kelime Eş-Oluşum Ağı"
 msgstr "Keyword Co-occurrence Network"
@@ -126,8 +126,8 @@ msgid "Aynı yayında birlikte geçen anahtar kelime yok."
 msgstr "No keywords occur together in the same publication."
 
 #: bibliometrics/services/analyzer.py:242
-#: bibliometrics/services/job_runner.py:327
-#: bibliometrics/templates/bibliometrics/landing.html:238
+#: bibliometrics/services/job_runner.py:373
+#: bibliometrics/templates/bibliometrics/landing.html:247
 #: openalex/templates/openalex/landing.html:115
 msgid "Anahtar Kelime Zaman Trendi"
 msgstr "Keyword Trend over Time"
@@ -142,8 +142,8 @@ msgid "En Çok Atıf Alan Yayınlar (Top 10)"
 msgstr "Most Cited Publications (Top 10)"
 
 #: bibliometrics/services/analyzer.py:245
-#: bibliometrics/services/job_runner.py:329
-#: bibliometrics/templates/bibliometrics/landing.html:240
+#: bibliometrics/services/job_runner.py:375
+#: bibliometrics/templates/bibliometrics/landing.html:249
 #: openalex/templates/openalex/landing.html:117
 msgid "En Çok Yayın Yapılan Dergiler"
 msgstr "Journals with the Most Publications"
@@ -163,7 +163,7 @@ msgstr "No country or institution information."
 
 #: bibliometrics/services/analyzer.py:249
 #: bibliometrics/services/analyzer.py:1262
-#: bibliometrics/templates/bibliometrics/landing.html:250
+#: bibliometrics/templates/bibliometrics/landing.html:259
 #: openalex/templates/openalex/landing.html:123
 msgid "Ülke İşbirliği Ağı"
 msgstr "Country Collaboration Network"
@@ -174,9 +174,9 @@ msgstr "No publications with authors from more than one country."
 
 #: bibliometrics/services/analyzer.py:251
 #: bibliometrics/services/analyzer.py:671
-#: bibliometrics/services/job_runner.py:331
-#: bibliometrics/templates/bibliometrics/landing.html:251
-#: bibliometrics/templates/bibliometrics/landing.html:353
+#: bibliometrics/services/job_runner.py:377
+#: bibliometrics/templates/bibliometrics/landing.html:260
+#: bibliometrics/templates/bibliometrics/landing.html:362
 #: bibliometrics/views.py:65 openalex/templates/openalex/landing.html:124
 msgid "Yazar İşbirliği Ağı"
 msgstr "Author Collaboration Network"
@@ -187,7 +187,7 @@ msgstr "No publications with more than one author."
 
 #: bibliometrics/services/analyzer.py:253
 #: bibliometrics/services/analyzer.py:738
-#: bibliometrics/templates/bibliometrics/landing.html:252
+#: bibliometrics/templates/bibliometrics/landing.html:261
 #: openalex/templates/openalex/landing.html:125
 msgid "Yayın Türleri Dağılımı"
 msgstr "Publication Type Distribution"
@@ -205,8 +205,8 @@ msgstr "Citation Analysis and H-index"
 #: bibliometrics/services/analyzer.py:256
 #: bibliometrics/services/analyzer.py:285
 #: bibliometrics/services/analyzer.py:857
-#: bibliometrics/services/job_runner.py:333
-#: bibliometrics/templates/bibliometrics/landing.html:254
+#: bibliometrics/services/job_runner.py:379
+#: bibliometrics/templates/bibliometrics/landing.html:263
 #: openalex/templates/openalex/landing.html:127
 msgid "Yıllık Atıf Trendi"
 msgstr "Annual Citation Trend"
@@ -217,8 +217,8 @@ msgstr "No cited publications with a known publication year."
 
 #: bibliometrics/services/analyzer.py:258
 #: bibliometrics/services/analyzer.py:1544
-#: bibliometrics/services/job_runner.py:334
-#: bibliometrics/templates/bibliometrics/landing.html:255
+#: bibliometrics/services/job_runner.py:380
+#: bibliometrics/templates/bibliometrics/landing.html:264
 #: openalex/templates/openalex/landing.html:128
 msgid "Araştırma Konusu Kümeleri (Topic Map)"
 msgstr "Research Topic Clusters (Topic Map)"
@@ -230,8 +230,8 @@ msgstr "No cluster of at least 4 co-occurring keywords was found."
 #: bibliometrics/services/analyzer.py:260
 #: bibliometrics/services/analyzer.py:285
 #: bibliometrics/services/analyzer.py:1427
-#: bibliometrics/services/job_runner.py:335
-#: bibliometrics/templates/bibliometrics/landing.html:256
+#: bibliometrics/services/job_runner.py:381
+#: bibliometrics/templates/bibliometrics/landing.html:265
 #: openalex/templates/openalex/landing.html:129
 msgid "Araştırma Boşluğu Haritası (Research Gap)"
 msgstr "Research Gap Map"
@@ -245,8 +245,8 @@ msgstr ""
 
 #: bibliometrics/services/analyzer.py:262
 #: bibliometrics/services/analyzer.py:1665
-#: bibliometrics/services/job_runner.py:336
-#: bibliometrics/templates/bibliometrics/landing.html:257
+#: bibliometrics/services/job_runner.py:382
+#: bibliometrics/templates/bibliometrics/landing.html:266
 msgid "Bradford Kanunu — Çekirdek Dergi Bölgeleri"
 msgstr "Bradford's Law — Core Journal Zones"
 
@@ -256,8 +256,8 @@ msgstr "At least 3 different journals/sources are required."
 
 #: bibliometrics/services/analyzer.py:264
 #: bibliometrics/services/analyzer.py:1770
-#: bibliometrics/services/job_runner.py:337
-#: bibliometrics/templates/bibliometrics/landing.html:258
+#: bibliometrics/services/job_runner.py:383
+#: bibliometrics/templates/bibliometrics/landing.html:267
 msgid "Tematik Harita (Callon Merkeziyet × Yoğunluk)"
 msgstr "Thematic Map (Callon Centrality × Density)"
 
@@ -268,7 +268,7 @@ msgstr ""
 
 #: bibliometrics/services/analyzer.py:266
 #: bibliometrics/services/analyzer.py:1946
-#: bibliometrics/templates/bibliometrics/landing.html:241
+#: bibliometrics/templates/bibliometrics/landing.html:250
 msgid "Tematik Evrim (Dönemler Arası Tema Akışı)"
 msgstr "Thematic Evolution (Theme Flow Across Periods)"
 
@@ -282,7 +282,7 @@ msgstr ""
 
 #: bibliometrics/services/analyzer.py:268
 #: bibliometrics/services/analyzer.py:2115
-#: bibliometrics/templates/bibliometrics/landing.html:259
+#: bibliometrics/templates/bibliometrics/landing.html:268
 msgid "Üç Alan Grafiği (Yazar ↔ Anahtar Kelime ↔ Dergi)"
 msgstr "Three Fields Plot (Author ↔ Keyword ↔ Journal)"
 
@@ -296,14 +296,14 @@ msgstr ""
 
 #: bibliometrics/services/analyzer.py:270
 #: bibliometrics/services/analyzer.py:2176
-#: bibliometrics/templates/bibliometrics/landing.html:242
+#: bibliometrics/templates/bibliometrics/landing.html:251
 msgid "Ülke İşbirliği: Tek Ülkeli ve Çok Ülkeli Yayınlar (SCP/MCP)"
 msgstr ""
 "Country Collaboration: Single and Multiple Country Publications (SCP/MCP)"
 
 #: bibliometrics/services/analyzer.py:272
 #: bibliometrics/services/analyzer.py:2291
-#: bibliometrics/templates/bibliometrics/landing.html:243
+#: bibliometrics/templates/bibliometrics/landing.html:252
 msgid "Bibliyografik Eşleşme Ağı (Paylaşılan Referanslar)"
 msgstr "Bibliographic Coupling Network (Shared References)"
 
@@ -313,7 +313,7 @@ msgstr "No reference list (shared by at least 2 records)."
 
 #: bibliometrics/services/analyzer.py:274
 #: bibliometrics/services/analyzer.py:286
-#: bibliometrics/templates/bibliometrics/landing.html:260
+#: bibliometrics/templates/bibliometrics/landing.html:269
 msgid "Yerel Atıf ve Küresel Atıf Karşılaştırması"
 msgstr "Local vs. Global Citation Comparison"
 
@@ -326,7 +326,7 @@ msgstr ""
 
 #: bibliometrics/services/analyzer.py:276
 #: bibliometrics/services/analyzer.py:2484
-#: bibliometrics/templates/bibliometrics/landing.html:244
+#: bibliometrics/templates/bibliometrics/landing.html:253
 msgid "Konu Modelleme (NMF) — Konu Başına En Belirleyici Kelimeler"
 msgstr "Topic Modeling (NMF) — Most Distinctive Words per Topic"
 
@@ -336,7 +336,7 @@ msgstr "At least 20 records with a sufficiently long abstract are required."
 
 #: bibliometrics/services/analyzer.py:279
 #: bibliometrics/services/analyzer.py:2519
-#: bibliometrics/templates/bibliometrics/landing.html:261
+#: bibliometrics/templates/bibliometrics/landing.html:270
 msgid "Konulara Göre Yıllık Yayın Payı (NMF)"
 msgstr "Annual Publication Share by Topic (NMF)"
 
@@ -355,8 +355,8 @@ msgid "Hesaplama sırasında hata oluştu."
 msgstr "An error occurred during the calculation."
 
 #: bibliometrics/services/analyzer.py:365
-#: bibliometrics/templates/bibliometrics/landing.html:345
-#: bibliometrics/templates/bibliometrics/landing.html:384
+#: bibliometrics/templates/bibliometrics/landing.html:354
+#: bibliometrics/templates/bibliometrics/landing.html:393
 #: bibliometrics/views.py:50 bibliometrics/views.py:63
 msgid "Yayın Trendi"
 msgstr "Publication Trend"
@@ -863,183 +863,298 @@ msgstr "Institution"
 msgid "OpenAlex ID"
 msgstr "OpenAlex ID"
 
-#: bibliometrics/services/job_runner.py:110
+#: bibliometrics/services/job_runner.py:145
 msgid "Dosya içeriği bulunamadı. Lütfen dosyayı tekrar yükleyin."
 msgstr "File content not found. Please upload the file again."
 
-#: bibliometrics/services/job_runner.py:127
+#: bibliometrics/services/job_runner.py:162
 msgid "Dosyadan kayıt okunamadı. Format desteklenmiyor olabilir."
 msgstr ""
 "No records could be read from the file. The format may not be supported."
 
-#: bibliometrics/services/job_runner.py:137
-#: bibliometrics/services/job_runner.py:245
+#: bibliometrics/services/job_runner.py:172
+#: bibliometrics/services/job_runner.py:285
 msgid "Analizler üretilemedi. Veri yetersiz olabilir."
 msgstr "The analyses could not be generated. There may not be enough data."
 
-#: bibliometrics/services/job_runner.py:204
+#: bibliometrics/services/job_runner.py:244
 msgid "PubMed verisi bulunamadı veya boş."
 msgstr "PubMed data not found or empty."
 
-#: bibliometrics/services/job_runner.py:205
+#: bibliometrics/services/job_runner.py:245
 msgid "PubMed verisinden kayıt okunamadı."
 msgstr "No records could be read from the PubMed data."
 
-#: bibliometrics/services/job_runner.py:209
+#: bibliometrics/services/job_runner.py:249
 msgid "OpenAlex verisi bulunamadı veya boş."
 msgstr "OpenAlex data not found or empty."
 
-#: bibliometrics/services/job_runner.py:210
+#: bibliometrics/services/job_runner.py:250
 msgid "OpenAlex verisinden kayıt okunamadı."
 msgstr "No records could be read from the OpenAlex data."
 
-#: bibliometrics/services/job_runner.py:222 forum/views.py:2407
+#: bibliometrics/services/job_runner.py:262 forum/views.py:2407
 #: forum/views.py:2578 openalex/services/job_runner.py:179
 #: pubmed/services/job_runner.py:156
 msgid "Bir hata oluştu, lütfen tekrar deneyin."
 msgstr "An error occurred, please try again."
 
-#: bibliometrics/services/job_runner.py:233
+#: bibliometrics/services/job_runner.py:273
 #, python-brace-format
 msgid ""
 "Bibliometrik analiz için en az 100 kayıt gereklidir (bulunan: {count})."
 msgstr "Bibliometric analysis requires at least 100 records (found: {count})."
 
-#: bibliometrics/services/job_runner.py:322
+#: bibliometrics/services/job_runner.py:368
 msgid "TAM RAPOR (26 Analize Kadar)"
 msgstr "FULL REPORT (Up to 26 Analyses)"
 
-#: bibliometrics/services/job_runner.py:324
+#: bibliometrics/services/job_runner.py:370
 #: openalex/templates/openalex/landing.html:111
 msgid "Yayın Trendi + Büyüme Oranı"
 msgstr "Publication Trend + Growth Rate"
 
-#: bibliometrics/services/job_runner.py:325
+#: bibliometrics/services/job_runner.py:371
 #: openalex/templates/openalex/landing.html:112
 msgid "En Verimli Yazarlar + Lotka Kanunu"
 msgstr "Most Productive Authors + Lotka's Law"
 
-#: bibliometrics/services/job_runner.py:326
+#: bibliometrics/services/job_runner.py:372
 msgid "Anahtar Kelime Bulutu + Eş-Oluşum Ağı"
 msgstr "Keyword Cloud + Co-occurrence Network"
 
-#: bibliometrics/services/job_runner.py:328
-#: bibliometrics/templates/bibliometrics/landing.html:239
+#: bibliometrics/services/job_runner.py:374
+#: bibliometrics/templates/bibliometrics/landing.html:248
 #: openalex/templates/openalex/landing.html:116
 msgid "En Çok Atıf Alan Yayınlar"
 msgstr "Most Cited Publications"
 
-#: bibliometrics/services/job_runner.py:330
+#: bibliometrics/services/job_runner.py:376
 msgid "Kurum / Ülke Dağılımı + İşbirliği Ağı"
 msgstr "Institution / Country Distribution + Collaboration Network"
 
-#: bibliometrics/services/job_runner.py:332
+#: bibliometrics/services/job_runner.py:378
 msgid "Yayın Türleri + Atıf Analizi + H-index"
 msgstr "Publication Types + Citation Analysis + H-index"
 
-#: bibliometrics/services/job_runner.py:340
+#: bibliometrics/services/job_runner.py:386
 msgid "Sipariş oluşturmak için:"
 msgstr "To place an order:"
 
-#: bibliometrics/services/job_runner.py:342
+#: bibliometrics/services/job_runner.py:388
 msgid "Tam rapor için proje talebi bırakın, ücretsiz değerlendirelim:"
 msgstr ""
 "For the full report, submit a project request and we will assess it for "
 "free:"
 
-#: bibliometrics/services/job_runner.py:350
+#: bibliometrics/services/job_runner.py:396
 #, python-brace-format
 msgid "\"{name}\" OpenAlex aramanız başarıyla analiz edildi."
 msgstr "Your OpenAlex search \"{name}\" has been analysed successfully."
 
-#: bibliometrics/services/job_runner.py:351
+#: bibliometrics/services/job_runner.py:397
 #, python-brace-format
 msgid "Yüklediğiniz \"{name}\" dosyası başarıyla analiz edildi."
 msgstr "Your uploaded file \"{name}\" has been analysed successfully."
 
-#: bibliometrics/services/job_runner.py:375
+#: bibliometrics/services/job_runner.py:421
 msgid "Bibliometrik Analiz - Demo Rapor"
 msgstr "Bibliometric Analysis - Demo Report"
 
-#: bibliometrics/services/job_runner.py:377
-#: bibliometrics/services/job_runner.py:429
-#: bibliometrics/services/job_runner.py:488
+#: bibliometrics/services/job_runner.py:423
+#: bibliometrics/services/job_runner.py:475
+#: bibliometrics/services/job_runner.py:534
 #, python-brace-format
 msgid "Merhaba {name},"
 msgstr "Hello {name},"
 
-#: bibliometrics/services/job_runner.py:379
-#: bibliometrics/services/job_runner.py:433
-#: bibliometrics/services/job_runner.py:492
+#: bibliometrics/services/job_runner.py:425
+#: bibliometrics/services/job_runner.py:479
+#: bibliometrics/services/job_runner.py:538
 #, python-brace-format
 msgid "Toplam Kayıt: {count}"
 msgstr "Total records: {count}"
 
-#: bibliometrics/services/job_runner.py:380
+#: bibliometrics/services/job_runner.py:426
 #, python-brace-format
 msgid "Dosya Formatı: {fmt}"
 msgstr "File format: {fmt}"
 
-#: bibliometrics/services/job_runner.py:382
+#: bibliometrics/services/job_runner.py:428
 msgid "Demo raporunuz (3 temel analiz) ekte PDF olarak sunulmuştur."
 msgstr "Your demo report (3 core analyses) is attached as a PDF."
 
-#: bibliometrics/services/job_runner.py:385
-#: bibliometrics/services/job_runner.py:498
+#: bibliometrics/services/job_runner.py:431
+#: bibliometrics/services/job_runner.py:544
 #: makaleanaliz/services/job_runner.py:171
 msgid "Bu bir otomatik bildirimdir."
 msgstr "This is an automated notification."
 
-#: bibliometrics/services/job_runner.py:386
-#: bibliometrics/services/job_runner.py:442
-#: bibliometrics/services/job_runner.py:499
+#: bibliometrics/services/job_runner.py:432
+#: bibliometrics/services/job_runner.py:488
+#: bibliometrics/services/job_runner.py:545
 msgid "Analizus - Akademik Veri Üssü"
 msgstr "Analizus - Academic Data Hub"
 
-#: bibliometrics/services/job_runner.py:427
+#: bibliometrics/services/job_runner.py:473
 msgid "Bibliometrik Analiz - Demo Raporunuz Hazır"
 msgstr "Bibliometric Analysis - Your Demo Report Is Ready"
 
-#: bibliometrics/services/job_runner.py:435
+#: bibliometrics/services/job_runner.py:481
 msgid ""
 "Demo raporunuzu (3 analiz içeren PDF) aşağıdaki bağlantıdan "
 "indirebilirsiniz:"
 msgstr ""
 "You can download your demo report (PDF with 3 analyses) from the link below:"
 
-#: bibliometrics/services/job_runner.py:438
-#: bibliometrics/services/job_runner.py:496
+#: bibliometrics/services/job_runner.py:484
+#: bibliometrics/services/job_runner.py:542
 msgid "Not: İndirme bağlantısı 7 gün geçerlidir."
 msgstr "Note: The download link is valid for 7 days."
 
-#: bibliometrics/services/job_runner.py:486
+#: bibliometrics/services/job_runner.py:532
 msgid "Bibliometrik Analiz - Tam Rapor Hazır!"
 msgstr "Bibliometric Analysis - Full Report Ready!"
 
-#: bibliometrics/services/job_runner.py:489
+#: bibliometrics/services/job_runner.py:535
 msgid "Bibliometrik analiz siparişiniz onaylandı ve tam raporunuz hazırlandı."
 msgstr ""
 "Your bibliometric analysis order has been approved and your full report is "
 "ready."
 
-#: bibliometrics/services/job_runner.py:490
+#: bibliometrics/services/job_runner.py:536
 #, python-brace-format
 msgid "Sipariş No: #{number}"
 msgstr "Order No.: #{number}"
 
-#: bibliometrics/services/job_runner.py:491
+#: bibliometrics/services/job_runner.py:537
 #, python-brace-format
 msgid "Kaynak: {name}"
 msgstr "Source: {name}"
 
-#: bibliometrics/services/job_runner.py:493
+#: bibliometrics/services/job_runner.py:539
 #, python-brace-format
 msgid "Ödenen Tutar: {amount} TL"
 msgstr "Amount paid: {amount} TL"
 
-#: bibliometrics/services/job_runner.py:494
+#: bibliometrics/services/job_runner.py:540
 msgid "Tam raporunuzu (PDF) aşağıdaki bağlantıdan indirebilirsiniz:"
 msgstr "You can download your full report (PDF) from the link below:"
+
+#: bibliometrics/services/method_text.py:23
+#, python-brace-format
+msgid ""
+"Bu çalışmada kullanılan bibliyometrik veri seti, {date} tarihinde OpenAlex "
+"veritabanından \"{query}\" sorgusuyla elde edilmiştir."
+msgstr ""
+"The bibliometric dataset used in this study was obtained from the OpenAlex "
+"database on {date} using the \"{query}\" query."
+
+#: bibliometrics/services/method_text.py:27
+#, python-brace-format
+msgid ""
+"Bu çalışmada kullanılan bibliyometrik veri seti, {date} tarihinde OpenAlex "
+"veritabanından elde edilmiştir."
+msgstr ""
+"The bibliometric dataset used in this study was obtained from the OpenAlex "
+"database on {date}."
+
+#: bibliometrics/services/method_text.py:33
+#, python-brace-format
+msgid ""
+"Bu çalışmada kullanılan bibliyometrik veri seti, {date} tarihinde PubMed "
+"veritabanından \"{query}\" sorgusuyla elde edilmiştir."
+msgstr ""
+"The bibliometric dataset used in this study was obtained from the PubMed "
+"database on {date} using the \"{query}\" query."
+
+#: bibliometrics/services/method_text.py:37
+#, python-brace-format
+msgid ""
+"Bu çalışmada kullanılan bibliyometrik veri seti, {date} tarihinde PubMed "
+"veritabanından elde edilmiştir."
+msgstr ""
+"The bibliometric dataset used in this study was obtained from the PubMed "
+"database on {date}."
+
+#: bibliometrics/services/method_text.py:42
+#, python-brace-format
+msgid ""
+"Bu çalışmada kullanılan bibliyometrik veri seti, {date} tarihinde {format} "
+"formatında dışa aktarılan kayıtlardan elde edilmiştir."
+msgstr ""
+"The bibliometric dataset used in this study was obtained from records "
+"exported in {format} format on {date}."
+
+#: bibliometrics/services/method_text.py:58
+#, python-brace-format
+msgid "Toplam {found} kayıttan {fetched} tanesi çekilmiştir."
+msgstr "Of a total of {found} records, {fetched} were retrieved."
+
+# Bibliometri raporu: Veri, Yöntem ve Kısıtlar (28 Eylül 2026)
+#: bibliometrics/services/method_text.py:62
+#, python-brace-format
+msgid ""
+"Başlığı olmayan {no_title} kayıt ve tekrar eden {duplicate} kayıt "
+"çıkarıldıktan sonra {n} kayıt analize dahil edilmiştir. Tekrar eden kayıtlar"
+" DOI bilgisine, DOI yoksa noktalama işaretlerinden arındırılmış başlık ve "
+"yayın yılına göre tespit edilmiştir."
+msgstr ""
+"After removing {no_title} records without a title and {duplicate} duplicate "
+"records, {n} records were included in the analysis. Duplicate records were "
+"identified by DOI, or, if no DOI was available, by title (with punctuation "
+"removed) and publication year."
+
+#: bibliometrics/services/method_text.py:69
+#, python-brace-format
+msgid ""
+"DOI'si olan {enriched} kayıt, eksik atıf sayısı, ülke, kurum ve/veya anahtar"
+" kelime bilgisini tamamlamak için OpenAlex ile zenginleştirilmiştir."
+msgstr ""
+"{enriched} records with a DOI were enriched using OpenAlex to complete "
+"missing citation count, country, institution and/or keyword information."
+
+#: bibliometrics/services/method_text.py:78
+#, python-brace-format
+msgid ""
+"Veri seti üzerinde yayın trendi, atıf analizi, yazar/ülke/kurum işbirliği "
+"ağları, anahtar kelime eş-oluşum ağı ve kümeleme, Bradford Kanunu, tematik "
+"harita ve tematik evrim, üç alan grafiği, bibliyografik eşleşme ağı ve konu "
+"modelleme dahil olmak üzere {n} bibliyometrik analiz gerçekleştirilmiştir. "
+"Analizler Python programlama dili (pandas, networkx, scikit-learn ve "
+"matplotlib kütüphaneleri) kullanılarak Analizus (https://analizus.com) "
+"platformu üzerinde otomatik olarak üretilmiştir."
+msgstr ""
+"{n} bibliometric analyses were performed on the dataset, including "
+"publication trend, citation analysis, author/country/institution "
+"collaboration networks, keyword co-occurrence network and clustering, "
+"Bradford's Law, thematic map and thematic evolution, three-field plot, "
+"bibliographic coupling network and topic modeling. The analyses were "
+"generated automatically on the Analizus (https://analizus.com) platform "
+"using the Python programming language (pandas, networkx, scikit-learn and "
+"matplotlib libraries)."
+
+#: bibliometrics/services/method_text.py:89
+#, python-brace-format
+msgid ""
+"Önerilen kaynak gösterimi:\n"
+"Analizus ({year}). Bibliyometrik Analiz Aracı [Bilgisayar yazılımı]. https://analizus.com adresinden erişildi ({date})."
+msgstr ""
+"Suggested citation:\n"
+"Analizus ({year}). Bibliometric Analysis Tool [Computer software]. Retrieved from https://analizus.com on {date}."
+
+#: bibliometrics/services/method_text.py:97
+#, python-brace-format
+msgid ""
+"Not: Bu metin otomatik olarak üretilmiştir ve bir uzman tarafından incelenip"
+" onaylanmamıştır; tezinize/makalenize eklemeden önce içeriği danışmanınızla "
+"ve alanınızın yazım kurallarıyla karşılaştırmanız önerilir. Kapsamlı bir "
+"uzman doğrulaması için: {url}"
+msgstr ""
+"Note: This text was generated automatically and has not been reviewed or "
+"approved by an expert; before adding it to your thesis/article, we recommend"
+" checking it with your advisor and against your field's writing conventions."
+" For a comprehensive expert review: {url}"
 
 #: bibliometrics/services/pdf_builder.py:139
 #, python-brace-format
@@ -1217,6 +1332,14 @@ msgstr ""
 " is only partly covered and earlier years are not covered at all. The "
 "earlier period appears incomplete."
 
+#: bibliometrics/services/prisma_diagram.py:49
+msgid "kayıt"
+msgstr "records"
+
+#: bibliometrics/services/prisma_diagram.py:56
+msgid "Kayıt Akış Diyagramı"
+msgstr "Record Flow Diagram"
+
 #: bibliometrics/services/report_notes.py:42
 msgid "Yayın yılı"
 msgstr "Publication year"
@@ -1258,19 +1381,21 @@ msgstr "Records retrieved"
 msgid "PubMed'de bulunan kayıt"
 msgstr "Records found in PubMed"
 
-#: bibliometrics/services/report_notes.py:74
+#: bibliometrics/services/report_notes.py:74 bibliometrics/tests.py:1265
+#: bibliometrics/tests.py:1326 bibliometrics/tests.py:1345
 msgid "Dosyadan okunan kayıt"
 msgstr "Records read from the file"
 
-#: bibliometrics/services/report_notes.py:75
+#: bibliometrics/services/report_notes.py:75 bibliometrics/tests.py:1266
 msgid "Başlığı olmadığı için çıkarılan"
 msgstr "Removed (no title)"
 
-#: bibliometrics/services/report_notes.py:76
+#: bibliometrics/services/report_notes.py:76 bibliometrics/tests.py:1267
 msgid "Tekrar olduğu için çıkarılan"
 msgstr "Removed (duplicate)"
 
-#: bibliometrics/services/report_notes.py:77
+#: bibliometrics/services/report_notes.py:77 bibliometrics/tests.py:1268
+#: bibliometrics/tests.py:1326 bibliometrics/tests.py:1345
 msgid "Analize giren kayıt"
 msgstr "Records analysed"
 
@@ -1744,7 +1869,7 @@ msgstr ""
 "You have reached your daily analysis limit. Please try again tomorrow."
 
 #: bibliometrics/templates/bibliometrics/landing.html:114
-#: bibliometrics/templates/bibliometrics/landing.html:438
+#: bibliometrics/templates/bibliometrics/landing.html:449
 #: istatistik/templates/istatistik/afa.html:109
 #: istatistik/templates/istatistik/anova.html:80
 #: istatistik/templates/istatistik/anova.html:236
@@ -1836,12 +1961,12 @@ msgid "Demo PDF İndir"
 msgstr "Download Demo PDF"
 
 #: bibliometrics/templates/bibliometrics/landing.html:170
-#: bibliometrics/templates/bibliometrics/landing.html:455
+#: bibliometrics/templates/bibliometrics/landing.html:466
 msgid "Demo Emaile Gönder"
 msgstr "Email the Demo"
 
 #: bibliometrics/templates/bibliometrics/landing.html:173
-#: bibliometrics/templates/bibliometrics/landing.html:454
+#: bibliometrics/templates/bibliometrics/landing.html:465
 msgid "Email gönderildi!"
 msgstr "Email sent!"
 
@@ -1869,15 +1994,29 @@ msgstr "Clean Dataset"
 msgid "Tekilleştirilmiş, zenginleştirilmiş kayıtlar (Excel/CSV)"
 msgstr "Deduplicated, enriched records (Excel/CSV)"
 
-#: bibliometrics/templates/bibliometrics/landing.html:217
+#: bibliometrics/templates/bibliometrics/landing.html:209
+msgid "Yöntem metni otomatik üretilir; bir uzman tarafından incelenmemiştir."
+msgstr ""
+"The method text is generated automatically; it has not been reviewed by an "
+"expert."
+
+#: bibliometrics/templates/bibliometrics/landing.html:220
 msgid "VOSviewer (ZIP)"
 msgstr "VOSviewer (ZIP)"
 
-#: bibliometrics/templates/bibliometrics/landing.html:227
+#: bibliometrics/templates/bibliometrics/landing.html:223
+msgid "Yöntem Metni"
+msgstr "Method Text"
+
+#: bibliometrics/templates/bibliometrics/landing.html:226
+msgid "PRISMA Diyagramı"
+msgstr "PRISMA Diagram"
+
+#: bibliometrics/templates/bibliometrics/landing.html:236
 msgid "Tam Raporda Yer Alabilecek 26 Analiz:"
 msgstr "Up to 26 Analyses Included in the Full Report:"
 
-#: bibliometrics/templates/bibliometrics/landing.html:228
+#: bibliometrics/templates/bibliometrics/landing.html:237
 msgid ""
 "Hangi analizlerin üretileceği verideki bilgilere (yıl, atıf, ülke vb.) "
 "bağlıdır."
@@ -1885,50 +2024,50 @@ msgstr ""
 "Which analyses are produced depends on the information in your data (year, "
 "citations, country, etc.)."
 
-#: bibliometrics/templates/bibliometrics/landing.html:249
+#: bibliometrics/templates/bibliometrics/landing.html:258
 #: openalex/templates/openalex/landing.html:122
 msgid "Kurum / Ülke Dağılımı"
 msgstr "Institution / Country Distribution"
 
-#: bibliometrics/templates/bibliometrics/landing.html:253
+#: bibliometrics/templates/bibliometrics/landing.html:262
 #: openalex/templates/openalex/landing.html:126
 msgid "Atıf Analizi + H-index"
 msgstr "Citation Analysis + H-index"
 
-#: bibliometrics/templates/bibliometrics/landing.html:275
+#: bibliometrics/templates/bibliometrics/landing.html:284
 msgid "Geçmiş Analizlerim"
 msgstr "My Past Analyses"
 
-#: bibliometrics/templates/bibliometrics/landing.html:285
+#: bibliometrics/templates/bibliometrics/landing.html:294
 msgctxt "bibliometri kaynak sütunu"
 msgid "Dosya"
 msgstr "Source"
 
-#: bibliometrics/templates/bibliometrics/landing.html:286
+#: bibliometrics/templates/bibliometrics/landing.html:295
 #: forum/templates/forum/egitim.html:211
 #: forum/templates/forum/egitim_talebi.html:111
 msgid "Format"
 msgstr "Format"
 
-#: bibliometrics/templates/bibliometrics/landing.html:287
+#: bibliometrics/templates/bibliometrics/landing.html:296
 msgid "Kayıt"
 msgstr "Records"
 
-#: bibliometrics/templates/bibliometrics/landing.html:288
+#: bibliometrics/templates/bibliometrics/landing.html:297
 msgid "Durum"
 msgstr "Status"
 
-#: bibliometrics/templates/bibliometrics/landing.html:289
+#: bibliometrics/templates/bibliometrics/landing.html:298
 msgid "Tarih"
 msgstr "Date"
 
-#: bibliometrics/templates/bibliometrics/landing.html:290
+#: bibliometrics/templates/bibliometrics/landing.html:299
 #: forum/templates/forum/market/job_detail.html:253
 msgid "İşlem"
 msgstr "Action"
 
-#: bibliometrics/templates/bibliometrics/landing.html:305
-#: bibliometrics/templates/bibliometrics/landing.html:457 forum/models.py:1073
+#: bibliometrics/templates/bibliometrics/landing.html:314
+#: bibliometrics/templates/bibliometrics/landing.html:468 forum/models.py:1073
 #: forum/templates/forum/hangi_test.html:866
 #: forum/templates/forum/market/my_jobs.html:76
 #: forum/templates/forum/profile_detail.html:382
@@ -1936,45 +2075,45 @@ msgstr "Action"
 msgid "Tamamlandı"
 msgstr "Completed"
 
-#: bibliometrics/templates/bibliometrics/landing.html:307
+#: bibliometrics/templates/bibliometrics/landing.html:316
 msgid "Çalışıyor"
 msgstr "Running"
 
-#: bibliometrics/templates/bibliometrics/landing.html:309
+#: bibliometrics/templates/bibliometrics/landing.html:318
 msgid "Başarısız"
 msgstr "Failed"
 
-#: bibliometrics/templates/bibliometrics/landing.html:311
+#: bibliometrics/templates/bibliometrics/landing.html:320
 msgid "Bekliyor"
 msgstr "Pending"
 
-#: bibliometrics/templates/bibliometrics/landing.html:324
+#: bibliometrics/templates/bibliometrics/landing.html:333
 #: forum/templates/forum/egitim.html:306 templates/base.html:509
 #: templates/base.html:719 templates/partials/footer.html:122
 msgid "Proje Talebi"
 msgstr "Project Request"
 
-#: bibliometrics/templates/bibliometrics/landing.html:341
+#: bibliometrics/templates/bibliometrics/landing.html:350
 #: templates/service_promo.html:80
 msgid "Örnek Rapor Çıktıları"
 msgstr "Sample Report Outputs"
 
-#: bibliometrics/templates/bibliometrics/landing.html:357
+#: bibliometrics/templates/bibliometrics/landing.html:366
 #: bibliometrics/views.py:66
 msgid "Atıf Analizi & H-index"
 msgstr "Citation Analysis & H-index"
 
-#: bibliometrics/templates/bibliometrics/landing.html:361
+#: bibliometrics/templates/bibliometrics/landing.html:370
 #: bibliometrics/views.py:67
 msgid "Araştırma Boşluğu Haritası"
 msgstr "Research Gap Map"
 
-#: bibliometrics/templates/bibliometrics/landing.html:365
+#: bibliometrics/templates/bibliometrics/landing.html:374
 #: bibliometrics/views.py:68
 msgid "Yazar Üretkenlik Dağılımı (Lotka Kanunu)"
 msgstr "Author Productivity Distribution (Lotka's Law)"
 
-#: bibliometrics/templates/bibliometrics/landing.html:368
+#: bibliometrics/templates/bibliometrics/landing.html:377
 #: templates/service_promo.html:89
 msgid ""
 "Bu grafikler aracın gerçek çıktısıdır — sizin verinizle aynı kalitede "
@@ -1983,11 +2122,11 @@ msgstr ""
 "These charts are the tool's actual output — the same quality is produced "
 "with your own data."
 
-#: bibliometrics/templates/bibliometrics/landing.html:376
+#: bibliometrics/templates/bibliometrics/landing.html:385
 msgid "Bibliometrik Analiz Nedir?"
 msgstr "What Is Bibliometric Analysis?"
 
-#: bibliometrics/templates/bibliometrics/landing.html:379
+#: bibliometrics/templates/bibliometrics/landing.html:388
 msgid ""
 "Bibliometrik analiz; bilimsel yayınların atıf sayısı, yazar işbirliği ağı, "
 "yayın trendi ve anahtar kelime dağılımı gibi nicel göstergelerini inceleyen "
@@ -2005,59 +2144,59 @@ msgstr ""
 "Science (WoS), Scopus, BibTeX and OpenAlex formats — upload a single file "
 "and run up to 17 different analyses within seconds."
 
-#: bibliometrics/templates/bibliometrics/landing.html:385
+#: bibliometrics/templates/bibliometrics/landing.html:394
 msgid "Yıllara göre yayın sayısı değişimini görselleştirin."
 msgstr "Visualise how the number of publications changes over the years."
 
-#: bibliometrics/templates/bibliometrics/landing.html:390
+#: bibliometrics/templates/bibliometrics/landing.html:399
 #: bibliometrics/views.py:53
 msgid "Atıf & H-index"
 msgstr "Citations & H-index"
 
-#: bibliometrics/templates/bibliometrics/landing.html:391
+#: bibliometrics/templates/bibliometrics/landing.html:400
 msgid "En çok atıf alan makaleleri ve yazar H-index değerlerini hesaplayın."
 msgstr "Identify the most cited articles and calculate author H-index values."
 
-#: bibliometrics/templates/bibliometrics/landing.html:396
+#: bibliometrics/templates/bibliometrics/landing.html:405
 msgid "İşbirliği Ağı"
 msgstr "Collaboration Network"
 
-#: bibliometrics/templates/bibliometrics/landing.html:397
+#: bibliometrics/templates/bibliometrics/landing.html:406
 msgid "Yazar ve kurum ortak çalışma ağlarını görsel harita ile inceleyin."
 msgstr ""
 "Explore author and institution collaboration networks on a visual map."
 
-#: bibliometrics/templates/bibliometrics/landing.html:402
+#: bibliometrics/templates/bibliometrics/landing.html:411
 #: bibliometrics/views.py:52
 msgid "Kelime Bulutu"
 msgstr "Word Cloud"
 
-#: bibliometrics/templates/bibliometrics/landing.html:403
+#: bibliometrics/templates/bibliometrics/landing.html:412
 msgid "Başlık ve özet metinlerinden anahtar kavram frekanslarını çıkarın."
 msgstr "Extract key concept frequencies from titles and abstracts."
 
-#: bibliometrics/templates/bibliometrics/landing.html:439
+#: bibliometrics/templates/bibliometrics/landing.html:450
 #: forum/templates/forum/home.html:1193
 msgid "Yükleniyor..."
 msgstr "Loading..."
 
-#: bibliometrics/templates/bibliometrics/landing.html:440
+#: bibliometrics/templates/bibliometrics/landing.html:451
 msgid "Dosya yükleniyor..."
 msgstr "Uploading file..."
 
-#: bibliometrics/templates/bibliometrics/landing.html:441
+#: bibliometrics/templates/bibliometrics/landing.html:452
 msgid "Analiz başladı, lütfen bekleyin..."
 msgstr "Analysis started, please wait..."
 
-#: bibliometrics/templates/bibliometrics/landing.html:442
+#: bibliometrics/templates/bibliometrics/landing.html:453
 msgid "Analiz arka planda devam ediyor, lütfen bekleyin..."
 msgstr "The analysis is running in the background, please wait..."
 
-#: bibliometrics/templates/bibliometrics/landing.html:443
+#: bibliometrics/templates/bibliometrics/landing.html:454
 msgid "Grafikler ve PDF oluşturuluyor..."
 msgstr "Creating charts and PDF..."
 
-#: bibliometrics/templates/bibliometrics/landing.html:444
+#: bibliometrics/templates/bibliometrics/landing.html:455
 #: istatistik/templates/istatistik/afa.html:305
 #: istatistik/templates/istatistik/betimsel.html:247
 #: istatistik/templates/istatistik/cronbach.html:246
@@ -2070,49 +2209,49 @@ msgstr "Creating charts and PDF..."
 msgid "Analiz başarısız oldu."
 msgstr "The analysis failed."
 
-#: bibliometrics/templates/bibliometrics/landing.html:445
+#: bibliometrics/templates/bibliometrics/landing.html:456
 #: semanticscholar/templates/semanticscholar/landing.html:200
 msgid "Bir hata oluştu."
 msgstr "An error occurred."
 
-#: bibliometrics/templates/bibliometrics/landing.html:446
+#: bibliometrics/templates/bibliometrics/landing.html:457
 msgid "Sunucu bağlantı hatası. Lütfen tekrar deneyin."
 msgstr "Server connection error. Please try again."
 
-#: bibliometrics/templates/bibliometrics/landing.html:447
+#: bibliometrics/templates/bibliometrics/landing.html:458
 #, python-brace-format
 msgid "{n} kayıt"
 msgstr "{n} records"
 
-#: bibliometrics/templates/bibliometrics/landing.html:448
+#: bibliometrics/templates/bibliometrics/landing.html:459
 #, python-brace-format
 msgid "{n} dosya seçildi: {names}"
 msgstr "{n} files selected: {names}"
 
-#: bibliometrics/templates/bibliometrics/landing.html:449
+#: bibliometrics/templates/bibliometrics/landing.html:460
 msgid "Admin ile iletişime geçiniz"
 msgstr "Please contact the admin"
 
-#: bibliometrics/templates/bibliometrics/landing.html:450
+#: bibliometrics/templates/bibliometrics/landing.html:461
 msgid "Admin ile İletişim"
 msgstr "Contact Admin"
 
-#: bibliometrics/templates/bibliometrics/landing.html:451
+#: bibliometrics/templates/bibliometrics/landing.html:462
 msgid "Siparişi Görüntüle"
 msgstr "View Order"
 
-#: bibliometrics/templates/bibliometrics/landing.html:452
+#: bibliometrics/templates/bibliometrics/landing.html:463
 #: openalex/templates/openalex/landing.html:515 pubmed/views.py:114
 #: templates/partials/footer.html:269
 msgid "Gönderiliyor..."
 msgstr "Sending..."
 
-#: bibliometrics/templates/bibliometrics/landing.html:453
+#: bibliometrics/templates/bibliometrics/landing.html:464
 msgid "Gönderildi"
 msgstr "Sent"
 
-#: bibliometrics/templates/bibliometrics/landing.html:456
-#: bibliometrics/views.py:221
+#: bibliometrics/templates/bibliometrics/landing.html:467
+#: bibliometrics/views.py:223
 msgid "Email gönderilemedi."
 msgstr "The email could not be sent."
 
@@ -2210,73 +2349,73 @@ msgstr ""
 msgid "Dosya seçilmedi."
 msgstr "No file selected."
 
-#: bibliometrics/views.py:195
+#: bibliometrics/views.py:197
 msgid "Analiz henüz tamamlanmadı."
 msgstr "The analysis has not been completed yet."
 
-#: bibliometrics/views.py:198
+#: bibliometrics/views.py:200
 msgid "Demo rapor daha önce gönderildi."
 msgstr "The demo report has already been sent."
 
-#: bibliometrics/views.py:201
+#: bibliometrics/views.py:203
 msgid "Hesabınızda email adresi tanımlı değil."
 msgstr "There is no email address on your account."
 
-#: bibliometrics/views.py:217
+#: bibliometrics/views.py:219
 msgid "Demo PDF oluşturulamamış."
 msgstr "The demo PDF could not be generated."
 
-#: bibliometrics/views.py:223
+#: bibliometrics/views.py:225
 #, python-brace-format
 msgid "{email} adresine demo rapor gönderildi."
 msgstr "The demo report has been sent to {email}."
 
-#: bibliometrics/views.py:239 bibliometrics/views.py:311
+#: bibliometrics/views.py:241 bibliometrics/views.py:313
 #: istatistik/views.py:499 istatistik/views.py:1306
 msgid "E-posta doğrulaması gereklidir."
 msgstr "Email verification is required."
 
-#: bibliometrics/views.py:245 bibliometrics/views.py:316
+#: bibliometrics/views.py:247 bibliometrics/views.py:318
 #, python-brace-format
 msgid "Günlük analiz limitinize ({limit}) ulaştınız."
 msgstr "You have reached your daily analysis limit ({limit})."
 
-#: bibliometrics/views.py:253
+#: bibliometrics/views.py:255
 msgid "OpenAlex araması henüz tamamlanmadı."
 msgstr "The OpenAlex search has not been completed yet."
 
-#: bibliometrics/views.py:260 bibliometrics/views.py:328
+#: bibliometrics/views.py:262 bibliometrics/views.py:330
 #, python-brace-format
 msgid ""
 "Bibliometrik analiz için en az 100 sonuç gereklidir (bulunan: {count})."
 msgstr "Bibliometric analysis requires at least 100 results (found: {count})."
 
-#: bibliometrics/views.py:267
+#: bibliometrics/views.py:269
 msgid "OpenAlex verisi bulunamadı."
 msgstr "OpenAlex data not found."
 
-#: bibliometrics/views.py:279 bibliometrics/views.py:340
+#: bibliometrics/views.py:281 bibliometrics/views.py:342
 msgid "Bu arama için zaten bir bibliometrik analiz mevcut."
 msgstr "A bibliometric analysis already exists for this search."
 
-#: bibliometrics/views.py:296 bibliometrics/views.py:356
+#: bibliometrics/views.py:298 bibliometrics/views.py:358
 msgid "Bibliometrik analiz başlatıldı."
 msgstr "The bibliometric analysis has started."
 
 # PubMed modülü — Faz 3 bibliometri (29 Eylül 2026)
-#: bibliometrics/views.py:323
+#: bibliometrics/views.py:325
 msgid "PubMed araması henüz tamamlanmadı."
 msgstr "The PubMed search has not finished yet."
 
-#: bibliometrics/views.py:332
+#: bibliometrics/views.py:334
 msgid "PubMed verisi bulunamadı."
 msgstr "PubMed data not found."
 
-#: bibliometrics/views.py:372
+#: bibliometrics/views.py:374
 msgid "Analiz tamamlanmadan sipariş oluşturamazsınız."
 msgstr "You cannot place an order before the analysis is complete."
 
-#: bibliometrics/views.py:389
+#: bibliometrics/views.py:391
 msgid ""
 "Siparişiniz alındı! Ödeme onayından sonra tam rapor e-postanıza "
 "gönderilecek."
@@ -2284,11 +2423,11 @@ msgstr ""
 "Your order has been received! The full report will be sent to your email "
 "once the payment is confirmed."
 
-#: bibliometrics/views.py:396
+#: bibliometrics/views.py:398
 msgid "İlk 500 kayıt"
 msgstr "First 500 records"
 
-#: bibliometrics/views.py:402
+#: bibliometrics/views.py:404
 #, python-brace-format
 msgid "{start}–{end}. kayıtlar"
 msgstr "Records {start}–{end}"
