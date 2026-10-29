@@ -3203,8 +3203,16 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   çevrildi). Migration `forum/0192` (yalnız yeni SiteSettings alanı). 6 yeni
   pytest (mock'lu, ağa gitmiyor) + gerçek bir DOI ile manuel doğrulama (atıf,
   ülke, kurum, anahtar kelime, 35 referenced_work, 6 author_id başarıyla
-  çekildi). `forum+bibliometrics` 124/124 geçti. Sırada: B1 madde 2-4
-  (tekilleştirme, yazar/anahtar kelime normalizasyonu).
+  çekildi). `forum+bibliometrics` 124/124 geçti.
+  **B1-2 TAMAMLANDI (aynı gün, dev'de):** Tekilleştirme iyileştirmesi —
+  `_deduplicate_and_filter`'da DOI yoksa artık normalize edilmiş başlık
+  (noktalama yok sayılır, WoS/Scopus/BibTeX arası format farklarını tolere
+  eder) + yayın yılı ile eşleşiyor; yıl ikisinde de biliniyorsa farklıysa ayrı
+  kayıt sayılıyor (genel başlıkların — "Editöryal" vb. — farklı yıllarda
+  yanlışlıkla birleşmesini önler), yıl taraflardan birinde eksikse eski
+  davranış (yalnız başlık) korunuyor. 5 yeni pytest, rapor metni EN/DE
+  güncellendi, migration yok. `forum+bibliometrics` 129/129 geçti. Sırada:
+  B1-3 (yazar adı birleştirme), B1-4 (anahtar kelime normalizasyonu).
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

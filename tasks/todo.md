@@ -36,8 +36,14 @@ henüz push edilmedi (aşağıda madde 3). Bugünkü oturum şu 3 maddeyle bitti
      `forum/0192`) + `job_runner.py`/`report_notes.py` entegrasyonu. 6 yeni
      pytest + gerçek DOI ile manuel doğrulama. `forum+bibliometrics` 124/124.
      Detay: `analizus.md` §27 (29 Ekim B1-1 maddesi).
-   - [ ] B1-2 (tekilleştirme: DOI → normalize başlık+yıl sırası, elenen
-     kayıt raporu)
+   - [x] **B1-2 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):** Tekilleştirme
+     iyileştirmesi. `parser.py._deduplicate_and_filter`: DOI yoksa artık
+     normalize edilmiş başlık (noktalama yok sayılır) + yayın yılı ile eşleşir
+     (yıl ikisinde de biliniyorsa farklı yıllar ayrı kayıt sayılır — ör. aynı
+     "Editöryal" başlığı farklı yıllarda yanlışlıkla birleşmez; yıl taraflardan
+     birinde eksikse eski davranış gibi yalnız başlığa güvenilir). 5 yeni
+     pytest. Rapor metni (`report_notes.py` "Uygulanan kurallar") EN/DE
+     güncellendi. Migration yok. `forum+bibliometrics` 129/129.
    - [ ] B1-3 (yazar adı birleştirme: OpenAlex author ID varsa onu kullan)
    - [ ] B1-4 (anahtar kelime normalizasyonu: küçük harf, tekil/çoğul, tire/boşluk)
    - [ ] B2-B4 (bkz. plan dosyası §4)

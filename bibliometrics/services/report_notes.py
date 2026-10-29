@@ -136,8 +136,9 @@ def _rules(source, last_year, stats=None):
     """Uygulanan kurallar ve eşikler (kısa, tam cümleler)."""
     stats = stats or {}
     rules = [
-        gettext('Başlığı olmayan kayıtlar çıkarıldı. Tekrar eden kayıtlar DOI\'ye göre, DOI yoksa başlığın '
-                'ilk 80 karakterine göre (büyük/küçük harf ayrımı yapılmadan) çıkarıldı.'),
+        gettext('Başlığı olmayan kayıtlar çıkarıldı. Tekrar eden kayıtlar DOI\'ye göre, DOI yoksa noktalama '
+                'yok sayılarak normalize edilmiş başlık ve yayın yılına göre (ikisi de bilinen kayıtlarda) '
+                'çıkarıldı.'),
         gettext('Zaman serileri (yayın trendi, büyüme oranı, anahtar kelime trendi, yıllık atıf trendi, '
                 'Araştırma Boşluğu Haritası) yalnız tamamlanmış yılları ({year} ve öncesi) kullanır; '
                 'içinde bulunulan yıl eksik olduğundan dahil edilmedi. Yayın olmayan yıllar 0 sayıldı.'

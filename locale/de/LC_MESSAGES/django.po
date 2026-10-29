@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-29 14:30+0300\n"
+"POT-Creation-Date: 2026-10-29 14:46+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -451,7 +451,7 @@ msgid "Yıllık Yayın Büyüme Oranı"
 msgstr "Jährliche Wachstumsrate der Publikationen"
 
 #: bibliometrics/services/analyzer.py:808
-#: bibliometrics/services/report_notes.py:198
+#: bibliometrics/services/report_notes.py:199
 #, python-brace-format
 msgid ""
 "Veri {n} yıldan kısa bir dönemi kapsıyor; büyüme oranları küçük taban "
@@ -1079,14 +1079,14 @@ msgstr ""
 #: bibliometrics/services/report_notes.py:139
 msgid ""
 "Başlığı olmayan kayıtlar çıkarıldı. Tekrar eden kayıtlar DOI'ye göre, DOI "
-"yoksa başlığın ilk 80 karakterine göre (büyük/küçük harf ayrımı yapılmadan) "
-"çıkarıldı."
+"yoksa noktalama yok sayılarak normalize edilmiş başlık ve yayın yılına göre "
+"(ikisi de bilinen kayıtlarda) çıkarıldı."
 msgstr ""
 "Datensätze ohne Titel wurden entfernt. Dubletten wurden anhand der DOI "
-"entfernt, bei fehlender DOI anhand der ersten 80 Zeichen des Titels (ohne "
-"Beachtung der Groß-/Kleinschreibung)."
+"entfernt, bei fehlender DOI anhand des Titels (ohne Satzzeichen) und des "
+"Erscheinungsjahres (wenn beide bekannt sind)."
 
-#: bibliometrics/services/report_notes.py:141
+#: bibliometrics/services/report_notes.py:142
 #, python-brace-format
 msgid ""
 "Zaman serileri (yayın trendi, büyüme oranı, anahtar kelime trendi, yıllık "
@@ -1099,7 +1099,7 @@ msgstr ""
 "Jahre ({year} und früher); das laufende Jahr wurde nicht berücksichtigt, da "
 "es unvollständig ist. Jahre ohne Publikationen wurden mit 0 gezählt."
 
-#: bibliometrics/services/report_notes.py:145
+#: bibliometrics/services/report_notes.py:146
 msgid ""
 "Anahtar kelimeler küçük harfe çevrildi ve anlamsız sözcükler çıkarıldı; tek "
 "sözcüklü Türkçe kelimeler kök biçimine indirildi, çok sözcüklü ifadeler "
@@ -1111,7 +1111,7 @@ msgstr ""
 "Mehrwortbegriffe unverändert übernommen. Die Wortwolke berücksichtigt "
 "zusätzlich Wörter mit mindestens 4 Buchstaben aus den Abstracts."
 
-#: bibliometrics/services/report_notes.py:150
+#: bibliometrics/services/report_notes.py:151
 msgid ""
 "Anahtar kelimesi olmayan OpenAlex kayıtlarında OpenAlex'in geniş konu "
 "etiketleri (concepts) anahtar kelime yerine kullanıldı."
@@ -1119,7 +1119,7 @@ msgstr ""
 "Bei OpenAlex-Datensätzen ohne Schlagwörter wurden stattdessen die breiten "
 "Themenkategorien von OpenAlex (Concepts) verwendet."
 
-#: bibliometrics/services/report_notes.py:153
+#: bibliometrics/services/report_notes.py:154
 msgid ""
 "Yazar anahtar kelimesi olmayan PubMed kayıtlarında MeSH terimleri anahtar "
 "kelime yerine kullanıldı."
@@ -1127,7 +1127,7 @@ msgstr ""
 "Bei PubMed-Datensätzen ohne Autorenschlagwörter wurden MeSH-Begriffe als "
 "Schlagwörter verwendet."
 
-#: bibliometrics/services/report_notes.py:157
+#: bibliometrics/services/report_notes.py:158
 #, python-brace-format
 msgid ""
 "DOI'si olan kayıtlardan {n} tanesi OpenAlex ile zenginleştirildi: eksik atıf"
@@ -1136,7 +1136,7 @@ msgstr ""
 "{n} der Datensätze mit DOI wurden mit OpenAlex angereichert: fehlende "
 "Zitatzahl, Land, Institution und/oder Schlagwortangaben wurden ergänzt."
 
-#: bibliometrics/services/report_notes.py:161
+#: bibliometrics/services/report_notes.py:162
 msgid ""
 "Ülke ve kurum sayımında bir yayın, yazarlarının bulunduğu her ülke ve kurum "
 "için bir kez sayıldı. Kurum grafiği yalnız ülke bilgisi hiç yoksa üretilir."
@@ -1146,7 +1146,7 @@ msgstr ""
 "Institutionsgrafik wird nur erstellt, wenn überhaupt keine Länderangaben "
 "vorliegen."
 
-#: bibliometrics/services/report_notes.py:163
+#: bibliometrics/services/report_notes.py:164
 #, python-brace-format
 msgid ""
 "Ağ grafiklerinde en az {n} kez birlikte geçen bağlantılar gösterildi (böyle "
@@ -1157,7 +1157,7 @@ msgstr ""
 "auftreten (gibt es keine, die häufigsten Verbindungen). Maximal angezeigte "
 "Knoten: Autoren {a}, Schlagwörter {k}, Länder {c}."
 
-#: bibliometrics/services/report_notes.py:170
+#: bibliometrics/services/report_notes.py:171
 #, python-brace-format
 msgid ""
 "Araştırma Boşluğu Haritası en az 3 yayında geçen en sık {n} anahtar kelimeyi"
@@ -1172,7 +1172,7 @@ msgstr ""
 "Zitationswirkung ist die durchschnittliche Zitationszahl der Publikationen, "
 "in denen das Schlagwort vorkommt."
 
-#: bibliometrics/services/report_notes.py:190
+#: bibliometrics/services/report_notes.py:191
 msgid ""
 "Sonuçlar yalnız bu veri kaynağındaki kayıtları yansıtır; kaynağın taramadığı"
 " dergi, dil ve yayın türleri kapsam dışıdır."
@@ -1181,7 +1181,7 @@ msgstr ""
 "Zeitschriften, Sprachen und Publikationstypen, die die Quelle nicht erfasst,"
 " sind nicht enthalten."
 
-#: bibliometrics/services/report_notes.py:192
+#: bibliometrics/services/report_notes.py:193
 msgid ""
 "Yazar, kurum ve dergi adları otomatik olarak birleştirilmedi: aynı yazar "
 "farklı yazımlarla ayrı kişi, aynı adlı farklı yazarlar tek kişi olarak "
@@ -1192,7 +1192,7 @@ msgstr ""
 "mehrfach, verschiedene Personen gleichen Namens können als eine Person "
 "gezählt worden sein."
 
-#: bibliometrics/services/report_notes.py:202
+#: bibliometrics/services/report_notes.py:203
 msgid ""
 "PubMed atıf sayısı sağlamadığından atıfa dayanan analizler (en çok atıf alan"
 " yayınlar, H-index, yıllık atıf trendi, Araştırma Boşluğu Haritası) "
@@ -1202,7 +1202,7 @@ msgstr ""
 "Analysen (meistzitierte Publikationen, H-Index, jährlicher Zitationstrend, "
 "Forschungslücken-Karte) nicht erstellt."
 
-#: bibliometrics/services/report_notes.py:204
+#: bibliometrics/services/report_notes.py:205
 msgid ""
 "Ülke ve kurum bilgisi tahminidir: PubMed bu bilgileri ayrı alan olarak "
 "vermez; yazar adres metninden otomatik çıkarıldı. Adresinde ülke adı "
@@ -1215,7 +1215,7 @@ msgstr ""
 "der Länderzählung nicht berücksichtigt, Affiliationen ohne erkennbaren "
 "Institutionsnamen nicht bei der Institutionszählung."
 
-#: bibliometrics/services/report_notes.py:210
+#: bibliometrics/services/report_notes.py:211
 msgid ""
 "Atıf sayıları verinin alındığı andaki değerlerdir ve kaynaktan kaynağa "
 "değişir; yeni yayınlar atıf toplamak için daha az zaman bulduğundan "
@@ -1225,7 +1225,7 @@ msgstr ""
 "unterscheiden sich je nach Quelle; neuere Publikationen sind benachteiligt, "
 "da sie weniger Zeit hatten, Zitationen zu sammeln."
 
-#: bibliometrics/services/report_notes.py:214
+#: bibliometrics/services/report_notes.py:215
 #, python-brace-format
 msgid ""
 "{n} kayıt içinde bulunulan yıla ({year}) ait; bu kayıtlar zaman serilerinde "
@@ -1234,7 +1234,7 @@ msgstr ""
 "{n} Datensätze stammen aus dem laufenden Jahr ({year}); sie fehlen in den "
 "Zeitreihen, sind aber in den übrigen Analysen enthalten."
 
-#: bibliometrics/services/report_notes.py:221
+#: bibliometrics/services/report_notes.py:222
 #, python-brace-format
 msgid ""
 "\"{field}\" bilgisi hiçbir kayıtta yok; bu bilgi analizlerde kullanılamadı."
@@ -1242,7 +1242,7 @@ msgstr ""
 "„{field}“ ist in keinem Datensatz vorhanden; diese Angabe konnte in den "
 "Analysen nicht verwendet werden."
 
-#: bibliometrics/services/report_notes.py:225
+#: bibliometrics/services/report_notes.py:226
 #, python-brace-format
 msgid ""
 "\"{field}\" bilgisi kayıtların yalnız %{pct} kadarında ({n} kayıt) var; bu "

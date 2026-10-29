@@ -20,7 +20,10 @@ from bibliometrics.services.analyzer import (
     SHORT_SERIES_YEARS,
 )
 from bibliometrics.services.report_notes import build_report_notes
-from bibliometrics.services.parser import parse_openalex_txt, parse_pubmed_txt, detect_format, parse_file
+from bibliometrics.services.parser import (
+    parse_openalex_txt, parse_pubmed_txt, detect_format, parse_file,
+    _deduplicate_and_filter, _normalize_title_key,
+)
 from bibliometrics.services.pdf_builder import _demo_cta_text
 from bibliometrics.models import BibliometricJob
 from bibliometrics.services.job_runner import _in_user_language
@@ -317,3 +320,37 @@ def test_fetch_works_by_dois_batches_and_normalizes_doi(monkeypatch):
     assert '10.1/0' in seen_filters[0]
     assert '10.1/59' in seen_filters[1]
     assert '10.1/a' in result  # doi.org/10.1/A -> küçük harf
+
+
+def _rec(title, year=None, doi=''):
+    return {'title': title, 'year': year, 'doi': doi}
+
+
+def test_dedup_same_title_same_year_is_duplicate():
+    recs = [_rec('COVID-19: A Review', 2021), _rec('covid 19 a review', 2021)]
+    result = _deduplicate_and_filter(recs)
+    assert len(result) == 1
+
+
+def test_dedup_same_title_different_years_kept_separate():
+    """B1-2: aynı (genel) başlık farklı yıllarda yayınlanmışsa yanlışlıkla birleştirilmez."""
+    recs = [_rec('Editöryal', 2020), _rec('Editöryal', 2021)]
+    result = _deduplicate_and_filter(recs)
+    assert len(result) == 2
+
+
+def test_dedup_same_title_one_missing_year_still_duplicate():
+    """Kaynaklardan biri yıl vermiyorsa eski davranış gibi yalnız başlığa güvenilir."""
+    recs = [_rec('Örnek Başlık', 2020), _rec('Örnek Başlık', None)]
+    result = _deduplicate_and_filter(recs)
+    assert len(result) == 1
+
+
+def test_dedup_doi_takes_priority_over_title():
+    recs = [_rec('Başlık A', 2020, doi='10.1/x'), _rec('Başlık B', 2021, doi='10.1/x')]
+    result = _deduplicate_and_filter(recs)
+    assert len(result) == 1
+
+
+def test_normalize_title_key_ignores_punctuation():
+    assert _normalize_title_key('COVID-19: A Review!') == _normalize_title_key('covid 19 a review')
