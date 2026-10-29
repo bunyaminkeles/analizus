@@ -36,6 +36,8 @@ from bibliometrics.services.analyzer import (
     thematic_evolution,
     three_field_plot_data,
     three_field_plot,
+    scp_mcp_counts,
+    scp_mcp_chart,
 )
 import matplotlib.patches as mpatches
 import bibliometrics.services.analyzer as analyzer_module
@@ -706,3 +708,34 @@ def test_three_field_plot_figure_has_box_per_item():
     assert fig is not None
     rects = [p for p in fig.axes[0].patches if isinstance(p, mpatches.Rectangle)]
     assert len(rects) == len(authors) + len(keywords) + len(journals)
+
+
+def test_scp_mcp_counts_classifies_single_and_multi_country():
+    """B2-6: tek ülkeli yayın SCP, birden fazla ülkeden yazarı olan yayın HER
+    ülke için MCP sayılmalı (genel ülke sayımındaki 'tam sayım' kuralıyla tutarlı)."""
+    records = (
+        [{'country': 'United States'}] * 5
+        + [{'country': 'United States, United Kingdom'}] * 3
+        + [{'country': 'United Kingdom'}] * 2
+    )
+    counts = scp_mcp_counts(records)
+    assert counts is not None
+    assert counts['United States'] == {'scp': 5, 'mcp': 3}
+    assert counts['United Kingdom'] == {'scp': 2, 'mcp': 3}
+
+
+def test_scp_mcp_counts_no_country_returns_none():
+    assert scp_mcp_counts([{'country': ''}, {}]) is None
+
+
+def test_scp_mcp_chart_bar_count_matches_top_n_countries():
+    records = (
+        [{'country': 'United States'}] * 5
+        + [{'country': 'United States, United Kingdom'}] * 3
+        + [{'country': 'United Kingdom'}] * 2
+        + [{'country': 'Germany'}] * 1
+    )
+    fig = scp_mcp_chart(records, n=2)
+    assert fig is not None
+    bars = [p for p in fig.axes[0].patches if isinstance(p, mpatches.Rectangle)]
+    assert len(bars) == 4  # top-2 ülke × (SCP çubuğu + MCP çubuğu)

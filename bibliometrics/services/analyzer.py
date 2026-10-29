@@ -264,6 +264,8 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
          gettext('Her dönemde yeterli kayıt ve anahtar kelime kümesi ile dönemler arasında paylaşılan tema gerekir.')),
         (gettext('Üç Alan Grafiği (Yazar ↔ Anahtar Kelime ↔ Dergi)'), lambda: three_field_plot(records),
          gettext('En az 2 yazar, 2 anahtar kelime ve 2 dergi arasında birlikte geçme akışı gerekir.')),
+        (gettext('Ülke İşbirliği: Tek Ülkeli ve Çok Ülkeli Yayınlar (SCP/MCP)'), lambda: scp_mcp_chart(records),
+         gettext('Ülke veya kurum bilgisi yok.')),
     ]
     citation_based = {
         gettext('En Çok Atıf Alan Yayınlar (Top 10)'), gettext('Atıf Analizi ve H-index'),
@@ -2033,6 +2035,76 @@ def three_field_plot(records: list[dict]):
     for spine in ax.spines.values():
         spine.set_visible(False)
     ax.set_title(gettext('Üç Alan Grafiği (Yazar ↔ Anahtar Kelime ↔ Dergi)'))
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 22. SCP/MCP (Ülke İşbirliği) ───────────────────────────
+
+def scp_mcp_counts(records: list[dict]):
+    """
+    SCP/MCP hesabı (B2-6, bibliometrix 'Corresponding Author's Country' eşdeğeri):
+    her kayıt, yazarlarının bulunduğu farklı ülke sayısına göre SCP (Single Country
+    Publication — tek ülkeli) veya MCP (Multiple Country Publication — çok ülkeli
+    işbirliği) olarak sınıflandırılır. Çok ülkeli bir yayın, o yayında adı geçen HER
+    ülke için MCP olarak sayılır (ülke sayımındaki genel "tam sayım" kuralıyla
+    tutarlı — bkz. `_record_countries()`).
+    Döner: {ülke: {'scp': n, 'mcp': n}} ya da ülke bilgisi hiç yoksa None.
+    """
+    counts = defaultdict(lambda: {'scp': 0, 'mcp': 0})
+    for r in records:
+        countries = _record_countries(r)
+        if len(countries) == 1:
+            counts[countries[0]]['scp'] += 1
+        elif len(countries) > 1:
+            for c in countries:
+                counts[c]['mcp'] += 1
+    if not counts:
+        return None
+    return dict(counts)
+
+
+def scp_mcp_chart(records: list[dict], n: int = 10):
+    """
+    SCP/MCP yığılmış çubuk grafiği (B2-6): en üretken top-N ülke, tek ülkeli (SCP)
+    ve çok ülkeli işbirliği (MCP) yayın sayısına göre yığılmış yatay çubuklarla.
+    """
+    counts = scp_mcp_counts(records)
+    if counts is None:
+        return None
+
+    ranked = sorted(counts.items(), key=lambda kv: kv[1]['scp'] + kv[1]['mcp'], reverse=True)[:n]
+    if not ranked:
+        return None
+
+    countries = [c for c, _ in ranked]
+    scp_vals = [v['scp'] for _, v in ranked]
+    mcp_vals = [v['mcp'] for _, v in ranked]
+
+    fig, ax = plt.subplots(figsize=(9, max(10, len(countries) * 0.75)))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    y_pos = range(len(countries))
+    ax.barh(y_pos, scp_vals, color=PALETTE[0], alpha=0.9, height=0.7,
+           edgecolor='white', linewidth=0.5, label=gettext('Tek Ülkeli (SCP)'), zorder=2)
+    ax.barh(y_pos, mcp_vals, left=scp_vals, color=PALETTE[2], alpha=0.9, height=0.7,
+           edgecolor='white', linewidth=0.5, label=gettext('Çok Ülkeli İşbirliği (MCP)'), zorder=2)
+
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(countries, fontsize=10)
+    ax.invert_yaxis()
+    ax.set_xlabel(gettext('Yayın Sayısı'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('Ülke İşbirliği: Tek Ülkeli ve Çok Ülkeli Yayınlar (SCP/MCP)'))
+    ax.grid(axis='x', zorder=1)
+    ax.legend(loc='lower right', fontsize=9, frameon=True, framealpha=0.95, edgecolor='#cbd5e0')
+
+    for i, (s, m) in enumerate(zip(scp_vals, mcp_vals)):
+        total = s + m
+        if total > 0:
+            ax.text(total + max(total * 0.01, 0.1), i, f'{total:,}',
+                   ha='left', va='center', fontsize=9, color='#334155', fontweight='bold')
+
     fig.tight_layout(pad=2.0)
     return fig
 

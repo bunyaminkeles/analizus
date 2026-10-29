@@ -189,6 +189,9 @@ def _rules(source, last_year, stats=None):
         gettext('Üç Alan Grafiği\'nde yazar ve dergi kutuları yalnız gösterilen en sık anahtar kelimelerle '
                 'birlikte geçme sayısına göre; anahtar kelime kutuları ise kelimenin tüm veri setindeki '
                 'toplam frekansına göre boyutlandırıldı.'),
+        gettext('SCP/MCP grafiğinde yazarlarının tamamı tek ülkeden olan yayınlar "Tek Ülkeli (SCP)", '
+                'birden fazla ülkeden yazarı olan yayınlar ise adı geçen HER ülke için "Çok Ülkeli '
+                'İşbirliği (MCP)" sayıldı.'),
     ]
     return rules
 

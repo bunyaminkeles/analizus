@@ -5,12 +5,13 @@
 başladı ve `dev`'de hızla ilerliyor (henüz `main`'e merge edilmedi — kullanıcı
 "merge et" demeden dokunulmayacak): **B1 (veri kalitesi) TAMAMEN BİTTİ**
 (B1-1 OpenAlex zenginleştirme, B1-2 tekilleştirme, B1-3 yazar birleştirme,
-B1-4 anahtar kelime normalizasyonu) ve **B2'den 5 madde tamamlandı** (B2-1
+B1-4 anahtar kelime normalizasyonu) ve **B2'den 6 madde tamamlandı** (B2-1
 Bradford Kanunu, B2-2 Louvain kümeleri + tablo, B2-3 Tematik Harita, B2-4
-Tematik Evrim, B2-5 Üç Alan Grafiği) — hepsi `dev`'e commit edildi (henüz
-push edilmedi), istatistik araç sayısı 17→21. **Yeni oturum buradan devam etsin: sıradaki
-B2-6..B2-8, sonra B3, B4** (bkz. madde 3 altındaki detaylı liste ve
-`bibliometri_durum_ve_gelistirme_prompt.md` §4). Ayrıca aşağıdaki 2 ayrı
+Tematik Evrim, B2-5 Üç Alan Grafiği, B2-6 SCP/MCP) — B2-6 henüz commit
+edilmedi (kullanıcı onayı bekliyor), istatistik araç sayısı 17→22. **Yeni
+oturum buradan devam etsin: sıradaki B2-7..B2-8, sonra B3, B4** (bkz. madde 3
+altındaki detaylı liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4).
+Ayrıca aşağıdaki 2 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
 1. **[ÖNCELİKLİ] Araştırma Konusu Kümeleri (Topic Map) grafiği görsel
@@ -158,8 +159,24 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      akılda tutulmalı). Sentetik + rastgele (8 yazar × 9 kelime × 5 dergi)
      veriyle görsel doğrulandı. 3 yeni pytest, rapor "kurallar" metni EN/DE
      çevrildi. Yeni paket/migration yok. `forum+bibliometrics` 158/158.
-   - [ ] B2-6..B2-8 (bkz. plan dosyası §4 — ülke işbirliği SCP/MCP, atıf
-     ağları, konu modelleme)
+   - [x] **B2-6 TAMAMLANDI (29 Ekim 2026, dev'de, commit bekliyor):** Ülke
+     İşbirliği SCP/MCP (bibliometrix 'Corresponding Author's Country'
+     eşdeğeri). **Durum tespiti:** "Ülke İşbirliği Ağı" (network grafiği)
+     zaten mevcuttu (`country_collaboration()`, analiz #15) — eksik olan
+     asıl parça SCP/MCP yığılmış çubuktu. `analyzer.py`'ye `scp_mcp_counts()`
+     (saf hesap: her kayıt `_record_countries()` ile sınıflandırılır — 1
+     ülke → o ülke için SCP, 2+ ülke → listedeki HER ülke için MCP, mevcut
+     "tam sayım" kuralıyla tutarlı) + `scp_mcp_chart()` (top-10 ülke, yatay
+     yığılmış çubuk — `top_journals()`/`top_cited()` ile aynı görsel dil)
+     eklendi, 22. analiz olarak kaydedildi (istatistik araç sayısı 21→22,
+     tüm "N Analiz" referansları güncellendi). **Dünya haritası (plan
+     dosyasında zaten "opsiyonel" işaretliydi) kullanıcı kararıyla kapsam
+     dışı bırakıldı** — GeoJSON + matplotlib poligon ek karmaşıklık. Sentetik
+     veriyle (12 ülke, ağırlıklı rastgele SCP/MCP dağılımı) görsel doğrulandı
+     — bibliometrix'in gerçek SCP/MCP grafiğiyle aynı kalıp. 3 yeni pytest,
+     rapor "kurallar" metni EN/DE çevrildi. Yeni paket/migration yok.
+     `forum+bibliometrics` 161/161.
+   - [ ] B2-7..B2-8 (bkz. plan dosyası §4 — atıf ağları, konu modelleme)
    - [ ] B3-B4 (bkz. plan dosyası §4)
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş
