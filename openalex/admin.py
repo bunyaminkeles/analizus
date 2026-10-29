@@ -38,3 +38,26 @@ class AlexOrderAdmin(ModelAdmin):
             queued += 1
         self.message_user(request, f'{queued} sipariş kuyruğa alındı; veri hazırlanınca tam rapor emaili '
                                    f'otomatik gönderilecek (hata olursa sipariş "Onaylandı"ya döner, Admin Notu\'na bakın).')
+
+    def get_urls(self):
+        from django.urls import path
+        urls = super().get_urls()
+        custom = [
+            path('<uuid:pk>/quick-approve/', self.admin_site.admin_view(self.quick_approve_view), name='openalex_alexorderproxy_quick_approve'),
+        ]
+        return custom + urls
+
+    def quick_approve_view(self, request, pk):
+        from django.shortcuts import redirect
+        from openalex.services.job_runner import run_order_job
+
+        order = AlexOrderProxy.objects.filter(
+            pk=pk, status__in=('pending_payment', 'payment_review', 'approved')
+        ).first()
+        if order:
+            order.status = 'processing'
+            order.approved_at = timezone.now()
+            order.save(update_fields=['status', 'approved_at'])
+            run_order_job(order.id)
+            self.message_user(request, 'Sipariş kuyruğa alındı; veri hazırlanınca tam rapor emaili otomatik gönderilecek.')
+        return redirect('/admin/')

@@ -840,6 +840,23 @@ class DonationAdmin(ModelAdmin):
             count += 1
         self.message_user(request, f'{count} bağış onaylandı; Premium ve teşekkür e-postası gönderildi.')
 
+    def get_urls(self):
+        from django.urls import path
+        urls = super().get_urls()
+        custom = [
+            path('<int:pk>/quick-approve/', self.admin_site.admin_view(self.quick_approve_view), name='forum_donation_quick_approve'),
+        ]
+        return custom + urls
+
+    def quick_approve_view(self, request, pk):
+        from django.shortcuts import redirect
+        donation = Donation.objects.filter(pk=pk).exclude(status='completed').select_related('user__profile').first()
+        if donation:
+            donation.status = 'completed'
+            donation.save()
+            self.message_user(request, 'Bağış onaylandı; Premium ve teşekkür e-postası gönderildi.')
+        return redirect('/admin/')
+
     fieldsets = (
         ('Bağışçı Bilgileri', {
             'fields': ('user', 'name', 'email', 'is_anonymous')

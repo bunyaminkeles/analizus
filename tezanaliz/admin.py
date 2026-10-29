@@ -96,3 +96,30 @@ class BibliometricOrderProxyAdmin(GroupTabsMixin, ModelAdmin):
                     sent_count += 1
 
         self.message_user(request, f'{sent_count} siparişe tam rapor emaili gönderildi.')
+
+    def get_urls(self):
+        from django.urls import path
+        urls = super().get_urls()
+        custom = [
+            path('<uuid:pk>/quick-approve/', self.admin_site.admin_view(self.quick_approve_view), name='tezanaliz_bibliometricorderproxy_quick_approve'),
+        ]
+        return custom + urls
+
+    def quick_approve_view(self, request, pk):
+        from django.contrib import messages
+        from django.shortcuts import redirect
+        from django.utils import timezone
+        from bibliometrics.services.job_runner import send_order_results_email
+
+        order = BibliometricOrderProxy.objects.filter(
+            pk=pk, status__in=('pending_payment', 'payment_review', 'approved', 'processing')
+        ).first()
+        if order:
+            order.status = 'approved'
+            order.approved_at = timezone.now()
+            order.save(update_fields=['status', 'approved_at'])
+            if send_order_results_email(str(order.id)):
+                self.message_user(request, 'Sipariş onaylandı ve tam rapor emaili gönderildi.')
+            else:
+                self.message_user(request, 'Sipariş onaylandı ancak email gönderilemedi (rapor PDF\'i henüz hazır olmayabilir).', level=messages.WARNING)
+        return redirect('/admin/')
