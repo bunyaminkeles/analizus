@@ -192,6 +192,12 @@ def _rules(source, last_year, stats=None):
         gettext('SCP/MCP grafiğinde yazarlarının tamamı tek ülkeden olan yayınlar "Tek Ülkeli (SCP)", '
                 'birden fazla ülkeden yazarı olan yayınlar ise adı geçen HER ülke için "Çok Ülkeli '
                 'İşbirliği (MCP)" sayıldı.'),
+        gettext('Bibliyografik Eşleşme Ağı ve Yerel/Küresel Atıf karşılaştırması yalnız DOI\'si olan ve '
+                'OpenAlex ile zenginleştirilmiş kayıtları kullanır; iki yayın aynı eserlere atıf yapıyorsa '
+                'bağlanır, kenar kalınlığı paylaşılan referans sayısıdır.'),
+        gettext('"Yerel atıf", bir yayının yalnız BU veri setindeki diğer kayıtlardan aldığı atıf '
+                'sayısıdır (derlemenin kendi iç etkisi); "küresel atıf" ise OpenAlex\'teki toplam atıf '
+                'sayısıdır ve her zaman yerel atıftan büyük veya eşittir.'),
     ]
     return rules
 

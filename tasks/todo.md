@@ -5,11 +5,12 @@
 başladı ve `dev`'de hızla ilerliyor (henüz `main`'e merge edilmedi — kullanıcı
 "merge et" demeden dokunulmayacak): **B1 (veri kalitesi) TAMAMEN BİTTİ**
 (B1-1 OpenAlex zenginleştirme, B1-2 tekilleştirme, B1-3 yazar birleştirme,
-B1-4 anahtar kelime normalizasyonu) ve **B2'den 6 madde tamamlandı** (B2-1
+B1-4 anahtar kelime normalizasyonu) ve **B2'den 7 madde tamamlandı** (B2-1
 Bradford Kanunu, B2-2 Louvain kümeleri + tablo, B2-3 Tematik Harita, B2-4
-Tematik Evrim, B2-5 Üç Alan Grafiği, B2-6 SCP/MCP) — hepsi `dev`'e commit
-edildi (henüz push edilmedi), istatistik araç sayısı 17→22. **Yeni
-oturum buradan devam etsin: sıradaki B2-7..B2-8, sonra B3, B4** (bkz. madde 3
+Tematik Evrim, B2-5 Üç Alan Grafiği, B2-6 SCP/MCP, B2-7 Bibliyografik
+Eşleşme + Yerel/Küresel Atıf) — hepsi `dev`'e commit edildi (B2-1..B2-6 push
+edildi, B2-7 henüz push edilmedi), istatistik araç sayısı 17→24. **Yeni
+oturum buradan devam etsin: sıradaki B2-8, sonra B3, B4** (bkz. madde 3
 altındaki detaylı liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4).
 Ayrıca aşağıdaki 2 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
@@ -176,7 +177,42 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      — bibliometrix'in gerçek SCP/MCP grafiğiyle aynı kalıp. 3 yeni pytest,
      rapor "kurallar" metni EN/DE çevrildi. Yeni paket/migration yok.
      `forum+bibliometrics` 161/161.
-   - [ ] B2-7..B2-8 (bkz. plan dosyası §4 — atıf ağları, konu modelleme)
+   - [x] **B2-7 TAMAMLANDI (29 Ekim 2026, dev'de, push edilmedi):** Atıf
+     ağları. **Veri durumu netleştirildi (AskUserQuestion ile kullanıcıya
+     soruldu):** `referenced_works` yalnız DOI'li ve B1-1 OpenAlex
+     zenginleştirmesinden geçen kayıtlarda dolu; her kaydın KENDİ OpenAlex
+     ID'si hiçbir yerde saklanmıyordu — klasik "co-citation" (harici atıf
+     edilen eserler arası ağ) için düğümler yalnız ham ID ile etiketlenebilir
+     (başlık için yüzlerce ek API çağrısı gerekir) — kullanıcı bu nedenle en
+     dar/en değerli kapsamı seçti: **Bibliyografik Eşleşme (Bibliographic
+     Coupling) + Yerel/Küresel Atıf**, harici co-citation ağı YAPILMADI.
+     `enrichment.py`'ye `rec['openalex_id']` eklendi (B1-1 akışında, `work.
+     get('id')`) + `parser.py` `EMPTY_RECORD`'a `'openalex_id': ''` eklendi.
+     `analyzer.py`'ye `bibliographic_coupling()` (iki yayın aynı esere atıf
+     yapıyorsa bağlanır, kenar ağırlığı paylaşılan referans sayısı —
+     `country_collaboration()`/`author_collaboration()` ile aynı ağ çizim
+     kalıbı, Counter + fallback) + `local_citation_counts()`/
+     `local_global_citations()` (saf hesap + çizim ayrımı, `scp_mcp_counts`/
+     `scp_mcp_chart` kalıbıyla tutarlı — "yerel atıf" = bu veri setindeki
+     diğer kayıtlardan kaç tanesinin referenced_works'ünde bu kaydın
+     openalex_id'si geçtiği) eklendi, 23. ve 24. analiz olarak kaydedildi
+     (istatistik araç sayısı 22→24, tüm "N Analiz" referansları 7 dosyada
+     güncellendi). **Görsel doğrulamada bulunup düzeltilen gerçek tasarım
+     sorunu:** ilk tasarımda yerel/küresel atıf aynı eksende çift çubuk
+     olarak çiziliyordu — küresel atıf (tüm literatür) yerel atıftan
+     (küçük veri setindeki iç atıf) yapısal olarak çok büyük olduğundan
+     (gerçek veride de hep böyle olacak) yerel çubuk görünmez kalıyordu;
+     tasarım tek çubuğa (yerel atıf, sıralama ölçütü) + her çubuğun yanına
+     "{yerel} yerel · {küresel} küresel atıf" metin etiketine çevrildi —
+     ikisi de ölçek farkından bağımsız okunabilir. `local_global_citations`
+     bu nedenle `has_citations=False` (PubMed) kaynaklarda da atlanan
+     `citation_based` kümesine eklendi (küresel atıf her zaman 0 olurdu).
+     Sentetik veriyle (25 yayın × paylaşılan referans havuzu; 12 iç-atıflı
+     kayıt) görsel doğrulandı. 8 yeni pytest (ağ düğüm sayısı + yerel atıf
+     sıralaması + eşik altı/üstü durumlar), rapor "kurallar" metni (2 yeni
+     cümle) EN/DE çevrildi. Yeni paket yok, migration yok (openalex_id
+     kayıt içi bir alan, model değil). `forum+bibliometrics` 167/167.
+   - [ ] B2-8 (bkz. plan dosyası §4 — konu modelleme NMF/LDA)
    - [ ] B3-B4 (bkz. plan dosyası §4)
 
 Ayrıca not: Hetzner'de yalnız **2 CPU** var — deploy/collectstatic yavaş

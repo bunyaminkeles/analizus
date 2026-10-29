@@ -1636,7 +1636,7 @@ class SiteSettings(models.Model):
     bibliometri_demo_grafik_sayisi = models.PositiveIntegerField(
         default=10,
         verbose_name="Bibliometri Demo Grafik Sayısı",
-        help_text="Bibliometri demo PDF'inde gösterilecek grafik sayısı (toplam en fazla 22 grafik üretilebilir). (default: 10)",
+        help_text="Bibliometri demo PDF'inde gösterilecek grafik sayısı (toplam en fazla 24 grafik üretilebilir). (default: 10)",
     )
     bibliometri_openalex_zenginlestirme_max_kayit = models.PositiveIntegerField(
         default=2000,

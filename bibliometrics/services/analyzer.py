@@ -266,10 +266,15 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
          gettext('En az 2 yazar, 2 anahtar kelime ve 2 dergi arasında birlikte geçme akışı gerekir.')),
         (gettext('Ülke İşbirliği: Tek Ülkeli ve Çok Ülkeli Yayınlar (SCP/MCP)'), lambda: scp_mcp_chart(records),
          gettext('Ülke veya kurum bilgisi yok.')),
+        (gettext('Bibliyografik Eşleşme Ağı (Paylaşılan Referanslar)'), lambda: bibliographic_coupling(records),
+         gettext('Referans listesi (en az 2 kayıtta, paylaşılan referansla) yok.')),
+        (gettext('Yerel Atıf ve Küresel Atıf Karşılaştırması'), lambda: local_global_citations(records),
+         gettext('Bu veri setindeki kayıtlar arasında referans üzerinden iç atıf bulunamadı.')),
     ]
     citation_based = {
         gettext('En Çok Atıf Alan Yayınlar (Top 10)'), gettext('Atıf Analizi ve H-index'),
         gettext('Yıllık Atıf Trendi'), gettext('Araştırma Boşluğu Haritası (Research Gap)'),
+        gettext('Yerel Atıf ve Küresel Atıf Karşılaştırması'),
     }
     results = []
     for title, fn, reason, *is_series in analyses:
@@ -2104,6 +2109,178 @@ def scp_mcp_chart(records: list[dict], n: int = 10):
         if total > 0:
             ax.text(total + max(total * 0.01, 0.1), i, f'{total:,}',
                    ha='left', va='center', fontsize=9, color='#334155', fontweight='bold')
+
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 23. Bibliyografik Eşleşme Ağı ───────────────────────────
+
+def bibliographic_coupling(records: list[dict], min_shared: int = 2, max_nodes: int = 30):
+    """
+    Bibliyografik Eşleşme Ağı (B2-7, bibliometrix 'Bibliographic Coupling' eşdeğeri):
+    iki yayın, aynı eserlere atıf yapıyorsa (referenced_works kesişimi) bağlanır;
+    kenar ağırlığı paylaşılan referans sayısıdır. Yalnız referenced_works dolu
+    kayıtlar (B1-1 OpenAlex zenginleştirmesinden geçmiş, DOI'li) katılır.
+    """
+    try:
+        import networkx as nx
+    except ImportError:
+        logger.warning('networkx paketi yüklü değil')
+        return None
+
+    candidates = [r for r in records if r.get('referenced_works')]
+    if len(candidates) < 2:
+        return None
+
+    # Her kayıt için kısa, benzersiz düğüm etiketi (aynı kısaltma 2. kez çıkarsa "(2)" eklenir)
+    labels = []
+    seen = Counter()
+    for r in candidates:
+        title = (r.get('title') or '').strip() or gettext('(başlıksız)')
+        short = title[:45] + '…' if len(title) > 45 else title
+        seen[short] += 1
+        labels.append(f'{short} ({seen[short]})' if seen[short] > 1 else short)
+
+    ref_sets = [set(r['referenced_works']) for r in candidates]
+
+    coupling_count = Counter()
+    for i in range(len(candidates)):
+        for j in range(i + 1, len(candidates)):
+            shared = len(ref_sets[i] & ref_sets[j])
+            if shared > 0:
+                coupling_count[(labels[i], labels[j])] = shared
+
+    G = nx.Graph()
+    for (l1, l2), w in coupling_count.items():
+        if w >= min_shared:
+            G.add_edge(l1, l2, weight=w)
+
+    if G.number_of_nodes() == 0:
+        for (l1, l2), w in coupling_count.most_common(40):
+            G.add_edge(l1, l2, weight=w)
+
+    if G.number_of_nodes() == 0:
+        return None
+
+    if G.number_of_nodes() > max_nodes:
+        top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_nodes]
+        G = G.subgraph([n for n, _ in top_nodes]).copy()
+        if G.number_of_nodes() == 0:
+            return None
+
+    degrees = dict(G.degree())
+    max_deg = max(degrees.values()) if degrees else 1
+    min_deg = min(degrees.values()) if degrees else 0
+    span = (max_deg - min_deg) or 1
+
+    node_colors = [plt.cm.viridis(0.15 + 0.7 * (degrees[n] - min_deg) / span)
+                   for n in G.nodes()]
+    node_sizes = [300 + degrees[n] * 130 for n in G.nodes()]
+    edge_weights = [G[u][v].get('weight', 1) for u, v in G.edges()]
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    pos = nx.spring_layout(G, seed=42, k=3.0)
+
+    nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.35,
+                           width=[min(w * 0.6, 4.0) for w in edge_weights],
+                           edge_color='#94a3b8')
+    nx.draw_networkx_nodes(G, pos, ax=ax, node_size=node_sizes,
+                           node_color=node_colors, alpha=0.9,
+                           linewidths=0.8, edgecolors='white')
+
+    degree_threshold = sorted(degrees.values(), reverse=True)[min(14, len(degrees) - 1)]
+    label_dict = {n: n for n, d in degrees.items() if d >= degree_threshold}
+    nx.draw_networkx_labels(G, pos, labels=label_dict, ax=ax,
+                            font_size=7, font_color='#1e293b', font_weight='bold')
+
+    sm = plt.cm.ScalarMappable(cmap=plt.cm.viridis,
+                               norm=plt.Normalize(vmin=min_deg, vmax=max_deg))
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax, fraction=0.03, pad=0.02)
+    cbar.set_label(gettext('Paylaşılan Referans Sayısı'), fontsize=10)
+
+    ax.set_title(gettext('Bibliyografik Eşleşme Ağı (Paylaşılan Referanslar)'))
+    ax.axis('off')
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 24. Yerel / Küresel Atıf ───────────────────────────
+
+def local_citation_counts(records: list[dict]):
+    """
+    Her openalex_id'li kayıt için "yerel atıf" sayısı (bu veri setindeki diğer
+    kayıtlardan kaçının onu referenced_works üzerinden atıf yaptığı).
+    Döner: {openalex_id: yerel_atıf_sayısı} (hiç iç atıf yoksa None).
+    """
+    own_ids = {r['openalex_id']: r for r in records if r.get('openalex_id')}
+    if len(own_ids) < 2:
+        return None
+
+    local_count = Counter()
+    for r in records:
+        for ref in (r.get('referenced_works') or []):
+            if ref in own_ids:
+                local_count[ref] += 1
+
+    if not local_count:
+        return None
+    return dict(local_count)
+
+
+def local_global_citations(records: list[dict], n: int = 15):
+    """
+    Yerel Atıf vs Küresel Atıf (B2-7, bibliometrix 'Local Citations' eşdeğeri):
+    "küresel atıf" (cited_by) yayının OpenAlex genelindeki toplam atıf sayısıdır;
+    "yerel atıf" yalnız BU veri setindeki diğer kayıtlardan kaçının ona
+    referenced_works üzerinden atıf yaptığıdır (derlemenin kendi iç etkisi).
+    Yalnız openalex_id'si olan (B1-1 zenginleştirmesinden geçmiş) kayıtlar için
+    hesaplanabilir.
+    """
+    local_count = local_citation_counts(records)
+    if local_count is None:
+        return None
+
+    own_ids = {r['openalex_id']: r for r in records if r.get('openalex_id')}
+    ranked = sorted(local_count.items(), key=lambda kv: kv[1], reverse=True)[:n]
+
+    titles, local_vals, global_vals = [], [], []
+    for oid, local in ranked:
+        rec = own_ids[oid]
+        title = (rec.get('title') or '').strip() or gettext('(başlıksız)')
+        titles.append(title[:45] + '…' if len(title) > 45 else title)
+        local_vals.append(local)
+        global_vals.append(rec.get('cited_by') or 0)
+
+    # Küresel atıf (tüm literatür) her zaman yerel atıftan (bu küçük veri setindeki iç
+    # atıf) çok daha büyük olabilir — aynı eksende çift çubuk yerel çubuğu görünmez
+    # kılardı; bu yüzden sıralama yerel atfa göre, küresel sayı her çubuğun yanında
+    # metin olarak gösterilir (ölçek farkından bağımsız, her ikisi de okunabilir).
+    fig, ax = plt.subplots(figsize=(10, max(10, len(titles) * 0.8)))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    y_pos = list(range(len(titles)))
+    bars = ax.barh(y_pos, local_vals, color=PALETTE[2], alpha=0.9, height=0.7,
+                   edgecolor='white', linewidth=0.5, zorder=2)
+
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(titles, fontsize=9)
+    ax.invert_yaxis()
+    ax.set_xlabel(gettext('Yerel Atıf Sayısı (Bu Veri Setinde)'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('En Çok Yerel Atıf Alan Yayınlar (Top {n})').format(n=len(titles)))
+    ax.grid(axis='x', zorder=1)
+
+    max_local = max(local_vals) or 1
+    label_tmpl = gettext('{local} yerel · {glob} küresel atıf')
+    for bar, local, glob in zip(bars, local_vals, global_vals):
+        ax.text(bar.get_width() + max_local * 0.02, bar.get_y() + bar.get_height() / 2,
+               label_tmpl.format(local=f'{local:,}', glob=f'{glob:,}'),
+               ha='left', va='center', fontsize=8.5, color='#334155', fontweight='bold')
 
     fig.tight_layout(pad=2.0)
     return fig

@@ -83,3 +83,6 @@ def _apply_enrichment(rec: dict, work: dict) -> None:
     rec['author_ids'] = [
         a.get('author', {}).get('id', '') for a in authorships if a.get('author', {}).get('id')
     ]
+    # B2-7: kaydın kendi OpenAlex ID'si — başka kayıtların referenced_works'ünde
+    # bu ID geçiyorsa "yerel atıf" (bu veri setindeki iç atıf) sayılabilir.
+    rec['openalex_id'] = work.get('id') or ''
