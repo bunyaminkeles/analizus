@@ -1558,3 +1558,39 @@ def test_quiz_answer_requires_csrf_token(user):
     )
     assert with_token.status_code == 200
     assert with_token.json()['success'] is True
+
+
+# ─── Admin Dashboard: CSV Export ───────────────────────────────────────────────
+
+@pytest.mark.django_db
+def test_dashboard_export_csv_users_returns_200(client, staff_user):
+    """Profile.score yanlışlıkla kullanılıyordu (doğrusu total_score/reputation) —
+    her zaman 500 veriyordu, hiç testi yoktu (29 Ekim 2026, kullanıcı hata e-postasıyla bildirdi)."""
+    from forum.models import Profile, QuizScore
+
+    client.force_login(staff_user)
+    Profile.objects.create(user=staff_user, reputation=10)
+    QuizScore.objects.create(user=staff_user, total_points=5)
+
+    response = client.get(reverse('dashboard_export_csv'))
+    assert response.status_code == 200
+
+    import csv, io
+    rows = list(csv.reader(io.StringIO(response.content.decode('utf-8-sig'))))
+    assert rows[0] == ['Kullanıcı Adı', 'E-posta', 'Kayıt Tarihi', 'Son Giriş', 'E-posta Doğrulandı', 'Puan']
+    staff_row = next(r for r in rows[1:] if r[0] == staff_user.username)
+    assert staff_row[-1] == '15'  # reputation (10) + quiz puanı (5)
+
+
+@pytest.mark.django_db
+def test_dashboard_export_csv_istatistik_returns_200(client, staff_user):
+    client.force_login(staff_user)
+    response = client.get(reverse('dashboard_export_csv'), {'type': 'istatistik'})
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_dashboard_export_csv_requires_staff(client, user):
+    client.force_login(user)
+    response = client.get(reverse('dashboard_export_csv'))
+    assert response.status_code in (302, 403)

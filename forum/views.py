@@ -3146,16 +3146,25 @@ def dashboard_export_csv(request):
         response.write('\ufeff')
         writer = csv.writer(response)
         writer.writerow(['Kullanıcı Adı', 'E-posta', 'Kayıt Tarihi', 'Son Giriş', 'E-posta Doğrulandı', 'Puan'])
+        from django.db.models import Sum
+        from .models import QuizScore
+
         qs = User.objects.select_related('profile').order_by('-date_joined')
+        # Profile.total_score özelliği her çağrıda self.user.quiz_scores.first() ile ayrı
+        # sorgu atıyor — tüm kullanıcılar üzerinde döngüde N+1'e yol açar, tek sorguda topla.
+        quiz_points_map = dict(
+            QuizScore.objects.values('user_id').annotate(total=Sum('total_points')).values_list('user_id', 'total')
+        )
         for u in qs:
             profile = getattr(u, 'profile', None)
+            reputation = profile.reputation if profile else 0
             writer.writerow([
                 u.username,
                 u.email,
                 u.date_joined.strftime('%Y-%m-%d'),
                 u.last_login.strftime('%Y-%m-%d') if u.last_login else '',
                 'Evet' if (profile and profile.email_verified) else 'Hayır',
-                profile.score if profile else 0,
+                reputation + quiz_points_map.get(u.id, 0),
             ])
         return response
 
