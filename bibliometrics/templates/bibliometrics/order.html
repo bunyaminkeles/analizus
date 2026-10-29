@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      {% if job.clean_data_xlsx_url or job.clean_data_csv_url %}
+      {% if job.clean_data_xlsx_url or job.clean_data_csv_url or job.vosviewer_export_url %}
       {# Temiz Veri Seti (B3-1, ücretsiz) #}
       <div class="p-4 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3" style="background:rgba(21,32,43,.6);border:1px solid rgba(0,210,255,.15);border-radius:15px;">
         <div>
@@ -38,6 +38,7 @@
         <div class="d-flex gap-2">
           {% if job.clean_data_xlsx_url %}<a href="{{ job.clean_data_xlsx_url }}" target="_blank" class="btn btn-outline-info btn-sm fw-bold"><i class="bi bi-file-earmark-excel me-1"></i> XLSX</a>{% endif %}
           {% if job.clean_data_csv_url %}<a href="{{ job.clean_data_csv_url }}" target="_blank" class="btn btn-outline-info btn-sm fw-bold"><i class="bi bi-filetype-csv me-1"></i> CSV</a>{% endif %}
+          {% if job.vosviewer_export_url %}<a href="{{ job.vosviewer_export_url }}" target="_blank" class="btn btn-outline-info btn-sm fw-bold"><i class="bi bi-diagram-3 me-1"></i> VOSviewer (ZIP)</a>{% endif %}
         </div>
       </div>
       {% endif %}

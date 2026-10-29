@@ -577,7 +577,9 @@ def top_institutions(records: list[dict], n: int = 10):
 
 # ─────────────────────────── 7. Yazar İşbirliği Ağı ───────────────────────────
 
-def author_collaboration(records: list[dict], max_authors: int = 35, min_collab: int = 2):
+def _author_collaboration_graph(records: list[dict], max_authors: int = 35, min_collab: int = 2):
+    """`author_collaboration()`'ın graf kurma kısmı (B3-2 — VOSviewer export'unun da
+    kullanabilmesi için çizimden ayrıldı, davranış birebir aynı)."""
     try:
         import networkx as nx
     except ImportError:
@@ -613,6 +615,16 @@ def author_collaboration(records: list[dict], max_authors: int = 35, min_collab:
     if G.number_of_nodes() > max_authors:
         top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_authors]
         G = G.subgraph([n for n, _ in top_nodes]).copy()
+
+    return G
+
+
+def author_collaboration(records: list[dict], max_authors: int = 35, min_collab: int = 2):
+    import networkx as nx
+
+    G = _author_collaboration_graph(records, max_authors, min_collab)
+    if G is None:
+        return None
 
     degrees = dict(G.degree())
     max_deg = max(degrees.values()) if degrees else 1
@@ -1172,7 +1184,10 @@ def keyword_trend(records: list[dict], top_n: int = 8):
 
 # ─────────────────────────── 15. Ülke İşbirliği Ağı ───────────────────────────
 
-def country_collaboration(records: list[dict], min_collab: int = 2, max_countries: int = 30):
+def _country_collaboration_graph(records: list[dict], min_collab: int = 2, max_countries: int = 30):
+    """`country_collaboration()`'ın graf kurma kısmı (B3-2 — VOSviewer export'u için
+    ayrıldı, davranış birebir aynı). Düğümler `_record_countries()`'in döndürdüğü
+    etkin dildeki ülke adı (çizimle aynı — `_country_label()` ISO-2'yi çevirir)."""
     try:
         import networkx as nx
     except ImportError:
@@ -1202,6 +1217,16 @@ def country_collaboration(records: list[dict], min_collab: int = 2, max_countrie
     if G.number_of_nodes() > max_countries:
         top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_countries]
         G = G.subgraph([n for n, _ in top_nodes]).copy()
+
+    return G
+
+
+def country_collaboration(records: list[dict], min_collab: int = 2, max_countries: int = 30):
+    import networkx as nx
+
+    G = _country_collaboration_graph(records, min_collab, max_countries)
+    if G is None:
+        return None
 
     degrees = dict(G.degree())
     max_deg = max(degrees.values()) if degrees else 1
@@ -2125,13 +2150,9 @@ def scp_mcp_chart(records: list[dict], n: int = 10):
 
 # ─────────────────────────── 23. Bibliyografik Eşleşme Ağı ───────────────────────────
 
-def bibliographic_coupling(records: list[dict], min_shared: int = 2, max_nodes: int = 30):
-    """
-    Bibliyografik Eşleşme Ağı (B2-7, bibliometrix 'Bibliographic Coupling' eşdeğeri):
-    iki yayın, aynı eserlere atıf yapıyorsa (referenced_works kesişimi) bağlanır;
-    kenar ağırlığı paylaşılan referans sayısıdır. Yalnız referenced_works dolu
-    kayıtlar (B1-1 OpenAlex zenginleştirmesinden geçmiş, DOI'li) katılır.
-    """
+def _bibliographic_coupling_graph(records: list[dict], min_shared: int = 2, max_nodes: int = 30):
+    """`bibliographic_coupling()`'ın graf kurma kısmı (B3-2 — VOSviewer export'u için
+    ayrıldı, davranış birebir aynı — kısa/benzersiz başlık etiketleri dahil)."""
     try:
         import networkx as nx
     except ImportError:
@@ -2177,6 +2198,22 @@ def bibliographic_coupling(records: list[dict], min_shared: int = 2, max_nodes: 
         G = G.subgraph([n for n, _ in top_nodes]).copy()
         if G.number_of_nodes() == 0:
             return None
+
+    return G
+
+
+def bibliographic_coupling(records: list[dict], min_shared: int = 2, max_nodes: int = 30):
+    """
+    Bibliyografik Eşleşme Ağı (B2-7, bibliometrix 'Bibliographic Coupling' eşdeğeri):
+    iki yayın, aynı eserlere atıf yapıyorsa (referenced_works kesişimi) bağlanır;
+    kenar ağırlığı paylaşılan referans sayısıdır. Yalnız referenced_works dolu
+    kayıtlar (B1-1 OpenAlex zenginleştirmesinden geçmiş, DOI'li) katılır.
+    """
+    import networkx as nx
+
+    G = _bibliographic_coupling_graph(records, min_shared, max_nodes)
+    if G is None:
+        return None
 
     degrees = dict(G.degree())
     max_deg = max(degrees.values()) if degrees else 1

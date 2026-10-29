@@ -213,6 +213,9 @@
                   <a href="#" target="_blank" class="btn btn-outline-info fw-bold d-none" id="downloadCleanCsvBtn">
                     <i class="bi bi-filetype-csv me-1"></i> CSV
                   </a>
+                  <a href="#" target="_blank" class="btn btn-outline-info fw-bold d-none" id="downloadVosviewerBtn">
+                    <i class="bi bi-diagram-3 me-1"></i> {% trans "VOSviewer (ZIP)" %}
+                  </a>
                 </div>
               </div>
             </div>
@@ -422,6 +425,7 @@
   const downloadDemo = document.getElementById('downloadDemoBtn');
   const downloadCleanXlsx = document.getElementById('downloadCleanXlsxBtn');
   const downloadCleanCsv  = document.getElementById('downloadCleanCsvBtn');
+  const downloadVosviewer = document.getElementById('downloadVosviewerBtn');
   const sendDemo   = document.getElementById('sendDemoBtn');
   const orderBtn   = document.getElementById('orderBtn');
   const demoSent   = document.getElementById('demoSentMsg');
@@ -547,6 +551,10 @@
     if (data.clean_data_csv_url) {
       downloadCleanCsv.href = data.clean_data_csv_url;
       downloadCleanCsv.classList.remove('d-none');
+    }
+    if (data.vosviewer_export_url) {
+      downloadVosviewer.href = data.vosviewer_export_url;
+      downloadVosviewer.classList.remove('d-none');
     }
 
     if (data.demo_email_sent) {

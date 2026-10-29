@@ -11,11 +11,13 @@ B2-8 Konu Modelleme NMF). B1+B2 (B1-1..B2-8 tamamı) kullanıcı isteğiyle
 `--no-ff` ile `main`'e merge edilip push edildi (Hetzner deploy tetiklendi,
 merge öncesi production'da aktif kullanıcı kontrolü yapıldı). İstatistik
 araç sayısı 17→26. **B3 (Çıktılar) başladı: B3-1 (Temiz Veri Seti İndirme
-XLSX/CSV, herkese ücretsiz) TAMAMLANDI, henüz yalnız `dev`'de, main'e merge
-edilmedi** — kullanıcı "merge et" demeden dokunulmayacak. **Yeni oturum
-buradan devam etsin: sıradaki B3-2 (VOSviewer export + Biblioshiny
-formatı), sonra B3-3/B3-4, sonra B4** (bkz. madde 3 altındaki detaylı liste
-ve `bibliometri_durum_ve_gelistirme_prompt.md` §4).
+XLSX/CSV) + B3-2 (VOSviewer map+network export) TAMAMLANDI, henüz yalnız
+`dev`'de, main'e merge edilmedi** — kullanıcı "merge et" demeden
+dokunulmayacak. **Yeni oturum buradan devam etsin: sıradaki B3-3 (hazır
+Yöntem metni + PRISMA diyagramı), sonra B3-4, sonra B4** (B3-2b — Biblioshiny
+WoS-plaintext export — R/bibliometrix ile test edilebildiğinde ayrı ele
+alınacak; bkz. madde 3 altındaki detaylı liste ve
+`bibliometri_durum_ve_gelistirme_prompt.md` §4).
 Ayrıca aşağıdaki 2 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
@@ -258,8 +260,28 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      pytest + gerçek job ile uçtan uca S3 doğrulaması (test nesneleri
      sonra silindi). EN/DE çevrildi (polib ile 2 fuzzy düzeltildi).
      `forum+bibliometrics` 178/178. Detay: `analizus.md` §27 (29 Ekim B3-1).
-   - [ ] B3-2 (VOSviewer map+network export + Biblioshiny formatı) — sırada,
-     ayrı onay/tur.
+   - [x] **B3-2 TAMAMLANDI (29 Ekim 2026, dev'de):** VOSviewer Uyumlu Dışa
+     Aktarım. Format resmi VOSviewer dokümanından doğrulandı (WebFetch);
+     x/y/cluster bilinçli olarak gönderilmiyor (VOSviewer kendi yerleşim/
+     kümelemesini çalıştırsın). 4 ağ (anahtar kelime eş-oluşumu, yazar
+     işbirliği, ülke işbirliği, bibliyografik eşleşme) — veri yoksa o ağ
+     atlanır. Refactor: `author_collaboration()`/`country_collaboration()`/
+     `bibliographic_coupling()` artık `_*_graph()` yardımcılarını çağırıyor
+     (davranış aynı, G dışa açıldı). **Refactor sırasında gerçek regresyon
+     bulundu+düzeltildi:** 2 fonksiyonda `import networkx as nx` yanlışlıkla
+     eksik kalmıştı (`NameError`) — `country_collaboration()`'ın hiç testi
+     olmadığı için yalnız `bibliographic_coupling` testi yakaladı. Yeni
+     `bibliometrics/services/vosviewer_export.py` (stdlib `zipfile`);
+     `BibliometricJob.vosviewer_export_url` (migration `0009`);
+     `_upload_vosviewer_export()` (B3-1 deseniyle aynı, hata toleranslı);
+     B3-1'in 3. kartına üçüncü buton. 9 yeni pytest + gerçek job uçtan uca
+     S3 doğrulaması. EN/DE çevrildi. `forum+bibliometrics` 187/187. **Kullanıcı
+     kararı: Biblioshiny (bibliometrix) WoS-plaintext export bu turda
+     YAPILMADI** (R/bibliometrix burada kurulu değil, gerçek yazılımla
+     doğrulanamıyor) — ayrı B3-2b olarak bekliyor. Detay: `analizus.md` §27
+     (29 Ekim B3-2).
+   - [ ] B3-2b (Biblioshiny/bibliometrix WoS-plaintext export) — R ile test
+     edilebildiğinde ele alınacak, ayrı onay/tur.
    - [ ] B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı)
    - [ ] B3-4 (grafik başına otomatik yorum cümlesi, kural tabanlı)
    - [ ] B4 (ürün/huni) — bkz. plan dosyası §4

@@ -3298,6 +3298,51 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   OpenAlex"a fuzzy-eşleşmişti). `forum+bibliometrics` 178/178 geçti,
   migration yok (ayrı admin flag istenmedi). **Sırada B3-2** (VOSviewer
   map+network export + Biblioshiny formatı) — ayrı onay/tur.
+- **29 Ekim 2026 — Bibliometri Grup B, B3-2 (VOSviewer Uyumlu Dışa Aktarım)
+  TAMAMLANDI, `dev`'de.** VOSviewer format resmi dokümandan doğrulandı
+  (`https://app.vosviewer.com/docs/file-types/map-and-network-file-type/`):
+  map dosyası (tab-ayraçlı, başlıklı, `id`+`label` yeterli) + network
+  dosyası (başlıksız, `id1\tid2\tweight`); etikette virgül/noktalı virgül
+  varsa çift tırnağa alınır. **Bilinçli tasarım kararı:** x/y/cluster hiç
+  gönderilmiyor — VOSviewer kendi yerleşim+kümeleme algoritmasını
+  çalıştırsın diye (asıl katkımız zaten temizlenmiş/doğru ağırlıklandırılmış
+  kenar verisi: tekilleştirme, yazar adı birleştirme, anahtar kelime
+  normalizasyonu). **Kullanıcı kararı (AskUserQuestion):** Biblioshiny
+  (bibliometrix) uyumlu WoS-plaintext export bu turda YAPILMADI — burada
+  R/bibliometrix kurulu olmadığı için gerçek yazılımla doğrulanamıyor, ayrı
+  bir alt göreve (B3-2b) bırakıldı. 4 ağ dışa aktarılıyor: anahtar kelime
+  eş-oluşumu, yazar işbirliği, ülke işbirliği, bibliyografik eşleşme — her
+  biri varsa (veri yetersizse o ağ atlanır, ZIP'in geri kalanı yine üretilir)
+  bir `_map.txt`/`_network.txt` çifti. **Refactor (mimari ön-koşul):**
+  `author_collaboration()`/`country_collaboration()`/`bibliographic_coupling()`
+  yalnız `fig` döndürüyordu, networkx `G`'yi dışa açmıyordu (yalnız
+  `keyword_clusters()` zaten `(G, communities, all_kw)` döndürüyordu) — B2'nin
+  `_data()`+chart ayrımı kalıbıyla (`three_field_plot_data`/`scp_mcp_counts`
+  benzeri) her biri `_author_collaboration_graph()`/`_country_collaboration_graph()`/
+  `_bibliographic_coupling_graph()`'a ayrıldı (davranış birebir aynı — çizim
+  fonksiyonları artık bu yardımcıyı çağırıyor). **Gerçek regresyon bulundu ve
+  düzeltildi:** refactor sırasında `country_collaboration()`/`bibliographic_coupling()`
+  gövdesinde kalan `nx.spring_layout`/`nx.draw_networkx_*` çağrıları için
+  `import networkx as nx` satırı yanlışlıkla yeni yardımcıya taşınmış, asıl
+  fonksiyonda eksik kalmıştı (`NameError`) — `country_collaboration()`'ın
+  daha önce hiç pytest'i olmadığı için yalnız `bibliographic_coupling()`
+  testi bunu yakaladı; ikisi de düzeltildi, ayrıca `country_collaboration()`
+  için uçtan uca smoke-test elle çalıştırıldı. Yeni
+  `bibliometrics/services/vosviewer_export.py` (stdlib `zipfile` — yeni
+  bağımlılık yok), `BibliometricJob.vosviewer_export_url` (migration `0009`),
+  `job_runner.py`'ye `_upload_vosviewer_export()` (B3-1'deki hata-toleranslı
+  desenle aynı), `cleanup_expired_bibliometrics_s3_files()`'a yeni prefix,
+  `job_status` JSON + B3-1'in "Temiz Veri Seti" kartına üçüncü buton
+  (ayrı kart açılmadı). 9 yeni pytest (map/network dosya biçimi, ZIP
+  içeriği, veri yoksa `None`, 3 graf yardımcısının regresyon/birim testleri,
+  `_upload_vosviewer_export` mock'lu başarı/hata) + gerçek bir iş uçtan uca
+  çalıştırılıp S3'ten indirilen ZIP içeriği (yalnız keyword+author ağı
+  üretildi — bu sentetik veri setinde ülke/referanslı atıf verisi yoktu,
+  beklenen davranış) elle doğrulandı, test nesneleri silindi. EN/DE
+  çevrildi (`polib` ile "VOSviewer (ZIP)" fuzzy-eşleşmesi + OKUBENI.txt
+  içeriği düzeltildi). `forum+bibliometrics` 187/187 geçti. **Sırada B3-3**
+  (hazır Yöntem metni + PRISMA diyagramı) — ayrı onay/tur; B3-2b
+  (Biblioshiny) R ile test edilebildiğinde ele alınacak açık iş.
 - **27 Ekim 2026 — Sabit "araç sayısı" ifadeleri genel metne çevrildi (main'de
   canlı, `dev`→`main` `--no-ff` merge).** Kullanıcının GSC 404 ekran
   görüntüsü üzerine yapılan araştırma sırasında fark edildi: `home.html`/

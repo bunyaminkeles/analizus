@@ -971,3 +971,132 @@ def test_upload_clean_data_tolerates_upload_failure(monkeypatch):
 
     xlsx_url, csv_url = job_runner._upload_clean_data(_clean_export_records(), 'job456')
     assert xlsx_url == '' and csv_url == ''
+
+
+# ─────────────────────────── B3-2: VOSviewer Export ───────────────────────────
+
+def _vosviewer_records():
+    """Yazar/ülke/anahtar kelime/referans çiftleri üzerinde en az 1 bağlantı
+    üretecek 2 kayıt — her 4 ağ fonksiyonu için de en az bir kenar."""
+    base = {
+        'authors': ['Ahmet Yılmaz', 'Mehmet Demir'],
+        'country': 'TR; US',
+        'keywords': ['makine öğrenmesi', 'yapay zeka'],
+        'referenced_works': ['https://openalex.org/W1', 'https://openalex.org/W2'],
+    }
+    return [
+        {**base, 'title': 'Birinci Makale', 'year': 2021},
+        {**base, 'title': 'İkinci Makale', 'year': 2022},
+    ]
+
+
+def test_graph_to_files_produces_expected_map_and_network_columns():
+    import networkx as nx
+    from bibliometrics.services.vosviewer_export import _graph_to_files
+
+    G = nx.Graph()
+    G.add_edge('Kelime A', 'Kelime B, Sanayi', weight=3)
+
+    map_text, network_text = _graph_to_files(G)
+
+    map_lines = map_text.strip('\n').split('\n')
+    assert map_lines[0] == 'id\tlabel\tweight<Occurrences>'
+    assert len(map_lines) == 3  # başlık + 2 düğüm
+    # virgüllü etiket çift tırnağa alınmış olmalı
+    assert any('"Kelime B, Sanayi"' in line for line in map_lines[1:])
+
+    network_lines = network_text.strip('\n').split('\n')
+    assert len(network_lines) == 1
+    id1, id2, w = network_lines[0].split('\t')
+    assert w == '3'
+
+
+def test_build_vosviewer_zip_contains_all_four_networks():
+    import zipfile
+    import io
+    from bibliometrics.services.vosviewer_export import build_vosviewer_zip
+
+    data = build_vosviewer_zip(_vosviewer_records())
+    assert data is not None
+
+    zf = zipfile.ZipFile(io.BytesIO(data))
+    names = set(zf.namelist())
+    assert 'OKUBENI.txt' in names
+    for prefix in ('anahtar_kelime_es_olusumu', 'yazar_isbirligi',
+                   'ulke_isbirligi', 'bibliyografik_eslesme'):
+        assert f'{prefix}_map.txt' in names
+        assert f'{prefix}_network.txt' in names
+
+
+def test_build_vosviewer_zip_returns_none_without_any_network_data():
+    from bibliometrics.services.vosviewer_export import build_vosviewer_zip
+
+    # Tek yazarlı, ülkesiz, anahtar kelimesiz, referanssız kayıtlar — hiçbir ağ kurulamaz
+    records = [{'authors': ['Tek Yazar'], 'title': f'Makale {i}', 'year': 2020} for i in range(5)]
+    assert build_vosviewer_zip(records) is None
+
+
+def test_upload_vosviewer_export_returns_url(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    uploaded = {}
+
+    def fake_upload(data, key, content_type):
+        uploaded[key] = content_type
+        return f'https://s3.example.com/{key}'
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    url = job_runner._upload_vosviewer_export(_vosviewer_records(), 'job789')
+    assert url == 'https://s3.example.com/bibliometrics/vosviewer/job789.zip'
+    assert uploaded['bibliometrics/vosviewer/job789.zip'] == 'application/zip'
+
+
+def test_upload_vosviewer_export_returns_empty_without_data(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    called = []
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', lambda *a, **k: called.append(1))
+
+    records = [{'authors': ['Tek Yazar'], 'title': f'Makale {i}', 'year': 2020} for i in range(5)]
+    url = job_runner._upload_vosviewer_export(records, 'job000')
+    assert url == ''
+    assert not called
+
+
+def test_upload_vosviewer_export_tolerates_upload_failure(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    def fake_upload(data, key, content_type):
+        raise RuntimeError('S3 kapalı')
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    url = job_runner._upload_vosviewer_export(_vosviewer_records(), 'job111')
+    assert url == ''
+
+
+def test_author_collaboration_graph_matches_chart_function_data():
+    from bibliometrics.services.analyzer import _author_collaboration_graph, author_collaboration
+
+    records = _vosviewer_records()
+    G = _author_collaboration_graph(records, min_collab=2)
+    assert G is not None
+    assert G.number_of_nodes() == 2 and G.number_of_edges() == 1
+    assert author_collaboration(records, min_collab=2) is not None
+
+
+def test_country_collaboration_graph_has_expected_edge():
+    from bibliometrics.services.analyzer import _country_collaboration_graph
+
+    G = _country_collaboration_graph(_vosviewer_records(), min_collab=2)
+    assert G is not None
+    assert G.number_of_nodes() == 2 and G.number_of_edges() == 1
+
+
+def test_bibliographic_coupling_graph_has_expected_edge():
+    from bibliometrics.services.analyzer import _bibliographic_coupling_graph
+
+    G = _bibliographic_coupling_graph(_vosviewer_records(), min_shared=2)
+    assert G is not None
+    assert G.number_of_nodes() == 2 and G.number_of_edges() == 1
