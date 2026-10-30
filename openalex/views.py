@@ -78,8 +78,8 @@ def openalex_landing(request):
     form = AlexSearchForm()
     user = request.user
 
-    daily_count = AlexSearchJob.daily_count_for_user(user)
-    daily_limit = AlexSearchJob.get_daily_limit(user)
+    daily_count = AlexSearchJob.monthly_count_for_user(user)
+    daily_limit = AlexSearchJob.get_monthly_limit(user)
     remaining = max(0, daily_limit - daily_count)
 
     if request.method == 'POST':
@@ -101,14 +101,14 @@ def openalex_landing(request):
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return JsonResponse({
                         # Tam cümle msgid'ler (parça birleştirme yok)
-                        'error': (gettext('Günlük demo limitiniz doldu ({used}/{limit}). Premium üyelikle 7 aramaya yükseltebilirsiniz.')
+                        'error': (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
                                   if not user.profile.is_premium else
-                                  gettext('Günlük demo limitiniz doldu ({used}/{limit}). Yarın tekrar deneyebilirsiniz.')
+                                  gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.')
                                   ).format(used=daily_limit, limit=daily_limit)
                     }, status=429)
                 return render(request, 'openalex/landing.html', {
                     'form': form,
-                    'error': gettext('Günlük demo limitiniz doldu.'),
+                    'error': gettext('Bu ay için ücretsiz analiz hakkınız doldu.'),
                     'remaining': 0,
                     'daily_limit': daily_limit,
                 })
