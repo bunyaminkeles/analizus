@@ -209,7 +209,7 @@ TREND_AMBER = '#D97706'
 
 
 def run_all_analyses(records: list[dict], skipped: list = None, time_series: list = None,
-                     has_citations: bool = True) -> list[tuple[str, bytes]]:
+                     has_citations: bool = True) -> list[tuple[str, bytes, str | None]]:
     """
     Tüm analizleri çalıştırır.
     Her figür üretilir üretilmez PNG bytes'a çevrilip kapatılır —
@@ -220,6 +220,8 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
     veri kesildiğinde (OpenAlex sınırı) bu sayfalara uyarı yazmak için.
     has_citations: False → kaynak atıf sayısı vermiyor (PubMed); atıfa dayanan analizler (Araştırma
     Boşluğu'nun dikey ekseni de ortalama atıf) çalıştırılmaz, nedeni kaynağa göre yazılır.
+    Dönen üçlünün 3. elemanı (comment): kural tabanlı otomatik yorum cümlesi (B3-4) —
+    yalnız graph_comments.comment_builders()'ta eşleşen analizler için dolu, diğerleri None.
     """
     import gc as _gc
     no_year     = gettext('Tamamlanmış yıllara ait yayın yılı bilgisi yok.')
@@ -285,6 +287,8 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
         gettext('Yıllık Atıf Trendi'), gettext('Araştırma Boşluğu Haritası (Research Gap)'),
         gettext('Yerel Atıf ve Küresel Atıf Karşılaştırması'),
     }
+    from bibliometrics.services.graph_comments import comment_builders
+    comment_fns = comment_builders()
     results = []
     for title, fn, reason, *is_series in analyses:
         if not has_citations and title in citation_based:
@@ -307,7 +311,14 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
                 _gc.collect()
                 if is_series and time_series is not None:
                     time_series.append(len(results))
-                results.append((title, png_bytes))
+                comment = None
+                comment_fn = comment_fns.get(title)
+                if comment_fn is not None:
+                    try:
+                        comment = comment_fn(records, {'topic_data': _topic_data})
+                    except Exception as ce:
+                        logger.warning(f'Yorum cümlesi üretilemedi [{title}]: {ce}')
+                results.append((title, png_bytes, comment))
         except Exception as e:
             logger.warning(f'Analiz başarısız [{title}]: {e}')
             if skipped is not None:
@@ -676,12 +687,10 @@ def author_collaboration(records: list[dict], max_authors: int = 35, min_collab:
 
 # ─────────────────────────── 8. Yayın Türleri ───────────────────────────
 
-def publication_types(records: list[dict]):
-    types = [r.get('pub_type', '').strip().lower() for r in records if r.get('pub_type', '').strip()]
-    if not types:
-        return None
-
-    TYPE_TR = {
+def pub_type_labels() -> dict:
+    """Ham 'pub_type' değeri → aktif dilde etiket (publication_types() grafiği ve
+    graph_comments.comment_publication_types() ortak kaynağı)."""
+    return {
         'article':          gettext('Makale'),
         'review':           gettext('Derleme'),
         'inproceedings':    gettext('Konferans Bildirisi'),
@@ -698,6 +707,14 @@ def publication_types(records: list[dict]):
         'dataset':          gettext('Veri Seti'),
         'other':            gettext('Diğer'),
     }
+
+
+def publication_types(records: list[dict]):
+    types = [r.get('pub_type', '').strip().lower() for r in records if r.get('pub_type', '').strip()]
+    if not types:
+        return None
+
+    TYPE_TR = pub_type_labels()
     translated = [TYPE_TR.get(t, t.title()) for t in types]
     counter = Counter(translated)
 
@@ -1267,12 +1284,14 @@ def country_collaboration(records: list[dict], min_collab: int = 2, max_countrie
 
 # ─────────────────────────── 17. Research Gap ───────────────────────────
 
-def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
+def research_gap_points(records: list[dict], top_n: int = 30, recent_years: int = 3):
     """
-    Research Gap Haritası: Keyword bazında Trend × Atıf Etkisi quadrant analizi.
-    - X ekseni: Yayın trendi (son N yıl vs önceki dönem, normalize)
-    - Y ekseni: Ortalama atıf etkisi (log-scale'den normalize)
-    - Sol-üst kadran (düşen trend + yüksek atıf) = Research Gap fırsatı
+    research_gap() hesap kısmı (B3-4 yorum cümlesi de bunu kullanır — bkz.
+    graph_comments.comment_research_gap): Keyword bazında Trend × Atıf Etkisi.
+    - Trend: (son N yıl - önceki dönem) / toplam  →  [-1, +1]
+    - Atıf etkisi: ortalama atıf (log1p ile normalize, 'impact_norm')
+    Döner: (points, med_trend, med_impact) ya da veri yetersizse (None, None, None).
+    points: [{'kw', 'trend', 'impact', 'impact_norm', 'total'}, ...]
     """
     import math
 
@@ -1281,7 +1300,7 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
     records = [r for r in records if r.get('year') and 1900 < r['year'] <= last_year]
     now_year = max((r['year'] for r in records), default=0)
     if not now_year:
-        return None
+        return None, None, None
 
     cutoff = now_year - recent_years  # son 3 yıl sınırı
 
@@ -1305,7 +1324,7 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
     # En az 3 yayında geçen keyword'leri al
     kw_stats = {k: v for k, v in kw_stats.items() if v['total'] >= 3}
     if len(kw_stats) < 5:
-        return None
+        return None, None, None
 
     # Trend skoru: (yeni - eski) / toplam  →  [-1, +1]
     # Atıf etkisi: ortalama atıf (log1p normalize)
@@ -1320,21 +1339,38 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
     points = sorted(points, key=lambda x: x['total'], reverse=True)[:top_n]
 
     if not points:
-        return None
+        return None, None, None
 
     # Normalize impact için log1p
     max_impact = max(math.log1p(p['impact']) for p in points) or 1
     for p in points:
         p['impact_norm'] = math.log1p(p['impact']) / max_impact
 
-    trends   = [p['trend'] for p in points]
-    impacts  = [p['impact_norm'] for p in points]
-    labels   = [p['kw'] for p in points]
-    sizes    = [80 + p['total'] * 12 for p in points]
+    trends  = [p['trend'] for p in points]
+    impacts = [p['impact_norm'] for p in points]
 
     # Medyan kesim noktaları
     med_trend  = sorted(trends)[len(trends) // 2]
     med_impact = sorted(impacts)[len(impacts) // 2]
+    return points, med_trend, med_impact
+
+
+def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
+    """
+    Research Gap Haritası: Keyword bazında Trend × Atıf Etkisi quadrant analizi
+    (hesap için bkz. research_gap_points()).
+    - X ekseni: Yayın trendi (son N yıl vs önceki dönem, normalize)
+    - Y ekseni: Ortalama atıf etkisi (log-scale'den normalize)
+    - Sol-üst kadran (düşen trend + yüksek atıf) = Research Gap fırsatı
+    """
+    points, med_trend, med_impact = research_gap_points(records, top_n, recent_years)
+    if points is None:
+        return None
+
+    trends   = [p['trend'] for p in points]
+    impacts  = [p['impact_norm'] for p in points]
+    labels   = [p['kw'] for p in points]
+    sizes    = [80 + p['total'] * 12 for p in points]
 
     # Renk: Research Gap (sol-üst) = kırmızı/turuncu, diğerleri gri tonları
     colors = []
@@ -1431,10 +1467,12 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
 
 # ─────────────────────────── 16. Topic Map ───────────────────────────
 
-def topic_map(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8):
+def topic_map_topics(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8):
     """
-    Keyword community detection ile araştırma konusu kümeleri.
-    Her küme bir balon, boyutu o kümede kaç yayın var, rengi küme kimliği.
+    topic_map() hesap kısmı (B3-4 yorum cümlesi de bunu kullanır — bkz.
+    graph_comments.comment_topic_map): keyword community detection (greedy modularity,
+    deterministik — Louvain'den farklı olarak rastgele değil) ile araştırma konusu kümeleri.
+    Döner: topic_data ([{'keywords', 'size', 'n_kw'}, ...], büyükten küçüğe) ya da None.
     """
     try:
         import networkx as nx
@@ -1481,7 +1519,17 @@ def topic_map(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8)
         pub_count = sum(all_kw.get(k, 0) for k in kws_sorted[:3])
         topic_data.append({'keywords': label_kws, 'size': pub_count, 'n_kw': len(comm)})
 
-    if not topic_data:
+    return topic_data or None
+
+
+def topic_map(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8):
+    """
+    Keyword community detection ile araştırma konusu kümeleri (hesap için bkz.
+    topic_map_topics()). Her küme bir balon, boyutu o kümede kaç yayın var,
+    rengi küme kimliği.
+    """
+    topic_data = topic_map_topics(records, n_topics, top_kw_per_topic)
+    if topic_data is None:
         return None
 
     # Bubble chart. Önceki sürümde figsize sabit (14, 8) idi — PDF sayfası dikey

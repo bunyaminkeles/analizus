@@ -2602,14 +2602,14 @@ with connection.cursor() as c:
   OpenAlex zenginleştirme, tekilleştirme, yazar adı birleştirme, anahtar kelime normalizasyonu) ve B2 (bilim
   haritalama: Bradford Kanunu, anahtar kelime Louvain kümeleri, Tematik Harita/Evrim, Üç Alan Grafiği, SCP/MCP,
   Bibliyografik Eşleşme + Yerel/Küresel Atıf, Konu Modelleme NMF — istatistik araç sayısı 17→26) TAMAMEN BİTTİ;
-  B3 (Çıktılar) başladı — **B3-1 (Temiz Veri Seti İndirme, XLSX/CSV, herkese ücretsiz)** ve **B3-2 (VOSviewer
-  Uyumlu Dışa Aktarım — map+network dosyaları, format resmi VOSviewer dokümanından doğrulandı)** TAMAMLANDI.
-  Aynı turda ayrıca **Topic Map ve Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök neden sınıfı —
-  sabit/sınırsız `figsize`, PDF'e en-boy korunarak sığdırılınca devasa boşluk; kullanıcı ekran görüntüleriyle
-  bildirdi) düzeltildi. Sırada B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı), B3-4, B3-2b
-  (Biblioshiny — R/bibliometrix kurulu olmadığı için ertelendi), B4. Detay: aşağıdaki "Geçmiş Turlar
-  (Kronoloji)" 29 Ekim 2026 girdileri; plan dosyası `bibliometri_durum_ve_gelistirme_prompt.md` §4; görev
-  durumu `tasks/todo.md`.
+  B3 (Çıktılar) — **B3-1 (Temiz Veri Seti İndirme, XLSX/CSV), B3-2 (VOSviewer Uyumlu Dışa Aktarım), B3-3
+  (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı), B3-4 (grafik başına kural tabanlı otomatik yorum
+  cümlesi, LLM yok)** TAMAMLANDI (`dev`'de, henüz `main`'e merge edilmedi). Aynı turda ayrıca **Topic Map ve
+  Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök neden sınıfı — sabit/sınırsız `figsize`, PDF'e
+  en-boy korunarak sığdırılınca devasa boşluk; kullanıcı ekran görüntüleriyle bildirdi) düzeltildi. Sırada
+  B3-2b (Biblioshiny — R/bibliometrix kurulu olmadığı için ertelendi), B4 (ürün/huni). Detay: aşağıdaki
+  "Geçmiş Turlar (Kronoloji)" 29–30 Ekim 2026 girdileri; plan dosyası
+  `bibliometri_durum_ve_gelistirme_prompt.md` §4; görev durumu `tasks/todo.md`.
 
 #### SEO
 
@@ -3410,6 +3410,62 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   msgid + ayrıca makemessages churn'ünde fuzzy-eşleşen ilgisiz bir
   keyword_cooccurrence uyarı metni de fark edilip düzeltildi). `forum+
   bibliometrics` 191/191 geçti. Migration yok.
+- **30 Ekim 2026 — Bibliometri Grup B, B3-4 (Grafik Başına Otomatik Yorum
+  Cümlesi, kural tabanlı) TAMAMLANDI, `dev`'de (henüz push/merge edilmedi).**
+  26 analizin tamamına, LLM KULLANILMADAN sayılardan üretilen 1 cümlelik
+  yorum eklendi (ör. "Bölge 1, 6 çekirdek dergiyle toplam 167 yayının %34
+  payını oluşturuyor."). Kullanıcı kararı (AskUserQuestion, 2 soru):
+  yorum grafiğin ALTINDA ayrı/seçilebilir metin kutusu olarak (resmin içine
+  matplotlib text değil); önce 6 analizlik pilot grupla desen onaylandı,
+  sonra kalan 20 tamamlandı. **Mimari (plan verilenden daha düşük riskli —
+  mevcut ~15 testi kırmamak için):** analiz fonksiyonlarının dönüş tipine
+  dokunulmadı (hepsi hâlâ bare `fig` döner). Yeni `bibliometrics/services/
+  graph_comments.py`: her analiz için ayrı `comment_*(records, context=None)`
+  fonksiyonu — zaten ayrılmış saf hesap fonksiyonlarını (`bradford_zones`,
+  `keyword_clusters`, `thematic_map_themes`, `_group_authors`,
+  `_author_collaboration_graph`/`_country_collaboration_graph`/
+  `_bibliographic_coupling_graph`, `scp_mcp_counts`, `local_citation_counts`,
+  `three_field_plot_data`) tekrar kullanır — ayrı/duplicate hesap yok, cümle
+  grafikle asla çelişmez. 3 analiz için (`research_gap`, `topic_map`,
+  `thematic_evolution` zaten ayrıydı) ilk kez saf hesap ayrıldı: yeni
+  `research_gap_points()` ve `topic_map_topics()` (`thematic_evolution_themes`
+  zaten B2-4'ten beri ayrıydı) — chart fonksiyonları bu yeni fonksiyonları
+  çağıracak şekilde güncellendi, dönüş davranışı birebir aynı (mevcut
+  `topic_map`/`research_gap` testleri değişiklik gerektirmedi).
+  `publication_types()`'ın içindeki `TYPE_TR` sözlüğü de `pub_type_labels()`
+  olarak modül seviyesine çıkarıldı (yorumla paylaşmak için — tek kaynak,
+  kopya yok). `run_all_analyses`'a 6 satır: başlık eşlemeli
+  `graph_comments.comment_builders()` sözlüğünden ilgili yorum fonksiyonu
+  çağrılır (yorum üretimi hata verirse `try/except` ile yutulur, grafik yine
+  de rapora girer — yorum tamamen opsiyonel katman). NMF konu modelleme
+  (pahalı: TF-IDF+NMF) `_topic_data` önbelleği `context={'topic_data':
+  _topic_data}` ile yorum fonksiyonlarına da aktarılır, tekrar hesaplanmaz.
+  `pdf_builder._draw_figure_page`: varsa yorum, veri-kesintisi uyarı
+  kutusunun altında (en altta, footer'a en yakın) nötr renkli (`C_LIGHT`/
+  `C_BORDER`) kutuda; yoksa görüntü eskisi gibi tüm alanı kullanır.
+  `build_demo_pdf`/`build_full_pdf`: `figures` artık `(title, fig, comment)`
+  üçlüsü (eskiden ikili) — `job_runner.py`'ye dokunulmadı (listeyi olduğu gibi
+  aktarıyor). **Yan bulgu + düzeltme (yalnız kendi yeni koduna, kapsamı
+  genişletmeden):** `comment_keyword_cloud` ilk halinde İngilizce özetlerde
+  "this" gibi kelimeleri en sık terim olarak gösteriyordu —
+  `normalize_abstract_words()` yalnız TR stopword filtreler (aynı kısıt
+  `keyword_cloud()` grafiğinde de var, orada 200 kelime arasında kayboluyor,
+  tek cümlede göze çarpıyordu); `sklearn.feature_extraction.text.
+  ENGLISH_STOP_WORDS` (zaten requirements'ta, NMF için) ile yalnız yorum
+  fonksiyonunda ek filtre eklendi, paylaşılan fonksiyona dokunulmadı. 46 yeni
+  pytest (6 pilot + 20 kalan analiz için değer doğrulaması + `run_all_analyses`
+  hata-toleransı + **26 analizin tamamını tek seferde tetikleyen EN/DE
+  entegrasyon testi** — çeviri metinlerinde yanlış yazılmış bir `{placeholder}`
+  olsaydı `.format()` `KeyError` fırlatırdı, bu testle yakalanır). Gerçek
+  sentetik veriyle (167-179 kayıt, tüm alanlar dolu) tam PDF üretilip
+  pdftoppm ile PNG'ye çevrilip ~8 sayfa gözle doğrulandı (kutu taşmıyor/
+  kesilmiyor, sayılar grafik/tablo değerleriyle birebir eşleşiyor). EN/DE
+  çevrildi (30 yeni msgid, `polib` ile yalnız bu oturumun ürettiği msgid'ler
+  dolduruldu — `makemessages` ilgisiz ~59 eski boş girdiyi de ortaya çıkardı
+  [oda mesajı bildirimleri, pazar/teklif, sağkalım analizi, mediation vb. —
+  bu oturumdan ÖNCEKİ bir işten kalma, kasıtlı olarak dokunulmadı],
+  `--no-location` kullanılmadı, `compilemessages` hatasız). `bibliometrics`
+  143/143, `forum+bibliometrics` 250/250 geçti. Sırada B4 (ürün/huni, plan §4).
 - **29 Ekim 2026 — Bibliometri Grup B, B3-3 (Hazır Yöntem Metni + PRISMA
   Akış Diyagramı) TAMAMLANDI, `dev`'de.** Kullanıcıya AskUserQuestion ile
   soruldu: B3-1/B3-2 ile aynı teslim deseni seçildi — **ücretsiz indirme**

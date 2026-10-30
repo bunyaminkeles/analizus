@@ -284,7 +284,7 @@ def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: s
 
 
 def _draw_figure_page(c, width, height, fig, analysis_title: str, page_num: int, total_pages: int,
-                      warning: str = ''):
+                      warning: str = '', comment: str = ''):
     _draw_page_background(c, width, height)
     _draw_header(c, width, height,
                  title=analysis_title,
@@ -300,7 +300,17 @@ def _draw_figure_page(c, width, height, fig, analysis_title: str, page_num: int,
     content_top  = height - 62 - margin
     content_bot  = 35 + margin
 
-    # Veri kesintisi uyarısı: footer'ın üstünde turuncu kutu, grafik alanı o kadar daralır
+    # Grafik yorumu (B3-4, kural tabanlı): en altta, nötr renkli ince kutu
+    # (<i> kullanılmıyor — DejaVuSans için italik font kayıtlı değil, sessizce
+    # normal ağırlığa düşer; ayrım renk/boyutla sağlanıyor)
+    if comment:
+        from xml.sax.saxutils import escape
+        box = _box(escape(comment), width - 2 * margin, C_BORDER, C_LIGHT, font_size=8.5)
+        _, box_h = box.wrap(width - 2 * margin, height)
+        box.drawOn(c, margin, content_bot)
+        content_bot += box_h + 8
+
+    # Veri kesintisi uyarısı: üstünde turuncu kutu, grafik alanı o kadar daralır
     if warning:
         box = _box(warning, width - 2 * margin, C_ORANGE, (1.0, 0.97, 0.91), font_size=8.5)
         _, box_h = box.wrap(width - 2 * margin, height)
@@ -487,8 +497,9 @@ def _trend_warning(notes: dict, in_full_report: bool) -> str:
 
 def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '', notes: dict = None,
                    time_series: list = None) -> bytes:
-    """figures: [(title, Figure), ...]  — çağıran taraf kaç tanesinin demo'ya gireceğini
-    (SiteSettings.bibliometri_demo_grafik_sayisi) önceden kırpar; burada olduğu gibi kullanılır
+    """figures: [(title, Figure, comment), ...]  — çağıran taraf kaç tanesinin demo'ya gireceğini
+    (SiteSettings.bibliometri_demo_grafik_sayisi) önceden kırpar; burada olduğu gibi kullanılır.
+    comment: run_all_analyses'in ürettiği kural tabanlı yorum cümlesi (B3-4) ya da None.
     notes/time_series: verilirse veri kesildiğinde zaman serisi sayfalarına uyarı satırı (bölüm yok)"""
     A4, cm, canvas_mod, _ = _get_reportlab()
     width, height = A4
@@ -505,11 +516,11 @@ def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '', no
                 total_records=total_records, filename=filename, n_analyses=len(demo_figs))
     c.showPage()
 
-    for i, (title, fig) in enumerate(demo_figs, start=1):
+    for i, (title, fig, comment) in enumerate(demo_figs, start=1):
         try:
             _draw_figure_page(c, width, height, fig, title,
                               page_num=i + 1, total_pages=total_pages,
-                              warning=warning if i - 1 in series else '')
+                              warning=warning if i - 1 in series else '', comment=comment or '')
         except Exception as e:
             logger.warning(f'PDF grafik sayfası [{title}]: {e}')
         c.showPage()
@@ -521,7 +532,8 @@ def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '', no
 
 def build_full_pdf(figures: list, total_records: int = 0, filename: str = '', notes: dict = None,
                    time_series: list = None) -> bytes:
-    """figures: [(title, Figure), ...]  — tümü kullanılır
+    """figures: [(title, Figure, comment), ...]  — tümü kullanılır
+    comment: run_all_analyses'in ürettiği kural tabanlı yorum cümlesi (B3-4) ya da None.
     notes: report_notes.build_report_notes() çıktısı — raporun sonuna "Veri, Yöntem ve Kısıtlar" bölümü
     time_series: zaman serisi grafiklerinin figures içindeki sırası (veri kesintisi uyarısı için)"""
     A4, cm, canvas_mod, _ = _get_reportlab()
@@ -544,11 +556,11 @@ def build_full_pdf(figures: list, total_records: int = 0, filename: str = '', no
                 total_records=total_records, filename=filename, n_analyses=len(figures))
     c.showPage()
 
-    for i, (title, fig) in enumerate(figures, start=1):
+    for i, (title, fig, comment) in enumerate(figures, start=1):
         try:
             _draw_figure_page(c, width, height, fig, title,
                               page_num=i + 1, total_pages=total_pages,
-                              warning=warning if i - 1 in series else '')
+                              warning=warning if i - 1 in series else '', comment=comment or '')
         except Exception as e:
             logger.warning(f'PDF grafik sayfası [{title}]: {e}')
         c.showPage()
