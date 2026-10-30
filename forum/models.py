@@ -2445,3 +2445,44 @@ class AIUsageLog(models.Model):
     @classmethod
     def record(cls, user, tool, input_tokens=0, output_tokens=0):
         cls.objects.create(user=user, tool=tool, input_tokens=input_tokens, output_tokens=output_tokens)
+
+
+class MonthlyToolLimitMixin:
+    """Tarama (OpenAlex, TR Dizin, PubMed, Semantic Scholar, OAI-PMH, YÖK Tez) ve Bibliometri
+    araçları için ortak AYLIK (takvim ayı) ücretsiz kullanım hakkı mantığı. Alt sınıf `user`
+    (ForeignKey) ve `created_at` alanlarına sahip bir `models.Model` olmalı — her araç kendi
+    tablosundaki iş kayıtlarından ay bazlı sayım yapar, ayrı bir log tablosu gerekmez.
+
+    Hak miktarı: Free → SiteSettings.monthly_analysis_limit_free; Premium → ulaşılan bağış
+    kademesinin DonationTier.monthly_analysis_credits değeri (bkz. Profile.get_active_tier —
+    yalnız bağışla kazanılır, salt referral ile Premium olanlar taban hakta kalır). En az 1
+    ödüllü arkadaş daveti olan kullanıcıya ayrıca +1 eklenir (davet sayısı arttıkça büyümez)."""
+
+    @classmethod
+    def monthly_count_for_user(cls, user):
+        now = timezone.now()
+        return cls.objects.filter(
+            user=user, created_at__year=now.year, created_at__month=now.month,
+        ).count()
+
+    @classmethod
+    def get_monthly_limit(cls, user):
+        if user.is_staff or user.is_superuser:
+            return 9999
+        site = SiteSettings.load()
+        limit = site.monthly_analysis_limit_free
+        profile = getattr(user, 'profile', None)
+        if profile:
+            tier = profile.get_active_tier()
+            if tier:
+                limit = tier.monthly_analysis_credits
+            if ReferralUse.objects.filter(referrer=user, rewarded=True).exists():
+                limit += 1
+        return limit
+
+    @classmethod
+    def monthly_usage_summary(cls, user):
+        """Görünüme her zaman (hak dolmasa da) gösterilecek özet: {used, limit, remaining}."""
+        used = cls.monthly_count_for_user(user)
+        limit = cls.get_monthly_limit(user)
+        return {'used': used, 'limit': limit, 'remaining': max(limit - used, 0)}
