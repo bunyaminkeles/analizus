@@ -147,7 +147,7 @@ def _execute_job_body(job_id: str) -> None:
     """Upload tipi analiz, senkron."""
     from bibliometrics.models import BibliometricJob
     from bibliometrics.services.parser import parse_file, _deduplicate_and_filter
-    from bibliometrics.services.analyzer import run_all_analyses
+    from bibliometrics.services.analyzer import run_all_analyses, select_demo_figures
     from bibliometrics.services.pdf_builder import build_demo_pdf, build_full_pdf
     from bibliometrics.services.report_notes import build_report_notes
     from forum.s3_utils import upload_bytes_to_s3
@@ -197,7 +197,7 @@ def _execute_job_body(job_id: str) -> None:
         }
         notes = build_report_notes(records, stats=stats, skipped=skipped, source=source)
         demo_n = SiteSettings.load().bibliometri_demo_grafik_sayisi
-        demo_pdf_bytes = build_demo_pdf(figures[:demo_n], total_records=len(records), filename=job.original_filename,
+        demo_pdf_bytes = build_demo_pdf(select_demo_figures(figures, demo_n), total_records=len(records), filename=job.original_filename,
                                         notes=notes, time_series=time_series)
         full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename,
                                         notes=notes, time_series=time_series)
@@ -247,7 +247,7 @@ def _execute_job_openalex_body(job_id: str) -> None:
     close_old_connections()
     from bibliometrics.models import BibliometricJob
     from bibliometrics.services.parser import parse_openalex_json, parse_pubmed_json
-    from bibliometrics.services.analyzer import run_all_analyses
+    from bibliometrics.services.analyzer import run_all_analyses, select_demo_figures
     from bibliometrics.services.pdf_builder import build_demo_pdf, build_full_pdf
     from bibliometrics.services.report_notes import build_report_notes
     from forum.models import SiteSettings
@@ -315,7 +315,7 @@ def _execute_job_openalex_body(job_id: str) -> None:
         }
         notes = build_report_notes(records, stats=stats, skipped=skipped, source=source)
         demo_n = SiteSettings.load().bibliometri_demo_grafik_sayisi
-        demo_pdf_bytes = build_demo_pdf(figures[:demo_n], total_records=len(records), filename=job.original_filename,
+        demo_pdf_bytes = build_demo_pdf(select_demo_figures(figures, demo_n), total_records=len(records), filename=job.original_filename,
                                         notes=notes, time_series=time_series)
         full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename,
                                         notes=notes, time_series=time_series)

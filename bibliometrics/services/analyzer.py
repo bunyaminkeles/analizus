@@ -216,8 +216,10 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
     tüm Figure nesnelerini aynı anda bellekte tutmak yerine sadece
     hafif PNG bytes listesi saklanır.
     skipped: verilirse üretilemeyen analizler (başlık, neden) olarak eklenir — rapor kısıtları için.
-    time_series: verilirse zaman serisi grafiklerinin sonuç listesindeki sırası eklenir — PDF'te
-    veri kesildiğinde (OpenAlex sınırı) bu sayfalara uyarı yazmak için.
+    time_series: verilirse zaman serisi grafiklerinin başlıkları eklenir (B4-1'den beri sıra/indeks
+    değil başlık — select_demo_figures() demo PDF'i için figures'ı yeniden sıraladığından konumsal
+    indeks artık güvenilir değil) — PDF'te veri kesildiğinde (OpenAlex sınırı) bu sayfalara uyarı
+    yazmak için.
     has_citations: False → kaynak atıf sayısı vermiyor (PubMed); atıfa dayanan analizler (Araştırma
     Boşluğu'nun dikey ekseni de ortalama atıf) çalıştırılmaz, nedeni kaynağa göre yazılır.
     Dönen üçlünün 3. elemanı (comment): kural tabanlı otomatik yorum cümlesi (B3-4) —
@@ -310,7 +312,7 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
                 del fig
                 _gc.collect()
                 if is_series and time_series is not None:
-                    time_series.append(len(results))
+                    time_series.append(title)
                 comment = None
                 comment_fn = comment_fns.get(title)
                 if comment_fn is not None:
@@ -328,6 +330,56 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
             except Exception:
                 pass
     return results
+
+
+def _demo_priority_titles() -> list[str]:
+    """Demo PDF öncelik sırası (B4-1, F8): run_all_analyses'in doğal hesaplama sırası
+    yerine (eskiden figures[:demo_n] bu sırayı kullanıyordu — demo yıllık trend + büyüme
+    oranı + yazarlar + Lotka + 3 ayrı anahtar kelime analiziyle art arda açılıp çeşitlilik
+    sunmuyordu) çeşitli/görsel açıdan güçlü analizler önce gelecek şekilde elle sıralanmış
+    bir liste. select_demo_figures() kullanır."""
+    return [
+        gettext('Yıllara Göre Yayın Trendi'),
+        gettext('Anahtar Kelime Eş-Oluşum Ağı'),
+        gettext('Tematik Harita (Callon Merkeziyet × Yoğunluk)'),
+        gettext('En Verimli Yazarlar (Top 15)'),
+        gettext('Araştırma Konusu Kümeleri (Topic Map)'),
+        gettext('Atıf Analizi ve H-index'),
+        gettext('Bradford Kanunu — Çekirdek Dergi Bölgeleri'),
+        gettext('Araştırma Boşluğu Haritası (Research Gap)'),
+        gettext('Üç Alan Grafiği (Yazar ↔ Anahtar Kelime ↔ Dergi)'),
+        gettext('Konu Modelleme (NMF) — Konu Başına En Belirleyici Kelimeler'),
+        gettext('Yıllık Büyüme Oranı'),
+        gettext('Lotka Kanunu — Yazar Üretkenliği'),
+        gettext('Anahtar Kelime Bulutu'),
+        gettext('Anahtar Kelime Zaman Trendi'),
+        gettext('En Çok Atıf Alan Yayınlar (Top 10)'),
+        gettext('En Çok Yayın Yapılan Dergiler'),
+        gettext('Kurum / Ülke Dağılımı (Top 10)'),
+        gettext('Ülke İşbirliği Ağı'),
+        gettext('Yazar İşbirliği Ağı'),
+        gettext('Yayın Türleri Dağılımı'),
+        gettext('Yıllık Atıf Trendi'),
+        gettext('Tematik Evrim (Dönemler Arası Tema Akışı)'),
+        gettext('Ülke İşbirliği: Tek Ülkeli ve Çok Ülkeli Yayınlar (SCP/MCP)'),
+        gettext('Bibliyografik Eşleşme Ağı (Paylaşılan Referanslar)'),
+        gettext('Yerel Atıf ve Küresel Atıf Karşılaştırması'),
+        gettext('Konulara Göre Yıllık Yayın Payı (NMF)'),
+    ]
+
+
+def select_demo_figures(figures: list[tuple], n: int) -> list[tuple]:
+    """run_all_analyses() çıktısından (title, png_bytes, comment) demo PDF'i için en
+    fazla n tanesini _demo_priority_titles() sırasına göre seçer. Veri yetersizliği
+    yüzünden üretilemeyen (figures'ta olmayan) öncelikli analizler sırayı bozmadan
+    atlanır; önceliğe eklenmemiş bir analiz varsa (ör. ileride eklenecek yeni bir
+    analiz) listeden düşmez, hesaplama sırasındaki yeriyle sona eklenir."""
+    by_title = {f[0]: f for f in figures}
+    priority = _demo_priority_titles()
+    selected = [by_title[t] for t in priority if t in by_title]
+    priority_set = set(priority)
+    selected.extend(f for f in figures if f[0] not in priority_set)
+    return selected[:n]
 
 
 def _last_complete_year() -> int:

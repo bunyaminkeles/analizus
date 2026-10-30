@@ -2384,7 +2384,18 @@ def proje_talebi(request):
                 plain_content=admin_plain,
             )
 
-            # Kullanıcıya onay — formu gönderdiği sayfanın dilinde
+            # Kullanıcıya onay — formu gönderdiği sayfanın dilinde. TR'de otomatik
+            # ödeme akışı (sipariş/pazar) var; EN/DE'de proje talebi için canlı ödeme
+            # sistemi yok (B4-2) — ödeme yöntemi ayrıca e-posta ile iletileceği belirtilir.
+            payment_note_html = ''
+            payment_note_plain = ''
+            if lang != 'tr':
+                payment_note_html = "<p>" + gettext(
+                    "Ödeme yöntemine ilişkin bilgileri ayrı bir e-posta ile size ileteceğiz."
+                ) + "</p>"
+                payment_note_plain = "\n" + gettext(
+                    "Ödeme yöntemine ilişkin bilgileri ayrı bir e-posta ile size ileteceğiz."
+                )
             user_html = (
                 "<p>" + gettext("Sayın %(name)s,") % {'name': escape(name)} + "</p>"
                 "<p>" + gettext("Proje talebiniz başarıyla alındı. En kısa sürede sizinle iletişime geçeceğiz.") + "</p>"
@@ -2392,14 +2403,16 @@ def proje_talebi(request):
                 + gettext("Analiz Türü: %(value)s") % {'value': analysis_label} + "<br>"
                 + gettext("Veri Boyutu: %(value)s") % {'value': size_label} + "<br>"
                 + gettext("Süre Beklentisi: %(value)s") % {'value': timeline_label} + "</p>"
-                "<p>— " + gettext("Analizus Ekibi") + "</p>"
+                + payment_note_html
+                + "<p>— " + gettext("Analizus Ekibi") + "</p>"
             )
             EmailService._send_email(
                 to_email=email,
                 subject=gettext("Proje talebiniz alındı — Analizus"),
                 html_content=user_html,
                 plain_content=gettext("Sayın %(name)s,") % {'name': name} + "\n\n"
-                    + gettext("Proje talebiniz alındı. En kısa sürede sizinle iletişime geçeceğiz.") + "\n\n— " + gettext("Analizus Ekibi"),
+                    + gettext("Proje talebiniz alındı. En kısa sürede sizinle iletişime geçeceğiz.")
+                    + payment_note_plain + "\n\n— " + gettext("Analizus Ekibi"),
             )
 
             messages.success(request, gettext('Talebiniz alındı! En kısa sürede size dönüş yapacağız.'))

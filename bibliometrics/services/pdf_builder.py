@@ -520,7 +520,7 @@ def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '', no
         try:
             _draw_figure_page(c, width, height, fig, title,
                               page_num=i + 1, total_pages=total_pages,
-                              warning=warning if i - 1 in series else '', comment=comment or '')
+                              warning=warning if title in series else '', comment=comment or '')
         except Exception as e:
             logger.warning(f'PDF grafik sayfası [{title}]: {e}')
         c.showPage()
@@ -535,7 +535,8 @@ def build_full_pdf(figures: list, total_records: int = 0, filename: str = '', no
     """figures: [(title, Figure, comment), ...]  — tümü kullanılır
     comment: run_all_analyses'in ürettiği kural tabanlı yorum cümlesi (B3-4) ya da None.
     notes: report_notes.build_report_notes() çıktısı — raporun sonuna "Veri, Yöntem ve Kısıtlar" bölümü
-    time_series: zaman serisi grafiklerinin figures içindeki sırası (veri kesintisi uyarısı için)"""
+    time_series: zaman serisi grafiklerinin başlıkları (B4-1'den beri indeks değil başlık — demo PDF'i
+    figures'ı yeniden sıraladığından konumsal indeks güvenilir değil; veri kesintisi uyarısı için)"""
     A4, cm, canvas_mod, _ = _get_reportlab()
     width, height = A4
 
@@ -560,7 +561,7 @@ def build_full_pdf(figures: list, total_records: int = 0, filename: str = '', no
         try:
             _draw_figure_page(c, width, height, fig, title,
                               page_num=i + 1, total_pages=total_pages,
-                              warning=warning if i - 1 in series else '', comment=comment or '')
+                              warning=warning if title in series else '', comment=comment or '')
         except Exception as e:
             logger.warning(f'PDF grafik sayfası [{title}]: {e}')
         c.showPage()

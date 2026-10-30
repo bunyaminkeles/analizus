@@ -51,6 +51,7 @@ from bibliometrics.services.analyzer import (
     topic_modeling_trend,
     research_gap_points,
     topic_map_topics,
+    select_demo_figures,
 )
 import matplotlib.patches as mpatches
 import bibliometrics.services.analyzer as analyzer_module
@@ -1987,3 +1988,94 @@ def test_upload_wos_plaintext_export_tolerates_upload_failure(monkeypatch):
 
     url = job_runner._upload_wos_plaintext_export([{'title': 'X'}], 'job111')
     assert url == ''
+
+
+# ─────────────────────── B4-1: Demo seçimi (sabit öncelik sırası) ───────────────────────
+
+def _fake_figures(titles: list) -> list:
+    return [(t, b'PNG', None) for t in titles]
+
+
+def test_select_demo_figures_orders_by_priority():
+    """Doğal hesaplama sırası (Lotka, sonra Eş-Oluşum Ağı) değil, öncelik sırası
+    (Eş-Oluşum Ağı, sonra Lotka) kullanılmalı."""
+    figures = _fake_figures([
+        gettext('Lotka Kanunu — Yazar Üretkenliği'),
+        gettext('Anahtar Kelime Eş-Oluşum Ağı'),
+        gettext('Yıllara Göre Yayın Trendi'),
+    ])
+    selected = select_demo_figures(figures, 3)
+    titles = [t for t, _, _ in selected]
+    assert titles == [
+        gettext('Yıllara Göre Yayın Trendi'),
+        gettext('Anahtar Kelime Eş-Oluşum Ağı'),
+        gettext('Lotka Kanunu — Yazar Üretkenliği'),
+    ]
+
+
+def test_select_demo_figures_skips_missing_priority_titles():
+    """Öncelikli bir analiz veri yetersizliğinden üretilemediyse (figures'ta yok)
+    hata vermeden atlanmalı, sıradaki öncelikli analiz onun yerine gelmeli."""
+    figures = _fake_figures([
+        gettext('En Verimli Yazarlar (Top 15)'),
+        gettext('Yıllara Göre Yayın Trendi'),
+    ])
+    selected = select_demo_figures(figures, 2)
+    titles = [t for t, _, _ in selected]
+    assert titles == [
+        gettext('Yıllara Göre Yayın Trendi'),
+        gettext('En Verimli Yazarlar (Top 15)'),
+    ]
+
+
+def test_select_demo_figures_keeps_unlisted_titles_at_end():
+    """Öncelik listesine henüz eklenmemiş (ör. ileride eklenecek) bir analiz
+    sessizce düşmemeli — listenin sonunda, hesaplama sırasındaki yeriyle kalmalı."""
+    figures = _fake_figures([
+        gettext('Yıllara Göre Yayın Trendi'),
+        'Henüz Öncelik Listesinde Olmayan Yeni Analiz',
+    ])
+    selected = select_demo_figures(figures, 5)
+    titles = [t for t, _, _ in selected]
+    assert titles == [
+        gettext('Yıllara Göre Yayın Trendi'),
+        'Henüz Öncelik Listesinde Olmayan Yeni Analiz',
+    ]
+
+
+def test_select_demo_figures_respects_n_limit():
+    figures = _fake_figures([
+        gettext('Yıllara Göre Yayın Trendi'),
+        gettext('Anahtar Kelime Eş-Oluşum Ağı'),
+        gettext('Tematik Harita (Callon Merkeziyet × Yoğunluk)'),
+    ])
+    selected = select_demo_figures(figures, 2)
+    assert len(selected) == 2
+
+
+def test_build_demo_pdf_warning_follows_reordered_time_series_title(monkeypatch):
+    """B4-1 ile demo figures yeniden sıralanıyor — veri kesintisi uyarısı artık
+    konumsal indekse değil başlığa göre eşleşmeli (regresyon testi)."""
+    from bibliometrics.services import pdf_builder
+
+    captured = []
+
+    def fake_draw_figure_page(c, width, height, fig, analysis_title, page_num, total_pages,
+                              warning='', comment=''):
+        captured.append((analysis_title, warning))
+
+    monkeypatch.setattr(pdf_builder, '_draw_figure_page', fake_draw_figure_page)
+
+    trend_title = gettext('Yıllara Göre Yayın Trendi')
+    other_title = gettext('En Verimli Yazarlar (Top 15)')
+    # trend ikinci sırada (yeniden sıralanmış demo listesi senaryosu)
+    figures = [(other_title, b'PNG', None), (trend_title, b'PNG', None)]
+
+    pdf_builder.build_demo_pdf(
+        figures, total_records=10, filename='x.csv',
+        notes={'partial_year': 2020}, time_series=[trend_title],
+    )
+
+    by_title = dict(captured)
+    assert by_title[trend_title] != ''
+    assert by_title[other_title] == ''

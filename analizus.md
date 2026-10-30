@@ -2604,10 +2604,10 @@ with connection.cursor() as c:
   Bibliyografik Eşleşme + Yerel/Küresel Atıf, Konu Modelleme NMF — istatistik araç sayısı 17→26) TAMAMEN BİTTİ;
   B3 (Çıktılar) — **B3-1 (Temiz Veri Seti İndirme, XLSX/CSV), B3-2 (VOSviewer Uyumlu Dışa Aktarım), B3-2b
   (WoS Plaintext/Biblioshiny Uyumlu Dışa Aktarım), B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı),
-  B3-4 (grafik başına kural tabanlı otomatik yorum cümlesi, LLM yok)** TAMAMEN BİTTİ — **Grup B (B1+B2+B3)
-  tamamen bitti.** B3-1/B3-2/B3-3/B3-4 + CSV export 500 hatası düzeltmesi `main`'de canlı (30 Ekim 2026, merge
-  commit `c03eb91`); **B3-2b henüz `dev`'de** (30 Ekim 2026, migration `0011` içeriyor — merge öncesi yedek
-  hatırlatılmalı). Aynı turda ayrıca **Topic Map ve Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök
+  B3-4 (grafik başına kural tabanlı otomatik yorum cümlesi, LLM yok)** TAMAMEN BİTTİ, hepsi `main`'de canlı —
+  **Grup B (B1+B2+B3) TAMAMEN BİTTİ.** B3-1/B3-2/B3-3/B3-4 + CSV export 500 hatası düzeltmesi merge commit
+  `c03eb91`; B3-2b ayrı merge commit `bd0c213` ile (migration `0011`, kullanıcı önce `scripts/yedek_indir.sh
+  --simdi` ile yedek aldı). Aynı turda ayrıca **Topic Map ve Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök
   neden sınıfı — sabit/sınırsız `figsize`, PDF'e en-boy korunarak sığdırılınca devasa boşluk; kullanıcı ekran
   görüntüleriyle bildirdi) düzeltildi. Sırada B4 (ürün/huni). Detay: aşağıdaki "Geçmiş Turlar (Kronoloji)"
   29–30 Ekim 2026 girdileri; plan dosyası `bibliometri_durum_ve_gelistirme_prompt.md` §4; görev durumu
@@ -3412,8 +3412,53 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   msgid + ayrıca makemessages churn'ünde fuzzy-eşleşen ilgisiz bir
   keyword_cooccurrence uyarı metni de fark edilip düzeltildi). `forum+
   bibliometrics` 191/191 geçti. Migration yok.
+- **30 Ekim 2026 — Bibliometri Grup B4 (Ürün/Huni) başladı, B4-1 (Demo Seçimi)
+  ve B4-2'nin ilk yarısı (Uzman Paketi CTA) TAMAMLANDI, `dev`'de (henüz
+  push/merge edilmedi).** **B4-1:** Demo PDF'i eskiden `run_all_analyses`'in
+  ham hesaplama sırasının ilk N'ini gösteriyordu (demo yıllık trend + büyüme
+  oranı + yazarlar + Lotka + 3 ayrı anahtar kelime analiziyle art arda
+  açılıp çeşitlilik sunmuyordu — F8 bulgusu). `analyzer.py`'ye
+  `_demo_priority_titles()` (elle sıralanmış, çeşitli/görsel açıdan güçlü
+  analizler önce) + `select_demo_figures()` (figures'ı bu sıraya göre seçer,
+  üretilemeyen analizleri atlar, önceliğe eklenmemiş yeni bir analizi
+  sessizce düşürmez — sona ekler) eklendi; `job_runner.py`'deki iki
+  `figures[:demo_n]` çağrısı bununla değiştirildi. **Yan etki + düzeltme:**
+  demo artık yeniden sıralandığı için veri-kesintisi uyarı kutusunun hangi
+  sayfaya yazılacağını belirleyen `time_series` mekanizması (eskiden
+  `run_all_analyses` sonuç listesindeki KONUMSAL indeks kullanıyordu) artık
+  yanlış sayfaları işaretlerdi — `time_series` artık indeks değil BAŞLIK
+  listesi tutuyor (`analyzer.py` + `pdf_builder.py`'nin 2 döngüsü
+  güncellendi). **B4-2 (Paketler) ilk yarısı:** TR kullanıcılar "Tam Rapor"
+  siparişini tamamladıktan sonra "Uzman Paketi" (doğrulama + yöntem/bulgular
+  yazımı + revizyon) üçüncü kademesini sitede HİÇ görmüyordu (yalnız PDF'in
+  son sayfasındaki kapanış kutusunda gömülüydü) — `order.html`'e mevcut
+  `/proje-talebi/?source=bibliometrics&type=bibliometric` akışına (zaten var
+  olan genel proje talebi formu, tüm dillerde mevcut) bağlanan yeni bir
+  "Uzman Paketi" kartı eklendi (EN/DE'de zaten "Tam Rapor" butonu doğrudan
+  proje-talebi'ne gidiyor — A8 kararı, değişiklik gerekmedi).
+  **Doğrulanıp ek iş gerekmediği belirlenen madde — B4-3 (Rapor Dili
+  Seçimi):** Plan dosyasında "A4 kararına bağlı, karar bekliyor" yazıyordu
+  ama koda bakılınca ZATEN ÇÖZÜLMÜŞ bulundu — dosya yükleme formunda
+  `BibliometricUploadForm.report_language` alanı (migration `0006`, önceki
+  bir turda eklenmiş) var ve `job_runner._in_user_language()` tarafından
+  onurlanıyor; OpenAlex/PubMed'den tetiklenen akışta form/buton yok (tek
+  tıkla JSON API), dolayısıyla arayüz/profil diline düşüyor — bu da planın
+  "migration'sız alternatif"ine (yalnız arayüz dili) zaten karşılık geliyor.
+  Kod değişikliği YAPILMADI, yalnız durum netleştirildi. **Yan bulgu (B4
+  kapsamı dışında, `tasks/todo.md` "AÇIK İŞLER"e eklendi):** `order.html`'de
+  "17 analiz" + 17'lik sabit analiz listesi bayatlamış (gerçek sayı 26).
+  6 yeni pytest (`select_demo_figures` sıralama/atlama/düşürmeme/limit +
+  yeniden sıralanmış demo'da uyarı kutusunun doğru başlığı takip ettiğinin
+  regresyon testi). Gerçek sentetik veriyle demo çıktısı gözle doğrulandı.
+  `bibliometrics` 160/160 geçti. Migration yok. Sırada B4-2'nin ikinci
+  yarısı (uluslararası ödeme — karar bekliyor) + B4-4 (EN örnek tam rapor)
+  + B4-5 (SEO SSS çevirisi) — ikisi de kullanıcı kararı bekliyor.
 - **30 Ekim 2026 — Bibliometri Grup B, B3-2b (WoS Plaintext/Biblioshiny Uyumlu
-  Dışa Aktarım) TAMAMLANDI, `dev`'de (henüz push/merge edilmedi).** Kullanıcı
+  Dışa Aktarım) TAMAMLANDI, `main`'de canlı** (merge commit `bd0c213`,
+  migration `0011` — kullanıcı merge öncesi `scripts/yedek_indir.sh --simdi`
+  ile yedek aldı; merge öncesi production'da aktif staff-olmayan kullanıcı
+  yoktu; GitHub Actions "Deploy to Hetzner" `success`, migration Hetzner'de
+  uygulandığı ve site 200 döndüğü doğrulandı). Kullanıcı
   R'ın Hetzner'e kurulmasından (disk/kaynak) endişe etti — netleştirildi:
   üretilen dosya yalnızca düz metin (.txt), R/bibliometrix hiçbir zaman
   production'a kurulmuyor, kullanıcı dosyayı kendi bilgisayarındaki

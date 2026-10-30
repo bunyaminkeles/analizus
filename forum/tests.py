@@ -400,6 +400,54 @@ def test_proje_talebi_preselects_bibliometric(client):
     assert '<option value="bibliometric" selected>' in content
 
 
+# B4-2: EN/DE'de proje talebi gönderen kullanıcıya ödeme yönteminin ayrıca
+# e-postayla iletileceği bildirilir (canlı ödeme sistemi yok); TR'de gerek yok
+# (sipariş/pazar akışı zaten var).
+
+def _project_request_payload(**overrides):
+    payload = {
+        'name': 'Test Kullanıcı', 'email': 'test@example.com', 'company': '',
+        'analysis_type': 'bibliometric', 'description': 'Örnek açıklama.',
+        'data_size': 'medium', 'timeline': 'flexible', 'stage': 'planning',
+        'source': 'bibliometrics',
+    }
+    payload.update(overrides)
+    return payload
+
+
+@pytest.mark.django_db
+def test_proje_talebi_en_includes_payment_method_note(client, monkeypatch):
+    """/en/ — MultilingualFeatureMiddleware feature_multilingual kapalıyken
+    view'a hiç ulaşmadan 404 kestiği için önce açılmalı (bkz. intl_market_on)."""
+    from forum.models import SiteSettings
+    from forum.services.email_service import EmailService
+    s = SiteSettings.load()
+    s.feature_multilingual = True
+    s.save()
+    sent = []
+    monkeypatch.setattr(EmailService, '_send_email',
+                        staticmethod(lambda **kw: sent.append(kw) or True))
+
+    client.post('/en/proje-talebi/', _project_request_payload())
+
+    user_email = next(e for e in sent if e['to_email'] == 'test@example.com')
+    assert 'payment method' in user_email['html_content'].lower()
+    assert 'payment method' in user_email['plain_content'].lower()
+
+
+@pytest.mark.django_db
+def test_proje_talebi_tr_has_no_payment_method_note(client, monkeypatch):
+    from forum.services.email_service import EmailService
+    sent = []
+    monkeypatch.setattr(EmailService, '_send_email',
+                        staticmethod(lambda **kw: sent.append(kw) or True))
+
+    client.post('/proje-talebi/', _project_request_payload())
+
+    user_email = next(e for e in sent if e['to_email'] == 'test@example.com')
+    assert 'ödeme yöntem' not in user_email['html_content'].lower()
+
+
 # Madde 4: forum arama boş-durumu varsayılan görünümde gizli
 
 @pytest.mark.django_db
@@ -1594,3 +1642,9 @@ def test_dashboard_export_csv_requires_staff(client, user):
     client.force_login(user)
     response = client.get(reverse('dashboard_export_csv'))
     assert response.status_code in (302, 403)
+
+
+@pytest.mark.django_db
+def test_debug_en_proje_talebi_get(client):
+    r = client.get('/en/proje-talebi/')
+    print('DEBUG GET /en/proje-talebi/ status', r.status_code)
