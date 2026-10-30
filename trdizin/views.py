@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import gettext
 from django.views.decorators.http import require_GET, require_POST
 from functools import wraps
 
@@ -74,8 +75,8 @@ def trdizin_landing(request):
     form = DizinSearchForm()
     user = request.user
 
-    daily_count = DizinSearchJob.daily_count_for_user(user)
-    daily_limit = DizinSearchJob.get_daily_limit(user)
+    daily_count = DizinSearchJob.monthly_count_for_user(user)
+    daily_limit = DizinSearchJob.get_monthly_limit(user)
     remaining = max(0, daily_limit - daily_count)
 
     if request.method == 'POST':
@@ -96,12 +97,15 @@ def trdizin_landing(request):
             if remaining <= 0:
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return JsonResponse({
-                        'error': f'Günlük demo limitiniz doldu ({daily_limit}/{daily_limit}). '
-                                 f'{"Premium üyelikle 7 aramaya yükseltebilirsiniz." if not user.profile.is_premium else "Yarın tekrar deneyebilirsiniz."}'
+                        # Tam cümle msgid'ler (parça birleştirme yok)
+                        'error': (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
+                                  if not user.profile.is_premium else
+                                  gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.')
+                                  ).format(used=daily_limit, limit=daily_limit)
                     }, status=429)
                 return render(request, 'trdizin/landing.html', {
                     'form': form,
-                    'error': 'Günlük demo limitiniz doldu.',
+                    'error': gettext('Bu ay için ücretsiz analiz hakkınız doldu.'),
                     'remaining': 0,
                     'daily_limit': daily_limit,
                 })
