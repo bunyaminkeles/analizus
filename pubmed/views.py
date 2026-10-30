@@ -63,8 +63,8 @@ def pubmed_landing(request):
         })
 
     user = request.user
-    daily_limit = PubMedSearchJob.get_daily_limit(user)
-    remaining = max(0, daily_limit - PubMedSearchJob.daily_count_for_user(user))
+    daily_limit = PubMedSearchJob.get_monthly_limit(user)
+    remaining = max(0, daily_limit - PubMedSearchJob.monthly_count_for_user(user))
 
     if request.method == 'POST':
         if not _is_ajax(request):
@@ -76,10 +76,10 @@ def pubmed_landing(request):
         if not user.profile.email_verified:
             return JsonResponse({'error': gettext('PubMed tarama için e-posta doğrulaması gereklidir. Profil sayfanızdan e-postanızı doğrulayın.')}, status=403)
         if remaining <= 0:
-            # Tam cümle msgid'ler (OpenAlex ile aynı) — premium olmayana 7 aramalık premium önerilir
-            msg = (gettext('Günlük demo limitiniz doldu ({used}/{limit}). Premium üyelikle 7 aramaya yükseltebilirsiniz.')
+            # Tam cümle msgid'ler (OpenAlex ile aynı)
+            msg = (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
                    if not user.profile.is_premium else
-                   gettext('Günlük demo limitiniz doldu ({used}/{limit}). Yarın tekrar deneyebilirsiniz.'))
+                   gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
             return JsonResponse({'error': msg.format(used=daily_limit, limit=daily_limit)}, status=429)
 
         job = PubMedSearchJob.objects.create(user=user, query_parts=form.cleaned_data['query_parts_json'])
