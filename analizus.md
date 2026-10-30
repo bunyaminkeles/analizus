@@ -3412,6 +3412,47 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   msgid + ayrıca makemessages churn'ünde fuzzy-eşleşen ilgisiz bir
   keyword_cooccurrence uyarı metni de fark edilip düzeltildi). `forum+
   bibliometrics` 191/191 geçti. Migration yok.
+- **30 Ekim 2026 — Bibliometri Grup B4 (Ürün/Huni) başladı, B4-1 (Demo Seçimi)
+  ve B4-2'nin ilk yarısı (Uzman Paketi CTA) TAMAMLANDI, `dev`'de (henüz
+  push/merge edilmedi).** **B4-1:** Demo PDF'i eskiden `run_all_analyses`'in
+  ham hesaplama sırasının ilk N'ini gösteriyordu (demo yıllık trend + büyüme
+  oranı + yazarlar + Lotka + 3 ayrı anahtar kelime analiziyle art arda
+  açılıp çeşitlilik sunmuyordu — F8 bulgusu). `analyzer.py`'ye
+  `_demo_priority_titles()` (elle sıralanmış, çeşitli/görsel açıdan güçlü
+  analizler önce) + `select_demo_figures()` (figures'ı bu sıraya göre seçer,
+  üretilemeyen analizleri atlar, önceliğe eklenmemiş yeni bir analizi
+  sessizce düşürmez — sona ekler) eklendi; `job_runner.py`'deki iki
+  `figures[:demo_n]` çağrısı bununla değiştirildi. **Yan etki + düzeltme:**
+  demo artık yeniden sıralandığı için veri-kesintisi uyarı kutusunun hangi
+  sayfaya yazılacağını belirleyen `time_series` mekanizması (eskiden
+  `run_all_analyses` sonuç listesindeki KONUMSAL indeks kullanıyordu) artık
+  yanlış sayfaları işaretlerdi — `time_series` artık indeks değil BAŞLIK
+  listesi tutuyor (`analyzer.py` + `pdf_builder.py`'nin 2 döngüsü
+  güncellendi). **B4-2 (Paketler) ilk yarısı:** TR kullanıcılar "Tam Rapor"
+  siparişini tamamladıktan sonra "Uzman Paketi" (doğrulama + yöntem/bulgular
+  yazımı + revizyon) üçüncü kademesini sitede HİÇ görmüyordu (yalnız PDF'in
+  son sayfasındaki kapanış kutusunda gömülüydü) — `order.html`'e mevcut
+  `/proje-talebi/?source=bibliometrics&type=bibliometric` akışına (zaten var
+  olan genel proje talebi formu, tüm dillerde mevcut) bağlanan yeni bir
+  "Uzman Paketi" kartı eklendi (EN/DE'de zaten "Tam Rapor" butonu doğrudan
+  proje-talebi'ne gidiyor — A8 kararı, değişiklik gerekmedi).
+  **Doğrulanıp ek iş gerekmediği belirlenen madde — B4-3 (Rapor Dili
+  Seçimi):** Plan dosyasında "A4 kararına bağlı, karar bekliyor" yazıyordu
+  ama koda bakılınca ZATEN ÇÖZÜLMÜŞ bulundu — dosya yükleme formunda
+  `BibliometricUploadForm.report_language` alanı (migration `0006`, önceki
+  bir turda eklenmiş) var ve `job_runner._in_user_language()` tarafından
+  onurlanıyor; OpenAlex/PubMed'den tetiklenen akışta form/buton yok (tek
+  tıkla JSON API), dolayısıyla arayüz/profil diline düşüyor — bu da planın
+  "migration'sız alternatif"ine (yalnız arayüz dili) zaten karşılık geliyor.
+  Kod değişikliği YAPILMADI, yalnız durum netleştirildi. **Yan bulgu (B4
+  kapsamı dışında, `tasks/todo.md` "AÇIK İŞLER"e eklendi):** `order.html`'de
+  "17 analiz" + 17'lik sabit analiz listesi bayatlamış (gerçek sayı 26).
+  6 yeni pytest (`select_demo_figures` sıralama/atlama/düşürmeme/limit +
+  yeniden sıralanmış demo'da uyarı kutusunun doğru başlığı takip ettiğinin
+  regresyon testi). Gerçek sentetik veriyle demo çıktısı gözle doğrulandı.
+  `bibliometrics` 160/160 geçti. Migration yok. Sırada B4-2'nin ikinci
+  yarısı (uluslararası ödeme — karar bekliyor) + B4-4 (EN örnek tam rapor)
+  + B4-5 (SEO SSS çevirisi) — ikisi de kullanıcı kararı bekliyor.
 - **30 Ekim 2026 — Bibliometri Grup B, B3-2b (WoS Plaintext/Biblioshiny Uyumlu
   Dışa Aktarım) TAMAMLANDI, `main`'de canlı** (merge commit `bd0c213`,
   migration `0011` — kullanıcı merge öncesi `scripts/yedek_indir.sh --simdi`

@@ -30,18 +30,28 @@ detay madde 2 altında. Böylece **Grup B (B1+B2+B3) TAMAMEN BİTTİ.**
 içeriyor)** — R kurmadan, bibliometrix'in gerçek ayrıştırıcı kaynak kodu
 (GitHub) + resmi örnek dosyası doğrudan incelenerek format çıkarıldı;
 detay madde 2 altında.
-Yeni oturum buradan devam etsin: sıradaki B4 (bkz. madde 2 altındaki detaylı
-liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4). **Migration `0011`
-içeren bu değişiklik `main`'e merge edilmeden önce kullanıcıdan
-`scripts/yedek_indir.sh --simdi` istenmeli.**
-Ayrıca aşağıdaki 1 ayrı
-açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
+B3-2b migration `0011` ile `main`'e merge edilip push edildi (merge commit
+`bd0c213`, kullanıcı önce yedek aldı, Hetzner'de migration uygulandı, site
+200 doğrulandı). **Böylece Grup B (B1+B2+B3, B3-2b dahil) TAMAMEN main'de
+canlı.** **B4 (ürün/huni) başladı (30 Ekim 2026, `dev`'de, henüz push/merge
+edilmedi):** B4-1 (demo seçimi, sabit öncelik sırası) ve B4-2'nin ilk yarısı
+(Uzman Paketi CTA, order.html) TAMAMLANDI; B4-3 (rapor dili seçimi)
+incelenip zaten çözülmüş olduğu görüldü, kod değişikliği yapılmadı. Detay
+madde 2 altında. Yeni oturum buradan devam etsin: **B4-2'nin ikinci yarısı
+(uluslararası ödeme) + B4-4 (EN örnek tam rapor) + B4-5 (SEO SSS çevirisi)
+— üçü de kullanıcı kararı/onayı bekliyor**, bkz. madde 2 altındaki detaylı
+liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4.
+Ayrıca aşağıdaki 2 ayrı
+açık iş hâlâ bekliyor (bu Grup B/B4 turunda ele alınmadı, kullanıcı kararı):
 
 1. **DE/EN tarama araçlarının otomatik özet paragrafı Türkçe kalıyor** —
    kaynağı bulunamadı (`claude_service.generate_summary` değil, semanticscholar
    job_runner/views'ta `generate_summary` çağrısı yok). Detay: aşağıdaki
    "AÇIK İŞLER" listesinde 29 Ekim 2026 maddesi.
-2. **Grup B** (bibliometrix/VOSviewer kalitesinde yol haritası — B1 veri
+2. **`order.html`'de "17 analiz" bayatlamış (gerçek sayı 26)** — B4 sırasında
+   fark edildi, kapsam dışı bırakıldı. Detay: aşağıdaki "AÇIK İŞLER"
+   listesinde 30 Ekim 2026 maddesi.
+3. **Grup B** (bibliometrix/VOSviewer kalitesinde yol haritası — B1 veri
    kalitesi → B2 bilim haritalama → B3 çıktılar → B4 ürün/huni), plan
    dosyası: `bibliometri_durum_ve_gelistirme_prompt.md` §4.
    - [x] **B1-1 TAMAMLANDI (29 Ekim 2026, dev'de, push edildi):**
@@ -353,6 +363,40 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      143/143, `forum+bibliometrics` 250/250. Detay: `analizus.md` §27
      (30 Ekim B3-4).
    - [ ] B4 (ürün/huni) — bkz. plan dosyası §4
+     - [x] **B4-1 (Demo Seçimi) TAMAMLANDI (30 Ekim 2026, dev'de, henüz
+       push/merge edilmedi):** Demo PDF'i eskiden `figures[:demo_n]` ile
+       `run_all_analyses`'in ham hesaplama sırasının ilk N'ini gösteriyordu
+       (F8: trend+büyüme+yazarlar+Lotka+3 ayrı anahtar kelime analizi art
+       arda, çeşitlilik yok). `analyzer.py`'ye `_demo_priority_titles()` +
+       `select_demo_figures()` eklendi (elle sıralanmış, görsel açıdan güçlü
+       analizler önce; üretilemeyen analizler atlanır, önceliğe eklenmemiş
+       yeni analizler sessizce düşmez). `job_runner.py`'deki 2 çağrı
+       güncellendi. **Yan düzeltme:** veri-kesintisi uyarı kutusunu
+       yönlendiren `time_series` artık konumsal indeks değil başlık listesi
+       tutuyor (demo yeniden sıralandığı için eski indeks mantığı yanlış
+       sayfayı işaretlerdi) — `analyzer.py` + `pdf_builder.py`'nin 2 döngüsü
+       güncellendi. 6 yeni pytest. `bibliometrics` 160/160.
+     - [x] **B4-2 (Paketler) ilk yarısı TAMAMLANDI (30 Ekim 2026, dev'de):**
+       TR'de "Tam Rapor" siparişini tamamlayan kullanıcı "Uzman Paketi"
+       (doğrulama + yöntem/bulgular yazımı + revizyon) seçeneğini sitede hiç
+       görmüyordu (yalnız PDF'in son sayfasında gömülüydü). `order.html`'e
+       mevcut `/proje-talebi/?source=bibliometrics&type=bibliometric`
+       akışına (genel proje talebi formu, tüm dillerde zaten var) bağlanan
+       yeni bir kart eklendi. EN/DE'de zaten "Tam Rapor" butonu doğrudan
+       proje-talebi'ne gittiği için (A8 kararı) değişiklik gerekmedi. **İkinci
+       yarısı (uluslararası EUR/USD ödeme) kullanıcı kararı bekliyor.**
+     - [x] **B4-3 (Rapor Dili Seçimi) — incelendi, zaten çözülmüş bulundu,
+       kod değişikliği YAPILMADI (30 Ekim 2026):** Plan dosyası "A4 kararına
+       bağlı, karar bekliyor" diyordu; kontrol edilince dosya yükleme
+       formunda `BibliometricUploadForm.report_language` (migration `0006`,
+       önceki turda eklenmiş) zaten var ve `job_runner._in_user_language()`
+       tarafından kullanılıyor. OpenAlex/PubMed akışında form yok (tek tıkla
+       JSON API) → arayüz/profil diline düşüyor, bu da planın "migration'sız
+       alternatif"ine zaten karşılık geliyor.
+     - [ ] B4-4 (EN örnek tam rapor, anonim gerçek veri) — kullanıcı kararı
+       bekliyor: hangi konu/sorgu kullanılsın (bkz. sohbet).
+     - [ ] B4-5 (SEO: EN/DE SSS çevirisi + "nasıl dışa aktarılır" rehberleri)
+       — kullanıcı kararı bekliyor: kapsam/öncelik (bkz. sohbet).
    - [x] **Topic Map görsel kalite sorunu DÜZELTİLDİ (29 Ekim 2026, dev'de)**
      (Grup B dışı, ayrı açık işti). Kök neden sentetik veriyle render edilip
      doğrulandı: `topic_map()`'te sabit `figsize=(14,8)` (en/boy 1.75, geniş)
@@ -400,6 +444,13 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(30 Ekim 2026) B4 sırasında çıkan yan bulgu: `order.html`'de "17 analiz"
+  bayatlamış, gerçek sayı 26.** `bibliometrics/templates/bibliometrics/order.html:15`
+  ("En fazla 17 analiz içeren...") ve aynı sayfadaki sabit 17 analiz isim
+  listesi (satır ~74-99) — 9 eksik analiz var (Bradford, Tematik Harita,
+  Tematik Evrim, Üç Alan Grafiği, SCP/MCP, Bibliyografik Eşleşme, Yerel/
+  Küresel Atıf, Konu Modelleme x2). B4 kapsamında dokunulmadı (kapsam dışı),
+  ayrı onay gerekiyor.
 - [ ] **(29 Ekim 2026) Bibliometri Grup B / B1-4 sırasında çıkan yan bulgu:
   zeyrek'in Türkçe lemmatization'ı lokal dev ortamında sessizce başarısız
   oluyor — araştırılmadı.** `bibliometrics/services/analyzer.py`
