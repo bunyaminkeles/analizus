@@ -2602,15 +2602,16 @@ with connection.cursor() as c:
   OpenAlex zenginleştirme, tekilleştirme, yazar adı birleştirme, anahtar kelime normalizasyonu) ve B2 (bilim
   haritalama: Bradford Kanunu, anahtar kelime Louvain kümeleri, Tematik Harita/Evrim, Üç Alan Grafiği, SCP/MCP,
   Bibliyografik Eşleşme + Yerel/Küresel Atıf, Konu Modelleme NMF — istatistik araç sayısı 17→26) TAMAMEN BİTTİ;
-  B3 (Çıktılar) — **B3-1 (Temiz Veri Seti İndirme, XLSX/CSV), B3-2 (VOSviewer Uyumlu Dışa Aktarım), B3-3
-  (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı), B3-4 (grafik başına kural tabanlı otomatik yorum
-  cümlesi, LLM yok)** TAMAMEN BİTTİ, hepsi `main`'de canlı (B3-3+B3-4, 30 Ekim 2026, merge commit `c03eb91`
-  ile birlikte `main`'e alındı — Kullanıcı İstatistikleri CSV export 500 hatası düzeltmesi de aynı merge'e
-  dahil oldu). Aynı turda ayrıca **Topic Map ve Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök
+  B3 (Çıktılar) — **B3-1 (Temiz Veri Seti İndirme, XLSX/CSV), B3-2 (VOSviewer Uyumlu Dışa Aktarım), B3-2b
+  (WoS Plaintext/Biblioshiny Uyumlu Dışa Aktarım), B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı),
+  B3-4 (grafik başına kural tabanlı otomatik yorum cümlesi, LLM yok)** TAMAMEN BİTTİ — **Grup B (B1+B2+B3)
+  tamamen bitti.** B3-1/B3-2/B3-3/B3-4 + CSV export 500 hatası düzeltmesi `main`'de canlı (30 Ekim 2026, merge
+  commit `c03eb91`); **B3-2b henüz `dev`'de** (30 Ekim 2026, migration `0011` içeriyor — merge öncesi yedek
+  hatırlatılmalı). Aynı turda ayrıca **Topic Map ve Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök
   neden sınıfı — sabit/sınırsız `figsize`, PDF'e en-boy korunarak sığdırılınca devasa boşluk; kullanıcı ekran
-  görüntüleriyle bildirdi) düzeltildi. Sırada B3-2b (Biblioshiny — R/bibliometrix kurulu olmadığı için
-  ertelendi), B4 (ürün/huni). Detay: aşağıdaki "Geçmiş Turlar (Kronoloji)" 29–30 Ekim 2026 girdileri; plan dosyası
-  `bibliometri_durum_ve_gelistirme_prompt.md` §4; görev durumu `tasks/todo.md`.
+  görüntüleriyle bildirdi) düzeltildi. Sırada B4 (ürün/huni). Detay: aşağıdaki "Geçmiş Turlar (Kronoloji)"
+  29–30 Ekim 2026 girdileri; plan dosyası `bibliometri_durum_ve_gelistirme_prompt.md` §4; görev durumu
+  `tasks/todo.md`.
 
 #### SEO
 
@@ -3411,6 +3412,45 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   msgid + ayrıca makemessages churn'ünde fuzzy-eşleşen ilgisiz bir
   keyword_cooccurrence uyarı metni de fark edilip düzeltildi). `forum+
   bibliometrics` 191/191 geçti. Migration yok.
+- **30 Ekim 2026 — Bibliometri Grup B, B3-2b (WoS Plaintext/Biblioshiny Uyumlu
+  Dışa Aktarım) TAMAMLANDI, `dev`'de (henüz push/merge edilmedi).** Kullanıcı
+  R'ın Hetzner'e kurulmasından (disk/kaynak) endişe etti — netleştirildi:
+  üretilen dosya yalnızca düz metin (.txt), R/bibliometrix hiçbir zaman
+  production'a kurulmuyor, kullanıcı dosyayı kendi bilgisayarındaki
+  Biblioshiny'ye yüklüyor; R yalnızca FORMAT DOĞRULAMASI için gerekebilirdi
+  (lokalde, geçici). Kullanıcı kararı: R kurmadan, yalnız resmi format
+  şartnamesiyle devam edildi. **Doğrulama yöntemi:** R kurulu olmadığı için
+  format, bibliometrix'in GERÇEK ayrıştırıcı kaynak kodundan (GitHub
+  massimoaria/bibliometrix, `R/isi2df.R`, `gh api` ile indirilip okundu) ve
+  resmi örnek dosyasından (bibliometrix.org/datasets/wos_plaintext.txt, ham
+  haliyle `curl` ile incelendi) birebir çıkarıldı — varsayım yapılmadı. Yeni
+  `bibliometrics/services/wos_plaintext_export.py` (`build_wos_plaintext_export()`):
+  FN/VR başlık, her kayıt `PT <J|B>` ile başlar `ER`+boş satır ile biter,
+  dosya `EF` ile kapanır; AU/AF çok satırlı (3 boşluk girintili devam
+  satırı — isi2df.R'nin önceki etiketi devralma kuralına birebir uyularak).
+  **Kasıtlı olarak eklenmeyen/uydurulmayan alanlar (doğruluk önce):** RP
+  (corresponding author) — hangi yazarın yazıştığı bilgisi elimizde yok;
+  CR (atıf listesi) yalnızca bu veri setindeki BAŞKA bir kayda işaret eden
+  (openalex_id eşleşen) referanslar için üretiliyor, dış dünyaya yapılan
+  atıflar için yazar/dergi bilgimiz olmadığından yazılmıyor (bibliographic_
+  coupling/local_citation_counts'taki kısıtla aynı mantık, Biblioshiny'deki
+  ortak-atıf analizleri yalnızca veri seti içini görecek). `BibliometricJob.
+  wos_plaintext_export_url` (migration `0011`), `job_runner.py`'ye
+  `_upload_wos_plaintext_export()` (B3-1/B3-2 deseniyle hata toleranslı,
+  her iki job body'ye + cleanup fonksiyonuna eklendi), `job_status` JSON +
+  B3-1'in kartına yeni buton (landing.html+order.html). 12 yeni pytest —
+  R kurulu olmadığı için **isi2df.R'nin ayrıştırma mantığının sadeleştirilmiş
+  Python karşılığı** test dosyasında yazılıp (bağımsız doğrulama) üretilen
+  dosyanın PT/AU/AF/TI/SO/DT/DE/CR/TC/PY/DI alanlarının doğru ayrıştığı
+  doğrulandı (çoklu kayıt sınırının karışmadığı, gömülü `\n`'in satır
+  yapısını bozmadığı, yalnız iç referansların CR'a girdiği dahil). Gerçek
+  sentetik veriyle 3 kayıtlık dosya üretilip gözle incelendi, resmi örnek
+  dosyanın yapısıyla birebir eşleşti. EN/DE çevrildi (1 yeni msgid —
+  "WoS Plaintext (Biblioshiny)", "VOSviewer (ZIP)" emsaliyle aynı şekilde
+  yazılım/format adı olarak çevrilmeden bırakıldı). `bibliometrics` 155/155,
+  `forum+bibliometrics` 262/262 geçti. **Migration `0011` içeriyor —
+  `main`'e merge edilmeden önce kullanıcıdan `scripts/yedek_indir.sh --simdi`
+  istenmeli.** Sırada B4 (ürün/huni).
 - **30 Ekim 2026 — Bibliometri Grup B, B3-4 (Grafik Başına Otomatik Yorum
   Cümlesi, kural tabanlı) TAMAMLANDI, `main`'de canlı** (merge commit
   `c03eb91`, `--no-ff` ile `main`'e merge edilip push edildi; merge öncesi

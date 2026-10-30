@@ -176,6 +176,7 @@ def bibliometrics_job_status(request, job_id):
         data['vosviewer_export_url'] = job.vosviewer_export_url
         data['method_text_url'] = job.method_text_url
         data['prisma_diagram_url'] = job.prisma_diagram_url
+        data['wos_plaintext_export_url'] = job.wos_plaintext_export_url
         data['original_filename'] = job.original_filename
         data['created_at'] = job.created_at.strftime('%d.%m.%Y %H:%M')
         price = BibliometricOrder.calculate_price(job.total_records)
