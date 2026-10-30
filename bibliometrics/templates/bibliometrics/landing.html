@@ -57,16 +57,16 @@
           </div>
         </div>
 
-        {# Günlük limit #}
+        {# Aylık ücretsiz hak #}
         <div class="d-flex align-items-center gap-3 mt-3">
           <span class="badge bg-dark border border-secondary text-white px-3 py-2">
             <i class="bi bi-calendar3 me-1 text-info"></i>
-            {% trans "Günlük Limit:" %} <strong>{{ daily_used }} / {{ daily_limit }}</strong>
+            {% trans "Aylık Ücretsiz Hak:" %} <strong>{{ daily_used }} / {{ daily_limit }}</strong>
           </span>
           {% if remaining == 0 %}
-          <span class="badge bg-danger px-3 py-2">{% trans "Günlük limite ulaşıldı" %}</span>
+          <span class="badge bg-danger px-3 py-2">{% trans "Bu ayki ücretsiz hakkınız doldu" %}</span>
           {% else %}
-          <span class="badge bg-success px-3 py-2">{% blocktrans %}{{ remaining }} hakkınız kaldı{% endblocktrans %}</span>
+          <span class="badge bg-success px-3 py-2">{% blocktrans %}{{ remaining }} ücretsiz hakkınız kaldı{% endblocktrans %}</span>
           {% endif %}
         </div>
       </div>
@@ -92,7 +92,7 @@
         {% if remaining == 0 %}
         <div class="alert alert-warning">
           <i class="bi bi-exclamation-triangle me-2"></i>
-          {% trans "Günlük analiz limitinize ulaştınız. Yarın tekrar deneyiniz." %}
+          {% trans "Bu ay için ücretsiz analiz hakkınız doldu. Önümüzdeki ay tekrar deneyebilirsiniz." %}
         </div>
         {% else %}
         <form id="uploadForm" enctype="multipart/form-data">

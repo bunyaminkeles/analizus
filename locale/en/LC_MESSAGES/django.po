@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-31 01:02+0300\n"
+"POT-Creation-Date: 2026-10-31 02:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -403,10 +403,10 @@ msgstr "Publication Trend"
 #: bibliometrics/services/analyzer.py:2617
 #: bibliometrics/services/export_builder.py:30
 #: makaleanaliz/templates/makaleanaliz/results.html:138 openalex/models.py:83
-#: openalex/services/job_runner.py:22 openalex/views.py:195 pubmed/models.py:96
+#: openalex/services/job_runner.py:22 openalex/views.py:195 pubmed/models.py:81
 #: pubmed/services/job_runner.py:20 pubmed/views.py:163
-#: semanticscholar/models.py:88 semanticscholar/services/job_runner.py:21
-#: semanticscholar/views.py:240
+#: semanticscholar/models.py:76 semanticscholar/services/job_runner.py:21
+#: semanticscholar/views.py:244
 msgid "Yıl"
 msgstr "Year"
 
@@ -431,7 +431,7 @@ msgstr "Most Productive Authors (Top {n})"
 #: bibliometrics/services/analyzer.py:844
 #: bibliometrics/services/export_builder.py:31
 #: openalex/services/job_runner.py:22 openalex/views.py:196
-#: semanticscholar/services/job_runner.py:21 semanticscholar/views.py:241
+#: semanticscholar/services/job_runner.py:21 semanticscholar/views.py:245
 msgid "Atıf Sayısı"
 msgstr "Citations"
 
@@ -789,7 +789,7 @@ msgstr "Period"
 #: bibliometrics/services/export_builder.py:30
 #: openalex/services/job_runner.py:21 openalex/views.py:195
 #: pubmed/services/job_runner.py:19 pubmed/views.py:163
-#: semanticscholar/services/job_runner.py:20 semanticscholar/views.py:240
+#: semanticscholar/services/job_runner.py:20 semanticscholar/views.py:244
 msgid "Yazarlar"
 msgstr "Authors"
 
@@ -850,11 +850,11 @@ msgstr "Topic {n}"
 #: makaleanaliz/templates/makaleanaliz/results.html:137 openalex/forms.py:6
 #: openalex/models.py:81 openalex/services/job_runner.py:21
 #: openalex/templates/openalex/landing.html:224 openalex/views.py:195
-#: pubmed/forms.py:7 pubmed/models.py:93 pubmed/services/job_runner.py:19
-#: pubmed/views.py:163 semanticscholar/forms.py:7 semanticscholar/models.py:87
+#: pubmed/forms.py:7 pubmed/models.py:78 pubmed/services/job_runner.py:19
+#: pubmed/views.py:163 semanticscholar/forms.py:7 semanticscholar/models.py:75
 #: semanticscholar/services/job_runner.py:20
 #: semanticscholar/templates/semanticscholar/landing.html:334
-#: semanticscholar/views.py:240
+#: semanticscholar/views.py:244
 msgid "Başlık"
 msgstr "Title"
 
@@ -869,8 +869,8 @@ msgstr "Journal"
 #: openalex/models.py:81 openalex/services/job_runner.py:23
 #: openalex/templates/openalex/landing.html:225 openalex/views.py:196
 #: pubmed/services/job_runner.py:22 pubmed/views.py:165
-#: semanticscholar/models.py:87 semanticscholar/services/job_runner.py:22
-#: semanticscholar/views.py:241
+#: semanticscholar/models.py:75 semanticscholar/services/job_runner.py:22
+#: semanticscholar/views.py:245
 msgid "Özet"
 msgstr "Abstract"
 
@@ -880,7 +880,7 @@ msgid "DOI"
 msgstr "DOI"
 
 #: bibliometrics/services/export_builder.py:32 openalex/models.py:84
-#: pubmed/models.py:96 semanticscholar/views.py:241
+#: pubmed/models.py:81 semanticscholar/views.py:245
 msgid "Yayın Türü"
 msgstr "Publication Type"
 
@@ -891,7 +891,7 @@ msgstr "Country"
 
 #: bibliometrics/services/export_builder.py:32
 #: bibliometrics/services/report_notes.py:49 openalex/models.py:83
-#: pubmed/forms.py:13 pubmed/models.py:95
+#: pubmed/forms.py:13 pubmed/models.py:80
 msgid "Kurum"
 msgstr "Institution"
 
@@ -1623,8 +1623,8 @@ msgstr "Publication year"
 
 #: bibliometrics/services/report_notes.py:43 openalex/forms.py:8
 #: openalex/models.py:81 openalex/templates/openalex/landing.html:226
-#: pubmed/forms.py:9 pubmed/models.py:93 semanticscholar/forms.py:8
-#: semanticscholar/models.py:87
+#: pubmed/forms.py:9 pubmed/models.py:78 semanticscholar/forms.py:8
+#: semanticscholar/models.py:75
 #: semanticscholar/templates/semanticscholar/landing.html:335
 msgid "Yazar"
 msgstr "Author"
@@ -2125,17 +2125,17 @@ msgid "Demo (%(n)s grafik) ücretsiz · Tam rapor için proje talebi"
 msgstr "Demo (%(n)s charts) free · Project request for the full report"
 
 #: bibliometrics/templates/bibliometrics/landing.html:64
-msgid "Günlük Limit:"
-msgstr "Daily limit:"
+msgid "Aylık Ücretsiz Hak:"
+msgstr "Monthly Free Quota:"
 
 #: bibliometrics/templates/bibliometrics/landing.html:67
-msgid "Günlük limite ulaşıldı"
-msgstr "Daily limit reached"
+msgid "Bu ayki ücretsiz hakkınız doldu"
+msgstr "Your free quota for this month is used up"
 
 #: bibliometrics/templates/bibliometrics/landing.html:69
 #, python-format
-msgid "%(remaining)s hakkınız kaldı"
-msgstr "%(remaining)s remaining"
+msgid "%(remaining)s ücretsiz hakkınız kaldı"
+msgstr "%(remaining)s free uses remaining"
 
 #: bibliometrics/templates/bibliometrics/landing.html:80
 msgid ""
@@ -2154,8 +2154,12 @@ msgid "Veri Dosyası Yükle"
 msgstr "Upload Data File"
 
 #: bibliometrics/templates/bibliometrics/landing.html:95
-msgid "Günlük analiz limitinize ulaştınız. Yarın tekrar deneyiniz."
-msgstr "You have reached your daily analysis limit. Please try again tomorrow."
+msgid ""
+"Bu ay için ücretsiz analiz hakkınız doldu. Önümüzdeki ay tekrar "
+"deneyebilirsiniz."
+msgstr ""
+"Your free analysis quota for this month is used up. You can try again "
+"next month."
 
 #: bibliometrics/templates/bibliometrics/landing.html:114
 #: bibliometrics/templates/bibliometrics/landing.html:453
@@ -2543,7 +2547,7 @@ msgid "Gönderildi"
 msgstr "Sent"
 
 #: bibliometrics/templates/bibliometrics/landing.html:471
-#: bibliometrics/views.py:224
+#: bibliometrics/views.py:228
 msgid "Email gönderilemedi."
 msgstr "The email could not be sent."
 
@@ -2627,95 +2631,105 @@ msgid ""
 "Bibliometrik analiz kullanmak için e-posta adresinizi doğrulamanız gerekiyor."
 msgstr "You need to verify your email address to use bibliometric analysis."
 
-#: bibliometrics/views.py:87
+#: bibliometrics/views.py:86 bibliometrics/views.py:252
+#: bibliometrics/views.py:327 openalex/views.py:104 pubmed/views.py:80
+#: semanticscholar/views.py:99 trdizin/views.py:101
 #, python-brace-format
-msgid "Günlük analiz limitinize ({limit}) ulaştınız. Yarın tekrar deneyiniz."
+msgid ""
+"Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir "
+"destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz."
 msgstr ""
-"You have reached your daily analysis limit ({limit}). Please try again "
-"tomorrow."
+"Your free analysis quota for this month is used up ({used}/{limit}). You can "
+"increase your free quota by upgrading to a higher supporter tier."
 
-#: bibliometrics/views.py:102 istatistik/views.py:456 istatistik/views.py:1170
+#: bibliometrics/views.py:88 bibliometrics/views.py:254
+#: bibliometrics/views.py:329 openalex/views.py:106 pubmed/views.py:82
+#: semanticscholar/views.py:101 trdizin/views.py:103
+#, python-brace-format
+msgid ""
+"Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay "
+"tekrar deneyebilirsiniz."
+msgstr ""
+"Your free analysis quota for this month is used up ({used}/{limit}). You can "
+"try again next month."
+
+#: bibliometrics/views.py:106 istatistik/views.py:456 istatistik/views.py:1170
 #: istatistik/views.py:1311
 msgid "Dosya seçilmedi."
 msgstr "No file selected."
 
-#: bibliometrics/views.py:198
+#: bibliometrics/views.py:202
 msgid "Analiz henüz tamamlanmadı."
 msgstr "The analysis has not been completed yet."
 
-#: bibliometrics/views.py:201
+#: bibliometrics/views.py:205
 msgid "Demo rapor daha önce gönderildi."
 msgstr "The demo report has already been sent."
 
-#: bibliometrics/views.py:204
+#: bibliometrics/views.py:208
 msgid "Hesabınızda email adresi tanımlı değil."
 msgstr "There is no email address on your account."
 
-#: bibliometrics/views.py:220
+#: bibliometrics/views.py:224
 msgid "Demo PDF oluşturulamamış."
 msgstr "The demo PDF could not be generated."
 
-#: bibliometrics/views.py:226
+#: bibliometrics/views.py:230
 #, python-brace-format
 msgid "{email} adresine demo rapor gönderildi."
 msgstr "The demo report has been sent to {email}."
 
-#: bibliometrics/views.py:242 bibliometrics/views.py:314
+#: bibliometrics/views.py:246 bibliometrics/views.py:322
 #: istatistik/views.py:499 istatistik/views.py:1306
 msgid "E-posta doğrulaması gereklidir."
 msgstr "Email verification is required."
 
-#: bibliometrics/views.py:248 bibliometrics/views.py:319
-#, python-brace-format
-msgid "Günlük analiz limitinize ({limit}) ulaştınız."
-msgstr "You have reached your daily analysis limit ({limit})."
-
-#: bibliometrics/views.py:256
+#: bibliometrics/views.py:264
 msgid "OpenAlex araması henüz tamamlanmadı."
 msgstr "The OpenAlex search has not been completed yet."
 
-#: bibliometrics/views.py:263 bibliometrics/views.py:331
+#: bibliometrics/views.py:271 bibliometrics/views.py:343
 #, python-brace-format
 msgid "Bibliometrik analiz için en az 100 sonuç gereklidir (bulunan: {count})."
 msgstr "Bibliometric analysis requires at least 100 results (found: {count})."
 
-#: bibliometrics/views.py:270
+#: bibliometrics/views.py:278
 msgid "OpenAlex verisi bulunamadı."
 msgstr "OpenAlex data not found."
 
-#: bibliometrics/views.py:282 bibliometrics/views.py:343
+#: bibliometrics/views.py:290 bibliometrics/views.py:355
 msgid "Bu arama için zaten bir bibliometrik analiz mevcut."
 msgstr "A bibliometric analysis already exists for this search."
 
-#: bibliometrics/views.py:299 bibliometrics/views.py:359
+#: bibliometrics/views.py:307 bibliometrics/views.py:371
 msgid "Bibliometrik analiz başlatıldı."
 msgstr "The bibliometric analysis has started."
 
 # PubMed modülü — Faz 3 bibliometri (29 Eylül 2026)
-#: bibliometrics/views.py:326
+#: bibliometrics/views.py:338
 msgid "PubMed araması henüz tamamlanmadı."
 msgstr "The PubMed search has not finished yet."
 
-#: bibliometrics/views.py:335
+#: bibliometrics/views.py:347
 msgid "PubMed verisi bulunamadı."
 msgstr "PubMed data not found."
 
-#: bibliometrics/views.py:375
+#: bibliometrics/views.py:387
 msgid "Analiz tamamlanmadan sipariş oluşturamazsınız."
 msgstr "You cannot place an order before the analysis is complete."
 
-#: bibliometrics/views.py:392
+#: bibliometrics/views.py:404
 msgid ""
 "Siparişiniz alındı! Ödeme onayından sonra tam rapor e-postanıza gönderilecek."
 msgstr ""
 "Your order has been received! The full report will be sent to your email "
 "once the payment is confirmed."
 
-#: bibliometrics/views.py:399
+#: bibliometrics/views.py:411
 msgid "İlk 500 kayıt"
 msgstr "First 500 records"
 
-#: bibliometrics/views.py:405
+#: bibliometrics/views.py:417
 #, python-brace-format
 msgid "{start}–{end}. kayıtlar"
 msgstr "Records {start}–{end}"
@@ -24451,7 +24465,7 @@ msgstr "No results were found for this search. Try broadening your criteria."
 
 #: openalex/forms.py:9 openalex/models.py:82
 #: openalex/templates/openalex/landing.html:227 pubmed/forms.py:10
-#: pubmed/models.py:94 semanticscholar/forms.py:6 semanticscholar/models.py:88
+#: pubmed/models.py:79 semanticscholar/forms.py:6 semanticscholar/models.py:76
 #: semanticscholar/templates/semanticscholar/landing.html:333
 msgid "Anahtar Kelime"
 msgstr "Keyword"
@@ -24490,14 +24504,14 @@ msgid "Geçersiz operatör."
 msgstr "Invalid operator."
 
 #: openalex/models.py:82 openalex/services/job_runner.py:21 pubmed/forms.py:12
-#: pubmed/models.py:95 pubmed/services/job_runner.py:19
-#: semanticscholar/services/job_runner.py:20 semanticscholar/views.py:240
+#: pubmed/models.py:80 pubmed/services/job_runner.py:19
+#: semanticscholar/services/job_runner.py:20 semanticscholar/views.py:244
 msgid "Dergi/Kaynak"
 msgstr "Journal/Source"
 
 #: openalex/services/job_runner.py:23 openalex/views.py:196
 #: pubmed/services/job_runner.py:21 pubmed/views.py:164
-#: semanticscholar/services/job_runner.py:22 semanticscholar/views.py:241
+#: semanticscholar/services/job_runner.py:22 semanticscholar/views.py:245
 msgid "Kurumlar"
 msgstr "Institutions"
 
@@ -24642,6 +24656,8 @@ msgid "olarak tek tıkla indirin."
 msgstr "in one click."
 
 #: openalex/templates/openalex/landing.html:30
+#: pubmed/templates/pubmed/landing.html:52
+#: semanticscholar/templates/semanticscholar/landing.html:32
 #, python-format
 msgid ""
 "Bu ay <strong>%(daily_limit)s</strong> ücretsiz arama hakkınız "
@@ -24981,29 +24997,11 @@ msgstr ""
 msgid "OpenAlex tarama için e-posta doğrulaması gereklidir."
 msgstr "Email verification is required for OpenAlex searches."
 
-#: openalex/views.py:104
-#, python-brace-format
-msgid ""
-"Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir "
-"destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz."
-msgstr ""
-"Your free analysis quota for this month is used up ({used}/{limit}). You "
-"can increase your free quota by upgrading to a higher supporter tier."
-
-#: openalex/views.py:106
-#, python-brace-format
-msgid ""
-"Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay "
-"tekrar deneyebilirsiniz."
-msgstr ""
-"Your free analysis quota for this month is used up ({used}/{limit}). You "
-"can try again next month."
-
-#: openalex/views.py:111
+#: openalex/views.py:111 semanticscholar/views.py:106 trdizin/views.py:108
 msgid "Bu ay için ücretsiz analiz hakkınız doldu."
 msgstr "Your free analysis quota for this month is used up."
 
-#: openalex/views.py:140 pubmed/views.py:74 semanticscholar/views.py:127
+#: openalex/views.py:140 pubmed/views.py:74 semanticscholar/views.py:131
 msgid "Geçersiz sorgu."
 msgstr "Invalid query."
 
@@ -25011,7 +25009,7 @@ msgstr "Invalid query."
 msgid "OpenAlex Sonuçları"
 msgstr "OpenAlex Results"
 
-#: openalex/views.py:195 pubmed/views.py:163 semanticscholar/views.py:240
+#: openalex/views.py:195 pubmed/views.py:163 semanticscholar/views.py:244
 msgctxt "sıra numarası"
 msgid "No"
 msgstr "No."
@@ -25020,32 +25018,32 @@ msgstr "No."
 msgid "Açık Erişim"
 msgstr "Open Access"
 
-#: openalex/views.py:255 pubmed/views.py:210 semanticscholar/views.py:303
+#: openalex/views.py:255 pubmed/views.py:210 semanticscholar/views.py:307
 msgid "Kullanıcı tarafından iptal edildi."
 msgstr "Cancelled by the user."
 
-#: openalex/views.py:267 pubmed/views.py:221 semanticscholar/views.py:168
+#: openalex/views.py:267 pubmed/views.py:221 semanticscholar/views.py:172
 msgid "Sonuçlar henüz hazır değil."
 msgstr "The results are not ready yet."
 
-#: openalex/views.py:270 pubmed/views.py:223 semanticscholar/views.py:170
+#: openalex/views.py:270 pubmed/views.py:223 semanticscholar/views.py:174
 msgid "Demo sonuçlar zaten gönderildi."
 msgstr "The demo results have already been sent."
 
-#: openalex/views.py:275 pubmed/views.py:227 semanticscholar/views.py:173
+#: openalex/views.py:275 pubmed/views.py:227 semanticscholar/views.py:177
 #, python-brace-format
 msgid "Demo sonuçların {email} adresine gönderilmesi başlatıldı."
 msgstr "Sending the demo results to {email} has started."
 
-#: openalex/views.py:290 semanticscholar/views.py:187
+#: openalex/views.py:290 semanticscholar/views.py:191
 msgid "Bu arama için henüz sonuç yok."
 msgstr "There are no results for this search yet."
 
-#: pubmed/forms.py:8 pubmed/models.py:93
+#: pubmed/forms.py:8 pubmed/models.py:78
 msgid "Başlık/Özet"
 msgstr "Title/Abstract"
 
-#: pubmed/forms.py:11 pubmed/models.py:94
+#: pubmed/forms.py:11 pubmed/models.py:79
 msgid "MeSH Terimi"
 msgstr "MeSH Term"
 
@@ -25103,15 +25101,6 @@ msgstr ""
 "Extract data from more than 40 million biomedical publications in PubMed "
 "without coding. Search by title, abstract, author, MeSH term, journal and "
 "affiliation; download the results as Excel or TXT."
-
-#: pubmed/templates/pubmed/landing.html:52
-#, python-format
-msgid ""
-"Günlük <strong>%(daily_limit)s</strong> arama hakkınız bulunmaktadır. Kalan: "
-"<strong>%(remaining)s</strong>."
-msgstr ""
-"You have <strong>%(daily_limit)s</strong> searches per day. Remaining: "
-"<strong>%(remaining)s</strong>."
 
 #: pubmed/templates/pubmed/landing.html:65
 msgid "Tüm kriterler birlikte aranır (AND). Yıl aralığı örneği: 2020-2024."
@@ -25194,23 +25183,6 @@ msgstr ""
 "Email verification is required for PubMed searches. Please verify your email "
 "address on your profile page."
 
-#: pubmed/views.py:80
-#, python-brace-format
-msgid ""
-"Günlük demo limitiniz doldu ({used}/{limit}). Premium üyelikle 7 aramaya "
-"yükseltebilirsiniz."
-msgstr ""
-"You have reached your daily demo limit ({used}/{limit}). Upgrade to 7 "
-"searches with a Premium membership."
-
-#: pubmed/views.py:82 semanticscholar/views.py:98
-#, python-brace-format
-msgid ""
-"Günlük demo limitiniz doldu ({used}/{limit}). Yarın tekrar deneyebilirsiniz."
-msgstr ""
-"You have reached your daily demo limit ({used}/{limit}). You can try again "
-"tomorrow."
-
 #: pubmed/views.py:101
 #, python-brace-format
 msgid "Sırada bekliyorsunuz — tahmini sıra: {pos}."
@@ -25238,11 +25210,11 @@ msgstr "PubMed Results"
 msgid "Araştırma Alanı"
 msgstr "Field of Study"
 
-#: semanticscholar/models.py:89
+#: semanticscholar/models.py:77
 msgid "Alan"
 msgstr "Field of Study"
 
-#: semanticscholar/services/job_runner.py:22 semanticscholar/views.py:241
+#: semanticscholar/services/job_runner.py:22 semanticscholar/views.py:245
 msgid "Araştırma Alanları"
 msgstr "Fields of Study"
 
@@ -25322,15 +25294,6 @@ msgstr ""
 "Download data for the <strong class=\"text-info\">5 most recent "
 "publications</strong> as <strong class=\"text-info\">Excel or TXT</strong>, "
 "or receive them by email."
-
-#: semanticscholar/templates/semanticscholar/landing.html:32
-#, python-format
-msgid ""
-"Günlük <strong>%(daily_limit)s</strong> arama hakkı — Kalan: "
-"<strong>%(remaining)s</strong>"
-msgstr ""
-"<strong>%(daily_limit)s</strong> searches per day — Remaining: "
-"<strong>%(remaining)s</strong>"
 
 #: semanticscholar/templates/semanticscholar/landing.html:33
 msgid "CrossRef ile zenginleştirilir"
@@ -25515,11 +25478,7 @@ msgid "Semantic Scholar tarama için e-posta adresinizi doğrulamanız gerekiyor
 msgstr ""
 "You need to verify your email address to use Semantic Scholar searches."
 
-#: semanticscholar/views.py:102
-msgid "Günlük demo limitiniz doldu."
-msgstr "You have reached your daily demo limit."
-
-#: semanticscholar/views.py:238
+#: semanticscholar/views.py:242
 msgid "Semantic Scholar Sonuçları"
 msgstr "Semantic Scholar Results"
 
@@ -26233,6 +26192,62 @@ msgid ""
 msgstr ""
 "No-code data scraping from international academic databases. No Python or "
 "Selenium skills needed."
+
+#~ msgid "Günlük Limit:"
+#~ msgstr "Daily limit:"
+
+#~ msgid "Günlük limite ulaşıldı"
+#~ msgstr "Daily limit reached"
+
+#~ msgid "Günlük analiz limitinize ulaştınız. Yarın tekrar deneyiniz."
+#~ msgstr ""
+#~ "You have reached your daily analysis limit. Please try again tomorrow."
+
+#, python-brace-format
+#~ msgid ""
+#~ "Günlük analiz limitinize ({limit}) ulaştınız. Yarın tekrar deneyiniz."
+#~ msgstr ""
+#~ "You have reached your daily analysis limit ({limit}). Please try again "
+#~ "tomorrow."
+
+#, python-brace-format
+#~ msgid "Günlük analiz limitinize ({limit}) ulaştınız."
+#~ msgstr "You have reached your daily analysis limit ({limit})."
+
+#, python-format
+#~ msgid ""
+#~ "Günlük <strong>%(daily_limit)s</strong> arama hakkınız bulunmaktadır. "
+#~ "Kalan: <strong>%(remaining)s</strong>."
+#~ msgstr ""
+#~ "You have <strong>%(daily_limit)s</strong> searches per day. Remaining: "
+#~ "<strong>%(remaining)s</strong>."
+
+#, python-brace-format
+#~ msgid ""
+#~ "Günlük demo limitiniz doldu ({used}/{limit}). Premium üyelikle 7 aramaya "
+#~ "yükseltebilirsiniz."
+#~ msgstr ""
+#~ "You have reached your daily demo limit ({used}/{limit}). Upgrade to 7 "
+#~ "searches with a Premium membership."
+
+#, python-brace-format
+#~ msgid ""
+#~ "Günlük demo limitiniz doldu ({used}/{limit}). Yarın tekrar "
+#~ "deneyebilirsiniz."
+#~ msgstr ""
+#~ "You have reached your daily demo limit ({used}/{limit}). You can try "
+#~ "again tomorrow."
+
+#, python-format
+#~ msgid ""
+#~ "Günlük <strong>%(daily_limit)s</strong> arama hakkı — Kalan: "
+#~ "<strong>%(remaining)s</strong>"
+#~ msgstr ""
+#~ "<strong>%(daily_limit)s</strong> searches per day — Remaining: "
+#~ "<strong>%(remaining)s</strong>"
+
+#~ msgid "Günlük demo limitiniz doldu."
+#~ msgstr "You have reached your daily demo limit."
 
 #, python-format
 #~ msgid ""
