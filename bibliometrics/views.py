@@ -76,15 +76,19 @@ def bibliometrics_landing(request):
         messages.warning(request, gettext('Bibliometrik analiz kullanmak için e-posta adresinizi doğrulamanız gerekiyor.'))
         return redirect('profile_edit')
 
-    daily_limit = BibliometricJob.get_daily_limit(user)
-    daily_used = BibliometricJob.daily_count_for_user(user)
+    daily_limit = BibliometricJob.get_monthly_limit(user)
+    daily_used = BibliometricJob.monthly_count_for_user(user)
     remaining = daily_limit - daily_used
 
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if remaining <= 0:
+            is_premium = hasattr(user, 'profile') and user.profile.is_premium
+            msg = (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
+                   if not is_premium else
+                   gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
             return JsonResponse({
                 'status': 'error',
-                'error': gettext('Günlük analiz limitinize ({limit}) ulaştınız. Yarın tekrar deneyiniz.').format(limit=daily_limit),
+                'error': msg.format(used=daily_limit, limit=daily_limit),
             }, status=429)
 
         form = BibliometricUploadForm(request.POST, request.FILES)
@@ -241,11 +245,15 @@ def bibliometrics_from_openalex(request, alex_job_id):
     if hasattr(user, 'profile') and not user.profile.email_verified:
         return JsonResponse({'status': 'error', 'error': gettext('E-posta doğrulaması gereklidir.')}, status=403)
 
-    daily_limit = BibliometricJob.get_daily_limit(user)
-    daily_used = BibliometricJob.daily_count_for_user(user)
+    daily_limit = BibliometricJob.get_monthly_limit(user)
+    daily_used = BibliometricJob.monthly_count_for_user(user)
     if daily_used >= daily_limit:
+        is_premium = hasattr(user, 'profile') and user.profile.is_premium
+        msg = (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
+               if not is_premium else
+               gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
         return JsonResponse(
-            {'status': 'error', 'error': gettext('Günlük analiz limitinize ({limit}) ulaştınız.').format(limit=daily_limit)},
+            {'status': 'error', 'error': msg.format(used=daily_limit, limit=daily_limit)},
             status=429,
         )
 
@@ -313,10 +321,14 @@ def bibliometrics_from_pubmed(request, pubmed_job_id):
     if hasattr(user, 'profile') and not user.profile.email_verified:
         return JsonResponse({'status': 'error', 'error': gettext('E-posta doğrulaması gereklidir.')}, status=403)
 
-    daily_limit = BibliometricJob.get_daily_limit(user)
-    if BibliometricJob.daily_count_for_user(user) >= daily_limit:
+    daily_limit = BibliometricJob.get_monthly_limit(user)
+    if BibliometricJob.monthly_count_for_user(user) >= daily_limit:
+        is_premium = hasattr(user, 'profile') and user.profile.is_premium
+        msg = (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
+               if not is_premium else
+               gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
         return JsonResponse(
-            {'status': 'error', 'error': gettext('Günlük analiz limitinize ({limit}) ulaştınız.').format(limit=daily_limit)},
+            {'status': 'error', 'error': msg.format(used=daily_limit, limit=daily_limit)},
             status=429,
         )
 

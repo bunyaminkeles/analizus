@@ -4,8 +4,10 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
+from forum.models import MonthlyToolLimitMixin
 
-class BibliometricJob(models.Model):
+
+class BibliometricJob(MonthlyToolLimitMixin, models.Model):
     STATUS_CHOICES = (
         ('pending', 'Bekliyor'),
         ('running', 'Çalışıyor'),
@@ -117,24 +119,6 @@ class BibliometricJob(models.Model):
         self.error_message = error_msg
         self.completed_at = timezone.now()
         self.save(update_fields=['status', 'error_message', 'completed_at'])
-
-    @staticmethod
-    def daily_count_for_user(user):
-        today = timezone.now().date()
-        return BibliometricJob.objects.filter(
-            user=user,
-            created_at__date=today,
-        ).count()
-
-    @staticmethod
-    def get_daily_limit(user):
-        """Admin: ∞, Premium: 5, Normal: 2"""
-        if user.is_staff or user.is_superuser:
-            return 9999
-        if hasattr(user, 'profile') and user.profile.is_premium:
-            return 5
-        return 2
-
 
 class BibliometricOrder(models.Model):
     STATUS_CHOICES = (

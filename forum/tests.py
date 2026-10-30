@@ -145,19 +145,21 @@ def test_alex_job_mark_failed(user):
 # ─── YÖK Tez Job Status Geçişleri ────────────────────────────────────────────
 
 @pytest.mark.django_db
-def test_yoktez_job_daily_limit_normal_user(user):
-    """Normal kullanıcı için günlük limit 3 olmalı (fa1c281, 18 Mayıs 2026:
-    normal 1 / premium 7 yerine admin hariç herkese 3)."""
+def test_yoktez_job_monthly_limit_normal_user(user):
+    """Normal (Free) kullanıcı için aylık limit SiteSettings.monthly_analysis_limit_free
+    (default 1) olmalı — günlük sabit limit sisteminin aylık kademeli hakla değişimi
+    (30 Ekim 2026, aylık ücretsiz analiz hakkı özelliği)."""
     from yoktez.models import YokTezSearchJob
-    limit = YokTezSearchJob.get_daily_limit(user)
-    assert limit == 3
+    from forum.models import SiteSettings
+    limit = YokTezSearchJob.get_monthly_limit(user)
+    assert limit == SiteSettings.load().monthly_analysis_limit_free
 
 
 @pytest.mark.django_db
-def test_yoktez_job_daily_limit_staff(staff_user):
-    """Staff kullanıcı için günlük limit sınırsız (9999) olmalı."""
+def test_yoktez_job_monthly_limit_staff(staff_user):
+    """Staff kullanıcı için aylık limit sınırsız (9999) olmalı."""
     from yoktez.models import YokTezSearchJob
-    limit = YokTezSearchJob.get_daily_limit(staff_user)
+    limit = YokTezSearchJob.get_monthly_limit(staff_user)
     assert limit == 9999
 
 

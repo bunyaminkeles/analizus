@@ -3,8 +3,10 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
+from forum.models import MonthlyToolLimitMixin
 
-class YokTezSearchJob(models.Model):
+
+class YokTezSearchJob(MonthlyToolLimitMixin, models.Model):
     STATUS_CHOICES = (
         ('pending', 'Bekliyor'),
         ('running', 'Çalışıyor'),
@@ -61,21 +63,6 @@ class YokTezSearchJob(models.Model):
         if self.yil_baslangic or self.yil_bitis:
             parts.append(f'({self.yil_baslangic or "?"}-{self.yil_bitis or "?"})')
         return ' | '.join(parts) if parts else 'Genel Tarama'
-
-    @staticmethod
-    def daily_count_for_user(user):
-        today = timezone.now().date()
-        return YokTezSearchJob.objects.filter(user=user, created_at__date=today).count()
-
-    @staticmethod
-    def get_daily_limit(user):
-        """Admin: sınırsız, Premium: 7, diğerleri: 3 (limit mesajı 7 vaat ediyor; kullanıcı kararı 29 Eylül 2026)"""
-        if user.is_staff or user.is_superuser:
-            return 9999
-        if hasattr(user, 'profile') and user.profile.is_premium:
-            return 7
-        return 3
-
 
 class YokTezUniversite(models.Model):
     """YÖK Tez arama formundaki üniversite filtresi (eski DB sabit dict'ten taşındı)."""
