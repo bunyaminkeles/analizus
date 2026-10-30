@@ -2597,7 +2597,7 @@ with connection.cursor() as c:
   - PubMed modülü (Faz 1–3: 630a069, 289784b, d046c07) — `pubmed` app, arama sayfası TR/EN/DE, bibliometri köprüsü
     (13 analize kadar, atıf yok, ülke/kurum tahmini); `feature_pubmed` KAPALI başlar. §14, §15.
   - Tarama siparişi (4 araç ortak) + ilan vitrini fiyatları Site Ayarları → Fiyatlandırma'dan (e716e46). §20.
-- **Bibliometri Grup A+B — main'de canlı (en son 30 Ekim 2026, merge commit `c03eb91`):** Grup A (A1-A9: rapor
+- **Bibliometri Grup A+B+B4(kısmi) — main'de canlı (en son 30 Ekim 2026, merge commit `ef9f4a8`):** Grup A (A1-A9: rapor
   dili seçimi, OpenAlex/PubMed köprüsü iyileştirmeleri, demo CTA EN/DE); Grup B/B1 (veri kalitesi: DOI ile
   OpenAlex zenginleştirme, tekilleştirme, yazar adı birleştirme, anahtar kelime normalizasyonu) ve B2 (bilim
   haritalama: Bradford Kanunu, anahtar kelime Louvain kümeleri, Tematik Harita/Evrim, Üç Alan Grafiği, SCP/MCP,
@@ -2609,7 +2609,10 @@ with connection.cursor() as c:
   `c03eb91`; B3-2b ayrı merge commit `bd0c213` ile (migration `0011`, kullanıcı önce `scripts/yedek_indir.sh
   --simdi` ile yedek aldı). Aynı turda ayrıca **Topic Map ve Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök
   neden sınıfı — sabit/sınırsız `figsize`, PDF'e en-boy korunarak sığdırılınca devasa boşluk; kullanıcı ekran
-  görüntüleriyle bildirdi) düzeltildi. Sırada B4 (ürün/huni). Detay: aşağıdaki "Geçmiş Turlar (Kronoloji)"
+  görüntüleriyle bildirdi) düzeltildi. **B4 (ürün/huni) başladı:** B4-1 (demo seçimi) + B4-2 (Uzman Paketi
+  CTA + EN/DE ödeme notu) TAMAMLANDI, merge commit `ef9f4a8`; B4-3 (rapor dili) incelenip zaten çözülmüş
+  bulundu. Sırada B4-4 (EN örnek tam rapor, onaylı) ve B4-5 (SEO çevirisi, kapsam yeniden değerlendirilecek).
+  Detay: aşağıdaki "Geçmiş Turlar (Kronoloji)"
   29–30 Ekim 2026 girdileri; plan dosyası `bibliometri_durum_ve_gelistirme_prompt.md` §4; görev durumu
   `tasks/todo.md`.
 
@@ -3413,8 +3416,10 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   keyword_cooccurrence uyarı metni de fark edilip düzeltildi). `forum+
   bibliometrics` 191/191 geçti. Migration yok.
 - **30 Ekim 2026 — Bibliometri Grup B4 (Ürün/Huni) başladı, B4-1 (Demo Seçimi)
-  ve B4-2'nin ilk yarısı (Uzman Paketi CTA) TAMAMLANDI, `dev`'de (henüz
-  push/merge edilmedi).** **B4-1:** Demo PDF'i eskiden `run_all_analyses`'in
+  ve B4-2 (Paketler) TAMAMLANDI, `main`'de canlı** (merge commit `ef9f4a8`,
+  merge öncesi production'da aktif staff-olmayan kullanıcı yoktu, migration
+  yok, GitHub Actions deploy `success`, site 200 doğrulandı).
+  **B4-1:** Demo PDF'i eskiden `run_all_analyses`'in
   ham hesaplama sırasının ilk N'ini gösteriyordu (demo yıllık trend + büyüme
   oranı + yazarlar + Lotka + 3 ayrı anahtar kelime analiziyle art arda
   açılıp çeşitlilik sunmuyordu — F8 bulgusu). `analyzer.py`'ye
@@ -3446,13 +3451,37 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   "migration'sız alternatif"ine (yalnız arayüz dili) zaten karşılık geliyor.
   Kod değişikliği YAPILMADI, yalnız durum netleştirildi. **Yan bulgu (B4
   kapsamı dışında, `tasks/todo.md` "AÇIK İŞLER"e eklendi):** `order.html`'de
-  "17 analiz" + 17'lik sabit analiz listesi bayatlamış (gerçek sayı 26).
+  "17 analiz" + 17'lik sabit analiz listesi bayatlamış (gerçek sayı 26);
+  ayrıca `bibliometrics/views.py` promo metninde (satır ~48, ~59) ve
+  `tarama_seo_content.py`'nin `bibliometrics` girdisinde (intro + 1 SSS
+  cevabı) de aynı "17" bayatlığı var — hiçbirine dokunulmadı.
+  **B4-2 (Paketler) ikinci yarısı — kullanıcı kararı:** "en ve de için proje
+  talebi gönderen user'a eposta ile ödeme şeklinin gönderileceği bildirilsin"
+  — otomatik ödeme entegrasyonu (Stripe/PayPal) İSTENMEDİ. `forum/views.py`
+  `proje_talebi()`: EN/DE'de (TR hariç, TR'de zaten sipariş/pazar akışı var)
+  onay e-postasına "Ödeme yöntemine ilişkin bilgileri ayrı bir e-posta ile
+  size ileteceğiz." notu eklendi. **Test sırasında bulunan gerçek bug/altyapı
+  tuzağı:** `/en/`, `/de/` altındaki HER yol (view'a hiç ulaşmadan)
+  `MultilingualFeatureMiddleware` tarafından `SiteSettings.feature_multilingual`
+  kapalıyken 404'e düşürülüyor — testte `intl_market_on` deseniyle aynı
+  şekilde flag açılarak çözüldü (kod tarafında bir şey değişmedi, yalnız
+  test yazarken keşfedildi ve not edildi). 2 yeni pytest (EN'de ödeme notu
+  var, TR'de yok). 1 yeni msgid EN/DE çevrildi.
   6 yeni pytest (`select_demo_figures` sıralama/atlama/düşürmeme/limit +
   yeniden sıralanmış demo'da uyarı kutusunun doğru başlığı takip ettiğinin
   regresyon testi). Gerçek sentetik veriyle demo çıktısı gözle doğrulandı.
-  `bibliometrics` 160/160 geçti. Migration yok. Sırada B4-2'nin ikinci
-  yarısı (uluslararası ödeme — karar bekliyor) + B4-4 (EN örnek tam rapor)
-  + B4-5 (SEO SSS çevirisi) — ikisi de kullanıcı kararı bekliyor.
+  `bibliometrics` 160/160, `forum` 110/110 geçti. Migration yok.
+  **B4-4 (EN örnek tam rapor) kullanıcı onayı alındı, henüz BAŞLANMADI**
+  (gerçek bir OpenAlex sorgusuyla — nötr/evrensel bir konu — tam rapor
+  üretilip production S3'e yüklenecek, EN/DE sayfasına bağlanacak).
+  **B4-5 (SEO SSS çevirisi) kapsamı yeniden değerlendirilecek** — araştırma
+  sırasında bulunan önemli bulgu: `tarama_seo_content.py` içeriği
+  (openalex/semanticscholar/bibliometrics) şu an yalnız TR'de gösteriliyor,
+  hem view'larda hem `service_promo.html` şablonunda
+  (`{% if seo_guide and LANGUAGE_CODE == 'tr' %}`) TR'ye kilitli — EN/DE
+  çevirisi tek başına yetmez, şablon koşulu da gevşetilmeli. İçerik hacmi
+  büyük (3 araç × 7 bölüm, ~10.600 karakter TR kaynak metin → EN+DE yazım).
+  Yeni oturumda devam: B4-4 (onaylı) → B4-5 (kapsam netleşecek).
 - **30 Ekim 2026 — Bibliometri Grup B, B3-2b (WoS Plaintext/Biblioshiny Uyumlu
   Dışa Aktarım) TAMAMLANDI, `main`'de canlı** (merge commit `bd0c213`,
   migration `0011` — kullanıcı merge öncesi `scripts/yedek_indir.sh --simdi`
