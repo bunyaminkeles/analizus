@@ -2604,10 +2604,10 @@ with connection.cursor() as c:
   Bibliyografik Eşleşme + Yerel/Küresel Atıf, Konu Modelleme NMF — istatistik araç sayısı 17→26) TAMAMEN BİTTİ;
   B3 (Çıktılar) — **B3-1 (Temiz Veri Seti İndirme, XLSX/CSV), B3-2 (VOSviewer Uyumlu Dışa Aktarım), B3-2b
   (WoS Plaintext/Biblioshiny Uyumlu Dışa Aktarım), B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı),
-  B3-4 (grafik başına kural tabanlı otomatik yorum cümlesi, LLM yok)** TAMAMEN BİTTİ — **Grup B (B1+B2+B3)
-  tamamen bitti.** B3-1/B3-2/B3-3/B3-4 + CSV export 500 hatası düzeltmesi `main`'de canlı (30 Ekim 2026, merge
-  commit `c03eb91`); **B3-2b henüz `dev`'de** (30 Ekim 2026, migration `0011` içeriyor — merge öncesi yedek
-  hatırlatılmalı). Aynı turda ayrıca **Topic Map ve Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök
+  B3-4 (grafik başına kural tabanlı otomatik yorum cümlesi, LLM yok)** TAMAMEN BİTTİ, hepsi `main`'de canlı —
+  **Grup B (B1+B2+B3) TAMAMEN BİTTİ.** B3-1/B3-2/B3-3/B3-4 + CSV export 500 hatası düzeltmesi merge commit
+  `c03eb91`; B3-2b ayrı merge commit `bd0c213` ile (migration `0011`, kullanıcı önce `scripts/yedek_indir.sh
+  --simdi` ile yedek aldı). Aynı turda ayrıca **Topic Map ve Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök
   neden sınıfı — sabit/sınırsız `figsize`, PDF'e en-boy korunarak sığdırılınca devasa boşluk; kullanıcı ekran
   görüntüleriyle bildirdi) düzeltildi. Sırada B4 (ürün/huni). Detay: aşağıdaki "Geçmiş Turlar (Kronoloji)"
   29–30 Ekim 2026 girdileri; plan dosyası `bibliometri_durum_ve_gelistirme_prompt.md` §4; görev durumu
@@ -3413,7 +3413,11 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   keyword_cooccurrence uyarı metni de fark edilip düzeltildi). `forum+
   bibliometrics` 191/191 geçti. Migration yok.
 - **30 Ekim 2026 — Bibliometri Grup B, B3-2b (WoS Plaintext/Biblioshiny Uyumlu
-  Dışa Aktarım) TAMAMLANDI, `dev`'de (henüz push/merge edilmedi).** Kullanıcı
+  Dışa Aktarım) TAMAMLANDI, `main`'de canlı** (merge commit `bd0c213`,
+  migration `0011` — kullanıcı merge öncesi `scripts/yedek_indir.sh --simdi`
+  ile yedek aldı; merge öncesi production'da aktif staff-olmayan kullanıcı
+  yoktu; GitHub Actions "Deploy to Hetzner" `success`, migration Hetzner'de
+  uygulandığı ve site 200 döndüğü doğrulandı). Kullanıcı
   R'ın Hetzner'e kurulmasından (disk/kaynak) endişe etti — netleştirildi:
   üretilen dosya yalnızca düz metin (.txt), R/bibliometrix hiçbir zaman
   production'a kurulmuyor, kullanıcı dosyayı kendi bilgisayarındaki

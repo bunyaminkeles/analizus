@@ -281,8 +281,9 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      YAPILMADI** (R/bibliometrix burada kurulu değil, gerçek yazılımla
      doğrulanamıyor) — ayrı B3-2b olarak bekliyor. Detay: `analizus.md` §27
      (29 Ekim B3-2).
-   - [x] **B3-2b TAMAMLANDI (30 Ekim 2026, `dev`'de, henüz push/merge edilmedi,
-     migration `0011`):** WoS Plaintext (Biblioshiny/bibliometrix uyumlu) dışa
+   - [x] **B3-2b TAMAMLANDI, 30 Ekim 2026'da `main`'de canlı (merge commit
+     `bd0c213`, migration `0011` Hetzner'de uygulandı, site 200 doğrulandı):**
+     WoS Plaintext (Biblioshiny/bibliometrix uyumlu) dışa
      aktarım. Kullanıcının "R Hetzner'de yer kaplar mı" sorusu üzerine
      netleştirildi: R hiç production'a kurulmuyor (çıktı düz metin, kullanıcı
      kendi R/Biblioshiny'sine yüklüyor); R yalnız format doğrulaması için
@@ -304,7 +305,8 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      sentetik veriyle dosya üretilip gözle resmi örnekle karşılaştırıldı.
      EN/DE çevrildi (1 yeni msgid, "VOSviewer (ZIP)" emsaliyle çevrilmeden
      bırakıldı). `bibliometrics` 155/155. Detay: `analizus.md` §27
-     (30 Ekim B3-2b). **Merge öncesi yedek hatırlatması: migration var.**
+     (30 Ekim B3-2b). Merge öncesi kullanıcı yedek aldı (`scripts/yedek_indir.sh
+     --simdi`), sonra merge edildi.
    - [x] **B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı) TAMAMLANDI,
      30 Ekim 2026'da `main`'de canlı (B3-4 ile birlikte, merge commit
      `c03eb91`).** Kullanıcı kararı
