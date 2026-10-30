@@ -2597,18 +2597,19 @@ with connection.cursor() as c:
   - PubMed modülü (Faz 1–3: 630a069, 289784b, d046c07) — `pubmed` app, arama sayfası TR/EN/DE, bibliometri köprüsü
     (13 analize kadar, atıf yok, ülke/kurum tahmini); `feature_pubmed` KAPALI başlar. §14, §15.
   - Tarama siparişi (4 araç ortak) + ilan vitrini fiyatları Site Ayarları → Fiyatlandırma'dan (e716e46). §20.
-- **Bibliometri Grup A+B — main'de canlı (en son 29 Ekim 2026, merge commit `19bdefd`):** Grup A (A1-A9: rapor
+- **Bibliometri Grup A+B — main'de canlı (en son 30 Ekim 2026, merge commit `c03eb91`):** Grup A (A1-A9: rapor
   dili seçimi, OpenAlex/PubMed köprüsü iyileştirmeleri, demo CTA EN/DE); Grup B/B1 (veri kalitesi: DOI ile
   OpenAlex zenginleştirme, tekilleştirme, yazar adı birleştirme, anahtar kelime normalizasyonu) ve B2 (bilim
   haritalama: Bradford Kanunu, anahtar kelime Louvain kümeleri, Tematik Harita/Evrim, Üç Alan Grafiği, SCP/MCP,
   Bibliyografik Eşleşme + Yerel/Küresel Atıf, Konu Modelleme NMF — istatistik araç sayısı 17→26) TAMAMEN BİTTİ;
   B3 (Çıktılar) — **B3-1 (Temiz Veri Seti İndirme, XLSX/CSV), B3-2 (VOSviewer Uyumlu Dışa Aktarım), B3-3
   (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı), B3-4 (grafik başına kural tabanlı otomatik yorum
-  cümlesi, LLM yok)** TAMAMLANDI (`dev`'de, henüz `main`'e merge edilmedi). Aynı turda ayrıca **Topic Map ve
-  Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök neden sınıfı — sabit/sınırsız `figsize`, PDF'e
-  en-boy korunarak sığdırılınca devasa boşluk; kullanıcı ekran görüntüleriyle bildirdi) düzeltildi. Sırada
-  B3-2b (Biblioshiny — R/bibliometrix kurulu olmadığı için ertelendi), B4 (ürün/huni). Detay: aşağıdaki
-  "Geçmiş Turlar (Kronoloji)" 29–30 Ekim 2026 girdileri; plan dosyası
+  cümlesi, LLM yok)** TAMAMEN BİTTİ, hepsi `main`'de canlı (B3-3+B3-4, 30 Ekim 2026, merge commit `c03eb91`
+  ile birlikte `main`'e alındı — Kullanıcı İstatistikleri CSV export 500 hatası düzeltmesi de aynı merge'e
+  dahil oldu). Aynı turda ayrıca **Topic Map ve Bradford Kanunu grafiklerindeki görsel bug'lar** (aynı kök
+  neden sınıfı — sabit/sınırsız `figsize`, PDF'e en-boy korunarak sığdırılınca devasa boşluk; kullanıcı ekran
+  görüntüleriyle bildirdi) düzeltildi. Sırada B3-2b (Biblioshiny — R/bibliometrix kurulu olmadığı için
+  ertelendi), B4 (ürün/huni). Detay: aşağıdaki "Geçmiş Turlar (Kronoloji)" 29–30 Ekim 2026 girdileri; plan dosyası
   `bibliometri_durum_ve_gelistirme_prompt.md` §4; görev durumu `tasks/todo.md`.
 
 #### SEO
@@ -3411,7 +3412,11 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   keyword_cooccurrence uyarı metni de fark edilip düzeltildi). `forum+
   bibliometrics` 191/191 geçti. Migration yok.
 - **30 Ekim 2026 — Bibliometri Grup B, B3-4 (Grafik Başına Otomatik Yorum
-  Cümlesi, kural tabanlı) TAMAMLANDI, `dev`'de (henüz push/merge edilmedi).**
+  Cümlesi, kural tabanlı) TAMAMLANDI, `main`'de canlı** (merge commit
+  `c03eb91`, `--no-ff` ile `main`'e merge edilip push edildi; merge öncesi
+  production'da aktif (son 300 sn) staff-olmayan kullanıcı yoktu; GitHub
+  Actions "Deploy to Hetzner" `success`, migration yok, site 200 döndüğü
+  doğrulandı).
   26 analizin tamamına, LLM KULLANILMADAN sayılardan üretilen 1 cümlelik
   yorum eklendi (ör. "Bölge 1, 6 çekirdek dergiyle toplam 167 yayının %34
   payını oluşturuyor."). Kullanıcı kararı (AskUserQuestion, 2 soru):
@@ -3467,7 +3472,8 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   `--no-location` kullanılmadı, `compilemessages` hatasız). `bibliometrics`
   143/143, `forum+bibliometrics` 250/250 geçti. Sırada B4 (ürün/huni, plan §4).
 - **29 Ekim 2026 — Bibliometri Grup B, B3-3 (Hazır Yöntem Metni + PRISMA
-  Akış Diyagramı) TAMAMLANDI, `dev`'de.** Kullanıcıya AskUserQuestion ile
+  Akış Diyagramı) TAMAMLANDI, 30 Ekim 2026'da `main`'de canlı (B3-4 ile
+  birlikte, merge commit `c03eb91`).** Kullanıcıya AskUserQuestion ile
   soruldu: B3-1/B3-2 ile aynı teslim deseni seçildi — **ücretsiz indirme**
   (TXT+PNG), `pdf_builder.py`'nin sayfalama mantığına dokunulmadı. Kullanıcı
   ek talep bildirdi: metinde içeriğin otomatik üretildiği ve bir uzman

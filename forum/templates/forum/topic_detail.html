@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
         this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 
         const text = this.value.substring(0, this.selectionStart);
-        const match = text.match(/@(\w*)$/);
+        const match = text.match(/@([\w.@+-]*)$/);
         if (match) {
             mentionStart = this.selectionStart - match[0].length;
             if (match[1].length >= 1) {

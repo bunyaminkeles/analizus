@@ -4253,13 +4253,13 @@ def studyroom_detail(request, slug):
         post.save()
 
         # @mention bildirimleri
-        import re as _re
-        mentions = set(_re.findall(r'@(\w+)', message))
-        if mentions:
+        from .mention_utils import MENTION_REGEX, mention_candidates
+        raw_mentions = MENTION_REGEX.findall(message)
+        if raw_mentions:
             from .email_utils import notify_room_mention
             room_member_ids = set(room.memberships.values_list('user_id', flat=True))
             ct = ContentType.objects.get_for_model(StudyRoomPost)
-            for mentioned_user in User.objects.filter(username__in=mentions).exclude(pk=request.user.pk):
+            for mentioned_user in User.objects.filter(username__in=mention_candidates(raw_mentions)).exclude(pk=request.user.pk):
                 if mentioned_user.pk in room_member_ids:
                     Notification.objects.create(
                         recipient=mentioned_user,

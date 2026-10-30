@@ -588,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderMentions(text) {
-        return text.replace(/@(\w+)/g, (match, username) =>
+        return text.replace(/@([\w.@+-]*[\w@+-])/g, (match, username) =>
             `<a href="${PROFILE_URL_TEMPLATE.replace('__USERNAME__', encodeURIComponent(username))}" class="mention-link" title="@${username}">@${username}</a>`);
     }
 
@@ -618,7 +618,7 @@ document.addEventListener('DOMContentLoaded', function() {
     messageInput.addEventListener('input', function() {
         const cursorPos = this.selectionStart;
         const text = this.value.substring(0, cursorPos);
-        const match = text.match(/@(\w*)$/);
+        const match = text.match(/@([\w.@+-]*)$/);
 
         // Auto-resize
         this.style.height = 'auto';

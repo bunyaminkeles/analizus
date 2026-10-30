@@ -621,7 +621,7 @@ setInterval(() => {
 
 // @mention'ları tıklanabilir profile linki olarak render et
 function renderMentions(text) {
-  return text.replace(/@(\w+)/g, (match, username) => {
+  return text.replace(/@([\w.@+-]*[\w@+-])/g, (match, username) => {
     return `<a href="${PROFILE_URL_TEMPLATE.replace('__USERNAME__', encodeURIComponent(username))}" class="text-warning text-decoration-none fw-semibold">${match}</a>`;
   });
 }
@@ -690,7 +690,7 @@ document.addEventListener('DOMContentLoaded', () => {
     textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
 
     const before = textarea.value.slice(0, textarea.selectionStart);
-    const match = before.match(/@(\w+)$/);          // en az 1 harf şart
+    const match = before.match(/@([\w.@+-]+)$/);     // en az 1 harf şart
     if (!match) { dropdown.style.display = 'none'; mentionStart = -1; return; }
     mentionStart = before.lastIndexOf('@');
     const query = match[1];
