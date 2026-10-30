@@ -225,6 +225,9 @@
                   <a href="#" target="_blank" class="btn btn-outline-info fw-bold d-none" id="downloadPrismaBtn">
                     <i class="bi bi-diagram-2 me-1"></i> {% trans "PRISMA Diyagramı" %}
                   </a>
+                  <a href="#" target="_blank" class="btn btn-outline-info fw-bold d-none" id="downloadWosPlaintextBtn">
+                    <i class="bi bi-file-earmark-code me-1"></i> {% trans "WoS Plaintext (Biblioshiny)" %}
+                  </a>
                 </div>
               </div>
             </div>
@@ -437,6 +440,7 @@
   const downloadVosviewer = document.getElementById('downloadVosviewerBtn');
   const downloadMethodText = document.getElementById('downloadMethodTextBtn');
   const downloadPrisma     = document.getElementById('downloadPrismaBtn');
+  const downloadWosPlaintext = document.getElementById('downloadWosPlaintextBtn');
   const sendDemo   = document.getElementById('sendDemoBtn');
   const orderBtn   = document.getElementById('orderBtn');
   const demoSent   = document.getElementById('demoSentMsg');
@@ -574,6 +578,10 @@
     if (data.prisma_diagram_url) {
       downloadPrisma.href = data.prisma_diagram_url;
       downloadPrisma.classList.remove('d-none');
+    }
+    if (data.wos_plaintext_export_url) {
+      downloadWosPlaintext.href = data.wos_plaintext_export_url;
+      downloadWosPlaintext.classList.remove('d-none');
     }
 
     if (data.demo_email_sent) {

@@ -125,6 +125,24 @@ def _upload_prisma_diagram(flow: list, job_id) -> str:
         return ''
 
 
+def _upload_wos_plaintext_export(records: list, job_id) -> str:
+    """Web of Science plaintext (bibliometrix uyumlu) dışa aktarımını .txt olarak
+    S3'e yükler (B3-2b). Hata olursa job'ın tamamlanmasını engellemez."""
+    from forum.s3_utils import upload_bytes_to_s3
+    from bibliometrics.services.wos_plaintext_export import build_wos_plaintext_export
+
+    try:
+        text_bytes = build_wos_plaintext_export(records)
+        if not text_bytes:
+            return ''
+        return upload_bytes_to_s3(
+            text_bytes, f'bibliometrics/wos_plaintext/{job_id}.txt', 'text/plain; charset=utf-8',
+        ) or ''
+    except Exception as e:
+        logger.warning(f'[bibliometrics] WoS plaintext export üretilemedi [{job_id}]: {e}')
+        return ''
+
+
 def _execute_job_body(job_id: str) -> None:
     """Upload tipi analiz, senkron."""
     from bibliometrics.models import BibliometricJob
@@ -194,6 +212,7 @@ def _execute_job_body(job_id: str) -> None:
         vosviewer_url = _upload_vosviewer_export(records, job.id)
         method_text_url = _upload_method_text(records, stats, source, n_figures, job.id)
         prisma_diagram_url = _upload_prisma_diagram(notes['flow'], job.id)
+        wos_plaintext_url = _upload_wos_plaintext_export(records, job.id)
 
         close_old_connections()
         job.mark_completed(
@@ -206,6 +225,7 @@ def _execute_job_body(job_id: str) -> None:
             vosviewer_export_url=vosviewer_url,
             method_text_url=method_text_url,
             prisma_diagram_url=prisma_diagram_url,
+            wos_plaintext_export_url=wos_plaintext_url,
         )
         job._demo_pdf_bytes = demo_pdf_bytes
         logger.info(f'[bibliometrics] Job {job_id} tamamlandı. {len(records)} kayıt, {n_figures} analiz.')
@@ -310,6 +330,7 @@ def _execute_job_openalex_body(job_id: str) -> None:
         vosviewer_url = _upload_vosviewer_export(records, job.id)
         method_text_url = _upload_method_text(records, stats, source, n_figures, job.id)
         prisma_diagram_url = _upload_prisma_diagram(notes['flow'], job.id)
+        wos_plaintext_url = _upload_wos_plaintext_export(records, job.id)
 
         close_old_connections()
         job.mark_completed(
@@ -322,6 +343,7 @@ def _execute_job_openalex_body(job_id: str) -> None:
             vosviewer_export_url=vosviewer_url,
             method_text_url=method_text_url,
             prisma_diagram_url=prisma_diagram_url,
+            wos_plaintext_export_url=wos_plaintext_url,
         )
 
         logger.info(f'[bibliometrics] {job.source} job {job_id} tamamlandı. {len(records)} kayıt, {n_figures} analiz.')
@@ -584,6 +606,7 @@ def cleanup_expired_bibliometrics_s3_files(days=7):
             'bibliometrics/demo/', 'bibliometrics/full/',
             'bibliometrics/clean_data/', 'bibliometrics/vosviewer/',
             'bibliometrics/method_text/', 'bibliometrics/prisma/',
+            'bibliometrics/wos_plaintext/',
         ]
     )
 
@@ -594,9 +617,11 @@ def cleanup_expired_bibliometrics_s3_files(days=7):
         ).exclude(
             demo_pdf_url='', full_pdf_url='', clean_data_xlsx_url='', clean_data_csv_url='',
             vosviewer_export_url='', method_text_url='', prisma_diagram_url='',
+            wos_plaintext_export_url='',
         ).update(
             demo_pdf_url='', full_pdf_url='', clean_data_xlsx_url='', clean_data_csv_url='',
             vosviewer_export_url='', method_text_url='', prisma_diagram_url='',
+            wos_plaintext_export_url='',
         )
     except Exception as e:
         logger.error(f"DB temizlik hatası (bibliometrics): {e}")

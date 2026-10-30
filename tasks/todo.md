@@ -25,9 +25,15 @@ production'da aktif staff-olmayan kullanıcı yoktu; aynı merge'e Kullanıcı
 İstatistikleri CSV export 500 hatası düzeltmesi de dahil oldu) — ücretsiz
 indirme (B3-1/B3-2 ile aynı desen) + 26 analizin tamamına yorum cümlesi,
 detay madde 2 altında. Böylece **Grup B (B1+B2+B3) TAMAMEN BİTTİ.**
-Yeni oturum buradan devam etsin: sıradaki B4** (B3-2b — Biblioshiny WoS-plaintext export — R/bibliometrix ile
-test edilebildiğinde ayrı ele alınacak; bkz. madde 2 altındaki detaylı
-liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4).
+**B3-2b (WoS Plaintext/Biblioshiny Uyumlu Dışa Aktarım) de TAMAMLANDI
+(30 Ekim 2026, `dev`'de, henüz push/merge edilmedi, migration `0011`
+içeriyor)** — R kurmadan, bibliometrix'in gerçek ayrıştırıcı kaynak kodu
+(GitHub) + resmi örnek dosyası doğrudan incelenerek format çıkarıldı;
+detay madde 2 altında.
+Yeni oturum buradan devam etsin: sıradaki B4 (bkz. madde 2 altındaki detaylı
+liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4). **Migration `0011`
+içeren bu değişiklik `main`'e merge edilmeden önce kullanıcıdan
+`scripts/yedek_indir.sh --simdi` istenmeli.**
 Ayrıca aşağıdaki 1 ayrı
 açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı kararı):
 
@@ -275,8 +281,30 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      YAPILMADI** (R/bibliometrix burada kurulu değil, gerçek yazılımla
      doğrulanamıyor) — ayrı B3-2b olarak bekliyor. Detay: `analizus.md` §27
      (29 Ekim B3-2).
-   - [ ] B3-2b (Biblioshiny/bibliometrix WoS-plaintext export) — R ile test
-     edilebildiğinde ele alınacak, ayrı onay/tur.
+   - [x] **B3-2b TAMAMLANDI (30 Ekim 2026, `dev`'de, henüz push/merge edilmedi,
+     migration `0011`):** WoS Plaintext (Biblioshiny/bibliometrix uyumlu) dışa
+     aktarım. Kullanıcının "R Hetzner'de yer kaplar mı" sorusu üzerine
+     netleştirildi: R hiç production'a kurulmuyor (çıktı düz metin, kullanıcı
+     kendi R/Biblioshiny'sine yüklüyor); R yalnız format doğrulaması için
+     gerekebilirdi, kullanıcı kararıyla R kurmadan devam edildi. Format,
+     bibliometrix'in gerçek ayrıştırıcısından (`gh api` ile GitHub'dan
+     `R/isi2df.R` indirilip okundu) ve resmi örnek dosyasından
+     (bibliometrix.org/datasets/wos_plaintext.txt, `curl` ile incelendi)
+     birebir çıkarıldı. Yeni `bibliometrics/services/wos_plaintext_export.py`.
+     Kasıtlı eklenmeyen alanlar (doğruluk önce): RP (corresponding author
+     bilgimiz yok), CR yalnızca veri seti İÇİ eşleşen referanslar için
+     (dış atıflar için yazar/dergi bilgimiz yok — bibliographic_coupling'teki
+     kısıtla aynı). `BibliometricJob.wos_plaintext_export_url` (migration
+     `0011`), `job_runner.py` `_upload_wos_plaintext_export()` (B3-1/B3-2
+     deseniyle hata toleranslı), B3-1'in kartına yeni buton. 12 yeni pytest —
+     R yokken bağımsız doğrulama için isi2df.R'nin ayrıştırma mantığının
+     sadeleştirilmiş Python karşılığı test dosyasında yazıldı (PT/AU/AF/TI/
+     SO/DT/DE/CR/TC/PY/DI round-trip, çoklu kayıt sınırı, gömülü `\n`
+     güvenliği, CR'ın yalnız iç referanslarda oluşması). Gerçek 3 kayıtlık
+     sentetik veriyle dosya üretilip gözle resmi örnekle karşılaştırıldı.
+     EN/DE çevrildi (1 yeni msgid, "VOSviewer (ZIP)" emsaliyle çevrilmeden
+     bırakıldı). `bibliometrics` 155/155. Detay: `analizus.md` §27
+     (30 Ekim B3-2b). **Merge öncesi yedek hatırlatması: migration var.**
    - [x] **B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı) TAMAMLANDI,
      30 Ekim 2026'da `main`'de canlı (B3-4 ile birlikte, merge commit
      `c03eb91`).** Kullanıcı kararı

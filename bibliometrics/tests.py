@@ -88,6 +88,7 @@ from bibliometrics.services.parser import (
     _deduplicate_and_filter, _normalize_title_key,
 )
 from bibliometrics.services.pdf_builder import _demo_cta_text
+from bibliometrics.services.wos_plaintext_export import build_wos_plaintext_export
 from bibliometrics.models import BibliometricJob
 from bibliometrics.services.job_runner import _in_user_language
 from bibliometrics.services.enrichment import enrich_records_with_openalex, _apply_enrichment
@@ -1800,3 +1801,189 @@ def test_b34_comments_translate_without_placeholder_errors_in_en_and_de():
                 continue
             assert '{' not in comment and '}' not in comment, (
                 f'{lang} - [{title}]: doldurulmamış placeholder kaldı: {comment}')
+
+
+# ─────────────────────── B3-2b: WoS Plaintext (Biblioshiny) dışa aktarım ───────────────────────
+# R/bibliometrix burada kurulu değil (bkz. tasks/todo.md) — bağımsız doğrulama için isi2df.R'nin
+# (github.com/massimoaria/bibliometrix) ayrıştırma kurallarının sadeleştirilmiş Python karşılığı
+# kullanılıyor; format resmi örnek dosyasıyla (bibliometrix.org/datasets/wos_plaintext.txt) da
+# karşılaştırıldı (FN/VR başlık, PT ile başlangıç, ER + boş satır ile bitiş, EF dosya sonu).
+
+def _parse_wos_plaintext_like_isi2df(text: str) -> list:
+    """isi2df.R mantığının sadeleştirilmiş Python karşılığı (yalnız test için)."""
+    raw_lines = [l for l in text.split('\n') if len(l) > 1]
+    raw_lines = [l for l in raw_lines if l[:3] not in ('FN ', 'VR ')]
+
+    tags, contents = [], []
+    prev_tag = None
+    for line in raw_lines:
+        tag = prev_tag if line[:3] == '   ' else line[:3].replace(' ', '')
+        tags.append(tag)
+        contents.append(line[3:])
+        prev_tag = tag
+
+    docs = []
+    current = None
+    for tag, content in zip(tags, contents):
+        if tag == 'PT':
+            current = {}
+            docs.append(current)
+        if current is None:
+            continue
+        current.setdefault(tag, []).append(content)
+
+    comma_tags = {'AU', 'AF', 'CR'}
+    result = []
+    for doc in docs:
+        parsed = {}
+        for tag, parts in doc.items():
+            if tag in comma_tags:
+                parsed[tag] = '; '.join(parts)
+            else:
+                parsed[tag] = ' '.join(p.strip() for p in parts).strip()
+        result.append(parsed)
+    return result
+
+
+def test_wos_plaintext_export_none_for_empty_records():
+    assert build_wos_plaintext_export([]) is None
+
+
+def test_wos_plaintext_export_has_valid_header_and_footer():
+    text = build_wos_plaintext_export([{'title': 'X', 'year': 2020}]).decode('utf-8')
+    lines = text.rstrip('\n').split('\n')
+    assert lines[0] == 'FN Clarivate Analytics Web of Science'
+    assert lines[1] == 'VR 1.0'
+    assert lines[2] == 'PT J'
+    assert lines[-1] == 'EF'
+    assert lines[-3] == 'ER'
+    assert lines[-2] == ''  # ER sonrası boş satır (gerçek WoS örnek dosyasıyla aynı desen)
+
+
+def test_wos_plaintext_export_round_trips_core_fields():
+    records = [{
+        'title': 'Deep Learning for Bibliometrics',
+        'authors': ['Smith, J.', 'Doe, A.'],
+        'year': 2021,
+        'journal': 'Journal Of Informetrics',
+        'keywords': ['deep learning', 'bibliometrics'],
+        'cited_by': 42,
+        'doi': '10.1234/abcd',
+        'pub_type': 'article',
+    }]
+    text = build_wos_plaintext_export(records).decode('utf-8')
+    docs = _parse_wos_plaintext_like_isi2df(text)
+    assert len(docs) == 1
+    doc = docs[0]
+    assert doc['PT'] == 'J'
+    assert doc['TI'] == 'Deep Learning for Bibliometrics'
+    assert doc['SO'] == 'Journal Of Informetrics'
+    assert doc['PY'] == '2021'
+    assert doc['TC'] == '42'
+    assert doc['DI'] == '10.1234/abcd'
+    assert doc['DE'] == 'deep learning; bibliometrics'
+    assert doc['AU'] == 'Smith, J.; Doe, A.'
+    assert doc['AF'] == 'Smith, J.; Doe, A.'
+    assert doc['DT'] == 'Article'
+
+
+def test_wos_plaintext_export_book_type_sets_pt_b():
+    text = build_wos_plaintext_export([{'title': 'X', 'pub_type': 'book'}]).decode('utf-8')
+    doc = _parse_wos_plaintext_like_isi2df(text)[0]
+    assert doc['PT'] == 'B'
+    assert doc['DT'] == 'Book'
+
+
+def test_wos_plaintext_export_splits_multiple_records_without_leaking_authors():
+    records = [
+        {'title': 'Paper One', 'authors': ['Alice One', 'Bob Two'], 'year': 2019},
+        {'title': 'Paper Two', 'authors': ['Carol Three'], 'year': 2020},
+    ]
+    text = build_wos_plaintext_export(records).decode('utf-8')
+    docs = _parse_wos_plaintext_like_isi2df(text)
+    assert len(docs) == 2
+    assert docs[0]['TI'] == 'Paper One'
+    assert docs[0]['AU'] == 'Alice One; Bob Two'
+    assert docs[1]['TI'] == 'Paper Two'
+    assert docs[1]['AU'] == 'Carol Three'  # birinci kaydın ikinci yazarı sızmamalı
+
+
+def test_wos_plaintext_export_cr_only_for_internal_references():
+    """Dış dünyaya yapılan atıflar için yazar/dergi bilgimiz yok — yalnız bu veri
+    setindeki başka bir kayda işaret eden referanslar CR'a girmeli, uydurma yok."""
+    records = [
+        {'title': 'Citing Paper', 'authors': ['Citer A'], 'year': 2022,
+         'openalex_id': 'W1', 'referenced_works': ['W2', 'W_DIS_ARINDA_YOK']},
+        {'title': 'Cited Paper', 'authors': ['Original Author'], 'year': 2015,
+         'journal': 'Nature', 'openalex_id': 'W2'},
+    ]
+    text = build_wos_plaintext_export(records).decode('utf-8')
+    docs = _parse_wos_plaintext_like_isi2df(text)
+    citing = next(d for d in docs if d['TI'] == 'Citing Paper')
+    assert citing['CR'] == 'AUTHOR, 2015, NATURE'
+    assert citing['NR'] == '1'
+
+
+def test_wos_plaintext_export_no_cr_tag_without_internal_matches():
+    records = [{'title': 'Lonely Paper', 'openalex_id': 'W1', 'referenced_works': ['W999']}]
+    text = build_wos_plaintext_export(records).decode('utf-8')
+    doc = _parse_wos_plaintext_like_isi2df(text)[0]
+    assert 'CR' not in doc and 'NR' not in doc
+
+
+def test_wos_plaintext_export_sanitizes_embedded_newlines():
+    """Her etiket tek fiziksel satır olmalı — gömülü \\n belge sınırını bozmamalı."""
+    records = [
+        {'title': 'First\nTitle', 'abstract': 'Line one\nLine two', 'year': 2020},
+        {'title': 'Second Title', 'year': 2021},
+    ]
+    text = build_wos_plaintext_export(records).decode('utf-8')
+    docs = _parse_wos_plaintext_like_isi2df(text)
+    assert len(docs) == 2
+    assert '\n' not in docs[0]['TI']
+    assert docs[1]['TI'] == 'Second Title'
+
+
+def test_wos_plaintext_export_no_rp_tag_fabricated():
+    """Corresponding author bilgimiz güvenilir değil — RP uydurulmamalı."""
+    records = [{'title': 'X', 'authors': ['Only Author'], 'institution': 'MIT', 'country': 'US'}]
+    text = build_wos_plaintext_export(records).decode('utf-8')
+    assert '\nRP ' not in text
+
+
+def test_upload_wos_plaintext_export_returns_url(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    uploaded = {}
+
+    def fake_upload(data, key, content_type):
+        uploaded[key] = content_type
+        return f'https://s3.example.com/{key}'
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    url = job_runner._upload_wos_plaintext_export([{'title': 'X', 'year': 2020}], 'job789')
+    assert url == 'https://s3.example.com/bibliometrics/wos_plaintext/job789.txt'
+    assert uploaded['bibliometrics/wos_plaintext/job789.txt'] == 'text/plain; charset=utf-8'
+
+
+def test_upload_wos_plaintext_export_returns_empty_without_records(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    called = []
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', lambda *a, **k: called.append(1))
+
+    assert job_runner._upload_wos_plaintext_export([], 'job000') == ''
+    assert not called
+
+
+def test_upload_wos_plaintext_export_tolerates_upload_failure(monkeypatch):
+    from bibliometrics.services import job_runner
+
+    def fake_upload(data, key, content_type):
+        raise RuntimeError('S3 kapalı')
+
+    monkeypatch.setattr('forum.s3_utils.upload_bytes_to_s3', fake_upload)
+
+    url = job_runner._upload_wos_plaintext_export([{'title': 'X'}], 'job111')
+    assert url == ''
