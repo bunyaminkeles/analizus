@@ -19,8 +19,10 @@ doğrulandı; merge öncesi production'da 2 aktif kullanıcı vardı,
 kullanıcı kararıyla yine de devam edildi).** **B3-3 (Yöntem Metni + PRISMA
 Diyagramı) de TAMAMLANDI (29 Ekim 2026, `dev`'de, henüz push/merge edilmedi)
 — ücretsiz indirme (B3-1/B3-2 ile aynı desen), detay madde 2 altında.
-Yeni oturum buradan devam etsin: sıradaki B3-4 (grafik başına otomatik
-yorum cümlesi), sonra B4** (B3-2b — Biblioshiny WoS-plaintext export — R/bibliometrix ile
+**B3-4 (grafik başına kural tabanlı otomatik yorum cümlesi, LLM yok) de
+TAMAMLANDI (30 Ekim 2026, `dev`'de, henüz push/merge edilmedi)** — 26
+analizin tamamına eklendi, detay madde 2 altında.
+Yeni oturum buradan devam etsin: sıradaki B4** (B3-2b — Biblioshiny WoS-plaintext export — R/bibliometrix ile
 test edilebildiğinde ayrı ele alınacak; bkz. madde 2 altındaki detaylı
 liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4).
 Ayrıca aşağıdaki 1 ayrı
@@ -294,7 +296,27 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      render testi. EN/DE çevrildi (polib ile fuzzy-eşleşen 5 girdi +
      11 boş girdi dolduruldu — `--no-location` kullanılmadı). `forum+
      bibliometrics` 203/203. Detay: `analizus.md` §27 (29 Ekim B3-3).
-   - [ ] B3-4 (grafik başına otomatik yorum cümlesi, kural tabanlı)
+   - [x] **B3-4 TAMAMLANDI (30 Ekim 2026, dev'de, henüz push/merge edilmedi):**
+     Grafik başına kural tabanlı otomatik yorum cümlesi — LLM yok, sayılardan
+     üretilir. Yeni `bibliometrics/services/graph_comments.py`: 26 analizin
+     her biri için zaten ayrılmış saf hesap fonksiyonlarını (bradford_zones,
+     keyword_clusters, thematic_map_themes, _group_authors, graf kurucular,
+     scp_mcp_counts, local_citation_counts, three_field_plot_data) tekrar
+     kullanan `comment_*()` fonksiyonları — analiz fonksiyonlarının dönüş
+     tipine dokunulmadı (mevcut testler kırılmadı). `research_gap`/`topic_map`
+     için ilk kez saf hesap ayrıldı (`research_gap_points()`/
+     `topic_map_topics()`), `publication_types()`'ın TYPE_TR sözlüğü
+     `pub_type_labels()` olarak paylaşılan hale getirildi. `run_all_analyses`
+     başlık eşlemeli `comment_builders()` sözlüğünden ilgili yorumu çağırır
+     (hata toleranslı, NMF `_topic_data` önbelleği paylaşılır).
+     `pdf_builder.py`: yorum grafiğin altında nötr renkli kutuda (figures
+     artık `(title, fig, comment)` üçlüsü). 46 yeni pytest (değer doğrulama +
+     26 analizi EN/DE'de tek seferde tetikleyen placeholder-güvenliği testi).
+     Gerçek sentetik veriyle PDF üretilip pdftoppm ile görsel doğrulandı.
+     EN/DE çevrildi (30 yeni msgid, polib ile yalnız bu oturumun msgid'leri
+     dolduruldu — ilgisiz ~59 eski boş girdiye dokunulmadı). `bibliometrics`
+     143/143, `forum+bibliometrics` 250/250. Detay: `analizus.md` §27
+     (30 Ekim B3-4).
    - [ ] B4 (ürün/huni) — bkz. plan dosyası §4
    - [x] **Topic Map görsel kalite sorunu DÜZELTİLDİ (29 Ekim 2026, dev'de)**
      (Grup B dışı, ayrı açık işti). Kök neden sentetik veriyle render edilip

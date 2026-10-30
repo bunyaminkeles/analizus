@@ -18,6 +18,7 @@ from django.utils.translation import gettext
 from forum.models import Profile
 
 from bibliometrics.services.analyzer import (
+    run_all_analyses,
     publication_trend,
     annual_citation_trend,
     publication_growth_rate,
@@ -48,10 +49,40 @@ from bibliometrics.services.analyzer import (
     topic_modeling_data,
     topic_modeling_words_chart,
     topic_modeling_trend,
+    research_gap_points,
+    topic_map_topics,
 )
 import matplotlib.patches as mpatches
 import bibliometrics.services.analyzer as analyzer_module
 from bibliometrics.services.report_notes import build_report_notes
+from bibliometrics.services.graph_comments import (
+    comment_publication_trend,
+    comment_publication_growth_rate,
+    comment_top_authors,
+    comment_lotka_law,
+    comment_keyword_cloud,
+    comment_bradford_law,
+    comment_keyword_cooccurrence,
+    comment_keyword_trend,
+    comment_top_cited,
+    comment_top_journals,
+    comment_top_institutions,
+    comment_country_collaboration,
+    comment_author_collaboration,
+    comment_publication_types,
+    comment_thematic_map,
+    comment_citation_analysis,
+    comment_annual_citation_trend,
+    comment_topic_map,
+    comment_research_gap,
+    comment_thematic_evolution,
+    comment_three_field_plot,
+    comment_scp_mcp,
+    comment_bibliographic_coupling,
+    comment_local_global_citations,
+    comment_topic_modeling_words,
+    comment_topic_modeling_trend,
+)
 from bibliometrics.services.parser import (
     parse_openalex_txt, parse_pubmed_txt, detect_format, parse_file,
     _deduplicate_and_filter, _normalize_title_key,
@@ -1344,3 +1375,428 @@ def test_upload_prisma_diagram_tolerates_failure(monkeypatch):
 
     flow = [(gettext('Dosyadan okunan kayıt'), 10), (gettext('Analize giren kayıt'), 9)]
     assert job_runner._upload_prisma_diagram(flow, 'job789') == ''
+
+
+# ─────────────────────── B3-4: grafik başına otomatik yorum cümlesi ───────────────────────
+
+def test_comment_publication_trend_identifies_peak_year():
+    records = _records({2021: 5, 2022: 9, 2023: 30})
+    comment = comment_publication_trend(records)
+    assert comment is not None
+    assert '2021' in comment and '2023' in comment
+    assert '44' in comment  # toplam yayın (5+9+30)
+    assert '30' in comment  # en yoğun yılın yayın sayısı
+
+
+def test_comment_publication_trend_none_without_years():
+    assert comment_publication_trend([{'cited_by': 1}]) is None
+
+
+def test_comment_top_authors_identifies_lead_author_and_share():
+    records = [{'authors': ['Ayşe Kaya']}] * 3 + [{'authors': ['Mehmet Demir']}]
+    comment = comment_top_authors(records)
+    assert comment is not None
+    assert 'Ayşe Kaya' in comment
+    assert '3' in comment
+    assert '75' in comment  # 3/4 = %75
+
+
+def test_comment_top_authors_none_without_authors():
+    assert comment_top_authors([{'year': 2020}]) is None
+
+
+def test_comment_bradford_law_matches_zone_share():
+    counts = {f'J{i}': c for i, c in enumerate([30, 15, 10, 5, 5, 3, 3, 2, 2, 1])}
+    records = _journal_records(counts)
+    zones, totals = bradford_zones(records)
+    comment = comment_bradford_law(records)
+    assert comment is not None
+    assert str(len(zones[0])) in comment
+    pct = round(100 * totals[0] / sum(totals))
+    assert f'%{pct}' in comment
+
+
+def test_comment_bradford_law_none_without_enough_journals():
+    assert comment_bradford_law(_journal_records({'Tek Dergi': 10})) is None
+
+
+def test_comment_keyword_cooccurrence_reports_cluster_count_and_largest():
+    records = _topic_keyword_records()
+    _, communities, _ = keyword_clusters(records)
+    comment = comment_keyword_cooccurrence(records)
+    assert comment is not None
+    assert str(len(communities)) in comment
+    assert str(len(communities[0])) in comment
+
+
+def test_comment_thematic_map_labels_dominant_theme():
+    records = _topic_keyword_records()
+    themes, _, _ = thematic_map_themes(records)
+    dominant = max(themes, key=lambda t: t['weight'])
+    comment = comment_thematic_map(records)
+    assert comment is not None
+    assert dominant['label'] in comment
+
+
+def test_comment_thematic_map_none_with_single_cluster():
+    records = _topic_keyword_records({'A': _KEYWORD_TOPICS['A']}, per_topic=30, seed=1)
+    assert comment_thematic_map(records) is None
+
+
+def test_comment_citation_analysis_matches_h_index_and_totals():
+    records = [{'cited_by': c} for c in [10, 8, 5, 4, 3, 0, 0]]
+    # Sıralı atıf 10,8,5,4,3 → h: 10>=1, 8>=2, 5>=3, 4>=4, 3>=5(hayır) → h-index = 4
+    comment = comment_citation_analysis(records)
+    assert comment is not None
+    assert 'H-index değeri 4' in comment
+    assert '30' in comment  # toplam atıf (10+8+5+4+3)
+    assert any(s in comment for s in ('4.3', '4,3', '4.2', '4,2'))  # 30/7 ortalama, ayıraç/yuvarlama locale'e göre
+
+
+def test_comment_citation_analysis_none_without_citations():
+    assert comment_citation_analysis([{'cited_by': 0}]) is None
+
+
+def test_run_all_analyses_attaches_comment_for_matched_titles():
+    """B3-4: run_all_analyses sonuç üçlüsünün 3. elemanı, eşleşen analizler için dolu olmalı."""
+    records = _records({2021: 5, 2022: 9, 2023: 30})
+    results = run_all_analyses(records)
+    by_title = {title: comment for title, _png, comment in results}
+    assert by_title[gettext('Yıllara Göre Yayın Trendi')] is not None
+    assert '2023' in by_title[gettext('Yıllara Göre Yayın Trendi')]
+
+
+def test_run_all_analyses_comment_failure_does_not_break_report(monkeypatch):
+    """Yorum fonksiyonu hata verirse grafik yine de rapora girmeli, comment None olur."""
+    import bibliometrics.services.graph_comments as graph_comments_module
+
+    def _boom(records, context=None):
+        raise RuntimeError('beklenmeyen hata')
+
+    monkeypatch.setitem(graph_comments_module._COMMENT_BUILDERS_TR,
+                        'Yıllara Göre Yayın Trendi', _boom)
+    records = _records({2021: 5, 2022: 9, 2023: 30})
+    results = run_all_analyses(records)
+    by_title = {title: comment for title, _png, comment in results}
+    assert by_title[gettext('Yıllara Göre Yayın Trendi')] is None
+
+
+# ─────────────── B3-4 (devamı): kalan 20 analiz için yorum cümlesi testleri ───────────────
+
+def test_comment_publication_growth_rate_matches_cagr():
+    records = _records({2018: 10, 2019: 10, 2020: 10, 2021: 10, 2022: 10, 2023: 20})
+    comment = comment_publication_growth_rate(records)
+    assert comment is not None
+    assert '2018' in comment and '2023' in comment
+    # CAGR = (20/10)**(1/5) - 1 ≈ %14.9
+    assert any(s in comment for s in ('+14.9%', '+14,9%', '+15.0%', '+15,0%'))
+
+
+def test_comment_publication_growth_rate_none_for_short_series():
+    assert comment_publication_growth_rate(_records({2022: 5, 2023: 5})) is None
+
+
+def test_comment_lotka_law_matches_single_pub_share():
+    records = [{'authors': ['Ayşe Kaya']}] * 3 + [{'authors': ['Mehmet Demir']}] + [{'authors': ['John Smith']}]
+    comment = comment_lotka_law(records)
+    assert comment is not None
+    assert 'Toplam 3 farklı yazarın' in comment
+    assert '%67' in comment  # 2/3 yazar tek yayınlı
+
+
+def test_comment_lotka_law_none_without_authors():
+    assert comment_lotka_law([{'year': 2020}]) is None
+
+
+def test_comment_keyword_cloud_picks_most_frequent_non_stopword():
+    records = [{'keywords': ['machine learning']}] * 5 + [{'keywords': ['deep learning']}] * 2
+    comment = comment_keyword_cloud(records)
+    assert comment is not None
+    assert 'machine learning' in comment
+    assert '5' in comment
+
+
+def test_comment_keyword_cloud_filters_english_stopwords_from_abstract():
+    """Gerçek vaka: İngilizce özetlerde normalize_abstract_words yalnız TR stopword
+    filtreler, 'this' gibi kelimeler sızabilir — yorumda bariz görünür, filtrelenmeli."""
+    records = [{'abstract': 'this study presents a machine learning approach for classification'}] * 3
+    comment = comment_keyword_cloud(records)
+    assert comment is not None
+    assert '"this"' not in comment
+
+
+def test_comment_keyword_cloud_none_without_keywords_or_abstract():
+    assert comment_keyword_cloud([{'year': 2020}]) is None
+
+
+def test_comment_keyword_trend_picks_most_frequent_keyword():
+    records = [{'keywords': ['alpha']}] * 4 + [{'keywords': ['beta']}] * 2
+    comment = comment_keyword_trend(records)
+    assert comment is not None
+    assert 'alpha' in comment and '4' in comment
+
+
+def test_comment_top_cited_identifies_highest_cited_publication():
+    records = [
+        {'title': 'Az Atıflı', 'cited_by': 3},
+        {'title': 'Çok Atıflı Makale', 'cited_by': 50},
+    ]
+    comment = comment_top_cited(records)
+    assert comment is not None
+    assert 'Çok Atıflı Makale' in comment
+    assert '50' in comment
+
+
+def test_comment_top_cited_none_without_citations():
+    assert comment_top_cited([{'title': 'X', 'cited_by': 0}]) is None
+
+
+def test_comment_top_journals_identifies_most_frequent_journal():
+    records = _journal_records({'J1': 10, 'J2': 3})
+    comment = comment_top_journals(records)
+    assert comment is not None
+    assert 'J1' in comment and '10' in comment
+
+
+def test_comment_top_institutions_prefers_country_over_institution():
+    records = [{'country': 'TR'}] * 5 + [{'country': 'US'}] * 2
+    comment = comment_top_institutions(records)
+    assert comment is not None
+    assert 'Türkiye' in comment and '5' in comment
+
+
+def test_comment_top_institutions_falls_back_to_institution_without_country():
+    records = [{'institution': 'MIT'}] * 4 + [{'institution': 'Harvard'}] * 1
+    comment = comment_top_institutions(records)
+    assert comment is not None
+    assert 'MIT' in comment and '4' in comment
+
+
+def test_comment_top_institutions_none_without_data():
+    assert comment_top_institutions([{'year': 2020}]) is None
+
+
+def test_comment_country_collaboration_matches_graph():
+    from bibliometrics.services.analyzer import _country_collaboration_graph
+    records = _vosviewer_records()
+    G = _country_collaboration_graph(records)
+    comment = comment_country_collaboration(records)
+    assert comment is not None
+    assert str(G.number_of_nodes()) in comment
+    assert str(G.number_of_edges()) in comment
+
+
+def test_comment_author_collaboration_matches_graph():
+    from bibliometrics.services.analyzer import _author_collaboration_graph
+    records = _vosviewer_records()
+    G = _author_collaboration_graph(records)
+    comment = comment_author_collaboration(records)
+    assert comment is not None
+    assert str(G.number_of_nodes()) in comment
+    assert str(G.number_of_edges()) in comment
+
+
+def test_comment_publication_types_matches_dominant_type_share():
+    records = [{'pub_type': 'article'}] * 7 + [{'pub_type': 'review'}] * 3
+    comment = comment_publication_types(records)
+    assert comment is not None
+    assert 'Makale' in comment
+    assert '%70' in comment
+
+
+def test_comment_annual_citation_trend_identifies_peak_year():
+    records = [{'year': 2020, 'cited_by': 5}, {'year': 2021, 'cited_by': 50}]
+    comment = comment_annual_citation_trend(records)
+    assert comment is not None
+    assert '2021' in comment and '50' in comment
+
+
+def test_comment_topic_map_matches_largest_cluster():
+    records = _topic_keyword_records()
+    topic_data = topic_map_topics(records)
+    comment = comment_topic_map(records)
+    assert comment is not None
+    assert str(len(topic_data)) in comment
+    assert str(topic_data[0]['n_kw']) in comment
+
+
+def test_comment_research_gap_lists_gap_keywords():
+    """Eski yıllarda + yüksek atıflı 'alpha/beta/gamma' azalan ilgi + yüksek etki
+    (Research Gap); yeni yıllarda + düşük atıflı 'delta/epsilon/zeta' artan ilgi — gap değil."""
+    old_years, new_years = [2015, 2016, 2017], [2021, 2022, 2023]
+    records = [{'year': old_years[i % 3], 'keywords': ['alpha', 'beta', 'gamma'], 'cited_by': 50}
+              for i in range(30)]
+    records += [{'year': new_years[i % 3], 'keywords': ['delta', 'epsilon', 'zeta'], 'cited_by': 1}
+               for i in range(30)]
+    points, med_trend, med_impact = research_gap_points(records)
+    assert points is not None
+    gap_kws = [p['kw'] for p in points if p['trend'] < med_trend and p['impact_norm'] >= med_impact]
+    assert gap_kws  # bu senaryoda en az alpha/beta/gamma gap olmalı
+    comment = comment_research_gap(records)
+    assert comment is not None
+    assert str(len(gap_kws)) in comment
+    assert gap_kws[0] in comment
+
+
+def test_comment_research_gap_none_without_gap_quadrant_keywords():
+    assert comment_research_gap([{'keywords': ['x']}] * 3) is None
+
+
+def test_comment_thematic_evolution_identifies_bridging_theme():
+    records = _two_period_bridge_records()
+    labels, themes, flows = thematic_evolution_themes(records, n_periods=2)
+    comment = comment_thematic_evolution(records)
+    assert comment is not None
+    period_i, a_idx, b_idx, shared = max(flows, key=lambda f: f[3])
+    assert themes[period_i][a_idx]['label'] in comment
+    assert themes[period_i + 1][b_idx]['label'] in comment
+    assert str(shared) in comment
+
+
+def test_comment_three_field_plot_reports_top_linked_triplet():
+    records = _three_field_records()
+    authors, keywords, journals, _, _ = three_field_plot_data(records)
+    comment = comment_three_field_plot(records)
+    assert comment is not None
+    assert authors[0]['label'] in comment
+    assert keywords[0]['label'] in comment
+    assert journals[0]['label'] in comment
+
+
+def test_comment_scp_mcp_matches_top_country_breakdown():
+    records = (
+        [{'country': 'United States'}] * 5
+        + [{'country': 'United States, United Kingdom'}] * 3
+        + [{'country': 'United Kingdom'}] * 2
+    )
+    counts = scp_mcp_counts(records)
+    comment = comment_scp_mcp(records)
+    assert comment is not None
+    top_country = max(counts.items(), key=lambda kv: kv[1]['scp'] + kv[1]['mcp'])[0]
+    assert top_country in comment
+    assert str(counts[top_country]['scp']) in comment
+    assert str(counts[top_country]['mcp']) in comment
+
+
+def test_comment_bibliographic_coupling_matches_graph():
+    records = _coupling_records()
+    comment = comment_bibliographic_coupling(records)
+    assert comment is not None
+    assert 'Paper A' in comment or 'Paper B' in comment
+    assert '2' in comment  # 2 düğüm
+
+
+def test_comment_local_global_citations_identifies_top_local():
+    records = _local_citation_records()
+    comment = comment_local_global_citations(records)
+    assert comment is not None
+    assert 'Foundational Paper' in comment
+    assert '50' in comment  # küresel atıf
+
+
+def test_comment_topic_modeling_words_identifies_dominant_topic():
+    records = _topic_modeling_records()
+    topics, assignments = topic_modeling_data(records)
+    comment = comment_topic_modeling_words(records)
+    assert comment is not None
+    dominant = max(topics, key=lambda t: t['size'])
+    assert str(dominant['size']) in comment
+    assert dominant['words'][0] in comment
+
+
+def test_comment_topic_modeling_words_uses_cached_context_without_recompute(monkeypatch):
+    """context['topic_data'] verilirse topic_modeling_data() tekrar çağrılmamalı
+    (NMF pahalı — run_all_analyses'teki _topic_data önbelleği boşa gitmemeli)."""
+    records = _topic_modeling_records()
+    cached = topic_modeling_data(records)
+
+    def _boom(*a, **kw):
+        raise AssertionError('topic_modeling_data() context önbelleği yokken tekrar çağrıldı')
+
+    monkeypatch.setattr('bibliometrics.services.graph_comments.topic_modeling_data', _boom)
+    comment = comment_topic_modeling_words(records, {'topic_data': cached})
+    assert comment is not None
+
+
+def test_comment_topic_modeling_trend_identifies_dominant_topic_over_years():
+    records = _topic_modeling_records()
+    topics, assignments = topic_modeling_data(records)
+    comment = comment_topic_modeling_trend(records)
+    assert comment is not None
+    dominant = max(topics, key=lambda t: t['size'])
+    assert str(dominant['size']) in comment
+    assert dominant['words'][0] in comment
+
+
+def test_comment_topic_modeling_trend_none_for_single_year():
+    records = _topic_modeling_records()
+    for r in records:
+        r['year'] = 2020
+    assert comment_topic_modeling_trend(records) is None
+
+
+def _b34_full_coverage_records():
+    """26 analizin tamamını (dolayısıyla tüm yorum fonksiyonlarını) tetikleyecek
+    tek bir sentetik veri seti — EN/DE çeviri yer tutucularını uçtan uca doğrular."""
+    import random
+    rng = random.Random(42)
+    journals = (['J Core A'] * 10 + ['J Core B'] * 8 + ['J Core C'] * 6 +
+               [f'J Mid {i}' for i in range(10) for _ in range(2)])
+    authors_pool = ['Ayşe Kaya', 'Mehmet Demir', 'John Smith', 'Fatma Yılmaz', 'Carlos Diaz']
+    countries_pool = [['TR'], ['US'], ['DE'], ['TR', 'US'], ['US', 'DE']]
+    topics = {
+        'A': ['machine learning', 'deep learning', 'neural network', 'classification'],
+        'B': ['covid-19', 'public health', 'pandemic', 'vaccination'],
+        'C': ['climate change', 'carbon emission', 'sustainability', 'renewable energy'],
+    }
+    abstracts = {
+        'A': 'machine learning deep learning neural network classification method training '
+             'dataset performance accuracy model framework evaluation experiment algorithm',
+        'B': 'covid public health pandemic vaccination policy response outcomes population '
+             'survey intervention measures effectiveness analysis study result',
+        'C': 'climate change carbon emission sustainability renewable energy policy impact '
+             'environment resources strategy reduction target scenario future',
+    }
+    records = []
+    oid_pool = [f'W{i}' for i in range(len(journals))]
+    for i, journal in enumerate(journals):
+        topic = rng.choice(list(topics.keys()))
+        refs = rng.sample(oid_pool, k=rng.randint(0, 4))
+        records.append({
+            'year': 2015 + (i % 9),
+            'journal': journal,
+            'title': f'{topic}-makale-{i} başlığı',
+            'authors': rng.sample(authors_pool, k=rng.randint(1, 3)),
+            'keywords': rng.sample(topics[topic], k=rng.randint(2, 4)),
+            'cited_by': rng.randint(0, 40),
+            'country': ','.join(rng.choice(countries_pool)),
+            'pub_type': rng.choice(['article', 'review', 'conference paper']),
+            'openalex_id': oid_pool[i],
+            'referenced_works': refs,
+            'abstract': abstracts[topic] + f' sample padding text iteration number {i} here now',
+        })
+    return records
+
+
+def test_b34_comments_translate_without_placeholder_errors_in_en_and_de():
+    """B3-4: 26 analizin ürettiği yorum cümleleri EN/DE'de çeviriyle render edilmeli
+    (yanlış yazılmış bir {placeholder} çeviri .format()'ta KeyError/IndexError fırlatırdı —
+    bu test tüm yorum fonksiyonlarını tek seferde, 3 dilde tetikleyerek yakalar)."""
+    records = _b34_full_coverage_records()
+
+    with translation.override('tr'):
+        tr_results = run_all_analyses(records)
+    tr_by_title = {title: comment for title, _png, comment in tr_results}
+
+    for lang in ('en', 'de'):
+        with translation.override(lang):
+            results = run_all_analyses(records)
+        by_title = {title: comment for title, _png, comment in results}
+        commented_titles = [t for t, c in by_title.items() if c]
+        assert len(commented_titles) >= 20, (
+            f'{lang}: beklenenden az grafikte yorum üretildi ({len(commented_titles)})')
+        for title, comment in by_title.items():
+            if not comment:
+                continue
+            assert '{' not in comment and '}' not in comment, (
+                f'{lang} - [{title}]: doldurulmamış placeholder kaldı: {comment}')
