@@ -802,9 +802,9 @@ class JobReviewAdmin(ModelAdmin):
 class DonationTierAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    # Tutar ve gün listeden doğrudan düzenlenir (list_editable gerçek alan ister — renkli *_display sütunları yerine)
-    list_display = ('name', 'min_amount', 'premium_days', 'is_active')
-    list_editable = ('min_amount', 'premium_days', 'is_active')
+    # Tutar, gün ve aylık analiz hakkı listeden doğrudan düzenlenir (list_editable gerçek alan ister — renkli *_display sütunları yerine)
+    list_display = ('name', 'min_amount', 'premium_days', 'monthly_analysis_credits', 'is_active')
+    list_editable = ('min_amount', 'premium_days', 'monthly_analysis_credits', 'is_active')
     ordering = ('-min_amount',)
 
     def min_amount_display(self, obj):
@@ -825,7 +825,7 @@ class DonationAdmin(ModelAdmin):
     list_filter = ('status', 'is_anonymous', 'created_at')
     search_fields = ('name', 'email', 'user__username', 'payment_id')
     date_hierarchy = 'created_at'
-    readonly_fields = ('payment_id', 'conversation_id', 'premium_days_promised', 'premium_days_granted', 'created_at', 'completed_at')
+    readonly_fields = ('tier', 'payment_id', 'conversation_id', 'premium_days_promised', 'premium_days_granted', 'created_at', 'completed_at')
     ordering = ('-created_at',)
     actions = ('confirm_donations',)
 
@@ -862,7 +862,7 @@ class DonationAdmin(ModelAdmin):
             'fields': ('user', 'name', 'email', 'is_anonymous')
         }),
         ('Ödeme Bilgileri', {
-            'fields': ('amount', 'status', 'payment_id', 'conversation_id')
+            'fields': ('amount', 'tier', 'status', 'payment_id', 'conversation_id')
         }),
         ('Ödüller', {
             'description': "Durumu 'Tamamlandı' yapıp kaydedince söz verilen gün kadar Premium verilir "
@@ -1013,9 +1013,9 @@ class SiteSettingsAdmin(ModelAdmin):
             'classes': ('collapse',),
         }),
         ('Limitler', {
-            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Bibliometri demo grafik sayısı: demo PDF\'inde gösterilecek grafik sayısı (toplam en fazla 26 üretilebilir, default 10). Bibliometri OpenAlex zenginleştirme: DOI\'si olan kayıtlardan en fazla kaçının OpenAlex ile zenginleştirileceği (atıf, ülke, kurum, anahtar kelime; OpenAlex kaynaklı işlerde kullanılmaz, default 2000). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir. Haftalık ilan hakkı (EN/DE): TR\'den tamamen ayrı pazar — kriter yok, referans bonusu uygulanmaz; Premium (bağış ile kazanılır) daha yüksek hak verir. İlan onayı: açıkken yeni ilan admin onayından sonra yayınlanır (İş İlanları → Onayla/Reddet). Uzman Dizini: /uzmanlar/ sayfasına girmek için gereken en az puan (ayrıca en az 3 uzmanlık alanı + e-posta doğrulaması şart, admin/staff hesapları otomatik dışarıda — tekil istisna Profil → Uzman Dizini: Zorla Göster/Gizle alanından).',
+            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Bibliometri demo grafik sayısı: demo PDF\'inde gösterilecek grafik sayısı (toplam en fazla 26 üretilebilir, default 10). Bibliometri OpenAlex zenginleştirme: DOI\'si olan kayıtlardan en fazla kaçının OpenAlex ile zenginleştirileceği (atıf, ülke, kurum, anahtar kelime; OpenAlex kaynaklı işlerde kullanılmaz, default 2000). Aylık analiz hakkı (normal kullanıcı): OpenAlex, TR Dizin, PubMed, Semantic Scholar, OAI-PMH, YÖK Tez ve Bibliometri\'nin HER BİRİNDE ayda kaç kez ücretsiz kullanılabileceği; Premium kullanıcılar için hak Destek Kademeleri (Bağış Katmanları) → Aylık Analiz Hakkı alanından okunur, ödüllü (geçerli) her arkadaş daveti ayrıca +1 ekler. Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir. Haftalık ilan hakkı (EN/DE): TR\'den tamamen ayrı pazar — kriter yok, referans bonusu uygulanmaz; Premium (bağış ile kazanılır) daha yüksek hak verir. İlan onayı: açıkken yeni ilan admin onayından sonra yayınlanır (İş İlanları → Onayla/Reddet). Uzman Dizini: /uzmanlar/ sayfasına girmek için gereken en az puan (ayrıca en az 3 uzmanlık alanı + e-posta doğrulaması şart, admin/staff hesapları otomatik dışarıda — tekil istisna Profil → Uzman Dizini: Zorla Göster/Gizle alanından).',
             'fields': ('scrap_max_records', 'analiz_max_records', 'bibliometri_demo_grafik_sayisi',
-                       'bibliometri_openalex_zenginlestirme_max_kayit',
+                       'bibliometri_openalex_zenginlestirme_max_kayit', 'monthly_analysis_limit_free',
                        'job_weekly_limit_free', 'job_weekly_limit_premium',
                        'job_weekly_limit_intl_free', 'job_weekly_limit_intl_premium',
                        'job_approval_required', 'job_title_max_chars', 'job_description_max_chars',

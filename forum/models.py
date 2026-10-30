@@ -205,6 +205,11 @@ class Profile(models.Model):
         verbose_name="Tercih Edilen Dil (e-postalar)",
     )
     premium_expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Premium Bitiş Tarihi")
+    # Kullanıcının bağışla ulaştığı EN YÜKSEK kademe — yalnız yükseltilir, asla düşürülmez
+    # (bkz. Donation.grant_premium). Yalnız referral ile Premium olan kullanıcıda None kalır.
+    premium_tier = models.ForeignKey(
+        'DonationTier', null=True, blank=True, on_delete=models.SET_NULL, related_name='+',
+        verbose_name="Ulaşılan Bağış Kademesi")
     reputation = models.IntegerField(default=0, verbose_name="Akademik Puan")
 
     # Rütbe sistemi
@@ -434,6 +439,14 @@ class Profile(models.Model):
         if not self.premium_expires_at:
             return False
         return self.premium_expires_at > timezone.now()
+
+    def get_active_tier(self):
+        """Aylık analiz hakkı (tarama/bibliometri) için geçerli bağış kademesi.
+        Premium değilse veya hiç bağışla kademeye ulaşılmadıysa (yalnız referral ile
+        Premium olunmuşsa) None döner — çağıran taraf bunu taban (Free) hak olarak ele alır."""
+        if not self.is_premium:
+            return None
+        return self.premium_tier
 
     @property
     def quiz_points(self):
@@ -1301,6 +1314,10 @@ class DonationTier(models.Model):
     premium_days = models.IntegerField(verbose_name="Premium Gün Sayısı")
     name = models.CharField(max_length=50, blank=True, verbose_name="Katman Adı")
     is_active = models.BooleanField(default=True, verbose_name="Aktif")
+    monthly_analysis_credits = models.PositiveIntegerField(
+        default=1, verbose_name="Aylık Analiz Hakkı (araç başına)",
+        help_text="Bu kademedeki Premium üyenin tarama/bibliometri araçlarının her birinde "
+                  "ayda kaç kez ücretsiz kullanım hakkı olduğu.")
 
     class Meta:
         verbose_name = "Bağış Katmanı"
@@ -1330,6 +1347,9 @@ class Donation(models.Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='donations', verbose_name="Bağışçı")
+    tier = models.ForeignKey(
+        DonationTier, null=True, blank=True, on_delete=models.SET_NULL, related_name='donations',
+        verbose_name="Bağış Kademesi", help_text="Talep anında seçilen kademe.")
     email = models.EmailField(verbose_name="E-posta")
     name = models.CharField(max_length=100, blank=True, verbose_name="İsim")
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Miktar (TL)")
@@ -1385,7 +1405,10 @@ class Donation(models.Model):
             profile.premium_expires_at = now + timedelta(days=days)
 
         profile.account_type = 'Premium'
-        profile.save(update_fields=['account_type', 'premium_expires_at'])
+        # Kademe yalnız yükseltilir, asla düşürülmez ("en yüksek kademe kalıcı")
+        if self.tier and (not profile.premium_tier or self.tier.min_amount > profile.premium_tier.min_amount):
+            profile.premium_tier = self.tier
+        profile.save(update_fields=['account_type', 'premium_expires_at', 'premium_tier'])
 
         self.premium_days_granted = days
         self.save(update_fields=['premium_days_granted'])
@@ -1643,6 +1666,14 @@ class SiteSettings(models.Model):
         verbose_name="Bibliometri OpenAlex Zenginleştirme Maks. Kayıt",
         help_text="DOI'si olan kayıtlardan en fazla kaçı OpenAlex ile zenginleştirilsin (atıf, ülke, kurum, "
                   "anahtar kelime). OpenAlex kaynaklı işlerde kullanılmaz (veri zaten taze). (default: 2000)",
+    )
+    monthly_analysis_limit_free = models.PositiveIntegerField(
+        default=1,
+        verbose_name="Aylık analiz hakkı: normal kullanıcı (araç başına)",
+        help_text="Tarama araçları (OpenAlex, TR Dizin, PubMed, Semantic Scholar, OAI-PMH, YÖK Tez) ve "
+                  "Bibliometri'nin HER BİRİNDE, normal (Free) kullanıcının ayda kaç kez ücretsiz kullanım "
+                  "hakkı olduğu. Premium kullanıcılar için hak, ulaştıkları bağış kademesinden "
+                  "(Destek Kademeleri → Aylık Analiz Hakkı) okunur. (default: 1)",
     )
     uzman_dizini_min_puan = models.PositiveIntegerField(
         default=200,
