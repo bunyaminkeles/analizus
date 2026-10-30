@@ -17,11 +17,14 @@ merge edilip push edildi (merge commit `19bdefd`, GitHub Actions ile Hetzner
 deploy tetiklendi, migration `0008`/`0009` uygulandığı ve site 200 döndüğü
 doğrulandı; merge öncesi production'da 2 aktif kullanıcı vardı,
 kullanıcı kararıyla yine de devam edildi).** **B3-3 (Yöntem Metni + PRISMA
-Diyagramı) de TAMAMLANDI (29 Ekim 2026, `dev`'de, henüz push/merge edilmedi)
-— ücretsiz indirme (B3-1/B3-2 ile aynı desen), detay madde 2 altında.
-**B3-4 (grafik başına kural tabanlı otomatik yorum cümlesi, LLM yok) de
-TAMAMLANDI (30 Ekim 2026, `dev`'de, henüz push/merge edilmedi)** — 26
-analizin tamamına eklendi, detay madde 2 altında.
+Diyagramı) ve B3-4 (grafik başına kural tabanlı otomatik yorum cümlesi, LLM
+yok) de TAMAMLANDI ve 30 Ekim 2026'da `--no-ff` ile `main`'e merge edilip
+push edildi (merge commit `c03eb91`, GitHub Actions ile Hetzner deploy
+`success`, migration yok, site 200 döndüğü doğrulandı; merge öncesi
+production'da aktif staff-olmayan kullanıcı yoktu; aynı merge'e Kullanıcı
+İstatistikleri CSV export 500 hatası düzeltmesi de dahil oldu) — ücretsiz
+indirme (B3-1/B3-2 ile aynı desen) + 26 analizin tamamına yorum cümlesi,
+detay madde 2 altında. Böylece **Grup B (B1+B2+B3) TAMAMEN BİTTİ.**
 Yeni oturum buradan devam etsin: sıradaki B4** (B3-2b — Biblioshiny WoS-plaintext export — R/bibliometrix ile
 test edilebildiğinde ayrı ele alınacak; bkz. madde 2 altındaki detaylı
 liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4).
@@ -274,8 +277,9 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      (29 Ekim B3-2).
    - [ ] B3-2b (Biblioshiny/bibliometrix WoS-plaintext export) — R ile test
      edilebildiğinde ele alınacak, ayrı onay/tur.
-   - [x] **B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı) TAMAMLANDI
-     (29 Ekim 2026, `dev`'de, henüz push/merge edilmedi).** Kullanıcı kararı
+   - [x] **B3-3 (hazır Yöntem metni TR/EN/DE + PRISMA akış diyagramı) TAMAMLANDI,
+     30 Ekim 2026'da `main`'de canlı (B3-4 ile birlikte, merge commit
+     `c03eb91`).** Kullanıcı kararı
      (AskUserQuestion): B3-1/B3-2 ile aynı desen — **ücretsiz indirme**
      (TXT+PNG), `pdf_builder.py`'ye dokunulmadı. Ek kullanıcı talebi: metinde
      otomatik üretildiği ve uzman incelemesinden geçmediği açıkça belirtilsin
@@ -296,7 +300,8 @@ açık iş hâlâ bekliyor (bu Grup B turunda ele alınmadı, kullanıcı karar�
      render testi. EN/DE çevrildi (polib ile fuzzy-eşleşen 5 girdi +
      11 boş girdi dolduruldu — `--no-location` kullanılmadı). `forum+
      bibliometrics` 203/203. Detay: `analizus.md` §27 (29 Ekim B3-3).
-   - [x] **B3-4 TAMAMLANDI (30 Ekim 2026, dev'de, henüz push/merge edilmedi):**
+   - [x] **B3-4 TAMAMLANDI, 30 Ekim 2026'da `main`'de canlı (merge commit
+     `c03eb91`, GitHub Actions deploy `success`, site 200 doğrulandı):**
      Grafik başına kural tabanlı otomatik yorum cümlesi — LLM yok, sayılardan
      üretilir. Yeni `bibliometrics/services/graph_comments.py`: 26 analizin
      her biri için zaten ayrılmış saf hesap fonksiyonlarını (bradford_zones,
