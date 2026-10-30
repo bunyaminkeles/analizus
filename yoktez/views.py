@@ -65,8 +65,8 @@ def yoktez_landing(request):
             'seo_guide': TARAMA_SEO_CONTENT.get('yoktez'),
         })
     user = request.user
-    daily_count = YokTezSearchJob.daily_count_for_user(user)
-    daily_limit = YokTezSearchJob.get_daily_limit(user)
+    daily_count = YokTezSearchJob.monthly_count_for_user(user)
+    daily_limit = YokTezSearchJob.get_monthly_limit(user)
     remaining = max(0, daily_limit - daily_count)
 
     if request.method == 'POST':
@@ -82,8 +82,8 @@ def yoktez_landing(request):
             })
 
         if remaining <= 0:
-            msg = (f'Günlük arama limitiniz doldu ({daily_limit}/{daily_limit}). '
-                   f'{"Premium üyelikle 7 aramaya yükseltebilirsiniz." if not user.profile.is_premium else "Yarın tekrar deneyebilirsiniz."}')
+            msg = (f'Bu ay için ücretsiz analiz hakkınız doldu ({daily_limit}/{daily_limit}). '
+                   f'{"Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz." if not user.profile.is_premium else "Önümüzdeki ay tekrar deneyebilirsiniz."}')
             if is_ajax:
                 return JsonResponse({'error': msg}, status=429)
             return render(request, 'yoktez/landing.html', {
