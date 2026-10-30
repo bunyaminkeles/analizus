@@ -1,8 +1,24 @@
 import re
 from django.contrib.auth.models import User
 
-MENTION_REGEX = re.compile(r'@(\w+)')
+MENTION_REGEX = re.compile(r'@([\w.@+-]+)')
 URL_REGEX = re.compile(r'(https?://[^\s<>"]+)')
+
+
+def mention_candidates(raw_mentions):
+    """
+    Her yakalanan @mention için olası kullanıcı adı adaylarını üretir:
+    yakalananın tamamı ve (varsa) sondaki noktalar kırpılmış hali.
+    Bu, "...@tolga.gerger." gibi cümle sonu noktasının kullanıcı adına
+    dahil edilmesini önler.
+    """
+    candidates = set()
+    for raw in raw_mentions:
+        candidates.add(raw)
+        stripped = raw.rstrip('.')
+        if stripped:
+            candidates.add(stripped)
+    return candidates
 
 
 def parse_mentions(text):
@@ -15,7 +31,7 @@ def parse_mentions(text):
     usernames = MENTION_REGEX.findall(text)
     if not usernames:
         return User.objects.none()
-    return User.objects.filter(username__in=usernames)
+    return User.objects.filter(username__in=mention_candidates(usernames))
 
 
 def render_mentions_html(text):
@@ -29,17 +45,25 @@ def render_mentions_html(text):
     usernames = MENTION_REGEX.findall(text)
     if usernames:
         existing = set(
-            User.objects.filter(username__in=usernames).values_list('username', flat=True)
+            User.objects.filter(
+                username__in=mention_candidates(usernames)
+            ).values_list('username', flat=True)
         )
         def replace_mention(match):
-            username = match.group(1)
-            if username in existing:
-                return (
-                    f'<a href="/profile/{username}/" '
-                    f'class="mention-link" '
-                    f'title="@{username}">@{username}</a>'
-                )
-            return match.group(0)
+            raw = match.group(1)
+            if raw in existing:
+                username, trailing = raw, ''
+            else:
+                stripped = raw.rstrip('.')
+                if stripped in existing:
+                    username, trailing = stripped, raw[len(stripped):]
+                else:
+                    return match.group(0)
+            return (
+                f'<a href="/profile/{username}/" '
+                f'class="mention-link" '
+                f'title="@{username}">@{username}</a>{trailing}'
+            )
         text = MENTION_REGEX.sub(replace_mention, text)
 
     # URL'leri tıklanabilir yap (zaten <a> içinde olmayanlar)
