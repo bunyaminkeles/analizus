@@ -66,15 +66,19 @@ def oaipmh_landing(request):
             'browse_form': OAIPMHBrowseForm(),
         })
 
-    daily_used = OAIPMHSearchJob.daily_count_for_user(request.user)
-    daily_limit = OAIPMHSearchJob.get_daily_limit(request.user)
+    daily_used = OAIPMHSearchJob.monthly_count_for_user(request.user)
+    daily_limit = OAIPMHSearchJob.get_monthly_limit(request.user)
     remaining = max(0, daily_limit - daily_used)
 
     if request.method == 'POST':
         search_type = request.POST.get('search_type', 'keyword')
 
         if remaining <= 0:
-            return JsonResponse({'success': False, 'error': 'Günlük arama limitinize ulaştınız.'}, status=429)
+            msg = (f'Bu ay için ücretsiz analiz hakkınız doldu ({daily_limit}/{daily_limit}). '
+                   + ('Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.'
+                      if not (hasattr(request.user, 'profile') and request.user.profile.is_premium) else
+                      'Önümüzdeki ay tekrar deneyebilirsiniz.'))
+            return JsonResponse({'success': False, 'error': msg}, status=429)
 
         if search_type == 'keyword':
             form = OAIPMHKeywordForm(request.POST)

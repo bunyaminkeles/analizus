@@ -3771,17 +3771,19 @@ def send_support_email(request):
                 email=user.email,
                 name=user.get_full_name() or user.username,
                 amount=tier.min_amount,
+                tier=tier,
                 payment_id=f"IBAN-{uuid.uuid4().hex[:12].upper()}",
                 conversation_id=f"TIER-{tier.pk}",
                 premium_days_promised=tier.premium_days,
                 status='pending',
             )
         else:
-            # Yeniden talep: kayıt bu e-postada bildirilen katmana (tutar + gün) güncellenir
+            # Yeniden talep: kayıt bu e-postada bildirilen katmana (tutar + gün + kademe) güncellenir
             donation.amount = tier.min_amount
+            donation.tier = tier
             donation.conversation_id = f"TIER-{tier.pk}"
             donation.premium_days_promised = tier.premium_days
-            donation.save(update_fields=['amount', 'conversation_id', 'premium_days_promised'])
+            donation.save(update_fields=['amount', 'tier', 'conversation_id', 'premium_days_promised'])
 
         confirm_url = request.build_absolute_uri(
             reverse('mark_donation_transferred', args=[donation.pk])

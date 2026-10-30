@@ -3,9 +3,11 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
+from forum.models import MonthlyToolLimitMixin
 
-class PubMedSearchJob(models.Model):
-    """PubMed yayın arama görevi (demo: ücretsiz, günlük limitli). OpenAlex kalıbı: arama yalnız ilk
+
+class PubMedSearchJob(MonthlyToolLimitMixin, models.Model):
+    """PubMed yayın arama görevi (demo: ücretsiz, aylık limitli). OpenAlex kalıbı: arama yalnız ilk
     sayfayı saklar, tam veri bibliometri istenince job_runner.ensure_full_results ile çekilir."""
     STATUS_CHOICES = (
         ('pending', 'Bekliyor'),
@@ -69,23 +71,6 @@ class PubMedSearchJob(models.Model):
         self.error_message = error_msg
         self.completed_at = timezone.now()
         self.save(update_fields=['status', 'error_message', 'completed_at'])
-
-    @staticmethod
-    def daily_count_for_user(user):
-        today = timezone.now().date()
-        return PubMedSearchJob.objects.filter(
-            user=user,
-            created_at__date=today,
-        ).count()
-
-    @staticmethod
-    def get_daily_limit(user):
-        """OpenAlex ile aynı (kullanıcı kararı 29 Eylül 2026): admin sınırsız, Premium 7, diğerleri 3."""
-        if user.is_staff or user.is_superuser:
-            return 9999
-        if hasattr(user, 'profile') and user.profile.is_premium:
-            return 7
-        return 3
 
     def get_query_summary(self):
         from django.utils.translation import gettext  # aktif dilde (istek / kullanıcı dili)

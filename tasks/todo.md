@@ -1,46 +1,30 @@
 # Çok Dilli Yayın (EN/DE) — YAYINDA
 
-**Durum (29 Ekim 2026 gece):** Bibliometri Grup A (A1-A9) tamamen bitti,
-`main`'de canlı (Hetzner). Grup B (bibliometrix/VOSviewer yol haritası):
-**B1 (veri kalitesi) ve B2 (bilim haritalama) TAMAMEN BİTTİ — 8/8**
-(B1-1 OpenAlex zenginleştirme, B1-2 tekilleştirme, B1-3 yazar birleştirme,
-B1-4 anahtar kelime normalizasyonu; B2-1 Bradford Kanunu, B2-2 Louvain
-kümeleri + tablo, B2-3 Tematik Harita, B2-4 Tematik Evrim, B2-5 Üç Alan
-Grafiği, B2-6 SCP/MCP, B2-7 Bibliyografik Eşleşme + Yerel/Küresel Atıf,
-B2-8 Konu Modelleme NMF). B1+B2 (B1-1..B2-8 tamamı) kullanıcı isteğiyle
-`--no-ff` ile `main`'e merge edilip push edildi (Hetzner deploy tetiklendi,
-merge öncesi production'da aktif kullanıcı kontrolü yapıldı). İstatistik
-araç sayısı 17→26. **B3 (Çıktılar) başladı: B3-1 (Temiz Veri Seti İndirme
-XLSX/CSV) + B3-2 (VOSviewer map+network export) + Topic Map/Bradford Kanunu
-görsel bug düzeltmeleri TAMAMLANDI — 29 Ekim 2026 `--no-ff` ile `main`'e
-merge edilip push edildi (merge commit `19bdefd`, GitHub Actions ile Hetzner
-deploy tetiklendi, migration `0008`/`0009` uygulandığı ve site 200 döndüğü
-doğrulandı; merge öncesi production'da 2 aktif kullanıcı vardı,
-kullanıcı kararıyla yine de devam edildi).** **B3-3 (Yöntem Metni + PRISMA
-Diyagramı) ve B3-4 (grafik başına kural tabanlı otomatik yorum cümlesi, LLM
-yok) de TAMAMLANDI ve 30 Ekim 2026'da `--no-ff` ile `main`'e merge edilip
-push edildi (merge commit `c03eb91`, GitHub Actions ile Hetzner deploy
-`success`, migration yok, site 200 döndüğü doğrulandı; merge öncesi
-production'da aktif staff-olmayan kullanıcı yoktu; aynı merge'e Kullanıcı
-İstatistikleri CSV export 500 hatası düzeltmesi de dahil oldu) — ücretsiz
-indirme (B3-1/B3-2 ile aynı desen) + 26 analizin tamamına yorum cümlesi,
-detay madde 2 altında. Böylece **Grup B (B1+B2+B3) TAMAMEN BİTTİ.**
-**B3-2b (WoS Plaintext/Biblioshiny Uyumlu Dışa Aktarım) de TAMAMLANDI
-(30 Ekim 2026, `dev`'de, henüz push/merge edilmedi, migration `0011`
-içeriyor)** — R kurmadan, bibliometrix'in gerçek ayrıştırıcı kaynak kodu
-(GitHub) + resmi örnek dosyası doğrudan incelenerek format çıkarıldı;
-detay madde 2 altında.
-B3-2b migration `0011` ile `main`'e merge edilip push edildi (merge commit
-`bd0c213`, kullanıcı önce yedek aldı, Hetzner'de migration uygulandı, site
-200 doğrulandı). **Böylece Grup B (B1+B2+B3, B3-2b dahil) TAMAMEN main'de
-canlı.** **B4 (ürün/huni) başladı (30 Ekim 2026, `dev`'de, henüz push/merge
-edilmedi):** B4-1 (demo seçimi, sabit öncelik sırası) ve B4-2'nin ilk yarısı
-(Uzman Paketi CTA, order.html) TAMAMLANDI; B4-3 (rapor dili seçimi)
-incelenip zaten çözülmüş olduğu görüldü, kod değişikliği yapılmadı. Detay
-madde 2 altında. Yeni oturum buradan devam etsin: **B4-2'nin ikinci yarısı
-(uluslararası ödeme) + B4-4 (EN örnek tam rapor) + B4-5 (SEO SSS çevirisi)
-— üçü de kullanıcı kararı/onayı bekliyor**, bkz. madde 2 altındaki detaylı
-liste ve `bibliometri_durum_ve_gelistirme_prompt.md` §4.
+**Durum (30 Ekim 2026 akşamı):** Bibliometri Grup A (A1-A9) ve Grup B
+(B1 veri kalitesi + B2 bilim haritalama + B3 çıktılar — B3-1/B3-2/B3-2b/
+B3-3/B3-4, istatistik araç sayısı 17→26) **TAMAMEN BİTTİ, main'de canlı**
+(en son merge commit `ef9f4a8`). Grup B4 (ürün/huni) başladı:
+- **B4-1 (Demo Seçimi) TAMAMLANDI, main'de canlı:** demo PDF artık ham
+  hesaplama sırası yerine elle sıralanmış, çeşitli/görsel açıdan güçlü
+  analizleri önce gösteriyor (`select_demo_figures()`).
+- **B4-2 (Paketler) TAMAMLANDI, main'de canlı:** TR'de "Uzman Paketi" CTA
+  kartı (order.html → proje-talebi) + EN/DE'de proje talebi onay
+  e-postasına ödeme yöntemi ayrıca bildirileceği notu (kullanıcı kararı:
+  otomatik ödeme entegrasyonu İSTENMEDİ).
+- **B4-3 (Rapor Dili Seçimi):** incelendi, zaten çözülmüş bulundu — kod
+  değişikliği yapılmadı.
+- **B4-4 (EN örnek tam rapor):** kullanıcı onayı alındı (gerçek, nötr bir
+  OpenAlex sorgusuyla üretilip production S3'e yüklenecek, EN/DE sayfasına
+  bağlanacak) — **henüz BAŞLANMADI, yeni oturum buradan devam etsin.**
+- **B4-5 (SEO SSS çevirisi):** kapsam kullanıcıyla yeniden değerlendirilecek
+  — araştırmada önemli bulgu çıktı: `tarama_seo_content.py` içeriği
+  (openalex/semanticscholar/bibliometrics) hem view'larda hem
+  `service_promo.html` şablonunda (`LANGUAGE_CODE == 'tr'` koşulu) TR'ye
+  kilitli; EN/DE çevirisi tek başına yetmez, şablon koşulu da gevşetilmeli.
+  İçerik hacmi büyük (3 araç × 7 bölüm, ~10.600 karakter TR kaynak metin).
+
+Detay madde 2 altında; plan dosyası `bibliometri_durum_ve_gelistirme_prompt.md` §4.
+
 Ayrıca aşağıdaki 2 ayrı
 açık iş hâlâ bekliyor (bu Grup B/B4 turunda ele alınmadı, kullanıcı kararı):
 
@@ -363,8 +347,8 @@ açık iş hâlâ bekliyor (bu Grup B/B4 turunda ele alınmadı, kullanıcı kar
      143/143, `forum+bibliometrics` 250/250. Detay: `analizus.md` §27
      (30 Ekim B3-4).
    - [ ] B4 (ürün/huni) — bkz. plan dosyası §4
-     - [x] **B4-1 (Demo Seçimi) TAMAMLANDI (30 Ekim 2026, dev'de, henüz
-       push/merge edilmedi):** Demo PDF'i eskiden `figures[:demo_n]` ile
+     - [x] **B4-1 (Demo Seçimi) TAMAMLANDI, 30 Ekim 2026'da `main`'de canlı
+       (merge commit `ef9f4a8`):** Demo PDF'i eskiden `figures[:demo_n]` ile
        `run_all_analyses`'in ham hesaplama sırasının ilk N'ini gösteriyordu
        (F8: trend+büyüme+yazarlar+Lotka+3 ayrı anahtar kelime analizi art
        arda, çeşitlilik yok). `analyzer.py`'ye `_demo_priority_titles()` +
@@ -376,15 +360,25 @@ açık iş hâlâ bekliyor (bu Grup B/B4 turunda ele alınmadı, kullanıcı kar
        tutuyor (demo yeniden sıralandığı için eski indeks mantığı yanlış
        sayfayı işaretlerdi) — `analyzer.py` + `pdf_builder.py`'nin 2 döngüsü
        güncellendi. 6 yeni pytest. `bibliometrics` 160/160.
-     - [x] **B4-2 (Paketler) ilk yarısı TAMAMLANDI (30 Ekim 2026, dev'de):**
-       TR'de "Tam Rapor" siparişini tamamlayan kullanıcı "Uzman Paketi"
-       (doğrulama + yöntem/bulgular yazımı + revizyon) seçeneğini sitede hiç
-       görmüyordu (yalnız PDF'in son sayfasında gömülüydü). `order.html`'e
-       mevcut `/proje-talebi/?source=bibliometrics&type=bibliometric`
-       akışına (genel proje talebi formu, tüm dillerde zaten var) bağlanan
-       yeni bir kart eklendi. EN/DE'de zaten "Tam Rapor" butonu doğrudan
-       proje-talebi'ne gittiği için (A8 kararı) değişiklik gerekmedi. **İkinci
-       yarısı (uluslararası EUR/USD ödeme) kullanıcı kararı bekliyor.**
+     - [x] **B4-2 (Paketler) TAMAMLANDI, 30 Ekim 2026'da `main`'de canlı
+       (merge commit `ef9f4a8`):** TR'de "Tam Rapor" siparişini tamamlayan
+       kullanıcı "Uzman Paketi" (doğrulama + yöntem/bulgular yazımı +
+       revizyon) seçeneğini sitede hiç görmüyordu (yalnız PDF'in son
+       sayfasında gömülüydü). `order.html`'e mevcut
+       `/proje-talebi/?source=bibliometrics&type=bibliometric` akışına
+       (genel proje talebi formu, tüm dillerde zaten var) bağlanan yeni bir
+       kart eklendi. EN/DE'de zaten "Tam Rapor" butonu doğrudan
+       proje-talebi'ne gittiği için (A8 kararı) değişiklik gerekmedi.
+       **İkinci yarısı — kullanıcı kararı:** otomatik ödeme entegrasyonu
+       (Stripe/PayPal) İSTENMEDİ; bunun yerine `forum/views.py`
+       `proje_talebi()`'ne EN/DE için (TR hariç) onay e-postasına "Ödeme
+       yöntemine ilişkin bilgileri ayrı bir e-posta ile size ileteceğiz."
+       notu eklendi. **Test sırasında bulunan altyapı tuzağı:** `/en/`,
+       `/de/` altındaki her yol `MultilingualFeatureMiddleware` tarafından
+       `SiteSettings.feature_multilingual` kapalıyken view'a hiç ulaşmadan
+       404'e düşürülüyor (testte `intl_market_on` deseniyle flag açılarak
+       çözüldü — kod değişmedi, yalnız keşfedilip not edildi). 2 yeni
+       pytest, 1 yeni msgid EN/DE çevrildi. `forum` 110/110.
      - [x] **B4-3 (Rapor Dili Seçimi) — incelendi, zaten çözülmüş bulundu,
        kod değişikliği YAPILMADI (30 Ekim 2026):** Plan dosyası "A4 kararına
        bağlı, karar bekliyor" diyordu; kontrol edilince dosya yükleme
@@ -393,10 +387,39 @@ açık iş hâlâ bekliyor (bu Grup B/B4 turunda ele alınmadı, kullanıcı kar
        tarafından kullanılıyor. OpenAlex/PubMed akışında form yok (tek tıkla
        JSON API) → arayüz/profil diline düşüyor, bu da planın "migration'sız
        alternatif"ine zaten karşılık geliyor.
-     - [ ] B4-4 (EN örnek tam rapor, anonim gerçek veri) — kullanıcı kararı
-       bekliyor: hangi konu/sorgu kullanılsın (bkz. sohbet).
-     - [ ] B4-5 (SEO: EN/DE SSS çevirisi + "nasıl dışa aktarılır" rehberleri)
-       — kullanıcı kararı bekliyor: kapsam/öncelik (bkz. sohbet).
+     - [ ] **B4-4 (EN örnek tam rapor, gerçek veri) — kullanıcı onayı alındı,
+       henüz BAŞLANMADI, yeni oturum buradan devam etsin.** Plan: nötr/
+       evrensel bir konuda ("iklim değişikliği" gibi) gerçek bir OpenAlex
+       sorgusu çalıştırılıp (mevcut `openalex` scraper/parser akışıyla,
+       gerçek kullanıcı akışının birebir aynısı) tam rapor üretilecek,
+       production S3'e sabit bir path'e (7 günlük cleanup cron'un
+       kapsamadığı yeni bir prefix, ör. `bibliometrics/examples/`)
+       yüklenecek, EN/DE bibliometri sayfasına indirme linki eklenecek.
+       Rapor İngilizce üretilecek (iki dil sayfasında da aynı dosya,
+       buton metni çevrilecek). Gerçek OpenAlex API çağrısı + production
+       S3 yazma işlemi içerir.
+     - [ ] **B4-5 (SEO: EN/DE SSS çevirisi) — kapsam kullanıcıyla yeniden
+       değerlendirilecek (30 Ekim 2026).** Kullanıcı önce "yalnız
+       uluslararası araçlar" (openalex/semanticscholar/bibliometrics;
+       PubMed'in bu dosyada hiç girdisi yok, yoktez/trdizin/oaipmh/tableau
+       TR'ye özgü — dahil edilmeyecek) dedi, sonra kapsamı tekrar
+       düşünmek istedi. **Araştırmada bulunan önemli bulgu (henüz
+       çözülmedi):** `tarama_seo_content.py`'deki bu 3 aracın SSS/rehber
+       içeriği şu an yalnız TR'de gösteriliyor — `openalex/views.py` ve
+       `semanticscholar/views.py`'de `TARAMA_SEO_CONTENT.get(...) if
+       language=='tr' else None`, `bibliometrics/views.py`'de bu kontrol
+       hiç yok ama `templates/service_promo.html:128`'deki
+       `{% if seo_guide and LANGUAGE_CODE == 'tr' %}` şablon koşulu zaten
+       hepsini TR'ye kilitliyor. Yani EN/DE çevirisi TEK BAŞINA yetmez;
+       şablon koşulu da gevşetilmeli (`seo_guide` içerik varsa göster,
+       dile bakma — içerik zaten dile göre seçilecek). İçerik hacmi büyük:
+       3 araç × 7 bölüm (intro, ne zaman kullanılır, varsayımlar,
+       yorumlama, APA örneği, SSS, ilgili araçlar) ≈ 10.600 karakter TR
+       kaynak metin → EN+DE yazılması gereken gerçek bir çeviri/yazım işi
+       (kod değişikliği değil). Önerilen veri yapısı: mevcut TR
+       `TARAMA_SEO_CONTENT` dict'ine (4 TR-özel araç dahil) HİÇ dokunmadan,
+       yalnız bu 3 araç için ayrı `TARAMA_SEO_CONTENT_EN`/`_DE` dict'leri +
+       `get_seo_guide(tool_key, lang)` yardımcı fonksiyonu eklemek.
    - [x] **Topic Map görsel kalite sorunu DÜZELTİLDİ (29 Ekim 2026, dev'de)**
      (Grup B dışı, ayrı açık işti). Kök neden sentetik veriyle render edilip
      doğrulandı: `topic_map()`'te sabit `figsize=(14,8)` (en/boy 1.75, geniş)
@@ -444,13 +467,35 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-- [ ] **(30 Ekim 2026) B4 sırasında çıkan yan bulgu: `order.html`'de "17 analiz"
-  bayatlamış, gerçek sayı 26.** `bibliometrics/templates/bibliometrics/order.html:15`
-  ("En fazla 17 analiz içeren...") ve aynı sayfadaki sabit 17 analiz isim
-  listesi (satır ~74-99) — 9 eksik analiz var (Bradford, Tematik Harita,
-  Tematik Evrim, Üç Alan Grafiği, SCP/MCP, Bibliyografik Eşleşme, Yerel/
-  Küresel Atıf, Konu Modelleme x2). B4 kapsamında dokunulmadı (kapsam dışı),
-  ayrı onay gerekiyor.
+- [x] **(30 Ekim 2026) TAMAMLANDI — Arama Servisleri admin listelerinde
+  (OpenAlex İşleri, TR Dizin İşleri, YÖK Tez İşleri, OAI-PMH İşleri) admin ve
+  mevcut `SiteSettings.navigasyon_haric_grup` grubundaki kullanıcıların
+  aramaları artık listelenmiyor.** `oaipmh/admin.py`'deki 4 admin sınıfına
+  (`OAIPMHSearchJobAdmin`, `AlexSearchJobProxyAdmin`, `DizinSearchJobProxyAdmin`,
+  `YokTezSearchJobProxyAdmin`) `analytics/admin.py`'deki mevcut desenle aynı
+  `get_queryset()` override'ı eklendi (`exclude(user__is_staff=True)` +
+  `navigasyon_haric_grup` varsa `exclude(user__groups=...)`) — yeni model/
+  migration yok. `manage.py check` temiz, lokalde shell'den doğrulandı. Not:
+  lokal DB'de `navigasyon_haric_grup` boş (None) — "çalışanlar" grubunun da
+  gizlenmesi için production'da Site Ayarları → Navigasyon Analizi →
+  "Navigasyon Grafiği: hariç tutulacak grup" alanına o grup seçili olmalı,
+  DOĞRULANMADI. `UniversityAdmin`/`YokTezUniversite` dokunulmadı (user alanı
+  yok). Henüz main'e merge/deploy edilmedi (dev'de).
+- [ ] **(30 Ekim 2026) B4 sırasında çıkan yan bulgu: birden fazla yerde "17
+  analiz" bayatlamış, gerçek sayı 26.** Üç ayrı konum, hiçbirine dokunulmadı
+  (kapsam dışı), ayrı onay gerekiyor:
+  1. `bibliometrics/templates/bibliometrics/order.html:15` ("En fazla 17
+     analiz içeren...") + aynı sayfadaki sabit 17 analiz isim listesi
+     (satır ~74-99) — 9 eksik analiz var (Bradford, Tematik Harita,
+     Tematik Evrim, Üç Alan Grafiği, SCP/MCP, Bibliyografik Eşleşme, Yerel/
+     Küresel Atıf, Konu Modelleme x2).
+  2. `bibliometrics/views.py` promo metni, satır ~48 ("...17'ye kadar grafik
+     içeren PDF rapor...") ve satır ~59 ("Sistem otomatik olarak 17'ye kadar
+     farklı analiz çalıştırır.") — `bibliometrics_landing`'in
+     anonim/service_promo bölümü.
+  3. `tarama_seo_content.py`'nin `bibliometrics` girdisi: `intro` metninde
+     ("...17'ye kadar farklı analiz üretir...") ve bir SSS cevabında
+     ("...17'ye kadar analiz tek PDF'de sunulur...").
 - [ ] **(29 Ekim 2026) Bibliometri Grup B / B1-4 sırasında çıkan yan bulgu:
   zeyrek'in Türkçe lemmatization'ı lokal dev ortamında sessizce başarısız
   oluyor — araştırılmadı.** `bibliometrics/services/analyzer.py`

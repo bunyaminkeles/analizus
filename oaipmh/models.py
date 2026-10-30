@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+from forum.models import MonthlyToolLimitMixin
+
 User = get_user_model()
 
 
@@ -25,7 +27,7 @@ class University(models.Model):
         return self.name
 
 
-class OAIPMHSearchJob(models.Model):
+class OAIPMHSearchJob(MonthlyToolLimitMixin, models.Model):
     STATUS_CHOICES = [
         ('pending', 'Bekliyor'),
         ('running', 'Çalışıyor'),
@@ -108,21 +110,6 @@ class OAIPMHSearchJob(models.Model):
             return ' | '.join(parts) if parts else 'Genel Tarama'
         else:
             return f"{self.university.name if self.university else '?'} - Tüm Tezler"
-
-    @classmethod
-    def daily_count_for_user(cls, user):
-        today = timezone.now().date()
-        return cls.objects.filter(user=user, created_at__date=today).count()
-
-    @classmethod
-    def get_daily_limit(cls, user):
-        """Admin: ∞, Premium: 7, Normal: 1"""
-        if user.is_staff or user.is_superuser:
-            return 9999
-        if hasattr(user, 'profile') and user.profile.is_premium:
-            return 7
-        return 1
-
 
 class OAIPMHOrder(models.Model):
     STATUS_CHOICES = [

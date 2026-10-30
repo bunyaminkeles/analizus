@@ -40,6 +40,15 @@ class OAIPMHSearchJobAdmin(GroupTabsMixin, ModelAdmin):
         return obj.get_query_summary()
     get_query_summary.short_description = "Sorgu Özeti"
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.exclude(user__is_staff=True)
+        from forum.models import SiteSettings
+        haric_grup = SiteSettings.load().navigasyon_haric_grup
+        if haric_grup:
+            qs = qs.exclude(user__groups=haric_grup)
+        return qs
+
 
 @admin.register(AlexSearchJobProxy)
 class AlexSearchJobProxyAdmin(GroupTabsMixin, ModelAdmin):
@@ -54,6 +63,15 @@ class AlexSearchJobProxyAdmin(GroupTabsMixin, ModelAdmin):
     def get_query_summary(self, obj):
         return obj.get_query_summary()
     get_query_summary.short_description = "Sorgu Özeti"
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.exclude(user__is_staff=True)
+        from forum.models import SiteSettings
+        haric_grup = SiteSettings.load().navigasyon_haric_grup
+        if haric_grup:
+            qs = qs.exclude(user__groups=haric_grup)
+        return qs
 
 
 @admin.register(DizinSearchJobProxy)
@@ -70,6 +88,15 @@ class DizinSearchJobProxyAdmin(GroupTabsMixin, ModelAdmin):
         return obj.get_query_summary()
     get_query_summary.short_description = "Sorgu Özeti"
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.exclude(user__is_staff=True)
+        from forum.models import SiteSettings
+        haric_grup = SiteSettings.load().navigasyon_haric_grup
+        if haric_grup:
+            qs = qs.exclude(user__groups=haric_grup)
+        return qs
+
 
 @admin.register(YokTezSearchJobProxy)
 class YokTezSearchJobProxyAdmin(GroupTabsMixin, ModelAdmin):
@@ -84,3 +111,12 @@ class YokTezSearchJobProxyAdmin(GroupTabsMixin, ModelAdmin):
     def get_query_summary(self, obj):
         return obj.get_query_summary()
     get_query_summary.short_description = "Sorgu Özeti"
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.exclude(user__is_staff=True)
+        from forum.models import SiteSettings
+        haric_grup = SiteSettings.load().navigasyon_haric_grup
+        if haric_grup:
+            qs = qs.exclude(user__groups=haric_grup)
+        return qs

@@ -27,9 +27,9 @@
                         {% trans "OpenAlex'teki 240 milyondan fazla akademik yayından kodsuz veri çekin. Başlık, özet, yazar, anahtar kelime, dergi ve kurum alanlarında arama yapın; sonuçları" %} <strong>{% trans "Excel veya TXT" %}</strong> {% trans "olarak tek tıkla indirin." %}
                     </p>
                     <p class="text-muted">
-                        {% blocktrans %}Arama sonuçlarınızı ücretsiz indirebilirsiniz. Günlük <strong>{{ daily_limit }}</strong> arama hakkınız bulunmaktadır. Kalan: <strong>{{ remaining }}</strong>.{% endblocktrans %}
+                        {% blocktrans %}Bu ay <strong>{{ daily_limit }}</strong> ücretsiz arama hakkınız bulunmaktadır. Kalan ücretsiz hakkınız: <strong>{{ remaining }}</strong>.{% endblocktrans %}
                         {% if LANGUAGE_CODE == 'tr' %}
-                        <a href="{% url 'job_list' %}" class="text-warning">{% trans "Premium üyelik" %}</a> {% trans "ile günlük 7 aramaya yükseltebilirsiniz." %}
+                        <a href="{% url 'job_list' %}" class="text-warning">{% trans "Destekçi olarak" %}</a> {% trans "ücretsiz hakkınızı artırabilirsiniz." %}
                         {% endif %}
                     </p>
                 </div>
