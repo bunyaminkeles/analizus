@@ -467,6 +467,20 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(30 Ekim 2026) TAMAMLANDI — Arama Servisleri admin listelerinde
+  (OpenAlex İşleri, TR Dizin İşleri, YÖK Tez İşleri, OAI-PMH İşleri) admin ve
+  mevcut `SiteSettings.navigasyon_haric_grup` grubundaki kullanıcıların
+  aramaları artık listelenmiyor.** `oaipmh/admin.py`'deki 4 admin sınıfına
+  (`OAIPMHSearchJobAdmin`, `AlexSearchJobProxyAdmin`, `DizinSearchJobProxyAdmin`,
+  `YokTezSearchJobProxyAdmin`) `analytics/admin.py`'deki mevcut desenle aynı
+  `get_queryset()` override'ı eklendi (`exclude(user__is_staff=True)` +
+  `navigasyon_haric_grup` varsa `exclude(user__groups=...)`) — yeni model/
+  migration yok. `manage.py check` temiz, lokalde shell'den doğrulandı. Not:
+  lokal DB'de `navigasyon_haric_grup` boş (None) — "çalışanlar" grubunun da
+  gizlenmesi için production'da Site Ayarları → Navigasyon Analizi →
+  "Navigasyon Grafiği: hariç tutulacak grup" alanına o grup seçili olmalı,
+  DOĞRULANMADI. `UniversityAdmin`/`YokTezUniversite` dokunulmadı (user alanı
+  yok). Henüz main'e merge/deploy edilmedi (dev'de).
 - [ ] **(30 Ekim 2026) B4 sırasında çıkan yan bulgu: birden fazla yerde "17
   analiz" bayatlamış, gerçek sayı 26.** Üç ayrı konum, hiçbirine dokunulmadı
   (kapsam dışı), ayrı onay gerekiyor:
