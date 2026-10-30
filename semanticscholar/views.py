@@ -85,21 +85,25 @@ def semantic_landing(request):
         messages.warning(request, gettext('Semantic Scholar tarama için e-posta adresinizi doğrulamanız gerekiyor.'))
         return redirect('profile_edit')
 
-    daily_limit = SemanticSearchJob.get_daily_limit(user)
-    daily_used = SemanticSearchJob.daily_count_for_user(user)
+    daily_limit = SemanticSearchJob.get_monthly_limit(user)
+    daily_used = SemanticSearchJob.monthly_count_for_user(user)
     remaining = max(0, daily_limit - daily_used)
 
     if request.method == 'POST':
         form = SemanticSearchForm(request.POST)
         if form.is_valid():
             if remaining <= 0:
+                is_premium = hasattr(user, 'profile') and user.profile.is_premium
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return JsonResponse({
-                        'error': gettext('Günlük demo limitiniz doldu ({used}/{limit}). Yarın tekrar deneyebilirsiniz.').format(used=daily_limit, limit=daily_limit)
+                        'error': (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
+                                  if not is_premium else
+                                  gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.')
+                                  ).format(used=daily_limit, limit=daily_limit)
                     }, status=429)
                 return render(request, 'semanticscholar/landing.html', {
                     'form': form,
-                    'error': gettext('Günlük demo limitiniz doldu.'),
+                    'error': gettext('Bu ay için ücretsiz analiz hakkınız doldu.'),
                     'remaining': 0,
                     'daily_limit': daily_limit,
                 })
