@@ -83,7 +83,10 @@ def pubmed_landing(request):
             msg = (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
                    if not user.profile.is_premium else
                    gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
-            return JsonResponse({'error': msg.format(used=daily_limit, limit=daily_limit)}, status=429)
+            return JsonResponse({
+                'error': msg.format(used=daily_limit, limit=daily_limit),
+                'show_premium_cta': not user.profile.is_premium and (get_language() or 'tr')[:2] == 'tr',
+            }, status=429)
 
         job = PubMedSearchJob.objects.create(
             user=user,

@@ -470,6 +470,7 @@
     sendDemo: '{% filter escapejs %}{% trans "Demo Emaile Gönder" %}{% endfilter %}',
     emailFailed: '{% filter escapejs %}{% trans "Email gönderilemedi." %}{% endfilter %}',
     completedBadge: '{% filter escapejs %}{% trans "Tamamlandı" %}{% endfilter %}',
+    destekciOl: '{% filter escapejs %}{% trans "Destekçi Ol" %}{% endfilter %}',
   };
   const fmt = (t, v) => t.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
   // Dile göre adresler (sentinel + replace — STATUS_BASE + id çift eğik çizgi tuzağı)
@@ -494,9 +495,14 @@
   progText.textContent = T.resumed;
   {% endif %}
 
-  function showError(msg) {
+  function showError(msg, showPremiumCta) {
     errorArea.classList.remove('d-none');
-    errorMsg.textContent = msg;
+    if (showPremiumCta) {
+      errorMsg.innerHTML = msg.replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]))
+        + ' <a href="#" class="alert-link" data-bs-toggle="modal" data-bs-target="#donationModal">' + T.destekciOl + ' &rarr;</a>';
+    } else {
+      errorMsg.textContent = msg;
+    }
     progress.classList.add('d-none');
     submitBtn.disabled = false;
     submitBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i> ' + T.start;
@@ -655,7 +661,7 @@
           progText.textContent = T.started;
           startPolling(data.job_id);
         } else {
-          showError(data.error || T.generic);
+          showError(data.error || T.generic, data.show_premium_cta);
         }
       })
       .catch(() => showError(T.network));
