@@ -1,3 +1,5 @@
+import logging
+
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import get_language, gettext, pgettext
 from django.urls import reverse
@@ -9,8 +11,10 @@ from functools import wraps
 
 from .forms import AlexSearchForm, AlexOrderForm
 from .models import AlexSearchJob, AlexOrder
-from .services.job_runner import run_scraping_job
+from .services.job_runner import run_scraping_job, ensure_full_results
 from tarama_seo_content import TARAMA_SEO_CONTENT
+
+logger = logging.getLogger(__name__)
 
 
 def _safe_filename(job, ext: str) -> str:
@@ -180,11 +184,19 @@ def openalex_job_status(request, job_id):
 @login_required
 @require_GET
 def openalex_download_excel(request, job_id):
-    """demo_results JSON'ından Excel (.xlsx) üretir."""
+    """Tam sonuç listesinden (all_results) Excel (.xlsx) üretir — arama zaten aylık
+    ücretsiz hakla yapıldığı için ek hak gerekmez; yalnız 7 günlük saklama süresi
+    dolmuşsa (is_results_expired) erişim kapanır."""
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment
     job = get_object_or_404(AlexSearchJob, id=job_id, user=request.user)
-    records = job.demo_results or []
+    if job.is_results_expired():
+        raise Http404
+    try:
+        ensure_full_results(job)
+    except Exception as e:
+        logger.warning(f"OpenAlex tam liste çekilemedi, demo ile devam {job_id}: {e}")
+    records = job.all_results or job.demo_results or []
     if not records:
         raise Http404
 
@@ -233,13 +245,20 @@ def openalex_download_excel(request, job_id):
 @login_required
 @require_GET
 def openalex_download_txt(request, job_id):
-    """demo_results'dan TXT dosyası üretir."""
+    """Tam sonuç listesinden (all_results) TXT dosyası üretir — bkz. openalex_download_excel."""
     from .services.job_runner import _generate_alex_results_txt
     job = get_object_or_404(AlexSearchJob, id=job_id, user=request.user)
-    records = job.demo_results or []
+    if job.is_results_expired():
+        raise Http404
+    try:
+        ensure_full_results(job)
+    except Exception as e:
+        logger.warning(f"OpenAlex tam liste çekilemedi, demo ile devam {job_id}: {e}")
+    records = job.all_results or job.demo_results or []
     if not records:
         raise Http404
-    content = _generate_alex_results_txt(records, job, is_demo=True)
+    is_demo = records is job.demo_results
+    content = _generate_alex_results_txt(records, job, is_demo=is_demo)
     response = HttpResponse(content, content_type='text/plain; charset=utf-8')
     response['Content-Disposition'] = f'attachment; filename="{_safe_filename(job, "txt")}"'
     return response

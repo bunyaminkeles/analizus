@@ -6,6 +6,8 @@ from django.utils import timezone
 
 from forum.models import MonthlyToolLimitMixin
 
+RESULT_RETENTION_DAYS = 7
+
 
 class AlexSearchJob(MonthlyToolLimitMixin, models.Model):
     """OpenAlex yayın arama görevi (demo: ücretsiz, aylık limitli)"""
@@ -66,6 +68,12 @@ class AlexSearchJob(MonthlyToolLimitMixin, models.Model):
         self.ai_comment = ai_comment
         self.completed_at = timezone.now()
         self.save(update_fields=['status', 'demo_results', 'all_results', 'total_results', 'api_query', 'ai_comment', 'completed_at'])
+
+    def is_results_expired(self):
+        """7 günlük saklama süresi dolduysa True — indirme/tam liste erişimi bu durumda
+        kapatılır (kullanıcıya verilen "7 gün sonra silinir" sözüyle tutarlı; bkz.
+        job_runner.cleanup_expired_openalex_s3_files, aynı süreyle demo_results/all_results'ı da temizler)."""
+        return timezone.now() > self.created_at + timedelta(days=RESULT_RETENTION_DAYS)
 
     def mark_failed(self, error_msg):
         self.status = 'failed'
