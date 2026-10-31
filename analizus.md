@@ -3042,6 +3042,32 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **31 Ekim 2026 — Kota/destekçi mesajlarında renk ve CTA tutarlılığı turu
+  (3 ayrı düzeltme, main'de canlı).** Kullanıcı ekran görüntüleriyle sırayla
+  3 görsel/işlevsel tutarsızlık bildirdi: (1) PubMed'de "Destekçi olarak"
+  linki diğer 3 araçtan (OpenAlex/TR Dizin/Semantic Scholar) farklı olarak
+  `text-warning` sınıfı eksik olduğu için sarı değil varsayılan renkte
+  kalmıştı — `pubmed/templates/pubmed/landing.html:95`'e aynı sınıflar
+  eklendi. (2) `.ax-alert` içindeki linkler (ör. bibliometri "Bibliometrik
+  analizlerim →") varsayılan tarayıcı mavisiyle geliyordu, yeşil
+  `ax-alert--success` kutusu içinde çakışıyordu — `static/css/base.css` +
+  derlenmiş `static/css/bundle.css`'e her varyant için linki kendi vurgu
+  rengine boyayan 5 kural eklendi (`bundle.css` cache-bust: `v0016`→
+  `v0017`). Kontrol edildi: `.ax-alert__body` içinde `<a>` kullanan tek yer
+  PubMed'in `biblioAlert()` JS fonksiyonuydu, başka şablon etkilenmedi.
+  (3) Bibliometri sayfasında kota dolunca gösterilen **statik** (sayfa
+  ilk yüklenirken server-render edilen) uyarı kutusu hiçbir yol
+  göstermeden "önümüzdeki ay tekrar deneyebilirsiniz" diyordu — diğer
+  5 aracın AJAX hata yanıtlarındaki destekçi/proje talebi CTA mantığı
+  (29/30 Ekim turunda eklenmişti) bu statik bloğa hiç yansımamıştı.
+  `bibliometrics/views.py`'nin GET render context'ine `is_premium`
+  eklendi, template'te premium olmayan TR kullanıcısına Destekçi Ol
+  modalı, EN/DE kullanıcısına Proje Talebi linki gösterilecek şekilde
+  dallandı — tüm metinler zaten çevrilmiş mevcut msgid'ler yeniden
+  kullanıldı, yeni çeviri/makemessages gerekmedi. Üç düzeltme de ayrı
+  ayrı `dev`→`main` merge edilip (her seferinde production'da aktif
+  kullanıcı kontrolüyle) push edildi; 160/160 bibliometri testi yeşil.
+
 - **31 Ekim 2026 — Tam Sonuç Teslimi: Ücretsiz Hak Bazlı Birleştirme
   (Faz 5a-5e, main'de canlı) + canlı test turu (Sorun 1-4) + Bibliometri
   "Tam Rapor" aylık ücretsiz hak kapsamına alındı.** Kaynak: kullanıcının
