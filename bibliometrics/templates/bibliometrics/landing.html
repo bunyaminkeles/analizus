@@ -304,7 +304,8 @@
             </thead>
             <tbody id="recentJobsBody">
               {% for job in recent_jobs %}
-              <tr data-job-id="{{ job.id }}" data-status="{{ job.status }}"{% if job.status == 'pending' or job.status == 'running' %} class="job-row-live"{% endif %}>
+              <tr data-job-id="{{ job.id }}" data-status="{{ job.status }}"
+                  class="{% if forloop.counter > 5 %}d-none job-extra-row {% endif %}{% if job.status == 'pending' or job.status == 'running' %}job-row-live{% endif %}">
                 <td class="px-3">
                   <span class="text-white small">{{ job.original_filename|truncatechars:40 }}</span>
                 </td>
@@ -340,6 +341,15 @@
                 </td>
               </tr>
               {% endfor %}
+              {% if recent_jobs|length > 5 %}
+              <tr id="showMoreJobsRow">
+                <td colspan="6" class="text-center py-2">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" id="showMoreJobsBtn">
+                    <i class="bi bi-chevron-down me-1"></i>{% trans "Daha Fazla Göster" %} ({{ recent_jobs|length|add:"-5" }})
+                  </button>
+                </td>
+              </tr>
+              {% endif %}
             </tbody>
           </table>
         </div>
@@ -498,6 +508,16 @@
   progBar.style.width = '50%';
   progText.textContent = T.resumed;
   {% endif %}
+
+  // "Geçmiş Analizlerim" tablosu uzun olmasın diye yalnız ilk 5 satır
+  // gösterilir; kalanı bu butonla açılır.
+  const showMoreJobsBtn = document.getElementById('showMoreJobsBtn');
+  if (showMoreJobsBtn) {
+    showMoreJobsBtn.addEventListener('click', function () {
+      document.querySelectorAll('#recentJobsBody .job-extra-row').forEach(r => r.classList.remove('d-none'));
+      document.getElementById('showMoreJobsRow').remove();
+    });
+  }
 
   // "Geçmiş Analizlerim" tablosu sunucu tarafında sayfa yüklenirken render
   // edildiği için bekleyen/çalışan satırlar hiç güncellenmiyordu — her biri
