@@ -304,15 +304,15 @@
             </thead>
             <tbody id="recentJobsBody">
               {% for job in recent_jobs %}
-              <tr>
+              <tr data-job-id="{{ job.id }}" data-status="{{ job.status }}"{% if job.status == 'pending' or job.status == 'running' %} class="job-row-live"{% endif %}>
                 <td class="px-3">
                   <span class="text-white small">{{ job.original_filename|truncatechars:40 }}</span>
                 </td>
                 <td>
-                  <span class="badge bg-secondary small">{{ job.get_file_format_display|default:"-" }}</span>
+                  <span class="badge bg-secondary small job-format">{{ job.get_file_format_display|default:"-" }}</span>
                 </td>
-                <td class="text-white-50 small">{{ job.total_records }}</td>
-                <td>
+                <td class="text-white-50 small job-records">{{ job.total_records }}</td>
+                <td class="job-status">
                   {% if job.status == 'completed' %}
                     <span class="badge bg-success">{% trans "Tamamlandı" %}</span>
                   {% elif job.status == 'running' %}
@@ -324,7 +324,7 @@
                   {% endif %}
                 </td>
                 <td class="text-white-50 small">{{ job.created_at|date:"d.m.Y H:i" }}</td>
-                <td>
+                <td class="job-action">
                   {% if job.status == 'completed' %}
                     {% if LANGUAGE_CODE == 'tr' %}
                     <a href="{% url 'bibliometrics:order_page' job.id %}"
@@ -471,6 +471,10 @@
     emailFailed: '{% filter escapejs %}{% trans "Email gönderilemedi." %}{% endfilter %}',
     completedBadge: '{% filter escapejs %}{% trans "Tamamlandı" %}{% endfilter %}',
     destekciOl: '{% filter escapejs %}{% trans "Destekçi Ol" %}{% endfilter %}',
+    failedBadge: '{% filter escapejs %}{% trans "Başarısız" %}{% endfilter %}',
+    runningBadge: '{% filter escapejs %}{% trans "Çalışıyor" %}{% endfilter %}',
+    siparisBtn: '{% filter escapejs %}{% trans "Sipariş" %}{% endfilter %}',
+    projectRequestBtn: '{% filter escapejs %}{% trans "Proje Talebi" %}{% endfilter %}',
   };
   const fmt = (t, v) => t.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
   // Dile göre adresler (sentinel + replace — STATUS_BASE + id çift eğik çizgi tuzağı)
@@ -494,6 +498,40 @@
   progBar.style.width = '50%';
   progText.textContent = T.resumed;
   {% endif %}
+
+  // "Geçmiş Analizlerim" tablosu sunucu tarafında sayfa yüklenirken render
+  // edildiği için bekleyen/çalışan satırlar hiç güncellenmiyordu — her biri
+  // için ayrı ayrı iş durumunu kontrol edip satırı canlı güncelle.
+  document.querySelectorAll('#recentJobsBody tr.job-row-live').forEach(function (row) {
+    const jobId = row.dataset.jobId;
+    function pollRow() {
+      fetch(URLS.status.replace(SENT, jobId), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'pending' || data.status === 'running') {
+            if (data.status === 'running') {
+              row.querySelector('.job-status').innerHTML = '<span class="badge bg-info">' + T.runningBadge + '</span>';
+            }
+            setTimeout(pollRow, 8000);
+            return;
+          }
+          row.dataset.status = data.status;
+          row.classList.remove('job-row-live');
+          row.querySelector('.job-format').textContent = data.file_format || '-';
+          row.querySelector('.job-records').textContent = data.total_records;
+          if (data.status === 'completed') {
+            row.querySelector('.job-status').innerHTML = '<span class="badge bg-success">' + T.completedBadge + '</span>';
+            row.querySelector('.job-action').innerHTML = IS_TR
+              ? '<a href="' + URLS.order.replace(SENT, jobId) + '" class="btn btn-sm btn-outline-warning"><i class="bi bi-cart me-1"></i>' + T.siparisBtn + '</a>'
+              : '<a href="' + URLS.projectRequest + '" class="btn btn-sm btn-outline-warning"><i class="bi bi-send me-1"></i>' + T.projectRequestBtn + '</a>';
+          } else {
+            row.querySelector('.job-status').innerHTML = '<span class="badge bg-danger">' + T.failedBadge + '</span>';
+          }
+        })
+        .catch(() => setTimeout(pollRow, 10000));
+    }
+    setTimeout(pollRow, 5000);
+  });
 
   function showError(msg, showPremiumCta) {
     errorArea.classList.remove('d-none');

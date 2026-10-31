@@ -36,9 +36,17 @@ sorun bildirdi (Faz 5'in kapsamında değildi, ayrı turlarda ele alınıyor):
       yeşil. Dosyalar: openalex/trdizin/semanticscholar/pubmed/oaipmh/
       yoktez `views.py` + `templates/*/landing.html`,
       `bibliometrics/views.py` + `templates/bibliometrics/landing.html`.
-- [ ] **Sorun 3 — Bibliometri "Geçmiş Analizlerim" canlı güncelleme:**
-      tablo yalnız sayfa yüklenirken sunucu tarafında render ediliyor,
-      polling yok. Henüz başlanmadı.
+- [x] **Sorun 3 — TAMAMLANDI:** "Geçmiş Analizlerim" tablosu artık canlı
+      güncelleniyor. Yeni backend endpoint gerekmedi — zaten var olan
+      `bibliometrics:job_status` tekrar kullanıldı. Her satıra
+      `data-job-id`/`data-status` eklendi; `pending`/`running` durumundaki
+      satırlar (`job-row-live` sınıfı) JS ile 5-8 sn aralıkla kendi
+      durumunu sorup `completed`/`failed` olunca Durum/Kayıt/Format/İşlem
+      hücrelerini güncelleyip pollingi durduruyor. Tamamlanmış satırlar
+      hiç poll edilmiyor (performans). Doğrulama: gerçek bir 'running'
+      job ile view render edilip markup kontrol edildi. Migration yok,
+      270/270 pytest yeşil. Dosya: yalnız
+      `bibliometrics/templates/bibliometrics/landing.html`.
 - [x] **Sorun 3.5 — AI yorumu dil bug'ı — TAMAMLANDI:** OpenAlex/PubMed'in
       arama sonrası ürettiği AI yorumu, EN/DE sayfalarında bile hep Türkçe
       geliyordu. **Kök neden:** arka plan iş kuyruğu (`job_queue.py`)
