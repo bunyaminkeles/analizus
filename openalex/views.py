@@ -122,6 +122,7 @@ def openalex_landing(request):
             job = AlexSearchJob.objects.create(
                 user=user,
                 query_parts=query_parts,
+                created_language=(get_language() or 'tr')[:2],
             )
             run_scraping_job(job.id)
 

@@ -26,6 +26,41 @@ sorun bildirdi (Faz 5'in kapsamında değildi, ayrı turlarda ele alınıyor):
 - [ ] **Sorun 3 — Bibliometri "Geçmiş Analizlerim" canlı güncelleme:**
       tablo yalnız sayfa yüklenirken sunucu tarafında render ediliyor,
       polling yok. Henüz başlanmadı.
+- [x] **Sorun 3.5 — AI yorumu dil bug'ı — TAMAMLANDI:** OpenAlex/PubMed'in
+      arama sonrası ürettiği AI yorumu, EN/DE sayfalarında bile hep Türkçe
+      geliyordu. **Kök neden:** arka plan iş kuyruğu (`job_queue.py`)
+      yeniden başlatmaya dayanıklı olsun diye yalnız `(araç, job_id)`
+      taşıyor, dil bilgisi taşımıyor — bu yüzden AI yorumu dili
+      `Profile.preferred_language`'tan (`recipient_language`, e-posta
+      amaçlı tasarlanmış) okunuyordu, aramanın yapıldığı sayfanın
+      dilinden değil. Production'da doğrulandı: "benjamin" hesabının
+      `preferred_language`'ı `tr` iken EN/DE sayfalarda da arama yapmıştı.
+      **Düzeltme (migration ile):** `AlexSearchJob`/`PubMedSearchJob`'a
+      `created_language` alanı eklendi, arama başlatılırken `get_language()`
+      ile dolduruluyor; `_ai_comment_for_job` artık profile yerine bu
+      alanı kullanıyor. Migration: `openalex/migrations/
+      0005_alexsearchjob_created_language.py`,
+      `pubmed/migrations/0003_pubmedsearchjob_created_language.py`
+      (ikisi de basit `AddField`, default `'tr'`, veri kaybı riski yok).
+      270/270 pytest yeşil. **Not:** TXT dosyası/demo e-postası dili hâlâ
+      profile tabanlı bırakıldı (kasıtlı — e-posta daha sonra okunacağı
+      için kullanıcının genel tercihi doğru, yalnız AI yorumu anlık sayfa
+      diliyle eşleşmeliydi).
+- [ ] **Sorun 4 — Bibliometri "Geçmiş Analizlerim" tablosu uzun:**
+      yalnız son 5 sonuç gösterilsin, kalanı tıklanınca aşağıda açılsın
+      (accordion/"daha fazla göster"). Henüz başlanmadı.
+
+**Ayrı bulgu — Bibliometri "aylık ücretsiz hak" kapsamı netleştirildi
+(kullanıcı sordu, kod/commit diff'iyle doğrulandı, bug DEĞİL):** Faz 4g
+(`b186351`) yalnızca "günlük limit" metnini/mekanizmasını "aylık ücretsiz
+hak"a çevirdi — bu hak hep yalnızca **demo rapor (10 grafik) üretme
+hakkı** anlamına geldi. "Tam Rapor" (17-26 analiz, PDF) kayıt sayısına
+göre ücretli teslimat hep ayrıydı, Faz 4g VE Faz 5'in hiçbiri buna
+dokunmadı — admin dahil hiç kimse için bu hak tam raporu ücretsizleştirmedi.
+**Açık karar (kullanıcıya soruldu, cevap bekleniyor):** Tam rapor da aylık
+ücretsiz hakka dahil edilsin mi (hakkı olan kullanıcı 900 TL ödemeden tam
+PDF alsın)? Bu, OpenAlex/TRDizin/vs.'deki Faz 5 kararıyla aynı aileden bir
+iş kararı — onay gelirse ayrı bir faz olarak planlanacak.
 
 ---
 

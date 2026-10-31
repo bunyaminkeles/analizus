@@ -37,6 +37,8 @@ class AlexSearchJob(MonthlyToolLimitMixin, models.Model):
     all_results_file_url = models.URLField(max_length=500, blank=True, default='', verbose_name="Tüm Sonuçlar Dosya URL (S3)")
 
     ai_comment = models.TextField(blank=True, default='', verbose_name="AI Yorumu")
+    created_language = models.CharField(max_length=5, default='tr', blank=True,
+                                         verbose_name="Arama Anındaki Dil")
 
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)

@@ -91,7 +91,10 @@ def _ai_comment_for_job(job, demo_results):
         return ''
 
     prompt = _build_ai_prompt(job, demo_results)
-    resp = claude_summary_service.generate_summary('pubmed', prompt, lang=translation.get_language())
+    # Profile.preferred_language (recipient_language) yerine aramanın yapıldığı anki dil —
+    # bkz. openalex/services/job_runner.py._ai_comment_for_job (31 Ekim 2026).
+    lang = getattr(job, 'created_language', None) or translation.get_language()
+    resp = claude_summary_service.generate_summary('pubmed', prompt, lang=lang)
     if resp['success'] and resp['text']:
         AIUsageLog.record(job.user, 'pubmed', resp['input_tokens'], resp['output_tokens'])
         return resp['text']

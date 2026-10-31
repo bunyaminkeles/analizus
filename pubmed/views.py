@@ -5,7 +5,7 @@ from functools import wraps
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
-from django.utils.translation import gettext, pgettext
+from django.utils.translation import gettext, pgettext, get_language
 from django.views.decorators.http import require_GET, require_POST
 from django_ratelimit.decorators import ratelimit
 
@@ -85,7 +85,11 @@ def pubmed_landing(request):
                    gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
             return JsonResponse({'error': msg.format(used=daily_limit, limit=daily_limit)}, status=429)
 
-        job = PubMedSearchJob.objects.create(user=user, query_parts=form.cleaned_data['query_parts_json'])
+        job = PubMedSearchJob.objects.create(
+            user=user,
+            query_parts=form.cleaned_data['query_parts_json'],
+            created_language=(get_language() or 'tr')[:2],
+        )
         run_scraping_job(job.id)
         return JsonResponse({'status': 'started', 'job_id': str(job.id), 'remaining': remaining - 1})
 

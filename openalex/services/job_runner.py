@@ -105,7 +105,11 @@ def _ai_comment_for_job(job, demo_results):
         return ''
 
     prompt = _build_ai_prompt(job, demo_results)
-    resp = claude_summary_service.generate_summary('openalex', prompt, lang=translation.get_language())
+    # Profile.preferred_language (recipient_language) yerine aramanın yapıldığı anki dil —
+    # arka plan kuyruğu kullanıcı profilinin (e-posta amaçlı) diline değil, aramanın
+    # gerçekten hangi dilde yapıldığına bağlı olmalı (31 Ekim 2026).
+    lang = getattr(job, 'created_language', None) or translation.get_language()
+    resp = claude_summary_service.generate_summary('openalex', prompt, lang=lang)
     if resp['success'] and resp['text']:
         AIUsageLog.record(job.user, 'openalex', resp['input_tokens'], resp['output_tokens'])
         return resp['text']
