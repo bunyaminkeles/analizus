@@ -150,10 +150,26 @@
       <div class="card-body p-4">
         <p class="text-white-50 mb-3">
           <span id="formatBadge" class="badge bg-secondary me-2"></span>
-          {% if LANGUAGE_CODE == 'tr' %}{% blocktrans with n=demo_grafik_sayisi %}Bibliometrik analiziniz tamamlandı. Demo raporu ({{ n }} grafik) ücretsiz alabilirsiniz. Tam rapor (17 analize kadar) için sipariş oluşturunuz.{% endblocktrans %}{% else %}{% blocktrans with n=demo_grafik_sayisi %}Bibliometrik analiziniz tamamlandı. Demo raporu ({{ n }} grafik) ücretsiz alabilirsiniz. Tam rapor için proje talebi bırakın.{% endblocktrans %}{% endif %}
+          {% blocktrans with n=demo_grafik_sayisi %}Bibliometrik analiziniz tamamlandı. Demo raporu ({{ n }} grafik) ve tam rapor (26 analize kadar) ücretsiz indirilebilir.{% endblocktrans %}
         </p>
 
         {% include "partials/_s3_retention_notice.html" %}
+
+        {# Tam Rapor — artık aylık ücretsiz hak kapsamında (analiz zaten bu hakla başlatıldı) #}
+        <div class="card border-success mb-3 d-none" id="fullReportCard" style="background-color: #16213e;">
+          <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3 p-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-file-earmark-richtext-fill fs-3 text-success"></i>
+              <div>
+                <h6 class="text-white mb-0">{% trans "Tam Rapor (26 Analize Kadar)" %}</h6>
+                <span class="text-success small fw-bold">{% trans "ÜCRETSİZ" %}</span>
+              </div>
+            </div>
+            <a href="#" target="_blank" class="btn btn-success fw-bold" id="downloadFullBtn">
+              <i class="bi bi-download me-1"></i> {% trans "Tam Raporu İndir" %}
+            </a>
+          </div>
+        </div>
 
         <div class="row g-3">
           {# Demo Email Butonu #}
@@ -445,6 +461,8 @@
   const errorMsg  = document.getElementById('errorMsg');
   const results   = document.getElementById('resultsPanel');
   const downloadDemo = document.getElementById('downloadDemoBtn');
+  const fullReportCard = document.getElementById('fullReportCard');
+  const downloadFull = document.getElementById('downloadFullBtn');
   const downloadCleanXlsx = document.getElementById('downloadCleanXlsxBtn');
   const downloadCleanCsv  = document.getElementById('downloadCleanCsvBtn');
   const downloadVosviewer = document.getElementById('downloadVosviewerBtn');
@@ -625,6 +643,11 @@
     if (data.demo_pdf_url) {
       downloadDemo.href = data.demo_pdf_url;
       downloadDemo.classList.remove('d-none');
+    }
+
+    if (data.full_pdf_url) {
+      downloadFull.href = data.full_pdf_url;
+      fullReportCard.classList.remove('d-none');
     }
 
     if (data.clean_data_xlsx_url) {
