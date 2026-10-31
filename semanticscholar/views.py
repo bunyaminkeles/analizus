@@ -159,6 +159,7 @@ def semantic_job_status(request, job_id):
     elif job.status == 'completed':
         response['demo_results'] = job.demo_results[:5]
         response['all_results_file_url'] = job.all_results_file_url
+        response['remaining'] = max(0, SemanticSearchJob.get_monthly_limit(request.user) - SemanticSearchJob.monthly_count_for_user(request.user))
     elif job.status == 'failed':
         response['error'] = job.error_message
     return JsonResponse(response)
@@ -229,11 +230,16 @@ def semantic_order_page(request, job_id):
 @login_required
 @require_GET
 def semantic_download_excel(request, job_id):
+    """Tam sonuç listesinden (all_results) Excel (.xlsx) üretir — arama zaten aylık
+    ücretsiz hakla yapıldığı için ek hak gerekmez; 7 günlük saklama süresi dolmuşsa
+    erişim kapanır."""
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment
 
     job = get_object_or_404(SemanticSearchJob, id=job_id, user=request.user)
-    records = job.demo_results or []
+    if job.is_results_expired():
+        raise Http404
+    records = job.all_results or job.demo_results or []
     if not records:
         raise Http404
 
@@ -284,9 +290,10 @@ def semantic_download_excel(request, job_id):
 @login_required
 @require_GET
 def semantic_download(request, job_id):
+    """S3'teki tam liste TXT dosyasını proxy ile indirtir (tarayıcıda açmaz)."""
     import requests as req_lib
     job = get_object_or_404(SemanticSearchJob, id=job_id, user=request.user)
-    if not job.all_results_file_url:
+    if job.is_results_expired() or not job.all_results_file_url:
         raise Http404
     try:
         s3_resp = req_lib.get(job.all_results_file_url, timeout=30, stream=True)

@@ -93,9 +93,17 @@ açıkça talep ederse** yapılsın (otomatik email eki değil, "Tam Listeyi
       Migration yok, 270/270 pytest yeşil. Dosyalar: `trdizin/models.py`,
       `trdizin/services/job_runner.py`, `trdizin/views.py`,
       `trdizin/templates/trdizin/landing.html`.
-- [ ] **Faz 5c — Semantic Scholar:** aynı (full-S3-upload zaten var,
-      download endpoint'i hak kontrolüyle gate'lenecek, buton UI'a
-      eklenecek).
+- [x] **Faz 5c — Semantic Scholar TAMAMLANDI (31 Ekim 2026):** TRDizin ile
+      birebir aynı desen (zaten arama anında tüm veriyi çekiyordu,
+      `semantic_download` TXT endpoint'i vardı ama UI'a hiç bağlı değildi).
+      Yeni "TXT İndir" butonu eklendi, `semantic_download_excel` artık
+      `all_results` kullanıyor, retention bug'ı (`is_results_expired()` +
+      cleanup JSON temizliği) düzeltildi, eski "Tüm Veri Talebi" kutusu
+      (mailto:info@analizus.com) artık yalnız `remaining<=0` iken premium
+      CTA'sına (job_list) dönüşüyor. Migration yok, 270/270 pytest yeşil.
+      Dosyalar: `semanticscholar/models.py`,
+      `semanticscholar/services/job_runner.py`, `semanticscholar/views.py`,
+      `semanticscholar/templates/semanticscholar/landing.html`.
 - [ ] **Faz 5d — OAI-PMH:** mevcut görünür ücretsiz buton yeni ortak hak
       kontrolüne bağlanacak (netleşmemiş detay yukarıda).
 - [ ] **Faz 5e — PubMed:** yeni download/download-excel endpoint'leri +
