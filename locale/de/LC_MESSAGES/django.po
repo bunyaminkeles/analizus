@@ -5355,12 +5355,12 @@ msgstr "Ein Platz in der <strong>Unterstützerliste</strong>"
 
 #: forum/templates/forum/emails/support_payment_details.html:101
 msgid ""
-"Herhangi bir sorunuz için <a href=\"mailto:info@analizus.com\" "
-"style=\"color:#a855f7;text-decoration:none;\">info@analizus.com</a> adresine "
+"Herhangi bir sorunuz için <a href=\"mailto:support@analizus.com\" "
+"style=\"color:#a855f7;text-decoration:none;\">support@analizus.com</a> adresine "
 "yazabilirsiniz."
 msgstr ""
-"Bei Fragen schreiben Sie uns an <a href=\"mailto:info@analizus.com\" "
-"style=\"color:#a855f7;text-decoration:none;\">info@analizus.com</a>."
+"Bei Fragen schreiben Sie uns an <a href=\"mailto:support@analizus.com\" "
+"style=\"color:#a855f7;text-decoration:none;\">support@analizus.com</a>."
 
 #: forum/templates/forum/emails/support_payment_details.html:111
 msgid "İyi günler,"
