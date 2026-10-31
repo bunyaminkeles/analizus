@@ -1,4 +1,5 @@
 import uuid
+from datetime import timedelta
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -6,6 +7,8 @@ from django.utils import timezone
 from forum.models import MonthlyToolLimitMixin
 
 User = get_user_model()
+
+RESULT_RETENTION_DAYS = 7
 
 
 class University(models.Model):
@@ -90,6 +93,11 @@ class OAIPMHSearchJob(MonthlyToolLimitMixin, models.Model):
         self.total_results = total_count
         self.completed_at = timezone.now()
         self.save(update_fields=['status', 'demo_results', 'all_results', 'total_results', 'completed_at'])
+
+    def is_results_expired(self):
+        """7 günlük saklama süresi dolduysa True — bkz. openalex.models.AlexSearchJob.is_results_expired
+        (job_runner.cleanup_expired_oaipmh_s3_files aynı süreyle demo_results/all_results'ı temizler)."""
+        return timezone.now() > self.created_at + timedelta(days=RESULT_RETENTION_DAYS)
 
     def mark_failed(self, error_msg):
         self.status = 'failed'

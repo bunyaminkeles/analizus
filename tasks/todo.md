@@ -104,8 +104,15 @@ açıkça talep ederse** yapılsın (otomatik email eki değil, "Tam Listeyi
       Dosyalar: `semanticscholar/models.py`,
       `semanticscholar/services/job_runner.py`, `semanticscholar/views.py`,
       `semanticscholar/templates/semanticscholar/landing.html`.
-- [ ] **Faz 5d — OAI-PMH:** mevcut görünür ücretsiz buton yeni ortak hak
-      kontrolüne bağlanacak (netleşmemiş detay yukarıda).
+- [x] **Faz 5d — OAI-PMH TAMAMLANDI (31 Ekim 2026):** Bu araç zaten hedef
+      duruma en yakındı — TXT indirme butonu zaten UI'da görünürdü ve
+      ücretsizdi, çelişen bir "Tüm Veri Talebi" kutusu da yoktu (dokunma
+      gerekmedi). Yalnız: `oaipmh_download_excel` artık `demo_results`
+      yerine `all_results` (tam liste) kullanıyor; retention bug'ı
+      (`is_results_expired()` + cleanup JSON temizliği) hem Excel hem TXT
+      indirme view'larına eklendi. Migration yok, 270/270 pytest yeşil.
+      Dosyalar: `oaipmh/models.py`, `oaipmh/services/job_runner.py`,
+      `oaipmh/views.py`.
 - [ ] **Faz 5e — PubMed:** yeni download/download-excel endpoint'leri +
       landing.html butonları eklenecek (diğerleriyle aynı desen).
 - [ ] **Faz 5f — EN/DE premium akışı (EN SON, PayPal bilgisi bekleniyor):**

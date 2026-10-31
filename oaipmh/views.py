@@ -202,7 +202,7 @@ def oaipmh_download(request, job_id):
     _feature_check()
     job = get_object_or_404(OAIPMHSearchJob, id=job_id, user=request.user)
 
-    if not job.all_results_file_url:
+    if job.is_results_expired() or not job.all_results_file_url:
         raise Http404
 
     try:
@@ -223,12 +223,16 @@ def oaipmh_download(request, job_id):
 @login_required
 @require_GET
 def oaipmh_download_excel(request, job_id):
-    """demo_results JSON'ından Excel (.xlsx) üretir."""
+    """Tam sonuç listesinden (all_results) Excel (.xlsx) üretir — arama zaten aylık
+    ücretsiz hakla yapıldığı için ek hak gerekmez; 7 günlük saklama süresi dolmuşsa
+    erişim kapanır."""
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment
     _feature_check()
     job = get_object_or_404(OAIPMHSearchJob, id=job_id, user=request.user)
-    records = job.demo_results or []
+    if job.is_results_expired():
+        raise Http404
+    records = job.all_results or job.demo_results or []
     if not records:
         raise Http404
 
