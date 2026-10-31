@@ -49,6 +49,7 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~4309 satır; offset
 
 ## Kritik Non-obvious Kurallar
 - E-posta env var: `SMTP_*` prefix — `EMAIL_HOST` değil (`settings.py` içinde map'leniyor)
+- İki ayrı kullanıcıya görünen e-posta adresi var, karıştırma: `info@analizus.com` (genel/satış/KVKK yasal muhatap/API scraper contact — `DEFAULT_FROM_EMAIL`/`SMTP_USER` hâlâ bu) ve `support@analizus.com` (31 Ekim 2026'da eklendi, yalnız ödeme sonrası destek e-postasında — `forum/templates/forum/emails/support_payment_details.html` — sadece gelen kutusu, Django SMTP'si değil). Yeni bir yerde "destek"/"iletişim" adresi gerekirse hangisinin kullanılacağını varsayma, kullanıcıya sor (§27 "Geçmiş Turlar" 31 Ekim 2026 girdisi)
 - `conf_int()` sonucunu `np.array()` ile sar — statsmodels versiyona göre DataFrame veya ndarray döner
 - `result_data` kaydetmeden önce `inf`/`nan` temizle → JSON save patlar
 - Polling URL: `STATUS_TEMPLATE.replace(sentinel, jobId)` — `STATUS_BASE + jobId + '/'` double slash üretir
