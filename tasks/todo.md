@@ -67,9 +67,14 @@ sorun bildirdi (Faz 5'in kapsamında değildi, ayrı turlarda ele alınıyor):
       profile tabanlı bırakıldı (kasıtlı — e-posta daha sonra okunacağı
       için kullanıcının genel tercihi doğru, yalnız AI yorumu anlık sayfa
       diliyle eşleşmeliydi).
-- [ ] **Sorun 4 — Bibliometri "Geçmiş Analizlerim" tablosu uzun:**
-      yalnız son 5 sonuç gösterilsin, kalanı tıklanınca aşağıda açılsın
-      (accordion/"daha fazla göster"). Henüz başlanmadı.
+- [x] **Sorun 4 — TAMAMLANDI:** "Geçmiş Analizlerim" tablosunda artık
+      yalnız ilk 5 satır görünür; 5'ten fazla varsa altında "Daha Fazla
+      Göster (N)" butonu çıkıyor, tıklanınca kalan satırlar (`d-none
+      job-extra-row` sınıfı kaldırılarak) açılıyor. Backend değişikliği
+      gerekmedi (sunucu zaten son 10'u çekiyordu). Doğrulama: 7 kayıtlı
+      gerçek render testinde buton metni "(2)" ve 2 gizli satır doğru
+      çıktı. Migration yok, 270/270 pytest yeşil. Dosya: yalnız
+      `bibliometrics/templates/bibliometrics/landing.html`.
 
 **Ayrı bulgu — Bibliometri "aylık ücretsiz hak" kapsamı netleştirildi
 (kullanıcı sordu, kod/commit diff'iyle doğrulandı, bug DEĞİL):** Faz 4g
