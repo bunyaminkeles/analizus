@@ -370,23 +370,27 @@ def send_order_results_email(order, download_url):
         return False
 
 
-def cleanup_expired_openalex_s3_files(days=7):
+def cleanup_expired_openalex_s3_files(days=None):
     """7 günden eski openalex/ altındaki tüm dosyaları S3'den siler."""
     from forum.s3_utils import cleanup_s3_prefix
+    from openalex.models import RESULT_RETENTION_DAYS
 
+    days = days or RESULT_RETENTION_DAYS
     cutoff = timezone.now() - timedelta(days=days)
     deleted_count = sum(
         cleanup_s3_prefix(prefix, days)
         for prefix in ['openalex/demo/', 'openalex/full/', 'openalex/orders/']
     )
 
-    # DB'deki URL referanslarını da temizle
+    # DB'deki URL referanslarını VE demo_results/all_results JSON'larını da temizle —
+    # indirme view'ları S3'teki dosyaya değil doğrudan bu alanlara bakıyor; yalnız
+    # URL'leri temizlemek "7 gün sonra silinir" sözünü karşılamıyordu (31 Ekim 2026).
     try:
         AlexSearchJob.objects.filter(
             created_at__lt=cutoff,
         ).exclude(
-            demo_file_url='', all_results_file_url=''
-        ).update(demo_file_url='', all_results_file_url='')
+            demo_file_url='', all_results_file_url='', demo_results=[], all_results=[],
+        ).update(demo_file_url='', all_results_file_url='', demo_results=[], all_results=[])
     except Exception as e:
         logger.error(f"DB temizlik hatası (openalex): {e}")
 

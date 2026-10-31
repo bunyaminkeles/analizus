@@ -3,7 +3,11 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
+from datetime import timedelta
+
 from forum.models import MonthlyToolLimitMixin
+
+RESULT_RETENTION_DAYS = 7
 
 
 class DizinSearchJob(MonthlyToolLimitMixin, models.Model):
@@ -62,6 +66,11 @@ class DizinSearchJob(MonthlyToolLimitMixin, models.Model):
         self.lucene_query = lucene_query
         self.completed_at = timezone.now()
         self.save(update_fields=['status', 'demo_results', 'all_results', 'total_results', 'lucene_query', 'completed_at'])
+
+    def is_results_expired(self):
+        """7 günlük saklama süresi dolduysa True — bkz. openalex.models.AlexSearchJob.is_results_expired
+        (job_runner.cleanup_expired_trdizin_s3_files aynı süreyle demo_results/all_results'ı temizler)."""
+        return timezone.now() > self.created_at + timedelta(days=RESULT_RETENTION_DAYS)
 
     def mark_failed(self, error_msg):
         self.status = 'failed'

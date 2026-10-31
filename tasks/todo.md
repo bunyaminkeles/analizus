@@ -1,3 +1,130 @@
+# [PLAN — HENÜZ BAŞLANMADI] Tam Sonuç Teslimi: Ücretsiz Hak Bazlı Birleştirme (31 Ekim 2026)
+
+**Bulgu (31 Ekim 2026, OpenAlex "363 yayın / demo" sorusu araştırılırken ortaya çıktı):**
+6 tarama aracında "tam sonuç" (demo'nun ötesi) teslimi 3 FARKLI ve TUTARSIZ
+modelle çalışıyor:
+
+1. **OpenAlex, PubMed:** Tam veri hiç otomatik S3'e yüklenmiyor; yalnız
+   sipariş onaylanınca (OpenAlex) ya da bibliometri köprüsü tetiklerse
+   (`ensure_full_results`, ikisi de) üretiliyor. PubMed'in Order modeli hiç
+   yok — ham liste olarak hiçbir şekilde indirilemiyor, yalnız bibliometrik
+   analiz üzerinden (ücretsiz, aylık hak dahilinde) erişiliyor.
+2. **Semantic Scholar, TRDizin:** Arama biter bitmez tam sonuç TXT'si
+   otomatik S3'e yükleniyor (`.../full/<job_id>.txt`) ve indirme endpoint'i
+   (`/semantic-scholar/download/<id>/`, `/trdizin/download/<id>/`) **ödeme
+   kontrolü yapmıyor** — sadece sahiplik kontrolü var. Ama bu buton
+   landing.html'de hiçbir yere bağlanmamış, yani sipariş sistemi görünüşte
+   duruyor ama arka kapıdan (URL bilen) bedava tam indirme mümkün.
+3. **OAI-PMH:** Aynı otomatik S3 yükleme + ödemesiz indirme endpoint'i VE
+   buton **UI'da görünür** (`total_results > 0` olunca direkt çıkıyor) —
+   yani burada tam liste fiilen tamamen ücretsiz ve kasıtlı gibi duruyor.
+4. **YÖK Tez (klasik):** Tam veri kavramı yok, sadece 5 demo kayıt var.
+
+**Kullanıcı kararı (31 Ekim 2026):** Tarama sonucu elde edilen tam veri,
+imha süresi boyunca (zaten 7 gün, tüm araçlarda cron ile tutarlı — bu kısım
+değişmeyecek) S3'te kalsın. Tam listeye erişim artık TL/IBAN siparişine
+değil, aracın **aylık ücretsiz analiz hakkına** bağlansın (Faz 4b-4f'de
+kurulan `monthly_count_for_user`/`get_monthly_limit` ailesiyle aynı mantık);
+hak dolmuşsa kullanıcı premium'a yönlendirilsin. Teslim yalnız **kullanıcı
+açıkça talep ederse** yapılsın (otomatik email eki değil, "Tam Listeyi
+İndir/Gönder" gibi bir buton/istek).
+
+**KARARLAR NETLEŞTİ (31 Ekim 2026, kullanıcı):**
+1. Mevcut ödemeli sipariş sistemi (`AlexOrder`/`DizinOrder`/`SemanticOrder`/
+   `OAIPMHOrder`, IBAN havale, admin onay akışı) **KALDIRILMIYOR** —
+   aylık ücretsiz hak dolunca bir ALTERNATİF (isteyen TL ödeyip sipariş de
+   verebilir) olarak korunacak.
+2. Tam liste indirme **ayrı bir hak harcamayacak** — arama zaten o ayki
+   hakkı tükettiği için, tamamlanmış bir arama sonucunun tam listesini
+   indirmek/istemek ek hak düşmeden serbest. (Kapı zaten arama başlatma
+   anında var: `remaining <= 0` ise yeni arama başlatılamıyor → tam liste
+   de haliyle yok. Ek bir "indirme hakkı" sayacı EKLENMEYECEK.)
+3. Excel de aynı kurala tabi: kullanıcının o ay **en az 1 hakkı olduğu
+   sürece** (veya zaten aramasını bu hakla yaptıysa) tam liste Excel'e
+   açılır; hakkı yoksa yalnız demo (5 kayıt) + premium'a yönlendirme.
+4. PubMed'e yeni indirme endpoint'i (TXT + Excel, tam liste) eklenecek —
+   diğer 4 araçla (OpenAlex/TRDizin/SemanticScholar/OAI-PMH) aynı düzene
+   girecek.
+5. EN/DE kullanıcılar TR'deki gibi aynı ücretsiz aylık hakka sahip olacak
+   (dil bazlı kısıtlama kaldırılacak). Premium'a yönlendirme onlar için de
+   düzenlenecek ama **IBAN/TL modalı değil** — PayPal hesabı bildirilecek
+   (ekran görüntüsündeki "Premium-Mitglied werden" modalı örnek; gerçek
+   PayPal bilgileri kullanıcı tarafından ayrıca paylaşılacak). **Bu madde
+   EN SON yapılacak** — PayPal bilgisi gelene kadar başlanmayacak.
+
+**Netleşmemiş küçük detaylar (ilgili aracın turuna gelince, o turda sorulacak,
+şimdi varsayılmayacak):**
+- "Hakkı var mı" kontrolü tam liste isteği anında mı yapılacak (o anki
+  `remaining` durumuna bakarak) yoksa yalnız "bu arama zaten ücretsiz hakla
+  mı başlatıldı" (job oluşturulduğu andaki duruma bakarak) mı kontrol
+  edilecek? (İkisi çoğu zaman aynı sonucu verir; fark yalnız ay değişip
+  haklar sıfırlandıktan SONRA eski bir job'ın tam listesi istenirse ortaya
+  çıkar.)
+- OAI-PMH'deki hâlâ UI'da görünen ücretsiz buton yeni ortak kurala
+  (quota kontrolü) mı bağlanacak, yoksa zaten davranışı doğru olduğu için
+  sadece kod/metin tutarlılığı mı sağlanacak?
+
+**Uygulama sırası (her adım AYRI onayla, tek seferde tek görev):**
+- [x] **Faz 5a — OpenAlex TAMAMLANDI (31 Ekim 2026):** TXT/Excel indirme
+      artık `job.demo_results` (5 kayıt) yerine `job.all_results` (tam
+      liste, `ensure_full_results` ile) kullanıyor — ek hak harcanmıyor
+      (arama zaten o ayki hakla yapıldı). Ayrıca yan bulgu düzeltildi:
+      "7 gün sonra silinir" sözü `demo_results`/`all_results` JSON
+      alanları için hiç uygulanmıyordu (yalnız S3'teki düz dosya/URL
+      temizleniyordu) — `AlexSearchJob.is_results_expired()` +
+      `cleanup_expired_openalex_s3_files` artık bu alanları da temizliyor,
+      indirme view'ları süresi dolmuşsa 404 veriyor (API'den yeniden
+      çekip veriyi "diriltmiyor"). Migration yok, 270/270 pytest yeşil.
+      Dosyalar: `openalex/models.py`, `openalex/services/job_runner.py`,
+      `openalex/views.py`. Kurulan desen (retention + ücretsiz tam liste)
+      sonraki fazlarda (5b-5e) tekrar kullanılacak.
+- [x] **Faz 5b — TRDizin TAMAMLANDI (31 Ekim 2026):** TR Dizin zaten arama
+      anında tüm veriyi (`scrap_max_records`'a kadar) çekiyordu —
+      OpenAlex'in aksine `ensure_full_results` gerekmedi. `trdizin_download`
+      (TXT, tam liste) zaten vardı ama UI'da hiç bağlı değildi — yeni "TXT
+      İndir" butonu eklendi. `trdizin_download_excel` artık `demo_results`
+      yerine `all_results` kullanıyor. Retention bug'ı (OpenAlex'teki aynı
+      sorun) düzeltildi: `is_results_expired()` + cleanup artık
+      `demo_results`/`all_results`'ı da temizliyor. Yan bulgu: eski "Tüm
+      Veri Talebi → proje-talebi formu" kutusu yeni butonla çelişiyordu —
+      anlamı değiştirildi: artık yalnız o ayki arama hakkı bitince (`remaining
+      <= 0`, `trdizin_job_status`'a eklendi) "Destekçi olarak hakkınızı
+      artırabilirsiniz" (job_list linki, OpenAlex'teki kalıp) gösteriyor.
+      Migration yok, 270/270 pytest yeşil. Dosyalar: `trdizin/models.py`,
+      `trdizin/services/job_runner.py`, `trdizin/views.py`,
+      `trdizin/templates/trdizin/landing.html`.
+- [x] **Faz 5c — Semantic Scholar TAMAMLANDI (31 Ekim 2026):** TRDizin ile
+      birebir aynı desen (zaten arama anında tüm veriyi çekiyordu,
+      `semantic_download` TXT endpoint'i vardı ama UI'a hiç bağlı değildi).
+      Yeni "TXT İndir" butonu eklendi, `semantic_download_excel` artık
+      `all_results` kullanıyor, retention bug'ı (`is_results_expired()` +
+      cleanup JSON temizliği) düzeltildi, eski "Tüm Veri Talebi" kutusu
+      (mailto:info@analizus.com) artık yalnız `remaining<=0` iken premium
+      CTA'sına (job_list) dönüşüyor. Migration yok, 270/270 pytest yeşil.
+      Dosyalar: `semanticscholar/models.py`,
+      `semanticscholar/services/job_runner.py`, `semanticscholar/views.py`,
+      `semanticscholar/templates/semanticscholar/landing.html`.
+- [x] **Faz 5d — OAI-PMH TAMAMLANDI (31 Ekim 2026):** Bu araç zaten hedef
+      duruma en yakındı — TXT indirme butonu zaten UI'da görünürdü ve
+      ücretsizdi, çelişen bir "Tüm Veri Talebi" kutusu da yoktu (dokunma
+      gerekmedi). Yalnız: `oaipmh_download_excel` artık `demo_results`
+      yerine `all_results` (tam liste) kullanıyor; retention bug'ı
+      (`is_results_expired()` + cleanup JSON temizliği) hem Excel hem TXT
+      indirme view'larına eklendi. Migration yok, 270/270 pytest yeşil.
+      Dosyalar: `oaipmh/models.py`, `oaipmh/services/job_runner.py`,
+      `oaipmh/views.py`.
+- [ ] **Faz 5e — PubMed:** yeni download/download-excel endpoint'leri +
+      landing.html butonları eklenecek (diğerleriyle aynı desen).
+- [ ] **Faz 5f — EN/DE premium akışı (EN SON, PayPal bilgisi bekleniyor):**
+      dil bazlı "ücretsiz hak yok" kısıtlaması kaldırılacak (tüm 5 araçta);
+      premium'a yönlendirme EN/DE'de PayPal bilgilendirmesi gösterecek
+      şekilde ayrı bir CTA/e-posta metni yazılacak.
+- [ ] Her fazda ilgili `order.html`/landing.html metinleri (sipariş dili →
+      "aylık hak" diline) güncellenmeli; TR/EN/DE çevirileri eklenmeli.
+- [ ] Tüm fazlar bitince `analizus.md` §9/§20/§27'ye özet eklenmeli.
+
+---
+
 # Çok Dilli Yayın (EN/DE) — YAYINDA
 
 **Durum (30 Ekim 2026 akşamı):** Bibliometri Grup A (A1-A9) ve Grup B
