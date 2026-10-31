@@ -92,7 +92,15 @@
         {% if remaining == 0 %}
         <div class="alert alert-warning">
           <i class="bi bi-exclamation-triangle me-2"></i>
+          {% if is_premium %}
           {% trans "Bu ay için ücretsiz analiz hakkınız doldu. Önümüzdeki ay tekrar deneyebilirsiniz." %}
+          {% elif LANGUAGE_CODE == 'tr' %}
+          {% trans "Bu ay için ücretsiz analiz hakkınız doldu." %}
+          <a href="#" class="alert-link" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi olarak" %}</a> {% trans "ücretsiz hakkınızı artırabilirsiniz." %}
+          {% else %}
+          {% trans "Bu ay için ücretsiz analiz hakkınız doldu." %}
+          <a href="{% url 'proje_talebi' %}?source=bibliometrics" class="alert-link">{% trans "Proje Talebi" %} &rarr;</a>
+          {% endif %}
         </div>
         {% else %}
         <form id="uploadForm" enctype="multipart/form-data">

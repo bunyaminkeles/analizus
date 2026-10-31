@@ -160,6 +160,7 @@ def bibliometrics_landing(request):
         'form': BibliometricUploadForm(),
         'active_job_id': str(active_job.id) if active_job else None,
         'demo_grafik_sayisi': demo_n,
+        'is_premium': hasattr(user, 'profile') and user.profile.is_premium,
     })
 
 
