@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
 from django.http import Http404
 from django.core.exceptions import ValidationError
+from django.utils.translation import get_language
 from django_ratelimit.decorators import ratelimit
 from functools import wraps
 
@@ -82,10 +83,14 @@ def yoktez_landing(request):
             })
 
         if remaining <= 0:
+            is_premium = user.profile.is_premium
             msg = (f'Bu ay için ücretsiz analiz hakkınız doldu ({daily_limit}/{daily_limit}). '
-                   f'{"Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz." if not user.profile.is_premium else "Önümüzdeki ay tekrar deneyebilirsiniz."}')
+                   f'{"Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz." if not is_premium else "Önümüzdeki ay tekrar deneyebilirsiniz."}')
             if is_ajax:
-                return JsonResponse({'error': msg}, status=429)
+                return JsonResponse({
+                    'error': msg,
+                    'show_premium_cta': not is_premium and (get_language() or 'tr')[:2] == 'tr',
+                }, status=429)
             return render(request, 'yoktez/landing.html', {
                 'form': form, 'remaining': 0, 'daily_limit': daily_limit, 'error': msg,
             })

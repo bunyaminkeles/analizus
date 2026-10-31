@@ -362,14 +362,19 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                throw new Error(data.error);
+                const err = new Error(data.error);
+                err.showPremiumCta = !!data.show_premium_cta;
+                throw err;
             }
             currentJobId = data.job_id;
             resultsSummary.innerHTML = `<p class="text-info">{% trans "Arama görevi başlatıldı" %} (ID: ${currentJobId}). {% trans "Sonuçlar bekleniyor..." %}</p>`;
             pollStatus();
         })
         .catch(error => {
-            resultsSummary.innerHTML = `<p class="text-danger">{% trans "Hata:" %} ${error.message}</p>`;
+            const cta = error.showPremiumCta
+                ? ' <a href="#" class="text-warning" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>'
+                : '';
+            resultsSummary.innerHTML = `<p class="text-danger">{% trans "Hata:" %} ${error.message}${cta}</p>`;
             spinner.style.display = 'none';
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-search"></i> {% trans "Arama Yap" %}';
@@ -577,13 +582,18 @@ document.addEventListener('DOMContentLoaded', function() {
                             <a href="{% url 'bibliometrics:landing' %}" class="alert-link">{% trans "Görüntüle" %} &rarr;</a>
                         </div>`;
                 } else {
-                    throw new Error(data.error || '{% trans "Bilinmeyen hata" %}');
+                    const err = new Error(data.error || '{% trans "Bilinmeyen hata" %}');
+                    err.showPremiumCta = !!data.show_premium_cta;
+                    throw err;
                 }
             })
             .catch(err => {
                 biblioBtn.disabled = false;
                 biblioBtn.innerHTML = '<i class="fas fa-chart-bar"></i> {% trans "Bibliometrik Analiz İstiyorum" %}';
-                biblioStatus.innerHTML = `<div class="alert alert-danger mt-2 mb-0 py-2">{% trans "Hata:" %} ${err.message}</div>`;
+                const cta = err.showPremiumCta
+                    ? ' <a href="#" class="alert-link" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>'
+                    : '';
+                biblioStatus.innerHTML = `<div class="alert alert-danger mt-2 mb-0 py-2">{% trans "Hata:" %} ${err.message}${cta}</div>`;
             });
         });
     }

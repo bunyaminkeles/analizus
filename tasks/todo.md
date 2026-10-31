@@ -20,9 +20,22 @@ sorun bildirdi (Faz 5'in kapsamında değildi, ayrı turlarda ele alınıyor):
       `.catch()` yoktu (sessiz çökme) — o da eklendi. Migration yok,
       270/270 pytest yeşil. Dosyalar: openalex/trdizin/semanticscholar/
       pubmed/oaipmh `templates/*/landing.html`.
-- [ ] **Sorun 2 — Hata kutularında tıklanabilir "Destekçi ol" linki:**
-      "hakkınız doldu" / sahiplik hatası mesajları düz metin, tıklanabilir
-      değil. Henüz başlanmadı.
+- [x] **Sorun 2 — TAMAMLANDI:** "Hakkınız doldu" hata mesajlarına
+      tıklanabilir "Destekçi Ol" linki eklendi — `data-bs-toggle="modal"
+      data-bs-target="#donationModal"` (zaten her sayfada var olan footer
+      modalını açıyor). Kapsam genişletildi: OpenAlex, TRDizin, Semantic
+      Scholar, PubMed, OAI-PMH, YÖK Tez'in arama-başlatma kota hatası +
+      bibliometrinin 3 giriş noktası (dosya yükleme, OpenAlex köprüsü,
+      PubMed köprüsü). Sunucu artık `show_premium_cta` bayrağı dönüyor
+      (`not is_premium and (get_language() or 'tr')[:2] == 'tr'` —
+      premium/bağış sistemi henüz TR-only, EN/DE'de link gösterilmiyor,
+      Faz 5f'yi bekliyor). **Yan iş:** TRDizin/Semantic Scholar/OAI-PMH/
+      YÖK Tez'de arama hatası önceden native `alert()` penceresindeydi
+      (link konulamaz) — her birine yeni bir `#search-error-box` HTML
+      kutusu eklenip `alert()` kaldırıldı. Migration yok, 270/270 pytest
+      yeşil. Dosyalar: openalex/trdizin/semanticscholar/pubmed/oaipmh/
+      yoktez `views.py` + `templates/*/landing.html`,
+      `bibliometrics/views.py` + `templates/bibliometrics/landing.html`.
 - [ ] **Sorun 3 — Bibliometri "Geçmiş Analizlerim" canlı güncelleme:**
       tablo yalnız sayfa yüklenirken sunucu tarafında render ediliyor,
       polling yok. Henüz başlanmadı.

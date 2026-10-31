@@ -175,8 +175,8 @@ document.addEventListener('DOMContentLoaded', function () {
     cancelBtn.classList.toggle('pm-hidden', !busy);
   }
 
-  function showStatus(text, isError) {
-    statusEl.textContent = text;
+  function showStatus(text, isError, html) {
+    if (html) { statusEl.innerHTML = text; } else { statusEl.textContent = text; }
     statusEl.classList.toggle('ax-text-danger', !!isError);
   }
 
@@ -265,11 +265,21 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch(form.action, {method: 'POST', body: new FormData(form), headers: {'X-Requested-With': 'XMLHttpRequest'}})
       .then(r => r.json())
       .then(data => {
-        if (data.error) throw new Error(data.error);
+        if (data.error) {
+          const e = new Error(data.error);
+          e.showPremiumCta = !!data.show_premium_cta;
+          throw e;
+        }
         currentJobId = data.job_id;
         pollStatus();
       })
-      .catch(err => { setBusy(false); showStatus(T.error + ' ' + err.message, true); });
+      .catch(err => {
+        setBusy(false);
+        const cta = err.showPremiumCta
+          ? ' <a href="#" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>'
+          : '';
+        showStatus(esc(T.error + ' ' + err.message) + cta, true, true);
+      });
   });
 
   cancelBtn.addEventListener('click', function () {
@@ -317,12 +327,17 @@ document.addEventListener('DOMContentLoaded', function () {
             biblioBtn.disabled = false;
             biblioStatus.innerHTML = biblioAlert('info', T.biblio_exists);
           } else {
-            throw new Error(data.error || T.unknown);
+            const e = new Error(data.error || T.unknown);
+            e.showPremiumCta = !!data.show_premium_cta;
+            throw e;
           }
         })
         .catch(err => {
           biblioBtn.disabled = false;
-          biblioStatus.innerHTML = `<div class="ax-alert ax-alert--danger" role="alert"><div class="ax-alert__body">${esc(T.error + ' ' + err.message)}</div></div>`;
+          const cta = err.showPremiumCta
+            ? ' <a href="#" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>'
+            : '';
+          biblioStatus.innerHTML = `<div class="ax-alert ax-alert--danger" role="alert"><div class="ax-alert__body">${esc(T.error + ' ' + err.message)}${cta}</div></div>`;
         })
         .finally(() => { biblioBtn.querySelector('span').textContent = biblioLabel; });
     });

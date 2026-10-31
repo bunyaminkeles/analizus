@@ -73,6 +73,8 @@
                 </div>
             </div>
 
+            <div id="search-error-box" class="alert alert-danger mb-3" style="display:none;"></div>
+
             <!-- Devam eden tarama banner -->
             <div id="resume-banner" style="display:none;" class="alert alert-info mb-3">
                 <i class="bi bi-arrow-repeat me-2"></i>
@@ -202,7 +204,12 @@ document.getElementById('semantic-form').addEventListener('submit', function(e) 
             document.getElementById('status-area').style.display = 'none';
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-search me-1"></i>{% trans "Ara" %}';
-            alert(resp.error || '{% trans "Bir hata oluştu." %}');
+            const cta = resp.show_premium_cta
+                ? ' <a href="#" class="alert-link" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>'
+                : '';
+            const box = document.getElementById('search-error-box');
+            box.innerHTML = (resp.error || '{% trans "Bir hata oluştu." %}') + cta;
+            box.style.display = 'block';
         }
     })
     .catch(err => {

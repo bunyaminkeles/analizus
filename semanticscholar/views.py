@@ -99,7 +99,8 @@ def semantic_landing(request):
                         'error': (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
                                   if not is_premium else
                                   gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.')
-                                  ).format(used=daily_limit, limit=daily_limit)
+                                  ).format(used=daily_limit, limit=daily_limit),
+                        'show_premium_cta': not is_premium and (get_language() or 'tr')[:2] == 'tr',
                     }, status=429)
                 return render(request, 'semanticscholar/landing.html', {
                     'form': form,

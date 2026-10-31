@@ -6,7 +6,7 @@ from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib import messages
-from django.utils.translation import gettext, pgettext
+from django.utils.translation import gettext, pgettext, get_language
 from django_ratelimit.decorators import ratelimit
 
 from .forms import BibliometricUploadForm, BibliometricOrderForm
@@ -89,6 +89,7 @@ def bibliometrics_landing(request):
             return JsonResponse({
                 'status': 'error',
                 'error': msg.format(used=daily_limit, limit=daily_limit),
+                'show_premium_cta': not is_premium and (get_language() or 'tr')[:2] == 'tr',
             }, status=429)
 
         form = BibliometricUploadForm(request.POST, request.FILES)
@@ -253,7 +254,8 @@ def bibliometrics_from_openalex(request, alex_job_id):
                if not is_premium else
                gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
         return JsonResponse(
-            {'status': 'error', 'error': msg.format(used=daily_limit, limit=daily_limit)},
+            {'status': 'error', 'error': msg.format(used=daily_limit, limit=daily_limit),
+             'show_premium_cta': not is_premium and (get_language() or 'tr')[:2] == 'tr'},
             status=429,
         )
 
@@ -328,7 +330,8 @@ def bibliometrics_from_pubmed(request, pubmed_job_id):
                if not is_premium else
                gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
         return JsonResponse(
-            {'status': 'error', 'error': msg.format(used=daily_limit, limit=daily_limit)},
+            {'status': 'error', 'error': msg.format(used=daily_limit, limit=daily_limit),
+             'show_premium_cta': not is_premium and (get_language() or 'tr')[:2] == 'tr'},
             status=429,
         )
 
