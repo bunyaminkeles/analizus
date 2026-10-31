@@ -113,8 +113,25 @@ açıkça talep ederse** yapılsın (otomatik email eki değil, "Tam Listeyi
       indirme view'larına eklendi. Migration yok, 270/270 pytest yeşil.
       Dosyalar: `oaipmh/models.py`, `oaipmh/services/job_runner.py`,
       `oaipmh/views.py`.
-- [ ] **Faz 5e — PubMed:** yeni download/download-excel endpoint'leri +
-      landing.html butonları eklenecek (diğerleriyle aynı desen).
+- [x] **Faz 5e — PubMed TAMAMLANDI (31 Ekim 2026):** Düzeltme: "PubMed'de
+      hiç indirme endpoint'i yok" varsayımı yanlıştı — `pubmed_download_excel`/
+      `pubmed_download_txt` zaten vardı ve UI'da bağlıydı, sadece
+      `demo_results` kullanıyorlardı (OpenAlex'teki Order modeli yoktu, o
+      karıştırılmıştı). OpenAlex'teki gibi `ensure_full_results` + retention
+      bug düzeltmesi uygulandı. `pm-full-data` kutusu ("Tam veri seti için
+      proje talebi bırakın") TRDizin/SemanticScholar'daki gibi yalnız
+      `remaining<=0` iken premium CTA'sına dönüştürüldü. Migration yok,
+      270/270 pytest yeşil. Dosyalar: `pubmed/models.py`,
+      `pubmed/services/job_runner.py`, `pubmed/views.py`,
+      `pubmed/templates/pubmed/landing.html`.
+      **Yan bulgu + düzeltme (4 dosya):** "Destekçi olarak" linki
+      `{% url 'job_list' %}` (`/market/` — pazaryeri, premium ile ilgisi
+      yok) kullanıyordu; gerçek premium/bağış modalı (`#donationModal`,
+      `templates/partials/footer.html`, her sayfada mevcut) hiç
+      tetiklenmiyordu. OpenAlex'te ÖNCEDEN vardı (bu turda fark edildi),
+      TRDizin/SemanticScholar/PubMed'e Faz 5b-5e'de aynen kopyalanmıştı.
+      4'ü de `data-bs-toggle="modal" data-bs-target="#donationModal"`
+      ile düzeltildi (openalex/trdizin/semanticscholar/pubmed landing.html).
 - [ ] **Faz 5f — EN/DE premium akışı (EN SON, PayPal bilgisi bekleniyor):**
       dil bazlı "ücretsiz hak yok" kısıtlaması kaldırılacak (tüm 5 araçta);
       premium'a yönlendirme EN/DE'de PayPal bilgilendirmesi gösterecek

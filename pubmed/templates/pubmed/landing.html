@@ -88,9 +88,11 @@
     <p id="pm-biblio-info" class="pm-hint pm-hidden">{% trans "PubMed verisiyle 13 analize kadar PDF rapor üretilir; PubMed atıf sayısı vermediği için atıf analizleri ve Araştırma Boşluğu Haritası yer almaz. Demo rapor (10 grafik) ücretsiz e-postanıza gönderilir." %}</p>
     <div id="pm-biblio-status"></div>
     {% endif %}
+    <!-- Aylık ücretsiz hak bittiğinde premium'a yönlendirme (TXT/Excel butonları zaten
+         tam listeyi veriyor — bu kutu YENİ aramalar için hak artırma amaçlı) -->
     <p id="pm-full-data" class="pm-hint pm-hidden">
-      {% trans "Tam veri seti için proje talebi bırakın, ücretsiz değerlendirelim:" %}
-      <a href="{% url 'proje_talebi' %}?source=tool">{% trans "Proje Talebi Bırak" %}</a>
+      {% trans "Bu ay için ücretsiz arama hakkınız bitti." %}
+      {% if LANGUAGE_CODE == 'tr' %}<a href="#" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi olarak" %}</a> {% trans "ücretsiz hakkınızı artırabilirsiniz." %}{% endif %}
     </p>
   </section>
 
@@ -211,7 +213,11 @@ document.addEventListener('DOMContentLoaded', function () {
       $('pm-download-txt').href = url('txt', currentJobId);
       $('pm-download-xlsx').href = url('xlsx', currentJobId);
       actionsEl.classList.remove('pm-hidden');
-      fullData.classList.remove('pm-hidden');
+      // TXT/Excel butonları zaten tam listeyi veriyor (ek hak harcamadan) — bu kutu
+      // yalnız bu ayki arama hakkı bittiğinde (yeni arama için) premium'a yönlendirir.
+      if (typeof data.remaining === 'number' && data.remaining <= 0) {
+        fullData.classList.remove('pm-hidden');
+      }
     }
     // Bibliometrik analiz: en az 100 sonuç (sunucu da kontrol eder)
     const biblioBtn = $('pm-biblio');

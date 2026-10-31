@@ -29,7 +29,7 @@
                     <p class="text-muted">
                         {% blocktrans %}Bu ay <strong>{{ daily_limit }}</strong> ücretsiz arama hakkınız bulunmaktadır. Kalan ücretsiz hakkınız: <strong>{{ remaining }}</strong>.{% endblocktrans %}
                         {% if LANGUAGE_CODE == 'tr' %}
-                        <a href="{% url 'job_list' %}" class="text-warning">{% trans "Destekçi olarak" %}</a> {% trans "ücretsiz hakkınızı artırabilirsiniz." %}
+                        <a href="#" class="text-warning" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi olarak" %}</a> {% trans "ücretsiz hakkınızı artırabilirsiniz." %}
                         {% endif %}
                     </p>
                 </div>
