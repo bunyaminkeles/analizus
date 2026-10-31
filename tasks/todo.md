@@ -1,4 +1,70 @@
-# [PLAN — HENÜZ BAŞLANMADI] Tam Sonuç Teslimi: Ücretsiz Hak Bazlı Birleştirme (31 Ekim 2026)
+# Faz 5 Sonrası Üretim Testinde Çıkan Bulgular (31 Ekim 2026)
+
+Faz 5a-5e üretime alındıktan sonra kullanıcı canlıda test etti, 3 ayrı
+sorun bildirdi (Faz 5'in kapsamında değildi, ayrı turlarda ele alınıyor):
+
+- [x] **Sorun 1 — TAMAMLANDI:** Admin hesabıyla girince OpenAlex sayfası
+      önceki kullanıcının işini gösterdi (TXT "Not Found", e-posta/
+      bibliometri "JSON.parse" hatası). **Kök neden:** OpenAlex/PubMed
+      tamamlanmış sonucu `localStorage`'da **kullanıcıya göre ayrılmamış**
+      bir anahtarla (`openalex_last_job`) 24 saat saklıyordu — farklı
+      kullanıcı girince eskisinin işini gösterip butonları ona bağlıyordu;
+      sunucu `user=request.user` ile doğru şekilde reddediyordu (güvenlik
+      açığı YOK) ama red, JS'te çirkin şekilde yüzeye çıkıyordu (404 sayfası
+      / JSON parse çökmesi). Düzeltme: (1) `STORAGE_KEY` artık
+      `..._{{ request.user.id }}` ile kullanıcıya özel (openalex, pubmed).
+      (2) 5 aracın da ("E-posta Gönder" + openalex/pubmed'in "Bibliometrik
+      Analiz İstiyorum") fetch zincirlerine `r.json().catch(() => { throw
+      ... })` eklendi — sunucu JSON yerine HTML hata sayfası dönerse artık
+      çökmüyor, düzgün mesaj gösteriyor. TRDizin'in email fetch'inde hiç
+      `.catch()` yoktu (sessiz çökme) — o da eklendi. Migration yok,
+      270/270 pytest yeşil. Dosyalar: openalex/trdizin/semanticscholar/
+      pubmed/oaipmh `templates/*/landing.html`.
+- [ ] **Sorun 2 — Hata kutularında tıklanabilir "Destekçi ol" linki:**
+      "hakkınız doldu" / sahiplik hatası mesajları düz metin, tıklanabilir
+      değil. Henüz başlanmadı.
+- [ ] **Sorun 3 — Bibliometri "Geçmiş Analizlerim" canlı güncelleme:**
+      tablo yalnız sayfa yüklenirken sunucu tarafında render ediliyor,
+      polling yok. Henüz başlanmadı.
+- [x] **Sorun 3.5 — AI yorumu dil bug'ı — TAMAMLANDI:** OpenAlex/PubMed'in
+      arama sonrası ürettiği AI yorumu, EN/DE sayfalarında bile hep Türkçe
+      geliyordu. **Kök neden:** arka plan iş kuyruğu (`job_queue.py`)
+      yeniden başlatmaya dayanıklı olsun diye yalnız `(araç, job_id)`
+      taşıyor, dil bilgisi taşımıyor — bu yüzden AI yorumu dili
+      `Profile.preferred_language`'tan (`recipient_language`, e-posta
+      amaçlı tasarlanmış) okunuyordu, aramanın yapıldığı sayfanın
+      dilinden değil. Production'da doğrulandı: "benjamin" hesabının
+      `preferred_language`'ı `tr` iken EN/DE sayfalarda da arama yapmıştı.
+      **Düzeltme (migration ile):** `AlexSearchJob`/`PubMedSearchJob`'a
+      `created_language` alanı eklendi, arama başlatılırken `get_language()`
+      ile dolduruluyor; `_ai_comment_for_job` artık profile yerine bu
+      alanı kullanıyor. Migration: `openalex/migrations/
+      0005_alexsearchjob_created_language.py`,
+      `pubmed/migrations/0003_pubmedsearchjob_created_language.py`
+      (ikisi de basit `AddField`, default `'tr'`, veri kaybı riski yok).
+      270/270 pytest yeşil. **Not:** TXT dosyası/demo e-postası dili hâlâ
+      profile tabanlı bırakıldı (kasıtlı — e-posta daha sonra okunacağı
+      için kullanıcının genel tercihi doğru, yalnız AI yorumu anlık sayfa
+      diliyle eşleşmeliydi).
+- [ ] **Sorun 4 — Bibliometri "Geçmiş Analizlerim" tablosu uzun:**
+      yalnız son 5 sonuç gösterilsin, kalanı tıklanınca aşağıda açılsın
+      (accordion/"daha fazla göster"). Henüz başlanmadı.
+
+**Ayrı bulgu — Bibliometri "aylık ücretsiz hak" kapsamı netleştirildi
+(kullanıcı sordu, kod/commit diff'iyle doğrulandı, bug DEĞİL):** Faz 4g
+(`b186351`) yalnızca "günlük limit" metnini/mekanizmasını "aylık ücretsiz
+hak"a çevirdi — bu hak hep yalnızca **demo rapor (10 grafik) üretme
+hakkı** anlamına geldi. "Tam Rapor" (17-26 analiz, PDF) kayıt sayısına
+göre ücretli teslimat hep ayrıydı, Faz 4g VE Faz 5'in hiçbiri buna
+dokunmadı — admin dahil hiç kimse için bu hak tam raporu ücretsizleştirmedi.
+**Açık karar (kullanıcıya soruldu, cevap bekleniyor):** Tam rapor da aylık
+ücretsiz hakka dahil edilsin mi (hakkı olan kullanıcı 900 TL ödemeden tam
+PDF alsın)? Bu, OpenAlex/TRDizin/vs.'deki Faz 5 kararıyla aynı aileden bir
+iş kararı — onay gelirse ayrı bir faz olarak planlanacak.
+
+---
+
+# [PLAN] Tam Sonuç Teslimi: Ücretsiz Hak Bazlı Birleştirme (31 Ekim 2026)
 
 **Bulgu (31 Ekim 2026, OpenAlex "363 yayın / demo" sorusu araştırılırken ortaya çıktı):**
 6 tarama aracında "tam sonuç" (demo'nun ötesi) teslimi 3 FARKLI ve TUTARSIZ
@@ -113,8 +179,25 @@ açıkça talep ederse** yapılsın (otomatik email eki değil, "Tam Listeyi
       indirme view'larına eklendi. Migration yok, 270/270 pytest yeşil.
       Dosyalar: `oaipmh/models.py`, `oaipmh/services/job_runner.py`,
       `oaipmh/views.py`.
-- [ ] **Faz 5e — PubMed:** yeni download/download-excel endpoint'leri +
-      landing.html butonları eklenecek (diğerleriyle aynı desen).
+- [x] **Faz 5e — PubMed TAMAMLANDI (31 Ekim 2026):** Düzeltme: "PubMed'de
+      hiç indirme endpoint'i yok" varsayımı yanlıştı — `pubmed_download_excel`/
+      `pubmed_download_txt` zaten vardı ve UI'da bağlıydı, sadece
+      `demo_results` kullanıyorlardı (OpenAlex'teki Order modeli yoktu, o
+      karıştırılmıştı). OpenAlex'teki gibi `ensure_full_results` + retention
+      bug düzeltmesi uygulandı. `pm-full-data` kutusu ("Tam veri seti için
+      proje talebi bırakın") TRDizin/SemanticScholar'daki gibi yalnız
+      `remaining<=0` iken premium CTA'sına dönüştürüldü. Migration yok,
+      270/270 pytest yeşil. Dosyalar: `pubmed/models.py`,
+      `pubmed/services/job_runner.py`, `pubmed/views.py`,
+      `pubmed/templates/pubmed/landing.html`.
+      **Yan bulgu + düzeltme (4 dosya):** "Destekçi olarak" linki
+      `{% url 'job_list' %}` (`/market/` — pazaryeri, premium ile ilgisi
+      yok) kullanıyordu; gerçek premium/bağış modalı (`#donationModal`,
+      `templates/partials/footer.html`, her sayfada mevcut) hiç
+      tetiklenmiyordu. OpenAlex'te ÖNCEDEN vardı (bu turda fark edildi),
+      TRDizin/SemanticScholar/PubMed'e Faz 5b-5e'de aynen kopyalanmıştı.
+      4'ü de `data-bs-toggle="modal" data-bs-target="#donationModal"`
+      ile düzeltildi (openalex/trdizin/semanticscholar/pubmed landing.html).
 - [ ] **Faz 5f — EN/DE premium akışı (EN SON, PayPal bilgisi bekleniyor):**
       dil bazlı "ücretsiz hak yok" kısıtlaması kaldırılacak (tüm 5 araçta);
       premium'a yönlendirme EN/DE'de PayPal bilgilendirmesi gösterecek

@@ -1,9 +1,12 @@
 import uuid
+from datetime import timedelta
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
 from forum.models import MonthlyToolLimitMixin
+
+RESULT_RETENTION_DAYS = 7
 
 
 class PubMedSearchJob(MonthlyToolLimitMixin, models.Model):
@@ -34,6 +37,8 @@ class PubMedSearchJob(MonthlyToolLimitMixin, models.Model):
     demo_file_url = models.URLField(max_length=500, blank=True, default='', verbose_name="Demo Dosya URL (S3)")
 
     ai_comment = models.TextField(blank=True, default='', verbose_name="AI Yorumu")
+    created_language = models.CharField(max_length=5, default='tr', blank=True,
+                                         verbose_name="Arama Anındaki Dil")
 
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
@@ -65,6 +70,11 @@ class PubMedSearchJob(MonthlyToolLimitMixin, models.Model):
         self.ai_comment = ai_comment
         self.completed_at = timezone.now()
         self.save(update_fields=['status', 'demo_results', 'all_results', 'total_results', 'api_query', 'ai_comment', 'completed_at'])
+
+    def is_results_expired(self):
+        """7 günlük saklama süresi dolduysa True — bkz. openalex.models.AlexSearchJob.is_results_expired
+        (job_runner.cleanup_expired_pubmed_s3_files aynı süreyle demo_results/all_results'ı temizler)."""
+        return timezone.now() > self.created_at + timedelta(days=RESULT_RETENTION_DAYS)
 
     def mark_failed(self, error_msg):
         self.status = 'failed'

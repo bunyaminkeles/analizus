@@ -123,7 +123,7 @@
                                 <i class="bi bi-database-fill-lock text-warning mt-1"></i>
                                 <div>
                                     <div class="text-white fw-semibold small mb-1">{% trans "Ücretsiz Hakkınız Doldu" %}</div>
-                                    <div class="text-muted small">{% trans "Bu ay için ücretsiz arama hakkınız bitti." %} {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'job_list' %}" class="text-warning text-decoration-none fw-semibold">{% trans "Destekçi olarak" %}</a> {% trans "ücretsiz hakkınızı artırabilirsiniz." %}{% endif %}</div>
+                                    <div class="text-muted small">{% trans "Bu ay için ücretsiz arama hakkınız bitti." %} {% if LANGUAGE_CODE == 'tr' %}<a href="#" class="text-warning text-decoration-none fw-semibold" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi olarak" %}</a> {% trans "ücretsiz hakkınızı artırabilirsiniz." %}{% endif %}</div>
                                 </div>
                             </div>
                         </div>
@@ -329,7 +329,9 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
         method: 'POST',
         headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
     })
-    .then(r => r.json())
+    .then(r => r.json().catch(() => {
+        throw new Error('{% trans "Sunucuyla iletişim hatası. Sayfayı yenileyip tekrar deneyin." %}');
+    }))
     .then(data => {
         if (data.success) {
             btn.style.display = 'none';
@@ -338,6 +340,10 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
             btn.disabled = false;
             alert(data.error || '{% trans "E-posta gönderilemedi." %}');
         }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        alert(err.message);
     });
 });
 

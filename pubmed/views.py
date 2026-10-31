@@ -1,16 +1,19 @@
+import logging
 import re
 from functools import wraps
 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
-from django.utils.translation import gettext, pgettext
+from django.utils.translation import gettext, pgettext, get_language
 from django.views.decorators.http import require_GET, require_POST
 from django_ratelimit.decorators import ratelimit
 
 from .forms import PubMedSearchForm, FIELD_CHOICES
 from .models import PubMedSearchJob
-from .services.job_runner import run_scraping_job
+from .services.job_runner import run_scraping_job, ensure_full_results
+
+logger = logging.getLogger(__name__)
 
 
 def _safe_filename(job, ext: str) -> str:
@@ -82,7 +85,11 @@ def pubmed_landing(request):
                    gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
             return JsonResponse({'error': msg.format(used=daily_limit, limit=daily_limit)}, status=429)
 
-        job = PubMedSearchJob.objects.create(user=user, query_parts=form.cleaned_data['query_parts_json'])
+        job = PubMedSearchJob.objects.create(
+            user=user,
+            query_parts=form.cleaned_data['query_parts_json'],
+            created_language=(get_language() or 'tr')[:2],
+        )
         run_scraping_job(job.id)
         return JsonResponse({'status': 'started', 'job_id': str(job.id), 'remaining': remaining - 1})
 
@@ -141,6 +148,7 @@ def pubmed_job_status(request, job_id):
         ]
         response['has_demo'] = bool(job.demo_results)
         response['ai_comment'] = job.ai_comment
+        response['remaining'] = max(0, PubMedSearchJob.get_monthly_limit(request.user) - PubMedSearchJob.monthly_count_for_user(request.user))
     elif job.status == 'failed':
         response['error'] = job.error_message
     return JsonResponse(response)
@@ -149,11 +157,19 @@ def pubmed_job_status(request, job_id):
 @login_required
 @require_GET
 def pubmed_download_excel(request, job_id):
-    """demo_results JSON'ından Excel (.xlsx) üretir."""
+    """Tam sonuç listesinden (all_results) Excel (.xlsx) üretir — arama zaten aylık
+    ücretsiz hakla yapıldığı için ek hak gerekmez; 7 günlük saklama süresi dolmuşsa
+    erişim kapanır."""
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment
     job = get_object_or_404(PubMedSearchJob, id=job_id, user=request.user)
-    records = job.demo_results or []
+    if job.is_results_expired():
+        raise Http404
+    try:
+        ensure_full_results(job)
+    except Exception as e:
+        logger.warning(f"PubMed tam liste çekilemedi, demo ile devam {job_id}: {e}")
+    records = job.all_results or job.demo_results or []
     if not records:
         raise Http404
 
@@ -189,10 +205,16 @@ def pubmed_download_excel(request, job_id):
 @login_required
 @require_GET
 def pubmed_download_txt(request, job_id):
-    """demo_results'dan TXT dosyası üretir."""
+    """Tam sonuç listesinden (all_results) TXT dosyası üretir — bkz. pubmed_download_excel."""
     from .services.job_runner import _generate_pubmed_results_txt
     job = get_object_or_404(PubMedSearchJob, id=job_id, user=request.user)
-    records = job.demo_results or []
+    if job.is_results_expired():
+        raise Http404
+    try:
+        ensure_full_results(job)
+    except Exception as e:
+        logger.warning(f"PubMed tam liste çekilemedi, demo ile devam {job_id}: {e}")
+    records = job.all_results or job.demo_results or []
     if not records:
         raise Http404
     response = HttpResponse(_generate_pubmed_results_txt(records, job), content_type='text/plain; charset=utf-8')

@@ -91,7 +91,10 @@ def _ai_comment_for_job(job, demo_results):
         return ''
 
     prompt = _build_ai_prompt(job, demo_results)
-    resp = claude_summary_service.generate_summary('pubmed', prompt, lang=translation.get_language())
+    # Profile.preferred_language (recipient_language) yerine aramanın yapıldığı anki dil —
+    # bkz. openalex/services/job_runner.py._ai_comment_for_job (31 Ekim 2026).
+    lang = getattr(job, 'created_language', None) or translation.get_language()
+    resp = claude_summary_service.generate_summary('pubmed', prompt, lang=lang)
     if resp['success'] and resp['text']:
         AIUsageLog.record(job.user, 'pubmed', resp['input_tokens'], resp['output_tokens'])
         return resp['text']
@@ -247,15 +250,21 @@ def send_demo_email(job):
         return False
 
 
-def cleanup_expired_pubmed_s3_files(days=7):
+def cleanup_expired_pubmed_s3_files(days=None):
     """7 günden eski pubmed/ altındaki dosyaları S3'den siler (cron bağlantısı Faz 2: forum/api_views)."""
     from forum.s3_utils import cleanup_s3_prefix
+    from pubmed.models import RESULT_RETENTION_DAYS
 
+    days = days or RESULT_RETENTION_DAYS
     cutoff = timezone.now() - timedelta(days=days)
     deleted_count = cleanup_s3_prefix('pubmed/', days)
 
+    # DB'deki URL referansını VE demo_results/all_results JSON'larını da temizle —
+    # download view'ları S3'e değil doğrudan bu alanlara bakıyor (31 Ekim 2026).
     try:
-        PubMedSearchJob.objects.filter(created_at__lt=cutoff).exclude(demo_file_url='').update(demo_file_url='')
+        PubMedSearchJob.objects.filter(created_at__lt=cutoff).exclude(
+            demo_file_url='', demo_results=[], all_results=[],
+        ).update(demo_file_url='', demo_results=[], all_results=[])
     except Exception as e:
         logger.error(f"DB temizlik hatası (pubmed): {e}")
 
