@@ -103,13 +103,16 @@ def openalex_landing(request):
 
             if remaining <= 0:
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    is_premium = user.profile.is_premium
+                    is_tr = (get_language() or 'tr')[:2] == 'tr'
                     return JsonResponse({
                         # Tam cümle msgid'ler (parça birleştirme yok)
                         'error': (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
-                                  if not user.profile.is_premium else
+                                  if not is_premium else
                                   gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.')
                                   ).format(used=daily_limit, limit=daily_limit),
-                        'show_premium_cta': not user.profile.is_premium and (get_language() or 'tr')[:2] == 'tr',
+                        'show_premium_cta': not is_premium and is_tr,
+                        'show_project_request_cta': not is_premium and not is_tr,
                     }, status=429)
                 return render(request, 'openalex/landing.html', {
                     'form': form,

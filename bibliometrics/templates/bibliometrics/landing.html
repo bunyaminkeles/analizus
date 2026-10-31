@@ -553,14 +553,18 @@
     setTimeout(pollRow, 5000);
   });
 
-  function showError(msg, showPremiumCta) {
+  function showError(msg, showPremiumCta, showProjectRequestCta) {
     errorArea.classList.remove('d-none');
+    const escd = msg.replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
     if (showPremiumCta) {
-      errorMsg.innerHTML = msg.replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]))
-        + ' <a href="#" class="alert-link" data-bs-toggle="modal" data-bs-target="#donationModal">' + T.destekciOl + ' &rarr;</a>';
+      errorMsg.innerHTML = escd + ' <a href="#" class="alert-link" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">' + T.destekciOl + ' &rarr;</a>';
+    } else if (showProjectRequestCta) {
+      errorMsg.innerHTML = escd + ' <a href="' + URLS.projectRequest + '" class="alert-link" style="color:var(--ax-accent-warning);">' + T.projectRequestBtn + ' &rarr;</a>';
     } else {
       errorMsg.textContent = msg;
     }
+    errorMsg.classList.toggle('alert-warning', !!(showPremiumCta || showProjectRequestCta));
+    errorMsg.classList.toggle('alert-danger', !(showPremiumCta || showProjectRequestCta));
     progress.classList.add('d-none');
     submitBtn.disabled = false;
     submitBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i> ' + T.start;
@@ -719,7 +723,7 @@
           progText.textContent = T.started;
           startPolling(data.job_id);
         } else {
-          showError(data.error || T.generic, data.show_premium_cta);
+          showError(data.error || T.generic, data.show_premium_cta, data.show_project_request_cta);
         }
       })
       .catch(() => showError(T.network));

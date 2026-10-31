@@ -364,6 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) {
                 const err = new Error(data.error);
                 err.showPremiumCta = !!data.show_premium_cta;
+                err.showProjectRequestCta = !!data.show_project_request_cta;
                 throw err;
             }
             currentJobId = data.job_id;
@@ -371,10 +372,13 @@ document.addEventListener('DOMContentLoaded', function() {
             pollStatus();
         })
         .catch(error => {
-            const cta = error.showPremiumCta
-                ? ' <a href="#" class="text-warning" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>'
-                : '';
-            resultsSummary.innerHTML = `<p class="text-danger">{% trans "Hata:" %} ${error.message}${cta}</p>`;
+            let cta = '';
+            if (error.showPremiumCta) {
+                cta = ' <a href="#" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>';
+            } else if (error.showProjectRequestCta) {
+                cta = ' <a href="{% url "proje_talebi" %}?source=tool" style="color:var(--ax-accent-warning);">{% trans "Proje Talebi" %} &rarr;</a>';
+            }
+            resultsSummary.innerHTML = `<p class="text-warning">${error.message}${cta}</p>`;
             spinner.style.display = 'none';
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-search"></i> {% trans "Arama Yap" %}';
@@ -584,16 +588,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     const err = new Error(data.error || '{% trans "Bilinmeyen hata" %}');
                     err.showPremiumCta = !!data.show_premium_cta;
+                    err.showProjectRequestCta = !!data.show_project_request_cta;
                     throw err;
                 }
             })
             .catch(err => {
                 biblioBtn.disabled = false;
                 biblioBtn.innerHTML = '<i class="fas fa-chart-bar"></i> {% trans "Bibliometrik Analiz İstiyorum" %}';
-                const cta = err.showPremiumCta
-                    ? ' <a href="#" class="alert-link" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>'
-                    : '';
-                biblioStatus.innerHTML = `<div class="alert alert-danger mt-2 mb-0 py-2">{% trans "Hata:" %} ${err.message}${cta}</div>`;
+                let cta = '';
+                if (err.showPremiumCta) {
+                    cta = ' <a href="#" class="alert-link" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>';
+                } else if (err.showProjectRequestCta) {
+                    cta = ' <a href="{% url "proje_talebi" %}?source=tool" class="alert-link" style="color:var(--ax-accent-warning);">{% trans "Proje Talebi" %} &rarr;</a>';
+                }
+                biblioStatus.innerHTML = `<div class="alert alert-warning mt-2 mb-0 py-2">${err.message}${cta}</div>`;
             });
         });
     }

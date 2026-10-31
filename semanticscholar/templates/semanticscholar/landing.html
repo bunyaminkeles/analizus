@@ -73,7 +73,7 @@
                 </div>
             </div>
 
-            <div id="search-error-box" class="alert alert-danger mb-3" style="display:none;"></div>
+            <div id="search-error-box" class="alert alert-warning mb-3" style="display:none;"></div>
 
             <!-- Devam eden tarama banner -->
             <div id="resume-banner" style="display:none;" class="alert alert-info mb-3">
@@ -204,9 +204,12 @@ document.getElementById('semantic-form').addEventListener('submit', function(e) 
             document.getElementById('status-area').style.display = 'none';
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-search me-1"></i>{% trans "Ara" %}';
-            const cta = resp.show_premium_cta
-                ? ' <a href="#" class="alert-link" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>'
-                : '';
+            let cta = '';
+            if (resp.show_premium_cta) {
+                cta = ' <a href="#" class="alert-link" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>';
+            } else if (resp.show_project_request_cta) {
+                cta = ' <a href="{% url "proje_talebi" %}?source=tool" class="alert-link" style="color:var(--ax-accent-warning);">{% trans "Proje Talebi" %} &rarr;</a>';
+            }
             const box = document.getElementById('search-error-box');
             box.innerHTML = (resp.error || '{% trans "Bir hata oluştu." %}') + cta;
             box.style.display = 'block';
