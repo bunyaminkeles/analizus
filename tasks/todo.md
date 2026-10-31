@@ -78,9 +78,21 @@ açıkça talep ederse** yapılsın (otomatik email eki değil, "Tam Listeyi
       Dosyalar: `openalex/models.py`, `openalex/services/job_runner.py`,
       `openalex/views.py`. Kurulan desen (retention + ücretsiz tam liste)
       sonraki fazlarda (5b-5e) tekrar kullanılacak.
-- [ ] **Faz 5b — TRDizin:** mevcut otomatik full-S3-upload + linklenmemiş
-      download endpoint'i → hak kontrolüyle gate'lenecek, buton UI'a
-      eklenecek.
+- [x] **Faz 5b — TRDizin TAMAMLANDI (31 Ekim 2026):** TR Dizin zaten arama
+      anında tüm veriyi (`scrap_max_records`'a kadar) çekiyordu —
+      OpenAlex'in aksine `ensure_full_results` gerekmedi. `trdizin_download`
+      (TXT, tam liste) zaten vardı ama UI'da hiç bağlı değildi — yeni "TXT
+      İndir" butonu eklendi. `trdizin_download_excel` artık `demo_results`
+      yerine `all_results` kullanıyor. Retention bug'ı (OpenAlex'teki aynı
+      sorun) düzeltildi: `is_results_expired()` + cleanup artık
+      `demo_results`/`all_results`'ı da temizliyor. Yan bulgu: eski "Tüm
+      Veri Talebi → proje-talebi formu" kutusu yeni butonla çelişiyordu —
+      anlamı değiştirildi: artık yalnız o ayki arama hakkı bitince (`remaining
+      <= 0`, `trdizin_job_status`'a eklendi) "Destekçi olarak hakkınızı
+      artırabilirsiniz" (job_list linki, OpenAlex'teki kalıp) gösteriyor.
+      Migration yok, 270/270 pytest yeşil. Dosyalar: `trdizin/models.py`,
+      `trdizin/services/job_runner.py`, `trdizin/views.py`,
+      `trdizin/templates/trdizin/landing.html`.
 - [ ] **Faz 5c — Semantic Scholar:** aynı (full-S3-upload zaten var,
       download endpoint'i hak kontrolüyle gate'lenecek, buton UI'a
       eklenecek).

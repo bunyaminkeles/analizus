@@ -100,6 +100,9 @@
                             <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
                                 <i class="bi bi-envelope me-1"></i>E-posta Gönder
                             </button>
+                            <a id="download-btn" href="#" class="btn btn-sm btn-outline-primary" style="display:none;" target="_blank">
+                                <i class="bi bi-filetype-txt me-1"></i>TXT İndir
+                            </a>
                             <a id="download-excel-btn" href="#" class="btn btn-sm btn-success" style="display:none;">
                                 <i class="bi bi-file-earmark-excel me-1"></i>Excel İndir
                             </a>
@@ -112,13 +115,14 @@
                         {% include "partials/_s3_retention_notice.html" %}
                         <div id="results-list"></div>
 
-                        <!-- Tüm veri talep kutusu -->
+                        <!-- Aylık ücretsiz hak bittiğinde premium'a yönlendirme (TXT/Excel butonları zaten
+                             tam listeyi veriyor — bu kutu YENİ aramalar için hak artırma amaçlı) -->
                         <div id="full-data-box" style="display:none;" class="mt-3 p-3 rounded">
                             <div class="d-flex align-items-start gap-2">
                                 <i class="bi bi-database-fill-lock text-warning mt-1"></i>
                                 <div>
-                                    <div class="text-white fw-semibold small mb-1">Tüm Veri Talebi</div>
-                                    <div class="text-muted small">Yukarıdaki örnek, en yeni 5 makaleyi içermektedir. Tüm sonuçlara erişmek için <a href="/proje-talebi/?source=trdizin" class="text-warning text-decoration-none fw-semibold">talep formumuzu</a> doldurun.</div>
+                                    <div class="text-white fw-semibold small mb-1">Ücretsiz Hakkınız Doldu</div>
+                                    <div class="text-muted small">Bu ay için ücretsiz arama hakkınız bitti. {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'job_list' %}" class="text-warning text-decoration-none fw-semibold">Destekçi olarak</a> ücretsiz hakkınızı artırabilirsiniz.{% endif %}</div>
                                 </div>
                             </div>
                         </div>
@@ -292,11 +296,19 @@ function showResults(data) {
         emailBtn.style.display = 'inline-block';
         emailBtn.dataset.jobId = currentJobId;
 
+        const dlBtn = document.getElementById('download-btn');
+        dlBtn.href = `/trdizin/download/${currentJobId}/`;
+        dlBtn.style.display = 'inline-block';
+
         const xlBtn = document.getElementById('download-excel-btn');
         xlBtn.href = `/trdizin/download-excel/${currentJobId}/`;
         xlBtn.style.display = 'inline-block';
 
-        document.getElementById('full-data-box').style.display = 'block';
+        // TXT/Excel butonları zaten tam listeyi veriyor (ek hak harcamadan) — bu kutu
+        // yalnız bu ayki arama hakkı bittiğinde (yeni arama için) premium'a yönlendirir.
+        if (typeof data.remaining === 'number' && data.remaining <= 0) {
+            document.getElementById('full-data-box').style.display = 'block';
+        }
     }
 }
 

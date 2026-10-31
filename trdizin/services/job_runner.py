@@ -233,24 +233,27 @@ def send_order_results_email(order):
         return False
 
 
-def cleanup_expired_trdizin_s3_files(days=7):
+def cleanup_expired_trdizin_s3_files(days=None):
     """7 günden eski trdizin/ altındaki tüm dosyaları S3'den siler.
     DB'ye değil, S3'deki dosya tarihine bakar."""
     from forum.s3_utils import cleanup_s3_prefix
+    from trdizin.models import RESULT_RETENTION_DAYS
 
+    days = days or RESULT_RETENTION_DAYS
     cutoff = timezone.now() - timedelta(days=days)
     deleted_count = sum(
         cleanup_s3_prefix(prefix, days)
         for prefix in ['trdizin/demo/', 'trdizin/full/', 'trdizin/orders/']
     )
 
-    # DB'deki URL referanslarını da temizle
+    # DB'deki URL referanslarını VE demo_results/all_results JSON'larını da temizle —
+    # download-excel view'ı S3'e değil doğrudan bu alanlara bakıyor (31 Ekim 2026).
     try:
         DizinSearchJob.objects.filter(
             created_at__lt=cutoff,
         ).exclude(
-            demo_file_url='', all_results_file_url=''
-        ).update(demo_file_url='', all_results_file_url='')
+            demo_file_url='', all_results_file_url='', demo_results=[], all_results=[],
+        ).update(demo_file_url='', all_results_file_url='', demo_results=[], all_results=[])
     except Exception as e:
         logger.error(f"DB temizlik hatası (trdizin): {e}")
 
