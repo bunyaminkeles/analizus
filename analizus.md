@@ -3042,6 +3042,81 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **31 Ekim 2026 — Tam Sonuç Teslimi: Ücretsiz Hak Bazlı Birleştirme
+  (Faz 5a-5e, main'de canlı) + canlı test turu (Sorun 1-4) + Bibliometri
+  "Tam Rapor" aylık ücretsiz hak kapsamına alındı.** Kaynak: kullanıcının
+  OpenAlex "363 yayın bulundu ama demo 5 kayıt gösteriyor" sorusu
+  araştırılırken, 6 tarama aracının (OpenAlex, TR Dizin, Semantic
+  Scholar, OAI-PMH, PubMed, YÖK Tez) "tam sonuç" (demo ötesi) teslimini
+  **3 farklı ve tutarsız** modelle yaptığı bulundu — bazısı hiç
+  üretmiyor, bazısı ücretsiz üretip gizliyor, biri tamamen açık.
+  **Faz 5a-5e (tasks/todo.md'de ayrıntılı):** 5 aracın tamamında artık
+  tam liste (TXT/Excel) ücretsiz indirilebiliyor — arama zaten o ayki
+  ücretsiz hakla yapıldığı için ek hak harcanmıyor, iş bir kez
+  oluşturulduysa kalıcı olarak ücretsiz kalıyor (ay değişse bile).
+  Mevcut ödemeli sipariş sistemleri (`AlexOrder`/`DizinOrder`/vb.)
+  **kaldırılmadı**, hak dolunca alternatif olarak duruyor. Yan bulgu +
+  düzeltme: "7 gün sonra silinir" sözü `demo_results`/`all_results` JSON
+  alanlarını hiç kapsamıyordu (yalnız S3'teki düz dosya temizleniyordu)
+  — her 5 araca `is_results_expired()` + cleanup JSON temizliği eklendi.
+  Ayrıca "Destekçi olarak" linkinin `/market/`'e (pazaryeri, premium ile
+  ilgisiz) gittiği, gerçek premium modalının (`#donationModal`,
+  `footer.html`) hiç tetiklenmediği bulunup 4 dosyada düzeltildi.
+  **Üretim testinde çıkan 4 sorun (Sorun 1-4), hepsi aynı gün çözüldü:**
+  (1) farklı kullanıcı girince önceki kullanıcının işi `localStorage`'dan
+  (kullanıcıya göre ayrılmamış anahtar) gösterilip 404/"JSON.parse"
+  çökmesine yol açıyordu — anahtar kullanıcıya özel yapıldı, 5 aracın
+  fetch zincirlerine JSON-parse güvenlik ağı eklendi; (2) "hakkınız
+  doldu" hata mesajlarına tıklanabilir "Destekçi Ol"/"Proje Talebi"
+  linki eklendi (9 endpoint, TR→bağış modalı, EN/DE→proje talebi —
+  premium sistemi henüz TR-only); (3) bibliometri "Geçmiş Analizlerim"
+  tablosu artık canlı güncelleniyor (var olan `job_status` endpoint'i
+  polling ile); (4) aynı tablo yalnız ilk 5 satırı gösterip kalanını
+  "Daha Fazla Göster" ile açıyor. **Kritik ders (tekrarlanmasın):**
+  bu turlarda eklenen `{% trans %}` metinleri makemessages/çeviri/
+  compilemessages adımından hiç geçirilmemişti — EN/DE sayfalarda
+  Türkçe kalıyordu; düzeltilirken `msgmerge`'ün **fuzzy eşleştirmesinin**
+  6 yeni msgid'i yanlış/eksik çeviriyle işaretlediği görüldü (ör.
+  "Destekçi Ol" → anlamsızca "As a supporter,"a eşleşmiş) — polib ile
+  elle doğru çeviriyle düzeltilip fuzzy flag temizlendi. Ayrı bir bug:
+  OpenAlex/PubMed'in AI yorumu (Claude özeti) EN/DE sayfalarda da hep
+  Türkçe geliyordu — kök neden, arka plan iş kuyruğunun (restart'a
+  dayanıklı olsun diye) dil taşımaması, bu yüzden `Profile.
+  preferred_language` (e-posta amaçlı, anlık sayfa diliyle senkron
+  olmayabilir) kullanılıyordu; `AlexSearchJob`/`PubMedSearchJob`'a
+  `created_language` alanı eklenip (**migration**, basit `AddField`,
+  veri kaybı riski yok) arama anındaki `get_language()` ile dolduruldu.
+  **Bibliometri "Tam Rapor" (son adım):** `BibliometricJob` zaten her
+  tamamlanan işte tam PDF'i de ücretsiz üretip S3'e yüklüyordu
+  (`full_pdf_url`, demo ile aynı pipeline) ama hiç kullanıcıya
+  gösterilmiyordu — tek yol 900 TL'lik sipariş idi; `bibliometrics_job_status`
+  bu alanı artık JSON'a koyuyor, sonuç panelinde mevcut Demo/Sipariş
+  kartlarına dokunmadan yeni bir "Tam Rapor — ÜCRETSİZ" kartı eklendi
+  (Sipariş/Uzman Paketi sistemi olduğu gibi korundu). Tüm adımlar
+  migration'lı olanlar dahil tek tek `dev`→`main` merge edilip (her
+  seferinde production'da aktif kullanıcı kontrolüyle) Hetzner'e deploy
+  edildi; her adımda 270/270 pytest yeşil. Ayrıntılı dosya listesi ve
+  kararlar: `tasks/todo.md`.
+
+- **31 Ekim 2026 — Yeni `support@analizus.com` kutusu hosting.com.tr'de
+  (ProMail) açıldı, kod tabanında yalnız ödeme sonrası destek e-postasına
+  bağlandı, `main`'e merge edildi (`8fda8f2`, migration yok).** Önce koddaki
+  tüm `info@analizus.com` kullanım noktaları tarandı: iletişim sayfası, KVKK/
+  gizlilik politikası (yasal muhatap), proje talebi CTA'sı, bibliometrics/
+  semanticscholar landing sayfalarındaki "tüm veri talebi" mailto linkleri
+  ve OpenAlex/PubMed/Semantic Scholar scraper'larındaki API politeness
+  contact adresi — kullanıcı kararıyla bunların hiçbiri değişmedi, yalnız
+  `forum/templates/forum/emails/support_payment_details.html`'deki
+  "Herhangi bir sorunuz için ..." cümlesi `support@analizus.com`'a
+  çevrildi (EN/DE `.po`/`.mo` güncellenip derlendi). `DEFAULT_FROM_EMAIL`/
+  `SMTP_USER` (`.env`) dokunulmadı — Django hâlâ `info@` SMTP'siyle
+  gönderiyor, `support@` yalnızca gelen kutusu (webmail/Outlook) olarak
+  kullanılacak, kullanıcı kararı. hosting.com.tr tarafı: domain zaten
+  ProMail üzerinde barındığından (`mail.analizus.com`) yeni MX/SPF/DKIM
+  kaydı gerekmedi, panelin "Mail Hesaplarım" ekranında ikinci hesap olarak
+  göründü. Merge öncesi production'da aktif (staff olmayan) kullanıcı
+  olmadığı doğrulanıp `dev`'den `main`'e `--no-ff` merge edildi.
+
 - **28 Ekim 2026 — Bibliometri Grup A başladı, A1 tamamlandı (dev'de, henüz
   push edilmedi).** Kaynak: `bibliometri_durum_ve_gelistirme_prompt.md`
   (gerçek vaka: EN kullanıcı kayıt→onboarding huninde `next`/dil bağlamını
