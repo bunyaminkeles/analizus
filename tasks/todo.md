@@ -1,3 +1,44 @@
+# Bibliometri "Tam Rapor" Aylık Ücretsiz Hak Kapsamına Alındı (31 Ekim 2026)
+
+**Bulgu (kullanıcı doğruladı, kod incelemesiyle teyit edildi):**
+`MonthlyToolLimitMixin.get_monthly_limit()` ([forum/models.py:2468-2481](forum/models.py#L2468-L2481))
+zaten önceki oturumlarda tier-bazlı kurulmuştu: Free → `SiteSettings.
+monthly_analysis_limit_free`; Premium → destekçi paketinin (`DonationTier.
+monthly_analysis_credits`) hakkı; ödüllü davet +1. `BibliometricJob` da
+`MonthlyToolLimitMixin` kullanıyor (Faz 4g). Ayrıca her tamamlanan işte
+**tam PDF zaten ücretsiz üretilip S3'e yükleniyordu**
+(`job_runner.py:202-222`, `full_pdf_url` — demo ile aynı pipeline). Ama
+`bibliometrics_job_status` bu alanı JSON'a hiç koymuyordu, sayfada hiçbir
+indirme linki yoktu — tek yol "Sipariş Oluştur" (900 TL) idi. Yani tam
+rapor zaten ücretsiz hazırdı, sadece kullanıcıya hiç gösterilmiyordu.
+
+**Düzeltme (TAMAMLANDI):**
+- [x] `bibliometrics_job_status`: `full_pdf_url` JSON'a eklendi.
+- [x] Sonuç panelinde, mevcut Demo/Sipariş kartlarına **dokunmadan**,
+      üstlerine yeni bir "Tam Rapor — ÜCRETSİZ" kartı eklendi
+      (`full_pdf_url` doluysa görünür, direkt S3 indirme linki).
+      Sipariş kartı ve `BibliometricOrder` sistemi tamamen olduğu gibi
+      bırakıldı (Uzman Paketi/insan incelemesi için hâlâ geçerli).
+- [x] Üstteki özet cümle güncellendi: artık "Demo raporu VE tam rapor
+      ücretsiz indirilebilir" diyor (önceden "tam rapor için sipariş
+      oluşturun" diyordu — yanlış/bayat bilgi idi). Aynı yerde bayat
+      "17 analiz" referansı da (bilinen, 30 Ekim'den kalma ayrı bulgu)
+      fırsatçı olarak 26'ya düzeltildi.
+- [x] Davranış: iş zaten aylık hakla oluşturulduğu için tam rapor **her
+      zaman** ücretsiz kalır (ay değişse bile) — OpenAlex/TRDizin'deki
+      Faz 5 kararıyla birebir aynı mantık. Yeni iş başlatma kuralı
+      (`daily_used >= daily_limit` → 429) hiç değişmedi; hak bitince
+      yeni analiz yine engelleniyor.
+- [x] 2 yeni msgid (EN/DE) makemessages ile bulunup elle doğru çevrildi
+      (fuzzy eşleşme yine yanlış/bayat çeviri getirmişti — "17 analiz
+      için sipariş oluşturun" gibi), compilemessages hatasız.
+
+Migration yok, 270/270 pytest yeşil. Dosyalar: `bibliometrics/views.py`,
+`bibliometrics/templates/bibliometrics/landing.html`,
+`locale/en+de/LC_MESSAGES/django.po(.mo)`.
+
+---
+
 # Sorun 2 Genişletmesi — Renk/Metin Tutarlılığı + EN/DE Proje Talebi CTA'sı + Çeviri Düzeltmesi (31 Ekim 2026)
 
 Sorun 2'yi canlıda test ederken 3 ek bulgu çıktı, hepsi tek turda çözüldü:

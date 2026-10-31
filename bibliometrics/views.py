@@ -177,6 +177,7 @@ def bibliometrics_job_status(request, job_id):
         data['error'] = job.error_message
     elif job.status == 'completed':
         data['demo_pdf_url'] = job.demo_pdf_url
+        data['full_pdf_url'] = job.full_pdf_url
         data['demo_email_sent'] = job.demo_email_sent
         data['clean_data_xlsx_url'] = job.clean_data_xlsx_url
         data['clean_data_csv_url'] = job.clean_data_csv_url
