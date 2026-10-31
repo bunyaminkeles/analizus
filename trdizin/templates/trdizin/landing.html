@@ -322,7 +322,9 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
         method: 'POST',
         headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
     })
-    .then(r => r.json())
+    .then(r => r.json().catch(() => {
+        throw new Error('Sunucuyla iletişim hatası. Sayfayı yenileyip tekrar deneyin.');
+    }))
     .then(data => {
         if (data.success) {
             btn.style.display = 'none';
@@ -331,6 +333,10 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
             btn.disabled = false;
             alert(data.error || 'E-posta gönderilemedi.');
         }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        alert(err.message);
     });
 });
 

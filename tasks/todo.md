@@ -1,4 +1,35 @@
-# [PLAN — HENÜZ BAŞLANMADI] Tam Sonuç Teslimi: Ücretsiz Hak Bazlı Birleştirme (31 Ekim 2026)
+# Faz 5 Sonrası Üretim Testinde Çıkan Bulgular (31 Ekim 2026)
+
+Faz 5a-5e üretime alındıktan sonra kullanıcı canlıda test etti, 3 ayrı
+sorun bildirdi (Faz 5'in kapsamında değildi, ayrı turlarda ele alınıyor):
+
+- [x] **Sorun 1 — TAMAMLANDI:** Admin hesabıyla girince OpenAlex sayfası
+      önceki kullanıcının işini gösterdi (TXT "Not Found", e-posta/
+      bibliometri "JSON.parse" hatası). **Kök neden:** OpenAlex/PubMed
+      tamamlanmış sonucu `localStorage`'da **kullanıcıya göre ayrılmamış**
+      bir anahtarla (`openalex_last_job`) 24 saat saklıyordu — farklı
+      kullanıcı girince eskisinin işini gösterip butonları ona bağlıyordu;
+      sunucu `user=request.user` ile doğru şekilde reddediyordu (güvenlik
+      açığı YOK) ama red, JS'te çirkin şekilde yüzeye çıkıyordu (404 sayfası
+      / JSON parse çökmesi). Düzeltme: (1) `STORAGE_KEY` artık
+      `..._{{ request.user.id }}` ile kullanıcıya özel (openalex, pubmed).
+      (2) 5 aracın da ("E-posta Gönder" + openalex/pubmed'in "Bibliometrik
+      Analiz İstiyorum") fetch zincirlerine `r.json().catch(() => { throw
+      ... })` eklendi — sunucu JSON yerine HTML hata sayfası dönerse artık
+      çökmüyor, düzgün mesaj gösteriyor. TRDizin'in email fetch'inde hiç
+      `.catch()` yoktu (sessiz çökme) — o da eklendi. Migration yok,
+      270/270 pytest yeşil. Dosyalar: openalex/trdizin/semanticscholar/
+      pubmed/oaipmh `templates/*/landing.html`.
+- [ ] **Sorun 2 — Hata kutularında tıklanabilir "Destekçi ol" linki:**
+      "hakkınız doldu" / sahiplik hatası mesajları düz metin, tıklanabilir
+      değil. Henüz başlanmadı.
+- [ ] **Sorun 3 — Bibliometri "Geçmiş Analizlerim" canlı güncelleme:**
+      tablo yalnız sayfa yüklenirken sunucu tarafında render ediliyor,
+      polling yok. Henüz başlanmadı.
+
+---
+
+# [PLAN] Tam Sonuç Teslimi: Ücretsiz Hak Bazlı Birleştirme (31 Ekim 2026)
 
 **Bulgu (31 Ekim 2026, OpenAlex "363 yayın / demo" sorusu araştırılırken ortaya çıktı):**
 6 tarama aracında "tam sonuç" (demo'nun ötesi) teslimi 3 FARKLI ve TUTARSIZ

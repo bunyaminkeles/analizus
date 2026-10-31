@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
     biblioList: "{% url 'bibliometrics:landing' %}",
   };
   const url = (key, id) => URLS[key].replace(SENTINEL, id);
-  const STORAGE_KEY = 'pubmed_last_job';
+  const STORAGE_KEY = 'pubmed_last_job_{{ request.user.id }}';
 
   const $ = (id) => document.getElementById(id);
   const builder = $('pm-builder'), form = $('pm-search-form'), submitBtn = $('pm-submit');
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function () {
     emailBtn.querySelector('span').textContent = T.sending;
     emailStatus.innerHTML = '';
     fetch(url('email', currentJobId), {method: 'POST', headers: {'X-CSRFToken': csrf(), 'X-Requested-With': 'XMLHttpRequest'}})
-      .then(r => r.json())
+      .then(r => r.json().catch(() => { throw new Error(T.unknown); }))
       .then(data => {
         if (!data.success) throw new Error(data.error || T.unknown);
         emailStatus.innerHTML = `<div class="ax-alert ax-alert--success" role="status"><div class="ax-alert__body">${esc(data.message)}</div></div>`;
@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
       biblioBtn.querySelector('span').textContent = T.biblio_starting;
       biblioStatus.innerHTML = '';
       fetch(url('biblio', currentJobId), {method: 'POST', headers: {'X-CSRFToken': csrf(), 'X-Requested-With': 'XMLHttpRequest'}})
-        .then(r => r.json())
+        .then(r => r.json().catch(() => { throw new Error(T.unknown); }))
         .then(data => {
           if (data.status === 'started') {
             biblioStatus.innerHTML = biblioAlert('success', T.biblio_started);
