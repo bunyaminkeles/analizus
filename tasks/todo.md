@@ -1,3 +1,57 @@
+# Sorun 2 Genişletmesi — Renk/Metin Tutarlılığı + EN/DE Proje Talebi CTA'sı + Çeviri Düzeltmesi (31 Ekim 2026)
+
+Sorun 2'yi canlıda test ederken 3 ek bulgu çıktı, hepsi tek turda çözüldü:
+
+- [x] **"Hata:"/"Error:" öneki kota mesajları için yanlış ton (gerçek hata
+      değil) + CTA rengi tutarsız + EN/DE'de hiç link yoktu (TAMAMLANDI):**
+      9 backend endpoint'inin tamamına (7 araç + bibliometri 3 giriş
+      noktası) ikinci bir bayrak eklendi: `show_project_request_cta =
+      not is_premium and not is_tr`. İstemci tarafı artık üç duruma göre
+      dallanıyor: premium → CTA yok; TR + premium değil → "Destekçi Ol"
+      (`#donationModal`); TR değil + premium değil → "Proje Talebi"
+      (`{% url 'proje_talebi' %}?source=...`). Kota mesajlarının önündeki
+      "Hata:"/"Error:" öneki kaldırıldı, kutu rengi danger(kırmızı) yerine
+      warning(sarı)/`ax-alert--warning` oldu — gerçek hatalar (ağ hatası,
+      iş başarısız) hâlâ danger kalıyor. CTA linkleri artık `var(--ax-
+      accent-warning)` (Premium Üye Ol butonuyla aynı renk) kullanıyor.
+      PubMed'de ayrıca: bibliometri köprüsü hatası gösterilince hemen
+      altındaki neredeyse aynı metinli arama-kotası ipucu (`pm-full-data`)
+      kullanıcı kafası karışmasın diye gizleniyor.
+- [x] **EN/DE'de yeni metinler Türkçe kalıyordu (TAMAMLANDI, kritik
+      ders):** Bugünkü tüm turlarda (Faz 5 + Sorun 1-4) eklenen
+      `{% trans %}` metinleri hiç `makemessages`/çeviri/`compilemessages`
+      adımından geçirilmemişti — Django çeviri bulamayınca kaynak Türkçe
+      metni gösteriyordu (kullanıcı EN PubMed sayfasında fark etti).
+      `makemessages -l en -l de` çalıştırıldı; **msgmerge'ün fuzzy
+      eşleştirmesi** 6 yeni msgid'i yanlış/eksik çeviriyle işaretlemişti
+      (ör. "Destekçi Ol" → fuzzy olarak "Destekçi olarak"ın çevirisi "As a
+      supporter," ile eşleşmiş — anlamsız). 6 msgid elle doğru çeviriyle
+      düzeltildi (fuzzy flag + previous_* temizlendi, polib ile):
+      "Destekçi Ol"→"Become a Supporter"/"Unterstützer werden",
+      "Daha Fazla Göster"→"Show More"/"Mehr anzeigen", "Ücretsiz Hakkınız
+      Doldu"→kısa başlık çevirisi (önceki fuzzy eşleşme yanlışlıkla tam
+      cümle çevirisi getirmişti), "Bu ay için ücretsiz arama hakkınız
+      bitti."→"analiz" değil "arama" (search, fuzzy yanlış kelimeyle
+      eşleşmişti), "Sunucuyla iletişim hatası..." ve "Sipariş" zaten
+      doğruydu, sadece fuzzy flag temizlendi. **34 ilgisiz, önceden var
+      olan fuzzy/boş çeviri** (mediation/MANOVA/hesap silme/forum
+      bildirim metinleri vb.) kapsam dışı bırakıldı, dokunulmadı.
+      `compilemessages` hatasız. **Ders:** Bundan sonra her `{% trans %}`
+      eklenen turda makemessages+çeviri+compilemessages adımı ATLANMAYACAK
+      — bugünkü gibi birikmesine izin verilmeyecek.
+- [x] **Bibliometri "Geçmiş Analizlerim" tam rapor kararı — AÇIK, cevap
+      bekleniyor:** Kullanıcı "zaten olmuş olmalı" dedi — tam raporun
+      (26 analiz) da aylık ücretsiz hakka dahil edilip edilmeyeceği henüz
+      netleşmedi, ayrı bir tur olarak planlanacak.
+
+Migration yok (sadece .po/.mo + görünüm), 270/270 pytest yeşil. Dosyalar:
+openalex/trdizin/semanticscholar/pubmed/oaipmh/yoktez `views.py` +
+`templates/*/landing.html`, `bibliometrics/views.py` +
+`templates/bibliometrics/landing.html`, `locale/en/LC_MESSAGES/django.po(.mo)`,
+`locale/de/LC_MESSAGES/django.po(.mo)`.
+
+---
+
 # Faz 5 Sonrası Üretim Testinde Çıkan Bulgular (31 Ekim 2026)
 
 Faz 5a-5e üretime alındıktan sonra kullanıcı canlıda test etti, 3 ayrı
