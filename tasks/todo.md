@@ -812,6 +812,25 @@ maddelerde.
   "Navigasyon Grafiği: hariç tutulacak grup" alanına o grup seçili olmalı,
   DOĞRULANMADI. `UniversityAdmin`/`YokTezUniversite` dokunulmadı (user alanı
   yok). Henüz main'e merge/deploy edilmedi (dev'de).
+- [x] **(31 Ekim 2026) TAMAMLANDI — `.ax-alert` içindeki linkler (ör. PubMed
+  "Bibliometrik analizlerim →") varsayılan tarayıcı/Bootstrap mavisiyle
+  renklendiriliyordu, yeşil `ax-alert--success` kutusu içinde çakışıyordu.**
+  `static/css/base.css` ve derlenmiş `static/css/bundle.css`'e her `ax-alert`
+  varyantı için linki kendi vurgu rengine boyayan 5 kural eklendi
+  (`.ax-alert--success/danger/warning/info/cyan .ax-alert__body a`).
+  `bundle.css` cache-bust için `templates/base.html`'deki `?v=0016` →
+  `?v=0017` yapıldı. Kontrol edildi: `.ax-alert__body` içinde `<a>` kullanan
+  tek yer `pubmed/templates/pubmed/landing.html`'deki `biblioAlert()` JS
+  fonksiyonuydu, başka şablon etkilenmiyor.
+- [x] **(31 Ekim 2026) TAMAMLANDI — "Destekçi olarak" linki (kota dolunca
+  gösterilen bağış yönlendirme metni) PubMed sayfasında sarı (premium)
+  renkte değildi, diğer 3 araçla tutarsızdı.** Kullanıcı ekran görüntüsüyle
+  netleştirdi: OpenAlex/TR Dizin/Semantic Scholar'da bu link zaten
+  `text-warning text-decoration-none fw-semibold` sınıflarıyla sarı
+  renkliydi (27ffc28 "kota mesajlarında renk/ton tutarlılığı" commit'i),
+  yalnız `pubmed/templates/pubmed/landing.html:95` bu sınıflar eksik
+  kalmıştı. Aynı sınıflar eklendi, mevcut desenle birebir aynı — tek
+  dosya, tek satır.
 - [ ] **(30 Ekim 2026) B4 sırasında çıkan yan bulgu: birden fazla yerde "17
   analiz" bayatlamış, gerçek sayı 26.** Üç ayrı konum, hiçbirine dokunulmadı
   (kapsam dışı), ayrı onay gerekiyor:

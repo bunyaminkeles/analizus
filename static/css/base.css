@@ -516,6 +516,14 @@
     border-color: var(--ax-accent-info);
 }
 
+/* İçindeki link, varsayılan tarayıcı/Bootstrap mavisi yerine kutunun kendi
+   vurgu rengini alır (ör. yeşil ax-alert--success içinde mavi link çakışması). */
+.ax-alert--success .ax-alert__body a { color: var(--ax-accent-secondary); }
+.ax-alert--danger .ax-alert__body a { color: var(--ax-accent-danger); }
+.ax-alert--warning .ax-alert__body a { color: var(--ax-accent-warning); }
+.ax-alert--info .ax-alert__body a { color: var(--ax-accent-primary); }
+.ax-alert--cyan .ax-alert__body a { color: var(--ax-accent-info); }
+
 /* -------------------------------------------------------------
    8. MODAL COMPONENT — Bootstrap .modal ile çakışmaz
    Açma/kapama sınıfı: .is-open (bkz. Faz 2 — vanilla JS controller)
