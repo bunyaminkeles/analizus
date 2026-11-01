@@ -319,13 +319,18 @@ açıkça talep ederse** yapılsın (otomatik email eki değil, "Tam Listeyi
       TRDizin/SemanticScholar/PubMed'e Faz 5b-5e'de aynen kopyalanmıştı.
       4'ü de `data-bs-toggle="modal" data-bs-target="#donationModal"`
       ile düzeltildi (openalex/trdizin/semanticscholar/pubmed landing.html).
-- [ ] **Faz 5f — EN/DE premium akışı (EN SON, PayPal bilgisi bekleniyor):**
-      dil bazlı "ücretsiz hak yok" kısıtlaması kaldırılacak (tüm 5 araçta);
-      premium'a yönlendirme EN/DE'de PayPal bilgilendirmesi gösterecek
-      şekilde ayrı bir CTA/e-posta metni yazılacak.
-- [ ] Her fazda ilgili `order.html`/landing.html metinleri (sipariş dili →
-      "aylık hak" diline) güncellenmeli; TR/EN/DE çevirileri eklenmeli.
-- [ ] Tüm fazlar bitince `analizus.md` §9/§20/§27'ye özet eklenmeli.
+- [x] **Faz 5f — TAMAMLANDI (1 Kasım 2026, main'de canlı).** EN/DE PayPal
+      bilgisi (paypal.me/bkeles74, bkeles74@gmail.com) geldi; kapsam kullanıcı
+      tarafından genişletildi — EN/DE artık TR'deki gibi tek `#donationModal`'dan
+      3 kademeli (Platin 50€/Altın 25€/Gümüş 10€) seçim sunuyor, Bronz pasif
+      edildi (silinmedi). `DonationTier.eur_amount` (migration `0195`),
+      `send_support_email()` `payment_method` (iban/paypal) ile dallanıyor,
+      mevcut IBAN/Donation/admin-onay akışı değişmeden kullanılıyor. 7 araçta
+      kota dolunca gösterilen premium CTA'sı artık dilden bağımsız. Plan
+      dosyası: `polymorphic-sniffing-brook.md`. 270/270 pytest yeşil.
+- [x] `order.html`/landing.html metinleri + TR/EN/DE çevirileri — yukarıdaki
+      Faz 5f turunda tamamlandı.
+- [x] `analizus.md` §9/§20/§27'ye özet eklendi (1 Kasım 2026).
 
 ---
 

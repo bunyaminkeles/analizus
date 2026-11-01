@@ -765,10 +765,14 @@ class StudyRoomPost:     # Oda mesajları (file: FileField → S3)
 class QuizQuestion / QuizScore:  # İstatistik Arena — 432 soru (hedef: 1000)
 class Badge:             # Rozetler — name_en/_de, description_en/_de (0156); localized_name/localized_description
 class SuccessStory:      # Başarı hikayeleri
-class DonationTier:      # Destek paketi (name, min_amount, premium_days, is_active)
+class DonationTier:      # Destek paketi (name, min_amount, eur_amount(0195), premium_days, is_active)
+    # 3 kademe (Platin/Altın/Gümüş) — Bronz 1 Kasım 2026'da is_active=False (silinmedi)
+    # eur_amount: EN/DE PayPal akışında gösterilen tutar (TR'de min_amount/TL kullanılır)
 class Donation:          # Bağış kaydı
     # STATUS: pending → pending_confirmation → completed | failed
-    # pending_confirmation: kullanıcı "Havaleyi Yaptım" butonuna bastı, admin onayı bekliyor
+    # payment_method (iban/paypal, 0195) Donation'da ayrı alan DEĞİL — yalnız send_support_email()'in
+    #   e-posta şablonu context'inde geçici bir context değişkeni, DB'ye `message` alanına not düşülür
+    # pending_confirmation: kullanıcı "Havaleyi Yaptım"/"Ödedim" butonuna bastı, admin onayı bekliyor
     # premium_days_promised (0167): talep anındaki katman günü — katman sonradan değişse de bu süre verilir
     # status → completed (admin kaydı, "Seçili bağışları onayla" aksiyonu, panel) → signals.reward_on_donation_completed:
     #   grant_premium() (bir kez; mevcut Premium'un üzerine ekler) + grant_supporter_badge() + teşekkür e-postası (bitiş tarihli, alıcı dilinde)
@@ -1921,7 +1925,7 @@ hiç saklama süresi taahhüdü vermiyor.
   bekleyen ilan varsa kırmızı + varsayılan açık; "Gör" / "Onayla / Reddet →". "X bekliyor" toplamına dahil.
 - `DonationAdmin` — aksiyon **"✅ Seçili bağışları onayla (Premium ver)"**; detayda Durum=Tamamlandı da aynı sonucu verir
   (sinyal). "Söz Verilen Premium Gün" / "Verilen Premium Gün" salt okunur.
-- `DonationTierAdmin` — tutar, Premium gün, aktif listeden düzenlenir (`list_editable`).
+- `DonationTierAdmin` — tutar (TL + EUR), Premium gün, aktif listeden düzenlenir (`list_editable`).
 - `JobProposalAdmin` — teklif (İlan Sahibi + Teklif Veren kolonları)
 - `ProfileAdmin` — kullanıcı profil; "Tercihler" bölümünde **"Uzman Dizini: Zorla Göster/Gizle"** (`directory_override`,
   8 Ekim 2026) — boş=otomatik kural, Evet=kurala bakmadan `/uzmanlar/`e zorla ekler (örn. gerçekten danışmanlık veren
@@ -3041,6 +3045,42 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 #### Geçmiş Turlar (Kronoloji)
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
+
+- **1 Kasım 2026 — "17 analiz" bayat sayısı 26'ya düzeltildi + Faz 5f: EN/DE
+  için PayPal ile 3 kademeli Premium akışı (ikisi de `main`'de canlı).**
+  **(1) Bayat sayı:** `bibliometrics/services/analyzer.py` `run_all_analyses()`
+  26 analiz tanımlıyor (30 Ekim'deki B1+B2 genişlemesinden beri), ama
+  `order.html`, `landing.html`, `views.py` promo metinleri ve
+  `tarama_seo_content.py`'de 9 yerde hâlâ eski "17" sayısı ve eksik
+  (yalnız 17 maddelik) analiz listeleri duruyordu — hepsi 26'ya
+  güncellendi, eksik listeler (Bradford, Tematik Harita/Evrim, Üç Alan
+  Grafiği, SCP/MCP, Bibliyografik Eşleşme, Yerel/Küresel Atıf, Konu
+  Modelleme ×2) tamamlandı. Ek onaylı 2 bulgu: SEO SSS'teki bayat "demo 3
+  grafik" → gerçek değer 10, "tam rapor için sipariş" → artık aylık
+  ücretsiz hak dahilinde ücretsiz; OpenAlex köprü kartındaki "kayıt
+  sayısına göre ücretlidir" → "ücretsizdir" (31 Ekim'deki Tam Rapor
+  Ücretsizleştirme kararıyla tutarlı hale getirildi).
+  **(2) Faz 5f (31 Ekim planının son adımı, PayPal bilgisi geldi):** İlk
+  turda EN/DE için tek sabit tutarlı (10€) bir PayPal akışı kuruldu,
+  ardından kullanıcı kapsamı genişletti — **EN/DE artık TR'deki gibi
+  3 kademeli** (Platin 50€/Altın 25€/Gümüş 10€) seçim sunuyor, aynı tek
+  `#donationModal`'dan, dil bazlı para birimi/ödeme talimatı/e-posta
+  içeriğiyle. **Bronz Destekçi kademesi pasif edildi** (silinmedi —
+  `Donation.tier` `SET_NULL` olduğu için geçmiş kayıtlar etkilenmiyor,
+  admin'den geri açılabilir). Yeni `DonationTier.eur_amount` alanı
+  (migration `forum/0195`, admin'den `list_editable`) — TR tarafında
+  `IBAN`, EN/DE'de `PayPal` (paypal.me/bkeles74) ile aynı `Donation`
+  modeli ve admin onay akışı (`mark_donation_transferred`,
+  `dashboard_approve_donation`) kullanılıyor, yeni bir ödeme sistemi
+  entegrasyonu YOK — yalnız manuel bildirim/onay. 7 araçta (OpenAlex, TR
+  Dizin, Semantic Scholar, PubMed, OAI-PMH, YÖK Tez, Bibliometri) kota
+  dolunca gösterilen premium CTA'sı artık dilden bağımsız herkese
+  çıkıyor (önceden yalnız TR'ye; EN/DE "Proje Talebi"ne yönleniyordu).
+  EN/DE çevirileri eklendi (`makemessages`+elle fuzzy düzeltme+
+  `compilemessages`, ders tekrar uygulandı), 270/270 pytest yeşil, canlı
+  `curl` ile TR/EN'de 3 doğru kademe + doğru tutar/para birimi
+  doğrulandı. Detay: `tasks/todo.md`, plan dosyası
+  `polymorphic-sniffing-brook.md`.
 
 - **31 Ekim 2026 — Kota/destekçi mesajlarında renk ve CTA tutarlılığı turu
   (3 ayrı düzeltme, main'de canlı).** Kullanıcı ekran görüntüleriyle sırayla
