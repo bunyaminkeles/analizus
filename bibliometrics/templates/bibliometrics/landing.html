@@ -507,6 +507,7 @@
     emailFailed: '{% filter escapejs %}{% trans "Email gönderilemedi." %}{% endfilter %}',
     completedBadge: '{% filter escapejs %}{% trans "Tamamlandı" %}{% endfilter %}',
     destekciOl: '{% filter escapejs %}{% trans "Destekçi Ol" %}{% endfilter %}',
+    premiumOl: '{% filter escapejs %}{% trans "Premium Üye Ol" %}{% endfilter %}',
     failedBadge: '{% filter escapejs %}{% trans "Başarısız" %}{% endfilter %}',
     runningBadge: '{% filter escapejs %}{% trans "Çalışıyor" %}{% endfilter %}',
     siparisBtn: '{% filter escapejs %}{% trans "Sipariş" %}{% endfilter %}',
@@ -579,18 +580,17 @@
     setTimeout(pollRow, 5000);
   });
 
-  function showError(msg, showPremiumCta, showProjectRequestCta) {
+  function showError(msg, showPremiumCta) {
     errorArea.classList.remove('d-none');
     const escd = msg.replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
     if (showPremiumCta) {
-      errorMsg.innerHTML = escd + ' <a href="#" class="alert-link" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">' + T.destekciOl + ' &rarr;</a>';
-    } else if (showProjectRequestCta) {
-      errorMsg.innerHTML = escd + ' <a href="' + URLS.projectRequest + '" class="alert-link" style="color:var(--ax-accent-warning);">' + T.projectRequestBtn + ' &rarr;</a>';
+      const ctaLabel = IS_TR ? T.destekciOl : T.premiumOl;
+      errorMsg.innerHTML = escd + ' <a href="#" class="alert-link" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">' + ctaLabel + ' &rarr;</a>';
     } else {
       errorMsg.textContent = msg;
     }
-    errorMsg.classList.toggle('alert-warning', !!(showPremiumCta || showProjectRequestCta));
-    errorMsg.classList.toggle('alert-danger', !(showPremiumCta || showProjectRequestCta));
+    errorMsg.classList.toggle('alert-warning', !!showPremiumCta);
+    errorMsg.classList.toggle('alert-danger', !showPremiumCta);
     progress.classList.add('d-none');
     submitBtn.disabled = false;
     submitBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i> ' + T.start;
@@ -754,7 +754,7 @@
           progText.textContent = T.started;
           startPolling(data.job_id);
         } else {
-          showError(data.error || T.generic, data.show_premium_cta, data.show_project_request_cta);
+          showError(data.error || T.generic, data.show_premium_cta);
         }
       })
       .catch(() => showError(T.network));

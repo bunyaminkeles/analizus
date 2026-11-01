@@ -3749,6 +3749,13 @@ def send_support_email(request):
         tier_id = data.get('tier_id')
         tier_name = data.get('tier_name')
         tier_amount = data.get('tier_amount')
+        # EN/DE PayPal akışı (Faz 5f): IBAN akışıyla aynı Donation/onay mekanizması,
+        # yalnız gösterilen ödeme talimatı farklı. tier_amount burada EUR gösterim
+        # değeridir (ör. "10"); Donation.amount hep tier.min_amount (TL) olarak
+        # kalır — admin gelir raporları (TL bazlı) bu yüzden bozulmaz.
+        payment_method = data.get('payment_method') or 'iban'
+        if payment_method not in ('iban', 'paypal'):
+            payment_method = 'iban'
 
         if not all([tier_id, tier_name, tier_amount]):
             return JsonResponse({'success': False, 'error': 'Geçersiz veri'}, status=400)
@@ -3758,6 +3765,8 @@ def send_support_email(request):
             return JsonResponse({'success': False, 'error': 'Paket bulunamadı'}, status=404)
 
         user = request.user
+        id_prefix = 'PAYPAL' if payment_method == 'paypal' else 'IBAN'
+        paypal_note = f'PayPal ile ödeme bildirildi: {tier_amount}€ → paypal.me/bkeles74' if payment_method == 'paypal' else ''
 
         # Daha önce pending/pending_confirmation kaydı varsa yeniden kullan
         donation = Donation.objects.filter(
@@ -3772,9 +3781,10 @@ def send_support_email(request):
                 name=user.get_full_name() or user.username,
                 amount=tier.min_amount,
                 tier=tier,
-                payment_id=f"IBAN-{uuid.uuid4().hex[:12].upper()}",
+                payment_id=f"{id_prefix}-{uuid.uuid4().hex[:12].upper()}",
                 conversation_id=f"TIER-{tier.pk}",
                 premium_days_promised=tier.premium_days,
+                message=paypal_note,
                 status='pending',
             )
         else:
@@ -3783,7 +3793,8 @@ def send_support_email(request):
             donation.tier = tier
             donation.conversation_id = f"TIER-{tier.pk}"
             donation.premium_days_promised = tier.premium_days
-            donation.save(update_fields=['amount', 'tier', 'conversation_id', 'premium_days_promised'])
+            donation.message = paypal_note
+            donation.save(update_fields=['amount', 'tier', 'conversation_id', 'premium_days_promised', 'message'])
 
         confirm_url = request.build_absolute_uri(
             reverse('mark_donation_transferred', args=[donation.pk])
@@ -3796,6 +3807,7 @@ def send_support_email(request):
             'tier_name': tier_name,
             'premium_days': tier.premium_days,
             'confirm_url': confirm_url,
+            'payment_method': payment_method,
             'job_limits': {
                 'free': site_settings.job_weekly_limit_free,
                 'premium': site_settings.job_weekly_limit_premium,

@@ -245,9 +245,11 @@ document.getElementById('yoktez-form').addEventListener('submit', function(e) {
             btn.innerHTML = '<i class="bi bi-search me-1"></i>Ara';
             let cta = '';
             if (data.show_premium_cta) {
-                cta = ' <a href="#" class="alert-link" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">Destekçi Ol &rarr;</a>';
-            } else if (data.show_project_request_cta) {
-                cta = ' <a href="{% url "proje_talebi" %}?source=tool" class="alert-link" style="color:var(--ax-accent-warning);">Proje Talebi &rarr;</a>';
+                {% if LANGUAGE_CODE == 'tr' %}
+                cta = ' <a href="#" class="alert-link" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">{% filter escapejs %}{% trans "Destekçi Ol" %}{% endfilter %} &rarr;</a>';
+                {% else %}
+                cta = ' <a href="#" class="alert-link" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">{% filter escapejs %}{% trans "Premium Üye Ol" %}{% endfilter %} &rarr;</a>';
+                {% endif %}
             }
             const box = document.getElementById('search-error-box');
             box.innerHTML = (data.error || 'Bir hata oluştu.') + cta;

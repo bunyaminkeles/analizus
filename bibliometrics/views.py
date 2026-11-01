@@ -83,15 +83,13 @@ def bibliometrics_landing(request):
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if remaining <= 0:
             is_premium = hasattr(user, 'profile') and user.profile.is_premium
-            is_tr = (get_language() or 'tr')[:2] == 'tr'
             msg = (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
                    if not is_premium else
                    gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
             return JsonResponse({
                 'status': 'error',
                 'error': msg.format(used=daily_limit, limit=daily_limit),
-                'show_premium_cta': not is_premium and is_tr,
-                'show_project_request_cta': not is_premium and not is_tr,
+                'show_premium_cta': not is_premium,
             }, status=429)
 
         form = BibliometricUploadForm(request.POST, request.FILES)
@@ -254,14 +252,12 @@ def bibliometrics_from_openalex(request, alex_job_id):
     daily_used = BibliometricJob.monthly_count_for_user(user)
     if daily_used >= daily_limit:
         is_premium = hasattr(user, 'profile') and user.profile.is_premium
-        is_tr = (get_language() or 'tr')[:2] == 'tr'
         msg = (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
                if not is_premium else
                gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
         return JsonResponse(
             {'status': 'error', 'error': msg.format(used=daily_limit, limit=daily_limit),
-             'show_premium_cta': not is_premium and is_tr,
-             'show_project_request_cta': not is_premium and not is_tr},
+             'show_premium_cta': not is_premium},
             status=429,
         )
 
@@ -332,14 +328,12 @@ def bibliometrics_from_pubmed(request, pubmed_job_id):
     daily_limit = BibliometricJob.get_monthly_limit(user)
     if BibliometricJob.monthly_count_for_user(user) >= daily_limit:
         is_premium = hasattr(user, 'profile') and user.profile.is_premium
-        is_tr = (get_language() or 'tr')[:2] == 'tr'
         msg = (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
                if not is_premium else
                gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.'))
         return JsonResponse(
             {'status': 'error', 'error': msg.format(used=daily_limit, limit=daily_limit),
-             'show_premium_cta': not is_premium and is_tr,
-             'show_project_request_cta': not is_premium and not is_tr},
+             'show_premium_cta': not is_premium},
             status=429,
         )
 

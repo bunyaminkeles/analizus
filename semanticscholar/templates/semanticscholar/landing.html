@@ -206,9 +206,11 @@ document.getElementById('semantic-form').addEventListener('submit', function(e) 
             btn.innerHTML = '<i class="bi bi-search me-1"></i>{% trans "Ara" %}';
             let cta = '';
             if (resp.show_premium_cta) {
+                {% if LANGUAGE_CODE == 'tr' %}
                 cta = ' <a href="#" class="alert-link" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>';
-            } else if (resp.show_project_request_cta) {
-                cta = ' <a href="{% url "proje_talebi" %}?source=tool" class="alert-link" style="color:var(--ax-accent-warning);">{% trans "Proje Talebi" %} &rarr;</a>';
+                {% else %}
+                cta = ' <a href="#" class="alert-link" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Premium Üye Ol" %} &rarr;</a>';
+                {% endif %}
             }
             const box = document.getElementById('search-error-box');
             box.innerHTML = (resp.error || '{% trans "Bir hata oluştu." %}') + cta;

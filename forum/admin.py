@@ -803,8 +803,8 @@ class DonationTierAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
     # Tutar, gün ve aylık analiz hakkı listeden doğrudan düzenlenir (list_editable gerçek alan ister — renkli *_display sütunları yerine)
-    list_display = ('name', 'min_amount', 'premium_days', 'monthly_analysis_credits', 'is_active')
-    list_editable = ('min_amount', 'premium_days', 'monthly_analysis_credits', 'is_active')
+    list_display = ('name', 'min_amount', 'eur_amount', 'premium_days', 'monthly_analysis_credits', 'is_active')
+    list_editable = ('min_amount', 'eur_amount', 'premium_days', 'monthly_analysis_credits', 'is_active')
     ordering = ('-min_amount',)
 
     def min_amount_display(self, obj):

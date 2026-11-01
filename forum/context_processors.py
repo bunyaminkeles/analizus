@@ -39,7 +39,12 @@ def profile_context(request):
 
 
 def donation_context(request):
-    """Aktif bağış paketlerini tüm sayfalara geçirir (footer modal için)."""
+    """Aktif bağış paketlerini tüm sayfalara geçirir (footer modal için).
+
+    Faz 5f (1 Kasım 2026): EN/DE kullanıcılar da aynı kademeleri (artık
+    `eur_amount` alanı sayesinde EUR karşılığıyla) görür — ayrı bir liste
+    gerekmiyor.
+    """
     try:
         tiers = list(DonationTier.objects.filter(is_active=True).order_by('min_amount'))
     except Exception:

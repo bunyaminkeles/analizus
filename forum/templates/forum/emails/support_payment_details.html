@@ -25,9 +25,37 @@
           <p style="margin:0 0 20px;font-size:15px;color:#e2e8f0;">
             {% blocktrans %}Merhaba <strong>{{ username }}</strong>,{% endblocktrans %}<br><br>
             {% trans "Analizus'a gösterdiğiniz desteğe içtenlikle teşekkür ederiz." %} 🙏<br>
+            {% if payment_method == 'paypal' %}
+            {% trans "Aşağıdaki PayPal adresine ödeme yaparak destek sürecinizi başlatabilirsiniz." %}
+            {% else %}
             {% trans "Aşağıdaki banka hesabına havale yaparak destek sürecinizi başlatabilirsiniz." %}
+            {% endif %}
           </p>
 
+          {% if payment_method == 'paypal' %}
+          <!-- PayPal Kutusu -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;border:1px solid rgba(236,72,153,0.3);border-radius:8px;margin-bottom:24px;">
+            <tr>
+              <td style="padding:18px 20px;">
+                <p style="margin:0 0 12px;font-size:12px;font-weight:700;color:#ec4899;text-transform:uppercase;letter-spacing:.08em;">📌 {% trans "PayPal Bilgileri" %}</p>
+                <table width="100%" cellpadding="4" cellspacing="0">
+                  <tr>
+                    <td style="font-size:13px;color:#94a3b8;width:120px;">{% trans "PayPal Linki" %}</td>
+                    <td style="font-size:13px;color:#f1f5f9;font-weight:600;"><a href="https://paypal.me/bkeles74" style="color:#f1f5f9;">paypal.me/bkeles74</a></td>
+                  </tr>
+                  <tr>
+                    <td style="font-size:13px;color:#94a3b8;">{% trans "PayPal E-posta" %}</td>
+                    <td style="font-size:13px;color:#f1f5f9;font-weight:600;">bkeles74@gmail.com</td>
+                  </tr>
+                  <tr>
+                    <td style="font-size:13px;color:#94a3b8;">{% trans "Tutar" %}</td>
+                    <td style="font-size:15px;color:#f59e0b;font-weight:700;">{{ tier_amount }} €</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+          {% else %}
           <!-- IBAN Kutusu -->
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;border:1px solid rgba(236,72,153,0.3);border-radius:8px;margin-bottom:24px;">
             <tr>
@@ -54,6 +82,7 @@
               </td>
             </tr>
           </table>
+          {% endif %}
 
           <!-- Seçilen Paket -->
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;border:1px solid rgba(168,85,247,0.3);border-radius:8px;margin-bottom:24px;">
@@ -69,10 +98,16 @@
           <!-- Adımlar -->
           <p style="margin:0 0 12px;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;">⏱️ {% trans "İşlem Adımları" %}</p>
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+            {% if payment_method == 'paypal' %}
+            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">1.</span> {% blocktrans %}Yukarıdaki PayPal adresine <strong>{{ tier_amount }} €</strong> gönderiniz.{% endblocktrans %}</td></tr>
+            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">2.</span> {% trans "Ödemeyi yaptıktan sonra aşağıdaki butona tıklayarak bize bildirin." %}</td></tr>
+            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">3.</span> {% blocktrans %}Onaylandıktan sonra Premium ve Destekçi Rozeti <strong>24 saat içinde</strong> aktifleştirilir.{% endblocktrans %}</td></tr>
+            {% else %}
             <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">1.</span> {% blocktrans %}Yukarıdaki IBAN'a <strong>{{ tier_amount }} TL</strong> havale yapınız.{% endblocktrans %}</td></tr>
             <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">2.</span> {% blocktrans %}Açıklama alanına <strong>{{ username }} — Destek</strong> yazınız.{% endblocktrans %}</td></tr>
             <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">3.</span> {% trans "Havaleyi yaptıktan sonra aşağıdaki butona tıklayarak bize bildirin." %}</td></tr>
             <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">4.</span> {% blocktrans %}Onaylandıktan sonra Premium ve Destekçi Rozeti <strong>24 saat içinde</strong> aktifleştirilir.{% endblocktrans %}</td></tr>
+            {% endif %}
           </table>
 
           <!-- Bildir Butonu -->
