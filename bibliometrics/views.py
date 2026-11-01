@@ -45,7 +45,7 @@ def bibliometrics_landing(request):
             'promo_color': 'info',
             'promo_cta_source': 'bibliometrics',
             'promo_openalex_bridge': True,
-            'promo_description': gettext('WoS, Scopus veya BibTeX dosyanızı yükleyin — yıllara göre yayın trendi, en çok atıf alan yazarlar, işbirliği ağı ve daha fazlası için 17\'ye kadar grafik içeren PDF rapor alın.'),
+            'promo_description': gettext('WoS, Scopus veya BibTeX dosyanızı yükleyin — yıllara göre yayın trendi, en çok atıf alan yazarlar, işbirliği ağı ve daha fazlası için 26\'ya kadar grafik içeren PDF rapor alın.'),
             'promo_features': [
                 {'icon': 'bi-graph-up-arrow', 'title': gettext('Yayın Trendi'), 'desc': gettext('Yıllar içinde yayın sayısı ve büyüme oranını grafikle görün.')},
                 {'icon': 'bi-people-fill', 'title': gettext('Yazar Analizi'), 'desc': gettext('En verimli yazarlar, işbirliği ağı ve Lotka kanunu dağılımı.')},
@@ -56,7 +56,7 @@ def bibliometrics_landing(request):
             ],
             'promo_steps': [
                 gettext('WoS, Scopus, BibTeX veya OpenAlex dosyanızı yükleyin.'),
-                gettext('Sistem otomatik olarak 17\'ye kadar farklı analiz çalıştırır.'),
+                gettext('Sistem otomatik olarak 26\'ya kadar farklı analiz çalıştırır.'),
                 gettext('Demo rapor ({n} grafik) ücretsiz emailinize gelir.').format(n=demo_n),
             ],
             'promo_gallery': [
