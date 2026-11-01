@@ -831,21 +831,24 @@ maddelerde.
   yalnız `pubmed/templates/pubmed/landing.html:95` bu sınıflar eksik
   kalmıştı. Aynı sınıflar eklendi, mevcut desenle birebir aynı — tek
   dosya, tek satır.
-- [ ] **(30 Ekim 2026) B4 sırasında çıkan yan bulgu: birden fazla yerde "17
-  analiz" bayatlamış, gerçek sayı 26.** Üç ayrı konum, hiçbirine dokunulmadı
-  (kapsam dışı), ayrı onay gerekiyor:
-  1. `bibliometrics/templates/bibliometrics/order.html:15` ("En fazla 17
-     analiz içeren...") + aynı sayfadaki sabit 17 analiz isim listesi
-     (satır ~74-99) — 9 eksik analiz var (Bradford, Tematik Harita,
-     Tematik Evrim, Üç Alan Grafiği, SCP/MCP, Bibliyografik Eşleşme, Yerel/
-     Küresel Atıf, Konu Modelleme x2).
-  2. `bibliometrics/views.py` promo metni, satır ~48 ("...17'ye kadar grafik
-     içeren PDF rapor...") ve satır ~59 ("Sistem otomatik olarak 17'ye kadar
-     farklı analiz çalıştırır.") — `bibliometrics_landing`'in
-     anonim/service_promo bölümü.
-  3. `tarama_seo_content.py`'nin `bibliometrics` girdisi: `intro` metninde
-     ("...17'ye kadar farklı analiz üretir...") ve bir SSS cevabında
-     ("...17'ye kadar analiz tek PDF'de sunulur...").
+- [x] **(1 Kasım 2026 TAMAMLANDI, 30 Ekim 2026 B4 sırasında bulunmuştu) Birden
+  fazla yerde "17 analiz" bayatlamış, gerçek sayı 26 — düzeltildi.** 9 konum:
+  `bibliometrics/templates/bibliometrics/order.html` (başlık + 17'lik eksik
+  liste tam 26'ya tamamlandı: Bradford, Tematik Harita/Evrim, Üç Alan
+  Grafiği, SCP/MCP, Bibliyografik Eşleşme, Yerel/Küresel Atıf, Konu
+  Modelleme x2 eklendi), `bibliometrics/templates/bibliometrics/landing.html`
+  (2 yer), `bibliometrics/views.py` (promo metni, 2 yer),
+  `tarama_seo_content.py` (intro + SSS, SSS'teki liste de tamamlandı),
+  `openalex/templates/openalex/landing.html` (1 yer). **Ek onaylı 2 bulgu
+  da düzeltildi:** `tarama_seo_content.py` SSS'teki bayat "demo 3 grafik" →
+  gerçek değer 10, "tam rapor için sipariş oluşturun" → aylık ücretsiz hak
+  dahilinde ücretsiz (Uzman Paketi ayrı/ücretli seçenek olarak kaldı);
+  `openalex/landing.html`'deki "kayıt sayısına göre ücretlidir" → "aylık
+  ücretsiz hakkınız dahilinde ücretsizdir". `makemessages -l en -l de`
+  çalıştırıldı, 5 fuzzy eşleşme elle doğru çeviriyle düzeltildi (önceki
+  turlardaki 34 ilgisiz fuzzy'ye dokunulmadı), `compilemessages` hatasız.
+  Migration yok, 270/270 pytest yeşil, canlı curl ile anonim bibliometri
+  sayfasında doğrulandı.
 - [ ] **(29 Ekim 2026) Bibliometri Grup B / B1-4 sırasında çıkan yan bulgu:
   zeyrek'in Türkçe lemmatization'ı lokal dev ortamında sessizce başarısız
   oluyor — araştırılmadı.** `bibliometrics/services/analyzer.py`

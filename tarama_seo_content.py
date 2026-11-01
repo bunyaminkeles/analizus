@@ -339,7 +339,7 @@ TARAMA_SEO_CONTENT = {
             'bir yöntemdir. Yayın sayısı, atıf örüntüleri, yazar üretkenliği, dergi dağılımı ve '
             'kurumsal işbirliği gibi göstergeler aracılığıyla alana ilişkin bütünsel bir tablo '
             'çizilir. Analizus Bibliometrik Analiz aracı, Web of Science, Scopus veya BibTeX '
-            'formatında dışa aktarılan veri dosyalarından otomatik olarak 17\'ye kadar farklı analiz üretir '
+            'formatında dışa aktarılan veri dosyalarından otomatik olarak 26\'ya kadar farklı analiz üretir '
             've sonuçları tek bir PDF raporda sunar.'
         ),
         'when_to_use': (
@@ -386,8 +386,10 @@ TARAMA_SEO_CONTENT = {
             {
                 'q': 'Kaç kayıtla analiz yapabilirim?',
                 'a': (
-                    'Demo modda ilk 3 grafiği ücretsiz alırsınız; tam rapor (17 grafiğe kadar) '
-                    'için sipariş oluşturabilirsiniz. Veri seti büyüklüğü konusunda bir '
+                    'Demo modda ilk 10 grafiği ücretsiz alırsınız; tam rapor (26 grafiğe kadar) '
+                    'da o ayki ücretsiz analiz hakkınız dahilinde ücretsiz indirilebilir. '
+                    'İsteyen kullanıcılar ayrıca ücretli "Uzman Paketi" ile bir uzmanın '
+                    'incelediği raporu sipariş edebilir. Veri seti büyüklüğü konusunda bir '
                     'üst sınır yoktur; ancak çok büyük dosyalar (10.000+ kayıt) işlem '
                     'süresini uzatabilir.'
                 ),
@@ -409,9 +411,11 @@ TARAMA_SEO_CONTENT = {
                     'anahtar kelime bulutu, eş-oluşum ağı ve zaman trendi, en çok atıf alan '
                     'yayınlar, en çok yayın yapan dergiler, ülke/kurum dağılımı, ülke ve yazar '
                     'işbirliği ağları, yayın türleri, atıf analizi ve h-index, yıllık atıf trendi, '
-                    'araştırma konusu kümeleri ve araştırma boşluğu haritası olmak üzere 17\'ye '
-                    'kadar analiz tek PDF\'de sunulur. Hangi analizlerin üretileceği verideki '
-                    'bilgilere bağlıdır.'
+                    'araştırma konusu kümeleri, araştırma boşluğu haritası, Bradford kanunu, '
+                    'tematik harita ve evrim, üç alan grafiği, SCP/MCP, bibliyografik eşleşme '
+                    'ağı, yerel/küresel atıf karşılaştırması ve konu modelleme (NMF) olmak '
+                    'üzere 26\'ya kadar analiz tek PDF\'de sunulur. Hangi analizlerin üretileceği '
+                    'verideki bilgilere bağlıdır.'
                 ),
             },
         ],
