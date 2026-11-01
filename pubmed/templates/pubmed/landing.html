@@ -270,7 +270,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (data.error) {
           const e = new Error(data.error);
           e.showPremiumCta = !!data.show_premium_cta;
-          e.showProjectRequestCta = !!data.show_project_request_cta;
           throw e;
         }
         currentJobId = data.job_id;
@@ -280,9 +279,11 @@ document.addEventListener('DOMContentLoaded', function () {
         setBusy(false);
         let cta = '';
         if (err.showPremiumCta) {
+          {% if LANGUAGE_CODE == 'tr' %}
           cta = ' <a href="#" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>';
-        } else if (err.showProjectRequestCta) {
-          cta = ' <a href="{% url "proje_talebi" %}?source=tool" style="color:var(--ax-accent-warning);">{% trans "Proje Talebi" %} &rarr;</a>';
+          {% else %}
+          cta = ' <a href="#" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Premium Üye Ol" %} &rarr;</a>';
+          {% endif %}
         }
         showStatus(esc(err.message) + cta, 'warning', true);
       });
@@ -335,7 +336,6 @@ document.addEventListener('DOMContentLoaded', function () {
           } else {
             const e = new Error(data.error || T.unknown);
             e.showPremiumCta = !!data.show_premium_cta;
-            e.showProjectRequestCta = !!data.show_project_request_cta;
             throw e;
           }
         })
@@ -343,9 +343,11 @@ document.addEventListener('DOMContentLoaded', function () {
           biblioBtn.disabled = false;
           let cta = '';
           if (err.showPremiumCta) {
+            {% if LANGUAGE_CODE == 'tr' %}
             cta = ' <a href="#" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Destekçi Ol" %} &rarr;</a>';
-          } else if (err.showProjectRequestCta) {
-            cta = ' <a href="{% url "proje_talebi" %}?source=tool" style="color:var(--ax-accent-warning);">{% trans "Proje Talebi" %} &rarr;</a>';
+            {% else %}
+            cta = ' <a href="#" style="color:var(--ax-accent-warning);" data-bs-toggle="modal" data-bs-target="#donationModal">{% trans "Premium Üye Ol" %} &rarr;</a>';
+            {% endif %}
           }
           // Aynı panelde arama kotası bitti ipucu (pm-full-data) da görünüyorsa
           // neredeyse aynı metni tekrarlayıp kafa karıştırıyordu — gizle.

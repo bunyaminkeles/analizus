@@ -188,7 +188,8 @@
                     {% for tier in donation_tiers %}
                     <div class="tier-option p-3 rounded"
                          style="background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.1);cursor:pointer;transition:all .2s;"
-                         data-tier-id="{{ tier.id }}" data-tier-name="{{ tier.name }}" data-tier-amount="{{ tier.min_amount }}"
+                         data-tier-id="{{ tier.id }}" data-tier-name="{{ tier.name }}"
+                         data-tier-amount="{% if LANGUAGE_CODE == 'tr' %}{{ tier.min_amount }}{% else %}{{ tier.eur_amount }}{% endif %}"
                          onclick="selectTier(this)">
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2">
@@ -201,7 +202,11 @@
                                 </label>
                             </div>
                             <div>
+                                {% if LANGUAGE_CODE == 'tr' %}
                                 <span class="text-warning fw-bold">{{ tier.min_amount|floatformat:0 }} TL</span>
+                                {% else %}
+                                <span class="text-warning fw-bold">{{ tier.eur_amount|floatformat:0 }} &euro;</span>
+                                {% endif %}
                                 <span class="text-muted mx-1">&rarr;</span>
                                 <span class="text-success small">{% blocktrans count days=tier.premium_days %}{{ days }} gün{% plural %}{{ days }} gün{% endblocktrans %}</span>
                             </div>
@@ -213,9 +218,15 @@
 
                 <div class="alert alert-info bg-transparent border-info text-info small mb-4">
                     <div class="d-flex flex-column gap-1">
+                        {% if LANGUAGE_CODE == 'tr' %}
                         <div><span class="fw-bold me-1">1.</span> {% trans "Paketini seç" %}</div>
                         <div><span class="fw-bold me-1">2.</span> {% trans '"Ödeme Talimatlarını Al" butonuna bas — IBAN bilgileri e-postana gelir' %}</div>
                         <div><span class="fw-bold me-1">3.</span> {% blocktrans %}Havaleyi yap → Premium genellikle <strong>24 saat içinde</strong> aktif edilir{% endblocktrans %}</div>
+                        {% else %}
+                        <div><span class="fw-bold me-1">1.</span> {% trans "Paketini seç" %}</div>
+                        <div><span class="fw-bold me-1">2.</span> {% blocktrans %}"Ödeme Talimatlarını Al" butonuna bas — PayPal bilgileri e-postana gelir{% endblocktrans %}</div>
+                        <div><span class="fw-bold me-1">3.</span> {% blocktrans %}Ödemeyi yap → Premium genellikle <strong>24 saat içinde</strong> aktif edilir{% endblocktrans %}</div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -270,14 +281,23 @@ function footerSendSupportEmail() {
     fetch('/api/send-support-email/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '' },
-        body: JSON.stringify({ tier_id: selected.value, tier_name: tier.dataset.tierName, tier_amount: tier.dataset.tierAmount })
+        body: JSON.stringify({
+            tier_id: selected.value,
+            tier_name: tier.dataset.tierName,
+            tier_amount: tier.dataset.tierAmount,
+            payment_method: '{% if LANGUAGE_CODE == "tr" %}iban{% else %}paypal{% endif %}',
+        })
     })
     .then(r => r.json())
     .then(data => {
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-envelope-fill me-2"></i>{% filter escapejs %}{% trans "Ödeme Talimatlarını Al" %}{% endfilter %}';
         if (data.success) {
+            {% if LANGUAGE_CODE == 'tr' %}
             alert('✅ {% filter escapejs %}{% trans "IBAN bilgileri e-postanıza gönderildi! Havale sonrası Premium üyeliğiniz 24 saat içinde aktif edilecektir." %}{% endfilter %}');
+            {% else %}
+            alert('✅ {% filter escapejs %}{% trans "PayPal bilgileri e-postanıza gönderildi! Ödeme sonrası Premium üyeliğiniz 24 saat içinde aktif edilecektir." %}{% endfilter %}');
+            {% endif %}
             bootstrap.Modal.getInstance(document.getElementById('donationModal')).hide();
         } else {
             alert('❌ {% filter escapejs %}{% trans "Hata:" %}{% endfilter %} ' + (data.error || '{% filter escapejs %}{% trans "E-posta gönderilemedi." %}{% endfilter %}'));

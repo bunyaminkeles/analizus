@@ -1311,6 +1311,9 @@ DONATION_TIER_NAME_MSGIDS = (
 class DonationTier(models.Model):
     """Bağış katmanları - Admin panelden yönetilebilir"""
     min_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Minimum Miktar (TL)")
+    eur_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Minimum Miktar (EUR)",
+        help_text="EN/DE kullanıcılara PayPal akışında gösterilen tutar (Faz 5f).")
     premium_days = models.IntegerField(verbose_name="Premium Gün Sayısı")
     name = models.CharField(max_length=50, blank=True, verbose_name="Katman Adı")
     is_active = models.BooleanField(default=True, verbose_name="Aktif")

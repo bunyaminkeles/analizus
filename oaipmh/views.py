@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.utils import timezone
-from django.utils.translation import get_language
 from django_ratelimit.decorators import ratelimit
 
 from forum.models import SiteSettings
@@ -76,15 +75,13 @@ def oaipmh_landing(request):
 
         if remaining <= 0:
             is_premium = hasattr(request.user, 'profile') and request.user.profile.is_premium
-            is_tr = (get_language() or 'tr')[:2] == 'tr'
             msg = (f'Bu ay için ücretsiz analiz hakkınız doldu ({daily_limit}/{daily_limit}). '
                    + ('Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.'
                       if not is_premium else
                       'Önümüzdeki ay tekrar deneyebilirsiniz.'))
             return JsonResponse({
                 'success': False, 'error': msg,
-                'show_premium_cta': not is_premium and is_tr,
-                'show_project_request_cta': not is_premium and not is_tr,
+                'show_premium_cta': not is_premium,
             }, status=429)
 
         if search_type == 'keyword':

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.utils.translation import gettext, get_language
+from django.utils.translation import gettext
 from django.views.decorators.http import require_GET, require_POST
 from functools import wraps
 
@@ -97,15 +97,13 @@ def trdizin_landing(request):
             if remaining <= 0:
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     is_premium = user.profile.is_premium
-                    is_tr = (get_language() or 'tr')[:2] == 'tr'
                     return JsonResponse({
                         # Tam cümle msgid'ler (parça birleştirme yok)
                         'error': (gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Daha yüksek bir destekçi kademesine geçerek ücretsiz hakkınızı artırabilirsiniz.')
                                   if not is_premium else
                                   gettext('Bu ay için ücretsiz analiz hakkınız doldu ({used}/{limit}). Önümüzdeki ay tekrar deneyebilirsiniz.')
                                   ).format(used=daily_limit, limit=daily_limit),
-                        'show_premium_cta': not is_premium and is_tr,
-                        'show_project_request_cta': not is_premium and not is_tr,
+                        'show_premium_cta': not is_premium,
                     }, status=429)
                 return render(request, 'trdizin/landing.html', {
                     'form': form,
