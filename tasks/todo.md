@@ -1039,17 +1039,26 @@ maddelerde.
   Kullanıcı kararı: önce bu TEK LİSTE'ye not edilsin, inceleme ayrı
   görev olarak ele alınacak.
 
-- [ ] **(28 Ekim 2026) OpenAlex sayfalama (pagination) 401 Unauthorized hatası
-  — araştırılmadı, bibliometri işinden bağımsız.** Render (dev/staging)
-  loglarında görüldü: bir arama job'ı (`d0855985-...`) cursor ile sayfalama
-  yaparken OpenAlex API'den 3 deneme boyunca 401 aldı ("OpenAlex pagination
-  hatası: 401"), bu yüzden toplam 2890 bulunan kayıttan yalnızca ilk sayfa
-  (200) çekilebildi; kullanıcı 1000 kayıt istemişti, 200/1000 ile kaldı
-  (parser sonrası net 199). İlk sayfa isteği başarılı olduğuna göre
-  `OPENALEX_API_KEY`/`mailto` muhtemelen yalnızca cursor'lu (sayfalanmış)
-  isteklerde eksik/düşüyor — `openalex/services/scraper.py` `build_api_params`
-  ve `_fetch_page` cursor akışı incelenmeli. Kullanıcı kararı: şimdilik not,
-  araştırma ayrı görev olarak sorulacak.
+- [x] **(28 Ekim 2026 bulundu, 7 Kasım 2026 TAMAMLANDI) OpenAlex sayfalama
+  (pagination) 401 Unauthorized hatası.** Kod incelemesi: `build_api_params`
+  ve `_fetch_page`'in cursor akışı arasında `api_key` ekleme mantığında bir
+  ASİMETRİ YOK — `params` dict'i bir kez oluşturulup hem ilk sayfa hem
+  sonraki cursor'lu sayfalarda aynen kopyalanıp kullanılıyor, yani kod bir
+  "cursor'da anahtar düşüyor" hatası içermiyordu. 401, muhtemelen OpenAlex
+  tarafında `OPENALEX_API_KEY`'in (süresi dolmuş/kota aşılmış/geçersiz)
+  dışsal bir nedenle reddedilmesinden kaynaklanıyor — Hetzner/Render'daki
+  gerçek env değeri (secret) bu oturumda kontrol EDİLEMEDİ (sandbox production
+  secret okumayı reddetti). Kök neden kesinleştirilemediği için **savunmacı
+  bir dayanıklılık düzeltmesi** uygulandı: `_fetch_page()` artık 401 alınca
+  (api_key varsa) anahtarı tek seferliğine kaldırıp aynı sayfayı anahtarsız
+  (free/polite pool) tekrar deniyor — hangi nedenle reddedilirse edilsin,
+  arama artık ilk sayfada yarıda kalmıyor, sadece daha düşük rate limit'e
+  düşüyor. Sonsuz döngü riski yok (anahtar yalnız bir kez kaldırılıyor,
+  `max_retries` sınırı korunuyor) — mock'lanmış 2 senaryoyla (401→200 kurtarma,
+  hep-401 → 3 denemede düzgün hata) doğrulandı, `manage.py check` temiz.
+  Migration yok, tek dosya. **Açık kalan:** gerçek `OPENALEX_API_KEY`'in
+  Hetzner'de neden 401 aldığı (anahtar süresi/kota) hâlâ doğrulanmadı —
+  kullanıcı isterse kendi OpenAlex hesap panelinden kontrol edebilir.
 
 - [ ] **(28 Ekim 2026) Bibliometri — Grup A hata düzeltmeleri (plan onaylandı,
   henüz uygulanmadı).** Kaynak: `bibliometri_durum_ve_gelistirme_prompt.md`

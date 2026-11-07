@@ -135,6 +135,14 @@ class OpenAlexScraper:
                     logger.warning(f"OpenAlex {response.status_code}, {wait:.1f}s bekleniyor...")
                     time.sleep(wait)
                     continue
+                if response.status_code == 401 and 'api_key' in req_params and attempt < self.max_retries - 1:
+                    # api_key reddedildi (süresi dolmuş/kota aşılmış/geçersiz olabilir) — free/polite
+                    # pool'a (anahtarsız) düşüp aynı sayfayı tekrar dene; sonuç ilk sayfada yarıda
+                    # kesilmesin (28 Ekim 2026 bulgusu: cursor'lu sayfalarda 401 alınca tüm arama
+                    # ilk sayfada kalıyordu).
+                    logger.warning("OpenAlex 401 (api_key reddedildi), anahtarsız yeniden deneniyor")
+                    del req_params['api_key']
+                    continue
                 response.raise_for_status()
                 return response.json()
             except requests.RequestException as e:
