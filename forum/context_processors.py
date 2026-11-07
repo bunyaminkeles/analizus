@@ -117,6 +117,37 @@ def feature_flags(request):
 OG_LOCALES = {'tr': 'tr_TR', 'en': 'en_US', 'de': 'de_DE'}
 
 
+def _hreflang_valid_languages(request):
+    """Bazı view'lar aynı URL yapısını paylaşsa da runtime koşuluyla (çeviri
+    kaydı yok / feature flag kapalı / ilan kapsamı uyuşmuyor) belirli
+    dillerde 404 döner — bu durumda translate_url() körü körüne üretilen
+    alternatifi yanlış doğrular (GSC "Page indexing → Not found" kaynağı,
+    27 Ekim 2026). None dönerse kısıtlama yok (tüm diller geçerli varsayılır).
+    """
+    match = getattr(request, 'resolver_match', None)
+    if not match:
+        return None
+
+    if match.url_name == 'service_page_detail':
+        from .models import ServicePage
+        page = ServicePage.objects.filter(slug=match.kwargs.get('slug'), is_active=True).first()
+        if not page:
+            return None
+        return {'tr'} | set(page.translations.values_list('language', flat=True))
+
+    if match.url_name == 'job_detail':
+        from .models import FreelanceJob
+        from .views import job_scope, market_intl_enabled
+        job = FreelanceJob.objects.filter(pk=match.kwargs.get('pk')).only('language').first()
+        if not job:
+            return None
+        if job_scope(job) == 'tr':
+            return {'tr'}
+        return {'en', 'de'} if market_intl_enabled() else set()
+
+    return None
+
+
 def hreflang_alternates(request):
     """Çok dilli sayfalar için hreflang alternatifleri + og:locale.
 
@@ -140,7 +171,13 @@ def hreflang_alternates(request):
     if len(set(paths.values())) != len(paths):
         return ctx  # tek dilli sayfa
 
-    ctx['hreflang_alternates'] = [(code, paths[code]) for code, _ in settings.LANGUAGES]
-    ctx['hreflang_default'] = paths[settings.LANGUAGE_CODE]
-    ctx['og_locale_alternates'] = [OG_LOCALES[c] for c, _ in settings.LANGUAGES if c != lang and c in OG_LOCALES]
+    valid_langs = _hreflang_valid_languages(request)
+    if valid_langs is not None:
+        paths = {code: p for code, p in paths.items() if code in valid_langs}
+        if lang not in paths or len(paths) < 2:
+            return ctx  # mevcut dil kendi listesinde yok ya da başka dilde karşılığı yok
+
+    ctx['hreflang_alternates'] = [(code, paths[code]) for code, _ in settings.LANGUAGES if code in paths]
+    ctx['hreflang_default'] = paths.get(settings.LANGUAGE_CODE, paths[lang])
+    ctx['og_locale_alternates'] = [OG_LOCALES[c] for c in paths if c != lang and c in OG_LOCALES]
     return ctx
