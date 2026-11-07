@@ -1248,21 +1248,27 @@ maddelerde.
     scopus parser'ın pattern'i). Kullanıcıya bu kısıtlama bildirilecek,
     onay sonrası uygulanacak.
 
-- [ ] **(27 Ekim 2026) GSC "Page indexing → Not found (404)" raporu — kök
-  neden bulundu, henüz düzeltilmedi.** Kullanıcı Search Console'da iki URL
-  kalıbı gördü: `/hizmetler/<slug>/` (EN/DE, ör. `nitel-analiz`,
-  `akademik-danismanlik`) ve `/en/market/job/<id>/`. Araştırma: ikisi de
-  view seviyesinde HAKLI olarak 404 dönüyor (`nitel-analiz`/`akademik-
-  danismanlik`'in `ServicePageTranslation` kaydı yok — yalnız `nicel-analiz`
-  pilot çevrildi, migration `0182`; `feature_market_intl` varsayılanı
-  `False` olduğu için EN/DE ilan sayfaları tamamen kapalı). Asıl sorun:
-  `forum/context_processors.py:115-141` `hreflang_alternates`, hedefte
-  çeviri/flag uygunluğu kontrol etmeden `translate_url()` ile körü körüne
-  tr/en/de `<link rel="alternate" hreflang>` üretiyor (`templates/
-  base.html:273-276`) — Google bu sahte linkleri takip edip var olmayan
-  sayfaları crawl ediyor. Sitemap tarafı doğru filtrelenmiş, sorun kaynağı
-  değil. **Öneri (uygulanmadı):** `hreflang_alternates`'e sayfa bazlı "hedef
-  gerçekten var mı" kontrolü eklenmeli. Kullanıcı onayı bekliyor.
+- [x] **(27 Ekim 2026 bulundu, 7 Kasım 2026 TAMAMLANDI) GSC "Page indexing →
+  Not found (404)" raporu.** Kullanıcı Search Console'da iki URL kalıbı
+  gördü: `/hizmetler/<slug>/` (EN/DE, ör. `nitel-analiz`, `akademik-
+  danismanlik`) ve `/en/market/job/<id>/`. Kök neden: `forum/
+  context_processors.py` `hreflang_alternates`, hedefte çeviri/flag
+  uygunluğu kontrol etmeden `translate_url()` ile körü körüne tr/en/de
+  `<link rel="alternate" hreflang>` üretiyordu — Google bu sahte linkleri
+  takip edip var olmayan sayfaları crawl ediyordu. **Düzeltme:** yeni
+  `_hreflang_valid_languages()` helper'ı eklendi — yalnız bu 2 view için
+  (`match.url_name` ile tespit) runtime kontrolü yapıyor: `service_page_
+  detail` için `ServicePage.translations`'da gerçekten kayıt var mı
+  (TR her zaman geçerli, base model), `job_detail` için `job_scope(job)`
+  ('tr'/'intl') + `market_intl_enabled()` — ilanın dil kapsamı ile
+  `feature_market_intl` flag'i tutmuyorsa o dil(ler) listeden çıkarılıyor.
+  Diğer tüm view'larda (`match.url_name` eşleşmezse) `None` dönüp eski
+  davranış korunuyor — regresyon riski yok. Docker'da doğrulandı: `/hizmetler/
+  nicel-analiz/` (çevirisi var) hâlâ 3 dilde hreflang üretiyor, `/hizmetler/
+  akademik-danismanlik/` (çevirisi yok) artık HİÇ hreflang üretmiyor; sentetik
+  iş ilanıyla 3 senaryo (TR iş, intl iş+flag açık, intl iş+flag kapalı) test
+  edildi, hepsi beklenen sonucu verdi. `pytest forum/tests.py` 110/110 yeşil.
+  Migration yok, tek dosya.
 
 - [x] **(27 Ekim 2026 TAMAMLANDI) Ana sayfa/eğitim/urls.py'deki sabit araç
   sayısı genel ifadeye çevrildi, main'de canlı.** Yukarıdaki GSC araştırması
