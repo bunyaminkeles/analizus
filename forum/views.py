@@ -889,9 +889,14 @@ def job_detail(request, pk):
 
                     # İlan sahibinin inbox'ına teklif bildirimi düşür
                     # (email send_proposal_notification tarafından zaten gönderildi, _skip_email=True)
+                    # AnalizBot'tan gönder: gerçek kullanıcı-kullanıcı sohbetine karışmasın (accept_proposal ile aynı desen)
                     site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+                    try:
+                        bot_user = User.objects.get(username='AnalizBot')
+                    except User.DoesNotExist:
+                        bot_user = request.user
                     _pm = PrivateMessage(
-                        sender=request.user,
+                        sender=bot_user,
                         receiver=job.owner,
                         message=(
                             f'"{job.title}" ilanınıza yeni bir teklif geldi!\n\n'
