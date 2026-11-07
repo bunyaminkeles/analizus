@@ -934,21 +934,22 @@ maddelerde.
   yakalayıp başarısız oldu, A3pl filtresiyle düzeldi), `forum/tests.py`
   110/110 yeşil. Migration yok, tek dosya. Henüz main'e push/merge
   edilmedi — kullanıcı onayı bekliyor.
-- [ ] **(29 Ekim 2026) Tarama araçlarının AI özet paragrafı DE/EN'de Türkçe
-  kalıyor — araştırılmadı, sıraya alındı.** Kullanıcı Semantic Scholar
-  aracında (muhtemelen diğer tarama araçlarında da) hem DE hem EN arayüzde
-  sonuç listesinin üstündeki otomatik özet paragrafının Türkçe çıktığını
-  gördü (ör. "Sorgu sonucunda toplam 0 kayıt bildirilmesine karşın..."). Kısa
-  araştırma: bu metin `forum/services/claude_service.py`
-  `generate_summary(lang=...)`'ten GELMİYOR — o fonksiyon doğru çalışıyor
-  (system_prompt'ta "Yanıtının tamamını {dil} dilinde yaz" var, openalex
-  job_runner'da `lang=translation.get_language()` ile doğru çağrılıyor).
-  `semanticscholar/services/job_runner.py` ve `views.py`'de `generate_summary`
-  çağrısı YOK — yani bu paragraf farklı bir mekanizmadan geliyor (muhtemelen
-  `forum/services/ai_service.py` — GroqService — ya da tarama araçları
-  arası paylaşımlı başka bir özet fonksiyonu, henüz bulunamadı). Sıradaki
-  adım: paragrafın tam kaynağını (hangi fonksiyon/şablon) bulup `lang`
-  parametresinin oraya doğru geçip geçmediğini kontrol etmek.
+- [x] **(29 Ekim 2026 bulundu, 7 Kasım 2026 ZATEN ÇÖZÜLMÜŞ olduğu doğrulandı)
+  Tarama araçlarının AI özet paragrafı DE/EN'de Türkçe kalıyor.** Yeniden
+  araştırıldı: `semanticscholar/` içinde hiçbir AI yorum/özet mekanizması
+  YOK (`generate_response`/`_ai_comment_for_job` çağrısı yok) — bu özelliğe
+  sahip yalnızca 2 araç var: OpenAlex ve PubMed (`_ai_comment_for_job`,
+  migration `0004`/`0002` "ai_comment" alanı). Kullanıcının "Semantic
+  Scholar" tanımlaması muhtemelen araç karışıklığıydı ([[feedback_tool_
+  ambiguity_clarify]]), gerçek kaynak muhtemelen OpenAlex/PubMed'di. Önemli:
+  **bu tam sorun 31 Ekim 2026'da commit `b8b9b91` ("fix: OpenAlex/PubMed AI
+  yorumu artık aramanın yapıldığı sayfanın dilinde") ile zaten düzeltilmiş**
+  — `created_language` alanı job oluşturulurken kaydediliyor, `_ai_comment_
+  for_job` artık `translation.get_language()` (arka plan thread'inde güvenilmez)
+  yerine önce `job.created_language`'a bakıyor. `git merge-base --is-ancestor
+  b8b9b91 main` ile main'de olduğu doğrulandı — canlıda. 29 Ekim notu bu
+  düzeltmeden ÖNCE yazılmış, checkbox güncellenmemiş kalmıştı. Kod
+  değişikliği gerekmedi, yalnızca todo bayat kaydı düzeltildi.
 
 - [x] **(28 Ekim 2026) TAMAMLANDI — Site genelinde çok satırlı Django `{# #}`
   yorumu site kullanıcılarına düz metin olarak sızıyordu.** Kullanıcı

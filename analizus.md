@@ -3046,6 +3046,71 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **7 Kasım 2026 — `tasks/todo.md` "AÇIK İŞLER" süpürme turu: 8 bulgu
+  düzeltildi, 2 madde zaten çözülmüş çıktı, hepsi `main`'de canlı.**
+  Kullanıcı "todo ve açık işleri kontrol et" ile başlattı, sırayla küçükten
+  büyüğe ilerlendi; her madde ayrı `dev`→`main` merge+deploy ile canlıya
+  alındı.
+  1. **PayPal/IBAN "Destekçi" popup'ında Türkçe karışıklığı:** `footer.html`
+     `footerSendSupportEmail()`'deki 4 native `alert()` çağrısı tarayıcının
+     kendi "bir daha soru sorma" checkbox'ını (tarayıcı diline göre) EN/DE
+     sayfalarda bile Türkçe gösteriyordu — `ax-alert` kutusuna çevrildi,
+     artık tamamen sayfa diliyle.
+  2. **Zeyrek TR lemmatization (`bibliometrics/services/analyzer.py`)
+     sessizce hiç çalışmıyordu:** `zeyrek.MorphAnalyzer().lemmatize()`
+     içeride `nltk.word_tokenize()` kullanıyor, `punkt_tab/turkish` kaynağı
+     hem lokalde hem Hetzner'de eksikti (`LookupError` yutuluyordu) —
+     `_get_tr_stopwords()` ile aynı "eksikse indir" deseni eklendi. Test
+     ederken **ikinci, daha kritik bir bulgu** çıktı: zeyrek çalışır olunca
+     İngilizce teknik terimlere de (abstract'ların çoğu İngilizce) rastgele
+     Türkçe çekim eki uydurup kökü bozuyordu (`photon`→`photo`,
+     `tensile`→`tensil`) — `.lemmatize()` yerine `.analyze()` + yalnız
+     gerçek çoğul eki (`A3pl`) filtresine geçilerek önlendi. Ayrıca
+     zeyrek'in kelime başına log gürültüsü susturuldu.
+  3. **EN/DE adres mimarisi:** Kullanıcı Mainz adresi verdi (iki isim
+     revizyonundan sonra "Bunyamin Keles" netleşti); önce footer'a dil
+     ayrımıyla eklendi, sonra kullanıcı sordu ("neden her sayfada
+     görünüyor, impressum gibi sadece ilgili sayfada olmalı değil mi?") —
+     footer global bir parça olduğu keşfedilince adres footer'dan tamamen
+     kaldırılıp tek kaynak `/iletisim/` sayfası yapıldı (orada da aynı
+     TR/EN-DE ayrımı).
+  4. **"Ödeme Talimatlarını Al" butonu giriş yapmamışta sessizce hiçbir şey
+     yapmıyordu:** `/api/send-support-email/` `@login_required` —
+     anonim `fetch()` login'in 302 yönlendirmesini takip edip HTML'i JSON
+     diye parse etmeye çalışıp `.catch()`'te kayboluyordu; content-type
+     kontrolüyle artık doğru dil önekli login sayfasına yönlendiriyor.
+  5. **Footer "404.991 ziyaretçi" yanıltıcıydı:** `VisitorCounterMiddleware`
+     bot dahil her GET isteğinde artıyor (gerçek tekil ziyaretçi değil) —
+     sayım mantığına dokunulmadı, etiket "sayfa görüntülenme"/"page
+     views"/"Seitenaufrufe" olarak düzeltildi.
+  6. **GSC "Page indexing → Not found (404)" raporu** (27 Ekim'den kalma kök
+     neden analizi tamamlanıp uygulandı): `hreflang_alternates`
+     (`forum/context_processors.py`) çevirisi/feature flag'i olmayan
+     `/hizmetler/<slug>/` ve `/market/job/<id>/` sayfaları için de körü
+     körüne tr/en/de link üretiyordu — `_hreflang_valid_languages()` ile
+     yalnız bu 2 view için runtime varlık kontrolü eklendi.
+  7. **OpenAlex cursor sayfalamada 401 (28 Ekim'den kalma):** kod
+     incelemesinde ilk sayfa/cursor sayfaları arasında `api_key` asimetrisi
+     bulunamadı (dış neden — anahtar süresi/kota — production secret
+     erişimi kısıtlı olduğu için doğrulanamadı); savunmacı düzeltme:
+     `_fetch_page()` artık 401 alınca anahtarsız (free/polite pool) tekrar
+     deniyor, arama ilk sayfada yarıda kalmıyor.
+  8. **Admin Dashboard "Dizin Tezleri" kartı hep 0/0 gösteriyordu:** salt
+     okunur denetimde (`forum/services/dashboard_service.py`) yanlış model
+     adı (`OAISearchJob` → olması gereken `OAIPMHSearchJob`) bulundu,
+     `ImportError` sessizce yutuluyordu — tek satır düzeltildi.
+  **Zaten çözülmüş çıkan 2 madde (yalnız todo bayatlığı düzeltildi, kod
+  değişikliği yok):** Güç Analizi (Post-hoc) aracı 27 Ekim'de "push
+  edilmedi" notuyla kalmıştı ama aslında commit `cb30dbb` ile zaten
+  main'deydi/canlıydı; tarama araçlarının AI özet paragrafının EN/DE'de
+  Türkçe kalması 29 Ekim'de bulunmuştu ama 31 Ekim'deki `b8b9b91` commit'i
+  (`created_language` alanı) bunu OpenAlex/PubMed için zaten çözmüştü
+  (Semantic Scholar'da zaten hiç AI özet özelliği yok — muhtemelen araç
+  karışıklığıydı). Her merge öncesi production online-kullanıcı kontrolü
+  (`Profile.last_seen`, son 300 sn, staff hariç) yapıldı, hepsinde liste
+  boştu. Migration YOK, `pytest forum/tests.py` + `bibliometrics/tests.py`
+  her turda yeşil.
+
 - **1 Kasım 2026 — "17 analiz" bayat sayısı 26'ya düzeltildi + Faz 5f: EN/DE
   için PayPal ile 3 kademeli Premium akışı (ikisi de `main`'de canlı).**
   **(1) Bayat sayı:** `bibliometrics/services/analyzer.py` `run_all_analyses()`
