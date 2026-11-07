@@ -1245,10 +1245,15 @@ maddelerde.
   çıktı — `git show origin/main:analizdestek/job_queue.py` ile zaten
   production'da olduğu doğrulanıp not güncellendi.
 
-- [ ] **(25 Ekim 2026) EN/DE Ödeme Sistemleri Altında Adres Değişikliği** —
-  kullanıcı talebi: EN ve DE sayfalarında ödeme sistemleri bölümünde yer alan
-  adres güncellenmeli. Detay/hangi adres henüz belirtilmedi — sonraki
-  oturumda kullanıcıdan netleştirilecek, sonra uygulanacak.
+- [x] **(25 Ekim 2026 bulundu, 7 Kasım 2026 TAMAMLANDI) EN/DE Ödeme Sistemleri
+  Altında Adres Değişikliği.** Kök konum bulundu: `templates/partials/
+  footer.html`'deki footer-bottom adres satırı dil ayrımı yapmadan TÜM
+  dillerde (TR/EN/DE) aynı Türkçe adresi ("Şehit Kubilay Mah. ... Keçiören/
+  Ankara") gösteriyordu. Kullanıcı yeni adresi verdi (7 Kasım 2026):
+  `{% if LANGUAGE_CODE == 'tr' %}` ile ayrıldı — TR eski adresi, EN/DE
+  "Bünyamin Keleş — Walter-Hallstein-Straße 13, 55130 Mainz" gösteriyor.
+  Docker'da TR/EN/DE curl ile doğrulandı, `pytest forum/tests.py` 110/110
+  yeşil. Migration yok, tek dosya.
 
 - [x] **(26 Ekim 2026 TAMAMLANDI, KRİTİK — Kümeleme aracı geliştirmesi
   sırasında bulundu) `svm`, `mediation`, `moderation` araçlarının arka plan
