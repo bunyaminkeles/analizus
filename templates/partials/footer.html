@@ -163,7 +163,11 @@
             </div>
         </div>
         <p class="text-center" style="font-size:.72rem;color:#64748b;margin-top:8px;">
+            {% if LANGUAGE_CODE == 'tr' %}
             Bünyamin Keleş — Şehit Kubilay Mah. 1697. Sokak No:15/A13, 06220 Keçiören/Ankara
+            {% else %}
+            Bunyamin Keles — Walter-Hallstein-Straße 13, 55130 Mainz
+            {% endif %}
         </p>
     </div>
 </footer>
@@ -250,18 +254,34 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer border-secondary d-flex gap-2">
-                <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">{% trans "Kapat" %}</button>
-                <button type="button" class="btn btn-primary rounded-pill" id="footerSupportBtn" onclick="footerSendSupportEmail()">
-                    <i class="bi bi-envelope-fill me-2"></i>{% trans "Ödeme Talimatlarını Al" %}
-                </button>
+            <div class="modal-footer border-secondary d-flex flex-column gap-2">
+                <div id="footerSupportMsg" class="ax-alert d-none" style="width:100%;" role="status"></div>
+                <div class="d-flex gap-2 w-100">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">{% trans "Kapat" %}</button>
+                    <button type="button" class="btn btn-primary rounded-pill" id="footerSupportBtn" onclick="footerSendSupportEmail()">
+                        <i class="bi bi-envelope-fill me-2"></i>{% trans "Ödeme Talimatlarını Al" %}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+function showFooterMsg(kind, text) {
+    const el = document.getElementById('footerSupportMsg');
+    el.className = 'ax-alert ax-alert--' + kind;
+    el.innerHTML = '<div class="ax-alert__body">' + text + '</div>';
+}
+
+document.getElementById('donationModal').addEventListener('show.bs.modal', function () {
+    const msg = document.getElementById('footerSupportMsg');
+    msg.className = 'ax-alert d-none';
+    msg.innerHTML = '';
+});
+
 function selectTier(el) {
+    document.getElementById('footerSupportMsg').className = 'ax-alert d-none';
     document.querySelectorAll('#donationModal .tier-option').forEach(o => {
         o.style.borderColor = 'rgba(255,255,255,0.1)';
         o.style.backgroundColor = 'rgba(255,255,255,0.05)';
@@ -273,7 +293,7 @@ function selectTier(el) {
 
 function footerSendSupportEmail() {
     const selected = document.querySelector('#donationModal input[name="selectedTier"]:checked');
-    if (!selected) { alert('{% filter escapejs %}{% trans "Lütfen bir destek paketini seçiniz." %}{% endfilter %}'); return; }
+    if (!selected) { showFooterMsg('warning', '{% filter escapejs %}{% trans "Lütfen bir destek paketini seçiniz." %}{% endfilter %}'); return; }
     const tier = selected.closest('.tier-option');
     const btn = document.getElementById('footerSupportBtn');
     btn.disabled = true;
@@ -294,13 +314,12 @@ function footerSendSupportEmail() {
         btn.innerHTML = '<i class="bi bi-envelope-fill me-2"></i>{% filter escapejs %}{% trans "Ödeme Talimatlarını Al" %}{% endfilter %}';
         if (data.success) {
             {% if LANGUAGE_CODE == 'tr' %}
-            alert('✅ {% filter escapejs %}{% trans "IBAN bilgileri e-postanıza gönderildi! Havale sonrası Premium üyeliğiniz 24 saat içinde aktif edilecektir." %}{% endfilter %}');
+            showFooterMsg('success', '✅ {% filter escapejs %}{% trans "IBAN bilgileri e-postanıza gönderildi! Havale sonrası Premium üyeliğiniz 24 saat içinde aktif edilecektir." %}{% endfilter %}');
             {% else %}
-            alert('✅ {% filter escapejs %}{% trans "PayPal bilgileri e-postanıza gönderildi! Ödeme sonrası Premium üyeliğiniz 24 saat içinde aktif edilecektir." %}{% endfilter %}');
+            showFooterMsg('success', '✅ {% filter escapejs %}{% trans "PayPal bilgileri e-postanıza gönderildi! Ödeme sonrası Premium üyeliğiniz 24 saat içinde aktif edilecektir." %}{% endfilter %}');
             {% endif %}
-            bootstrap.Modal.getInstance(document.getElementById('donationModal')).hide();
         } else {
-            alert('❌ {% filter escapejs %}{% trans "Hata:" %}{% endfilter %} ' + (data.error || '{% filter escapejs %}{% trans "E-posta gönderilemedi." %}{% endfilter %}'));
+            showFooterMsg('danger', '❌ {% filter escapejs %}{% trans "Hata:" %}{% endfilter %} ' + (data.error || '{% filter escapejs %}{% trans "E-posta gönderilemedi." %}{% endfilter %}'));
         }
     })
     .catch(() => { btn.disabled = false; btn.innerHTML = '<i class="bi bi-envelope-fill me-2"></i>{% filter escapejs %}{% trans "Ödeme Talimatlarını Al" %}{% endfilter %}'; });

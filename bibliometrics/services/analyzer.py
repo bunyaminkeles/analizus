@@ -20,7 +20,16 @@ def _get_tr_analyzer():
     global _tr_analyzer
     if _tr_analyzer is None:
         try:
+            import nltk
+            try:
+                nltk.data.find('tokenizers/punkt_tab/turkish/')
+            except LookupError:
+                nltk.download('punkt_tab', quiet=True)
             import zeyrek
+            # zeyrek her kelime analizinde kendi logger'ına WARNING seviyesinde
+            # ayrıştırma adaylarını basıyor (rulebasedanalyzer.py) — binlerce
+            # kelimelik rapor üretiminde log gürültüsüne yol açar, susturuluyor.
+            logging.getLogger('zeyrek').setLevel(logging.ERROR)
             _tr_analyzer = zeyrek.MorphAnalyzer()
         except Exception as e:
             logger.warning(f'zeyrek yüklenemedi: {e}')
@@ -42,16 +51,22 @@ def _get_tr_stopwords():
     return _tr_stopwords
 
 def lemmatize_word(word: str) -> str:
-    """Tek Türkçe kelimeyi lemmatize eder. Başarısızsa orijinali döner."""
+    """Tek Türkçe kelimeyi lemmatize eder. Başarısızsa orijinali döner.
+
+    Yalnız gerçek çoğul eki (A3pl, ör. "kediler"->"kedi") bulunan sonuçlar
+    kabul edilir — zeyrek bir Türkçe morfolojik analizör olduğu için
+    (abstract'lar çoğunlukla İngilizce) İngilizce teknik terimlere de
+    rastgele tekil/hal eki uydurup kökü bozabiliyor (ör. "photon"->"photo",
+    "tensile"->"tensil", her ikisi de A3pl değil tekil+hal eki tahmini)."""
     analyzer = _get_tr_analyzer()
     if not analyzer:
         return word
     try:
-        result = analyzer.lemmatize(word)
-        if result and result[0][1]:
-            lemma = result[0][1][0].lower()
-            if len(lemma) >= 2:
-                return lemma
+        for parse in analyzer.analyze(word)[0]:
+            if 'A3pl' in parse.morphemes:
+                lemma = parse.lemma.lower()
+                if len(lemma) >= 2:
+                    return lemma
     except Exception:
         pass
     return word

@@ -319,13 +319,18 @@ açıkça talep ederse** yapılsın (otomatik email eki değil, "Tam Listeyi
       TRDizin/SemanticScholar/PubMed'e Faz 5b-5e'de aynen kopyalanmıştı.
       4'ü de `data-bs-toggle="modal" data-bs-target="#donationModal"`
       ile düzeltildi (openalex/trdizin/semanticscholar/pubmed landing.html).
-- [ ] **Faz 5f — EN/DE premium akışı (EN SON, PayPal bilgisi bekleniyor):**
-      dil bazlı "ücretsiz hak yok" kısıtlaması kaldırılacak (tüm 5 araçta);
-      premium'a yönlendirme EN/DE'de PayPal bilgilendirmesi gösterecek
-      şekilde ayrı bir CTA/e-posta metni yazılacak.
-- [ ] Her fazda ilgili `order.html`/landing.html metinleri (sipariş dili →
-      "aylık hak" diline) güncellenmeli; TR/EN/DE çevirileri eklenmeli.
-- [ ] Tüm fazlar bitince `analizus.md` §9/§20/§27'ye özet eklenmeli.
+- [x] **Faz 5f — TAMAMLANDI (1 Kasım 2026, main'de canlı).** EN/DE PayPal
+      bilgisi (paypal.me/bkeles74, bkeles74@gmail.com) geldi; kapsam kullanıcı
+      tarafından genişletildi — EN/DE artık TR'deki gibi tek `#donationModal`'dan
+      3 kademeli (Platin 50€/Altın 25€/Gümüş 10€) seçim sunuyor, Bronz pasif
+      edildi (silinmedi). `DonationTier.eur_amount` (migration `0195`),
+      `send_support_email()` `payment_method` (iban/paypal) ile dallanıyor,
+      mevcut IBAN/Donation/admin-onay akışı değişmeden kullanılıyor. 7 araçta
+      kota dolunca gösterilen premium CTA'sı artık dilden bağımsız. Plan
+      dosyası: `polymorphic-sniffing-brook.md`. 270/270 pytest yeşil.
+- [x] `order.html`/landing.html metinleri + TR/EN/DE çevirileri — yukarıdaki
+      Faz 5f turunda tamamlandı.
+- [x] `analizus.md` §9/§20/§27'ye özet eklendi (1 Kasım 2026).
 
 ---
 
@@ -849,21 +854,41 @@ maddelerde.
   turlardaki 34 ilgisiz fuzzy'ye dokunulmadı), `compilemessages` hatasız.
   Migration yok, 270/270 pytest yeşil, canlı curl ile anonim bibliometri
   sayfasında doğrulandı.
-- [ ] **(29 Ekim 2026) Bibliometri Grup B / B1-4 sırasında çıkan yan bulgu:
-  zeyrek'in Türkçe lemmatization'ı lokal dev ortamında sessizce başarısız
-  oluyor — araştırılmadı.** `bibliometrics/services/analyzer.py`
-  `lemmatize_word()` içindeki `analyzer.lemmatize(word)` çağrısı NLTK
-  `punkt_tab` (tokenizers/punkt_tab/turkish/) kaynağı eksik olduğu için
-  `LookupError` fırlatıyor; fonksiyon bunu `except Exception: pass` ile
-  yutup kelimeyi değiştirmeden döndürüyor — yani lokal'de anahtar kelime
-  kök indirgemesi (TR için) hiç çalışmıyor olabilir (ör. "kediler" "kedi"ye
-  inmiyor). Production'da (Hetzner) bu NLTK verisinin mevcut olup olmadığı
-  DOĞRULANMADI — eğer orada da eksikse canlı raporlardaki Türkçe anahtar
-  kelime/kelime bulutu analizleri sessizce beklenenden daha az "akıllı"
-  çalışıyor demektir (çoğul/tekil TR kelimeler ayrı sayılabilir). Sıradaki
-  adım: Hetzner'de `docker compose exec web python -c "import nltk;
-  nltk.data.find('tokenizers/punkt_tab/turkish/')"` ile kontrol, eksikse
-  Dockerfile/deploy.sh'a `nltk.download('punkt_tab')` eklenmesi.
+- [x] **(29 Ekim 2026 bulundu, 7 Kasım 2026 TAMAMLANDI) Bibliometri Grup B /
+  B1-4 sırasında çıkan yan bulgu: zeyrek'in Türkçe lemmatization'ı sessizce
+  başarısız oluyordu.** Kök neden doğrulandı: `zeyrek.MorphAnalyzer().
+  lemmatize()` içeride `nltk.word_tokenize()` çağırıyor, bu da NLTK
+  `punkt_tab/turkish` kaynağını gerektiriyor — bu kaynak **hem lokalde hem
+  Hetzner'de (production, SSH ile doğrulandı — `/root/nltk_data` içinde
+  yalnız `corpora/stopwords` vardı, `tokenizers/` hiç yoktu) eksikti**,
+  `LookupError` `except Exception: pass` ile yutuluyordu — canlı raporlarda
+  TR anahtar kelime/kelime bulutu analizleri çoğul/tekil ayrımı yapmadan
+  (ör. "kediler"≠"kedi") çalışıyordu. **Düzeltme:**
+  `bibliometrics/services/analyzer.py`: (1) `_get_tr_analyzer()`'a
+  `_get_tr_stopwords()` ile aynı "eksikse indir" deseni eklendi
+  (`nltk.download('punkt_tab', quiet=True)`, Dockerfile/deploy.sh
+  değişikliği gerekmedi, ilk kullanımda otomatik iniyor). (2) **Yan bulgu:**
+  zeyrek çalışır hale gelince kendi `zeyrek.rulebasedanalyzer` logger'ı her
+  kelimede WARNING seviyesinde analiz adaylarını basıyordu (önceden
+  görünmüyordu çünkü fonksiyon zaten patlıyordu) — `logging.getLogger
+  ('zeyrek').setLevel(logging.ERROR)` ile susturuldu. (3) **İkinci yan
+  bulgu (test ederken bulundu, KRİTİK):** zeyrek bir Türkçe morfolojik
+  analizör olduğu için İngilizce teknik terimlere de rastgele tekil/hal eki
+  uydurup kökü bozuyordu (ör. "photon"→"photo", "tensile"→"tensil" — ikisi
+  de gerçek çoğul değil, zeyrek'in zorla bulduğu tekil+hal eki tahmini).
+  Abstract'ların çoğunluğu İngilizce olduğundan bu, düzeltmenin kendisinin
+  yarattığı yeni bir regresyon olurdu. `lemmatize_word()` `analyzer.
+  lemmatize()` yerine `analyzer.analyze()`'a geçirildi, yalnızca sonuçta
+  gerçek çoğul eki (`'A3pl' in parse.morphemes`) bulunursa kök kabul
+  ediliyor — bu hem orijinal "kediler"→"kedi" hatasını düzeltiyor hem de
+  tüm test edilen İngilizce teknik terimleri (16 kelime) değiştirmeden
+  bırakıyor, ayrıca yan etki olarak eski `.lemmatize()`'ın "arabalar"→"arab"
+  yanlış kökünü de "araba"ya düzeltti (A3pl'li ilk aday artık doğru seçiliyor).
+  `pytest bibliometrics/tests.py` 160/160 (1 test — `test_topic_modeling_
+  data_separates_distinct_vocabularies` — bu regresyonu tam olarak
+  yakalayıp başarısız oldu, A3pl filtresiyle düzeldi), `forum/tests.py`
+  110/110 yeşil. Migration yok, tek dosya. Henüz main'e push/merge
+  edilmedi — kullanıcı onayı bekliyor.
 - [ ] **(29 Ekim 2026) Tarama araçlarının AI özet paragrafı DE/EN'de Türkçe
   kalıyor — araştırılmadı, sıraya alındı.** Kullanıcı Semantic Scholar
   aracında (muhtemelen diğer tarama araçlarında da) hem DE hem EN arayüzde
@@ -1220,10 +1245,15 @@ maddelerde.
   çıktı — `git show origin/main:analizdestek/job_queue.py` ile zaten
   production'da olduğu doğrulanıp not güncellendi.
 
-- [ ] **(25 Ekim 2026) EN/DE Ödeme Sistemleri Altında Adres Değişikliği** —
-  kullanıcı talebi: EN ve DE sayfalarında ödeme sistemleri bölümünde yer alan
-  adres güncellenmeli. Detay/hangi adres henüz belirtilmedi — sonraki
-  oturumda kullanıcıdan netleştirilecek, sonra uygulanacak.
+- [x] **(25 Ekim 2026 bulundu, 7 Kasım 2026 TAMAMLANDI) EN/DE Ödeme Sistemleri
+  Altında Adres Değişikliği.** Kök konum bulundu: `templates/partials/
+  footer.html`'deki footer-bottom adres satırı dil ayrımı yapmadan TÜM
+  dillerde (TR/EN/DE) aynı Türkçe adresi ("Şehit Kubilay Mah. ... Keçiören/
+  Ankara") gösteriyordu. Kullanıcı yeni adresi verdi (7 Kasım 2026):
+  `{% if LANGUAGE_CODE == 'tr' %}` ile ayrıldı — TR eski adresi, EN/DE
+  "Bünyamin Keleş — Walter-Hallstein-Straße 13, 55130 Mainz" gösteriyor.
+  Docker'da TR/EN/DE curl ile doğrulandı, `pytest forum/tests.py` 110/110
+  yeşil. Migration yok, tek dosya.
 
 - [x] **(26 Ekim 2026 TAMAMLANDI, KRİTİK — Kümeleme aracı geliştirmesi
   sırasında bulundu) `svm`, `mediation`, `moderation` araçlarının arka plan
@@ -1746,8 +1776,12 @@ maddelerde.
      (eksik n → 400) ile doğrudan test edildi, `/analiz/orneklem/` TR/EN/DE
      200. 15 yeni msgid EN/DE çevrildi (`gettext()` + `{% trans %}` render
      testiyle doğrulandı), `compilemessages` hatasız, `pytest forum/tests.py`
-     104/104 yeşil. Henüz push/merge edilmedi — kullanıcının "push et"/
-     "merge et" onayı bekleniyor.
+     104/104 yeşil. **(7 Kasım 2026 ek not) Zaten main'de ve canlıda imiş** —
+     bu madde yazıldığında "push/merge edilmedi" notu düşülmüş ama commit
+     `cb30dbb` ("Merge branch 'dev': Basit Path Analizi + Post-hoc Güç Analizi
+     modu") main'in atası olarak doğrulandı, `main`==`origin/main`, canlıda
+     `https://www.analizus.com/analiz/orneklem/` 200 ve "Post-hoc"/"Güç
+     Hesapla" içeriyor. Not bayatmış, yapılacak ek iş yok.
   - Düşük öncelik / sonra değerlendirilebilir: diskriminant analizi, ordinal/
     multinomial lojistik regresyon.
 
