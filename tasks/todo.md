@@ -803,6 +803,20 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(7 Kasım 2026 TAMAMLANDI) Footer'daki "ziyaretçi" sayacı gerçek dışı
+  büyük görünüyordu (404.991) — kullanıcı sordu.** Kök neden: `forum/
+  middleware.py` `VisitorCounterMiddleware`'in kendi docstring'i bile
+  "Her sayfa isteğinde (bot dahil) ziyaretçi sayacını artırır" diyor —
+  `/static/`, `/media/`, `/admin/`, `/api/` dışındaki HER GET isteğinde
+  (botlar dahil, aynı kullanıcının gezdiği her sayfa ayrı) artıyor; yani bu
+  aslında tekil ziyaretçi değil, ham sayfa görüntülenme (pageview) sayacı —
+  etiket yanıltıcıydı. Kullanıcı kararı: sayım mantığına dokunulmadı (basit,
+  risksiz), yalnız `templates/partials/footer.html:159`'daki "ziyaretçi"
+  etiketi "sayfa görüntülenme" olarak düzeltildi (tek kullanım yeri).
+  EN/DE çevirisi eklendi ("page views"/"Seitenaufrufe", `makemessages`
+  sonrası fuzzy eşleşmeyi — "Görüntüle"ye yanlış eşlenmişti — polib ile
+  elle düzeltildi). `pytest forum/tests.py` 110/110 yeşil. Migration yok,
+  tek dosya + çeviri.
 - [x] **(7 Kasım 2026 TAMAMLANDI) Footer'daki adres site genelinde (ana sayfa
   dahil) her sayfada görünüyordu — kullanıcı sordu: "normalde sadece ilgili
   sayfada (impressum gibi) olması lazım değil mi?".** `templates/partials/
