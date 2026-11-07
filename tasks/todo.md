@@ -803,6 +803,20 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(7 Kasım 2026 TAMAMLANDI) TR/EN/DE "Ödeme Talimatlarını Al" butonu
+  giriş yapmamış kullanıcıda sessizce hiçbir şey yapmıyordu.** Kullanıcı
+  ekran görüntüsüyle bildirdi (EN sayfasında Premium modal). Kök neden:
+  `/api/send-support-email/` (`forum/views.py send_support_email`)
+  `@login_required` — anonim kullanıcıda Django 302 ile `/login/?next=...`a
+  yönlendiriyor, `fetch()` bu redirect'i sessizce takip edip login
+  sayfasının HTML'ini döndürüyor, `r.json()` bunu parse edemeyip
+  `.catch()`'e düşüyordu (hiçbir hata/yönlendirme gösterilmiyordu).
+  `templates/partials/footer.html` `footerSendSupportEmail()`'e content-type
+  kontrolü eklendi: yanıt JSON değilse (= login'e düşmüş demektir) sayfa
+  `{% url "login" %}?next=<mevcut sayfa>` adresine yönlendiriliyor. TR/EN/DE
+  için doğru dil önekli login URL'si üretildiği doğrulandı
+  (`/login/`, `/en/login/`, `/de/login/`), `pytest forum/tests.py` 110/110
+  yeşil. Migration yok, tek dosya.
 - [x] **(30 Ekim 2026) TAMAMLANDI — Arama Servisleri admin listelerinde
   (OpenAlex İşleri, TR Dizin İşleri, YÖK Tez İşleri, OAI-PMH İşleri) admin ve
   mevcut `SiteSettings.navigasyon_haric_grup` grubundaki kullanıcıların
