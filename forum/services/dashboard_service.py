@@ -307,9 +307,9 @@ def get_dashboard_context():
         biblio_month = biblio_total = 0
 
     try:
-        from oaipmh.models import OAISearchJob
-        oaipmh_month = OAISearchJob.objects.filter(created_at__date__gte=last_30_days).count()
-        oaipmh_total = OAISearchJob.objects.count()
+        from oaipmh.models import OAIPMHSearchJob
+        oaipmh_month = OAIPMHSearchJob.objects.filter(created_at__date__gte=last_30_days).count()
+        oaipmh_total = OAIPMHSearchJob.objects.count()
     except Exception:
         oaipmh_month = oaipmh_total = 0
 
