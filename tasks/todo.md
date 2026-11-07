@@ -1018,26 +1018,28 @@ maddelerde.
     `AnonymousUser` olursa FK hatasıyla 500 riski). Bu turun kapsamı dışında
     bırakıldı, ayrı onayla ele alınmalı.
 
-- [ ] **(28 Ekim 2026) Admin Dashboard — rakamların tutarlılığı ve metinlerle
-  örtüşmesi kontrol edilmeli.** Kullanıcı ekran görüntüsünde `/admin/`
-  "Site yönetimi" dashboard'unu paylaştı (PLATFORM SAĞLIĞI 60/İyi, Toplam
-  Kullanıcı 140, Toplam Konu 124, Toplam Gönderi 247, Toplam Görüntülenme
-  93802, HİZMET PAZARI 0 açık ilan/0 bekleyen teklif/5 devam eden/23 bu ay
-  bitti/toplam 31 iş, GELİR ÖZETİ bağış/vitrin/bibliometrik/OpenAlex
-  ay/toplam tutarları, AKADEMİK SERVİSLER 4/24 OpenAlex, 8/65 YÖK Tez,
-  2/9 Bibliometrik, 0/0 Dizin Tezleri, İSTATİSTİK ARAÇLARI 49/129 toplam,
-  10/29 Cronbach α, 7/16 Normallik, 16/32 Betimleyici) ve her bir sayının
-  (ay/toplam ayrımı, kart başlığı, yüzde/renk eşiği gibi) hesaplandığı
-  sorguyla ve yanındaki etiket/metinle gerçekten örtüştüğünü doğrulamamızı
-  istedi — henüz incelenmedi. Kontrol edilecekler: hangi view/queryset
-  hangi kartı besliyor (muhtemelen admin dashboard view'ı, bkz.
-  [[project_admin_analitik_turu]]), "ay" filtresinin tarih aralığı doğru mu
-  (bu ay mı, son 30 gün mü), "toplam" gerçekten tüm zamanları mı kapsıyor,
-  PLATFORM SAĞLIĞI skorunun bileşenleri ("Büyüme + içerik + kuyruk")
-  etiketle tutarlı mı, HİZMET PAZARI "Bu Ay Bitti" ile "Toplam
-  tamamlandı" sayılarının tutarlılığı, N+1 sorgu riski olup olmadığı.
-  Kullanıcı kararı: önce bu TEK LİSTE'ye not edilsin, inceleme ayrı
-  görev olarak ele alınacak.
+- [x] **(28 Ekim 2026 bulundu, 7 Kasım 2026 TAMAMLANDI) Admin Dashboard —
+  rakamların tutarlılığı ve metinlerle örtüşmesi incelendi.** Salt-okunur
+  denetim: dosya `forum/services/dashboard_service.py`
+  (`get_dashboard_context()`), render eden template `templates/admin/
+  index.html`. **Bulunan ve düzeltilen kesin bug:** "Dizin Tezleri" kartı
+  (OAI-PMH) HER ZAMAN 0/0 gösteriyordu — kod yanlış model adı
+  (`from oaipmh.models import OAISearchJob`, gerçek model `OAIPMHSearchJob`)
+  import ediyordu, `ImportError` `except Exception` ile sessizce yutulup
+  0/0'a düşüyordu. Tek satır düzeltildi, sentetik kayıtla (1 iş oluşturulup
+  silindi) doğru sayım (1/1) doğrulandı. **Tutarsızlık (bug değil, not
+  edildi):** Akademik Servisler kartı (OpenAlex/YÖK Tez/Bibliometrik)
+  hiçbir status filtresi olmadan TÜM işleri sayıyor, hemen yanındaki
+  İstatistik Araçları kartı ise yalnız `status='completed'` sayıyor — aynı
+  görsel format ("Bu Ay/Toplam") farklı sayım mantığı taşıyor, kullanıcı
+  kararıyla kapsam dışı bırakıldı (etiket yanlış değil, sadece tutarsız).
+  **Doğru bulunanlar:** Hizmet Pazarı "toplam 31 iş" etiketi `status=
+  'completed'` ile örtüşüyor; Gelir Özeti'ndeki 4 kalem hepsi aynı status
+  filtresini kullanıyor; Platform Sağlığı skoru gerçekten 3 bileşenden
+  (büyüme+içerik+kuyruk) oluşuyor; "bu ay" tüm kartlarda tutarlı şekilde
+  "son 30 gün" (takvim ayı değil — küçük etiket notu, bug değil); N+1 sorgu
+  riski yok (tekil `.count()`/`.aggregate()`). `pytest forum/tests.py`
+  110/110 yeşil. Migration yok, tek dosya.
 
 - [x] **(28 Ekim 2026 bulundu, 7 Kasım 2026 TAMAMLANDI) OpenAlex sayfalama
   (pagination) 401 Unauthorized hatası.** Kod incelemesi: `build_api_params`
