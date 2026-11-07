@@ -1751,8 +1751,12 @@ maddelerde.
      (eksik n → 400) ile doğrudan test edildi, `/analiz/orneklem/` TR/EN/DE
      200. 15 yeni msgid EN/DE çevrildi (`gettext()` + `{% trans %}` render
      testiyle doğrulandı), `compilemessages` hatasız, `pytest forum/tests.py`
-     104/104 yeşil. Henüz push/merge edilmedi — kullanıcının "push et"/
-     "merge et" onayı bekleniyor.
+     104/104 yeşil. **(7 Kasım 2026 ek not) Zaten main'de ve canlıda imiş** —
+     bu madde yazıldığında "push/merge edilmedi" notu düşülmüş ama commit
+     `cb30dbb` ("Merge branch 'dev': Basit Path Analizi + Post-hoc Güç Analizi
+     modu") main'in atası olarak doğrulandı, `main`==`origin/main`, canlıda
+     `https://www.analizus.com/analiz/orneklem/` 200 ve "Post-hoc"/"Güç
+     Hesapla" içeriyor. Not bayatmış, yapılacak ek iş yok.
   - Düşük öncelik / sonra değerlendirilebilir: diskriminant analizi, ordinal/
     multinomial lojistik regresyon.
 
