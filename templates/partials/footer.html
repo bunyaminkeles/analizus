@@ -308,7 +308,13 @@ function footerSendSupportEmail() {
             payment_method: '{% if LANGUAGE_CODE == "tr" %}iban{% else %}paypal{% endif %}',
         })
     })
-    .then(r => r.json())
+    .then(r => {
+        if (!(r.headers.get('content-type') || '').includes('application/json')) {
+            window.location.href = '{% url "login" %}?next=' + encodeURIComponent(window.location.pathname + window.location.search);
+            return Promise.reject(new Error('auth_redirect'));
+        }
+        return r.json();
+    })
     .then(data => {
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-envelope-fill me-2"></i>{% filter escapejs %}{% trans "Ödeme Talimatlarını Al" %}{% endfilter %}';
