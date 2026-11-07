@@ -854,21 +854,41 @@ maddelerde.
   turlardaki 34 ilgisiz fuzzy'ye dokunulmadı), `compilemessages` hatasız.
   Migration yok, 270/270 pytest yeşil, canlı curl ile anonim bibliometri
   sayfasında doğrulandı.
-- [ ] **(29 Ekim 2026) Bibliometri Grup B / B1-4 sırasında çıkan yan bulgu:
-  zeyrek'in Türkçe lemmatization'ı lokal dev ortamında sessizce başarısız
-  oluyor — araştırılmadı.** `bibliometrics/services/analyzer.py`
-  `lemmatize_word()` içindeki `analyzer.lemmatize(word)` çağrısı NLTK
-  `punkt_tab` (tokenizers/punkt_tab/turkish/) kaynağı eksik olduğu için
-  `LookupError` fırlatıyor; fonksiyon bunu `except Exception: pass` ile
-  yutup kelimeyi değiştirmeden döndürüyor — yani lokal'de anahtar kelime
-  kök indirgemesi (TR için) hiç çalışmıyor olabilir (ör. "kediler" "kedi"ye
-  inmiyor). Production'da (Hetzner) bu NLTK verisinin mevcut olup olmadığı
-  DOĞRULANMADI — eğer orada da eksikse canlı raporlardaki Türkçe anahtar
-  kelime/kelime bulutu analizleri sessizce beklenenden daha az "akıllı"
-  çalışıyor demektir (çoğul/tekil TR kelimeler ayrı sayılabilir). Sıradaki
-  adım: Hetzner'de `docker compose exec web python -c "import nltk;
-  nltk.data.find('tokenizers/punkt_tab/turkish/')"` ile kontrol, eksikse
-  Dockerfile/deploy.sh'a `nltk.download('punkt_tab')` eklenmesi.
+- [x] **(29 Ekim 2026 bulundu, 7 Kasım 2026 TAMAMLANDI) Bibliometri Grup B /
+  B1-4 sırasında çıkan yan bulgu: zeyrek'in Türkçe lemmatization'ı sessizce
+  başarısız oluyordu.** Kök neden doğrulandı: `zeyrek.MorphAnalyzer().
+  lemmatize()` içeride `nltk.word_tokenize()` çağırıyor, bu da NLTK
+  `punkt_tab/turkish` kaynağını gerektiriyor — bu kaynak **hem lokalde hem
+  Hetzner'de (production, SSH ile doğrulandı — `/root/nltk_data` içinde
+  yalnız `corpora/stopwords` vardı, `tokenizers/` hiç yoktu) eksikti**,
+  `LookupError` `except Exception: pass` ile yutuluyordu — canlı raporlarda
+  TR anahtar kelime/kelime bulutu analizleri çoğul/tekil ayrımı yapmadan
+  (ör. "kediler"≠"kedi") çalışıyordu. **Düzeltme:**
+  `bibliometrics/services/analyzer.py`: (1) `_get_tr_analyzer()`'a
+  `_get_tr_stopwords()` ile aynı "eksikse indir" deseni eklendi
+  (`nltk.download('punkt_tab', quiet=True)`, Dockerfile/deploy.sh
+  değişikliği gerekmedi, ilk kullanımda otomatik iniyor). (2) **Yan bulgu:**
+  zeyrek çalışır hale gelince kendi `zeyrek.rulebasedanalyzer` logger'ı her
+  kelimede WARNING seviyesinde analiz adaylarını basıyordu (önceden
+  görünmüyordu çünkü fonksiyon zaten patlıyordu) — `logging.getLogger
+  ('zeyrek').setLevel(logging.ERROR)` ile susturuldu. (3) **İkinci yan
+  bulgu (test ederken bulundu, KRİTİK):** zeyrek bir Türkçe morfolojik
+  analizör olduğu için İngilizce teknik terimlere de rastgele tekil/hal eki
+  uydurup kökü bozuyordu (ör. "photon"→"photo", "tensile"→"tensil" — ikisi
+  de gerçek çoğul değil, zeyrek'in zorla bulduğu tekil+hal eki tahmini).
+  Abstract'ların çoğunluğu İngilizce olduğundan bu, düzeltmenin kendisinin
+  yarattığı yeni bir regresyon olurdu. `lemmatize_word()` `analyzer.
+  lemmatize()` yerine `analyzer.analyze()`'a geçirildi, yalnızca sonuçta
+  gerçek çoğul eki (`'A3pl' in parse.morphemes`) bulunursa kök kabul
+  ediliyor — bu hem orijinal "kediler"→"kedi" hatasını düzeltiyor hem de
+  tüm test edilen İngilizce teknik terimleri (16 kelime) değiştirmeden
+  bırakıyor, ayrıca yan etki olarak eski `.lemmatize()`'ın "arabalar"→"arab"
+  yanlış kökünü de "araba"ya düzeltti (A3pl'li ilk aday artık doğru seçiliyor).
+  `pytest bibliometrics/tests.py` 160/160 (1 test — `test_topic_modeling_
+  data_separates_distinct_vocabularies` — bu regresyonu tam olarak
+  yakalayıp başarısız oldu, A3pl filtresiyle düzeldi), `forum/tests.py`
+  110/110 yeşil. Migration yok, tek dosya. Henüz main'e push/merge
+  edilmedi — kullanıcı onayı bekliyor.
 - [ ] **(29 Ekim 2026) Tarama araçlarının AI özet paragrafı DE/EN'de Türkçe
   kalıyor — araştırılmadı, sıraya alındı.** Kullanıcı Semantic Scholar
   aracında (muhtemelen diğer tarama araçlarında da) hem DE hem EN arayüzde
