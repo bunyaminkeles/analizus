@@ -803,6 +803,23 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(7 Kasım 2026 TAMAMLANDI) Footer'daki adres site genelinde (ana sayfa
+  dahil) her sayfada görünüyordu — kullanıcı sordu: "normalde sadece ilgili
+  sayfada (impressum gibi) olması lazım değil mi?".** `templates/partials/
+  footer.html` her sayfada render edilen global parça olduğu için Mainz/
+  Keçiören adresi artık EN/DE'de her sayfanın altında görünüyordu. Ayrıca
+  `/iletisim/` ("İletişim", EN/DE'de de aynı URL — `name='contact'` path'i
+  çevrilmemiş) sayfasında da AYRI bir adres kartı vardı, o da dil ayrımı
+  yapmadan Türkçe adresi gösteriyordu. Kullanıcı kararı: footer'dan adres
+  tamamen kaldırıldı (zaten "İletişim" linki var), tek adres kaynağı
+  `/iletisim/` sayfası oldu — `forum/templates/forum/contact.html`'deki
+  adres kartı da footer'dakiyle aynı `{% if LANGUAGE_CODE == 'tr' %}`
+  deseniyle ayrıldı (TR: Keçiören/Ankara, EN/DE: Bunyamin Keles — Walter-
+  Hallstein-Straße 13, 55130 Mainz). Ayrı bir Impressum sayfası
+  oluşturulmadı (mevcut İletişim sayfası bu amaca hizmet ediyor, kapsam
+  dışına çıkılmadı). Docker'da TR/EN/DE ana sayfa (adres yok) + `/iletisim/`
+  (doğru dil/adres) curl ile doğrulandı, `pytest forum/tests.py` 110/110
+  yeşil. Migration yok, 2 dosya.
 - [x] **(7 Kasım 2026 TAMAMLANDI) TR/EN/DE "Ödeme Talimatlarını Al" butonu
   giriş yapmamış kullanıcıda sessizce hiçbir şey yapmıyordu.** Kullanıcı
   ekran görüntüsüyle bildirdi (EN sayfasında Premium modal). Kök neden:
