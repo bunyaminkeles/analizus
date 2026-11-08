@@ -95,7 +95,7 @@ kartlar dashboard (admin/index.html) ile aynı koyu tema stilinde, aşağıdaki 
       <h2 class="nav-title">
         {% if selected_user %}En Çok Ziyaret — {{ selected_user.username }}{% else %}En Çok Ziyaret Edilen Sayfalar{% endif %}
       </h2>
-      <canvas id="topPagesChart"></canvas>
+      <div id="topPagesChartWrap"><canvas id="topPagesChart"></canvas></div>
     </div>
 
     <!-- Günlük Trend -->
@@ -185,6 +185,9 @@ kartlar dashboard (admin/index.html) ile aynı koyu tema stilinde, aşağıdaki 
 
   // --- Top Sayfalar (yatay bar) ---
   if (topPagesRaw.length) {
+    // Bölüm etiketleri dar ekranda autoSkip ile atlanıyordu (Chart.js varsayılanı) —
+    // her etiketin sığacağı kadar yükseklik verilip autoSkip kapatıldı.
+    document.getElementById('topPagesChartWrap').style.height = Math.max(220, topPagesRaw.length * 32) + 'px';
     new Chart(document.getElementById('topPagesChart'), {
       type: 'bar',
       data: {
@@ -194,8 +197,9 @@ kartlar dashboard (admin/index.html) ile aynı koyu tema stilinde, aşağıdaki 
       },
       options: {
         indexAxis: 'y',
+        maintainAspectRatio: false,
         plugins: { legend: { display: false } },
-        scales: { x: scaleOpts, y: { ...scaleOpts, ticks: { ...scaleOpts.ticks, font: { size: 11 } } } },
+        scales: { x: scaleOpts, y: { ...scaleOpts, ticks: { ...scaleOpts.ticks, font: { size: 11 }, autoSkip: false } } },
       },
     });
   } else {
