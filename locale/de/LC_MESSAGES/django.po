@@ -3985,7 +3985,7 @@ msgstr "Welcher Test?"
 
 #: forum/templates/forum/about.html:301
 msgid "Analizus, Bünyamin Keleş tarafından işletilmektedir."
-msgstr "Analizus wird von Bünyamin Keleş betrieben."
+msgstr "Analizus wird von Bunyamin Keles betrieben."
 
 #: forum/templates/forum/about.html:301
 msgid "Adres:"
