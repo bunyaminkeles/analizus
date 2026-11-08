@@ -5776,11 +5776,12 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
-**Durum (8 Kasım 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 21 dosya
-migre edildi (19'u 25 Ekim + `onboarding.html` 8 Kasım sabahı ayrı bir
-oturumda bug-fix olarak + `forum_index.html` bu turda), **46 dosyada hâlâ
-gerçek Bootstrap component class'ı var** (bkz. "Güncel envanter" altı).
-Faz 4-5 henüz başlamadı.
+**Durum (8 Kasım 2026):** Faz 1-2 TAMAMLANDI (Faz 2'nin atladığı
+`donationModal` bu turda kapatıldı). Faz 3 sürüyor — 22 dosya migre edildi
+(19'u 25 Ekim + `onboarding.html` 8 Kasım sabahı ayrı bir oturumda
+bug-fix olarak + `forum_index.html` + `footer.html` bu turda), **45
+dosyada hâlâ gerçek Bootstrap component class'ı var** (bkz. "Güncel
+envanter" altı). Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -5836,11 +5837,8 @@ dosya hiç kullanıcıya görünmüyor), silinmedi — ayrı bir karar.
 yeni CSS gerekmedi, 110/110 pytest, geçici `StudyRoom` kaydıyla canlı HTML
 doğrulandı), ~~`onboarding.html`~~ (✅ 8 Kasım sabahı, ayrı oturum — 22 Ekim
 bulgusu bug-fix'i olarak, bkz. commit `3ee71e3`),
-`footer.html` (partials) — **dikkat:** bu dosyadaki `donationModal` Faz 2'de
-atlanmış, hâlâ `data-bs-toggle`/`data-bs-target`/`data-bs-dismiss` +
-`show.bs.modal` JS event kullanıyor (saf class rename değil, `AxModal`'a
-JS davranış taşıması gerekiyor — sitede her sayfada göründüğü için ayrı
-dikkatli bir tur gerekir),
+~~`footer.html`~~ (✅ 8 Kasım — `donationModal` Faz 2 eksiği + component
+class'ları birlikte tamamlandı, detay yukarı "Faz 2'de atlanmış bir modal"),
 ~~`edit_job.html`~~ (✅ 25 Ekim), ~~`post_job.html`~~ (✅ 25 Ekim),
 ~~`search_results.html`~~ (✅ 25 Ekim), ~~`verification_pending.html`~~
 (✅ 25 Ekim), ~~`my_payments.html`~~ (✅ 25 Ekim), ~~`section_detail.html`~~
@@ -5915,6 +5913,32 @@ cascade'de kazanıyor); `normallik.html` vb. istatistik sayfaları tek tireli
 `ax-alert-danger`/`ax-alert-info` kullanıyor (farklı isim, çakışmıyor);
 `hangi_test.html`'in `.ax-modal-overlay/-dialog` yapısı tamamen ayrı
 isimlendirme.
+
+**8 Kasım 2026 — Faz 2'de atlanmış bir modal bulunup kapatıldı:**
+`templates/partials/footer.html`'deki `donationModal` (her sayfada footer'dan
+erişilen "Premium Üye Ol" bağış modalı) Faz 2'nin 5 modalli listesinde
+(searchModal/quizModal/profileModal/storyModal/shareStoryModal) hiç yoktu —
+hâlâ ham `data-bs-toggle`/`modal-dialog`/`modal-content`/`modal-header`/
+`modal-title`/`modal-body`/`modal-footer`/`btn-close`/`data-bs-dismiss` +
+`show.bs.modal` JS event'i kullanıyordu. Taşındı: 3 seviyeli Bootstrap
+yapısı (`modal`→`modal-dialog`→`modal-content`) 2 seviyeli `ax-modal`
+yapısına (`ax-modal-backdrop`→`ax-modal`) indirgendi; `show.bs.modal`
+event'i `ax-modal.js`'te hiç dispatch edilmediği için (62 satır kod okunup
+doğrulandı) karşılığı yok — mesaj kutusunu sıfırlayan mantık tetikleyici
+butonun `onclick`'ine (`resetFooterMsg()`) taşındı. Aynı dosyadaki component
+class'ları da (Faz 3 kapsamı) bu turda birlikte bitirildi: `btn-outline-secondary`→
+`ax-btn--ghost`, `btn-primary`→`ax-btn--primary` (established pattern,
+account_delete.html/onboarding.html/profile_edit.html'de aynı eşleme),
+`alert alert-info`→`ax-alert ax-alert--cyan` (25 Ekim kuralı: gerçek
+Bootstrap camgöbeği karşılığı `--cyan`, `--info` mor), `form-check-input`→
+`ax-form-check-input`. İnline `border-radius:20px`/`bg-dark border
+border-secondary` kaldırıldı — artık diğer tüm ax-modal'larla aynı standart
+görünüm (Faz 2'deki profileModal/storyModal emsaliyle aynı karar). `ax-modal.js`
+dosyasına dokunulmadı (kapsam dışı, sitedeki diğer 5 modali etkiler).
+110/110 pytest, canlı HTML'de div denge kontrolü (30 aç/30 kapa) +
+sınıf/ID eşleşmeleri `curl` ile doğrulandı; container'ın açılış rutini
+(deploy.sh) bitmeden yapılan ilk kontrol 502 verdi, birkaç saniye sonra
+tekrarlanınca 200 döndü (gerçek hata değil, zamanlama).
 
 ### Faz 2 — Vanilla JS modal/dropdown controller — TAMAMLANDI (modal+dropdown)
 **Kapsam kullanıcı onayıyla daraltıldı:** `notifications.js`'teki
