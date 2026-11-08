@@ -8276,7 +8276,7 @@ msgstr ""
 
 #: forum/templates/forum/home_intl.html:202
 msgid "İhtiyacınızı anlatan bir ilan açın, uzmanlarımızdan teklif alın."
-msgstr ""
+msgstr "Erstellen Sie eine Anzeige mit Ihrem Bedarf und erhalten Sie Angebote von unseren Experten."
 
 #: forum/templates/forum/home_intl.html:224
 msgid "Neler Teslim Ediyoruz?"
