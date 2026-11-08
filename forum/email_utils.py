@@ -404,10 +404,11 @@ def notify_admin_new_job(job):
     try:
         site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
         color = _COLORS['job']
+        currency = 'TL' if job.language == 'tr' else '€'
         rows = [
             ('İlan başlığı', job.title),
             ('İlan sahibi', job.owner.username),
-            ('Bütçe', f"Maks. {job.budget_max} TL"),
+            ('Bütçe', f"Maks. {job.budget_max} {currency}"),
             ('Kategori', str(job.category) if job.category else '—'),
             ('Referans', job.reference_number or '—'),
             ('Tarih', job.created_at.strftime('%d.%m.%Y %H:%M')),
@@ -420,7 +421,7 @@ def notify_admin_new_job(job):
             url, label, button = f"{site}/market/job/{job.pk}/", '🟠 Yeni İş İlanı', 'İlana Git'
         html = _build_admin_html(label, color, job.title, rows, url, button)
         pending = ' (onay bekliyor)' if job.status == 'pending' else ''
-        plain = f"Yeni ilan{pending}: '{job.title}' — {job.owner.username} (Maks. {job.budget_max} TL) {url}"
+        plain = f"Yeni ilan{pending}: '{job.title}' — {job.owner.username} (Maks. {job.budget_max} {currency}) {url}"
         _send_admin(f"[Analizus] Yeni İlan{pending}: {job.title[:60]}", html, plain)
     except Exception as e:
         logger.error(f"Admin yeni ilan bildirimi gönderilemedi: {e}")
@@ -432,12 +433,13 @@ def notify_admin_new_proposal(proposal):
     try:
         site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
         color = _COLORS['proposal']
+        currency = 'TL' if proposal.job.language == 'tr' else '€'
         preview = proposal.message[:200] + ('…' if len(proposal.message) > 200 else '')
         rows = [
             ('İlan', proposal.job.title),
             ('İlan sahibi', proposal.job.owner.username),
             ('Teklif veren', proposal.expert.username),
-            ('Fiyat', f"{proposal.price} TL"),
+            ('Fiyat', f"{proposal.price} {currency}"),
             ('Süre', proposal.duration),
             ('Ön yazı', preview),
             ('Tarih', proposal.created_at.strftime('%d.%m.%Y %H:%M')),
@@ -449,7 +451,7 @@ def notify_admin_new_proposal(proposal):
             f"{site}/admin/forum/jobproposal/{proposal.pk}/change/",
             'Teklifi Görüntüle'
         )
-        plain = f"Yeni teklif: {proposal.expert.username} → '{proposal.job.title}' — {proposal.price} TL"
+        plain = f"Yeni teklif: {proposal.expert.username} → '{proposal.job.title}' — {proposal.price} {currency}"
         _send_admin(f"[Analizus] Yeni Teklif: {proposal.job.title[:55]}", html, plain)
     except Exception as e:
         logger.error(f"Admin yeni teklif bildirimi gönderilemedi: {e}")
@@ -461,11 +463,12 @@ def notify_admin_proposal_accepted(proposal):
     try:
         site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
         color = _COLORS['accepted']
+        currency = 'TL' if proposal.job.language == 'tr' else '€'
         rows = [
             ('İlan', proposal.job.title),
             ('İlan sahibi', proposal.job.owner.username),
             ('Kabul edilen uzman', proposal.expert.username),
-            ('Anlaşılan fiyat', f"{proposal.price} TL"),
+            ('Anlaşılan fiyat', f"{proposal.price} {currency}"),
             ('Süre', proposal.duration),
         ]
         html = _build_admin_html(
@@ -475,7 +478,7 @@ def notify_admin_proposal_accepted(proposal):
             f"{site}/market/job/{proposal.job.pk}/",
             'İlana Git'
         )
-        plain = f"Teklif kabul: '{proposal.job.title}' — uzman: {proposal.expert.username} ({proposal.price} TL)"
+        plain = f"Teklif kabul: '{proposal.job.title}' — uzman: {proposal.expert.username} ({proposal.price} {currency})"
         _send_admin(f"[Analizus] ✅ Teklif Kabul: {proposal.job.title[:50]}", html, plain)
     except Exception as e:
         logger.error(f"Admin teklif kabul bildirimi gönderilemedi: {e}")
