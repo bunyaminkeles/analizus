@@ -1204,6 +1204,9 @@ def topic_detail(request, pk):
         ).values_list('post_id', flat=True))
 
     if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect(f"{reverse('login')}?next={request.path}")
+
         profile = getattr(request.user, 'profile', None)
         if profile and not profile.email_verified:
             messages.warning(request, gettext('Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor.'))

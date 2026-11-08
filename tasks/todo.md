@@ -803,6 +803,30 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(8 Kasım 2026 TAMAMLANDI) Kullanıcı ekran görüntüleriyle `/hakkimizda/`
+  sayfasında 4 ayrı EN/DE bulgusu bildirdi, hepsi aynı oturumda düzeltildi
+  (2 merge, main'de canlı).** (1) EN/DE'de adres hâlâ Keçiören/Ankara
+  gösteriyordu — `about.html`'e 7 Kasım'daki TR/EN-DE adres ayrım deseni
+  hiç uygulanmamıştı, düzeltildi. (2) `/iletisim/` KVKK onay checkbox'ı
+  EN/DE'de çıplak "KVKK Privacy Notice" diyordu (Türkiye'ye özgü kısaltma,
+  uluslararası kullanıcı tanımaz) — kullanıcı onayıyla GDPR/KVKK ikilisine
+  çevrildi. (3) **Kritik/sistemik bulgu:** `about.html` karşılaştırma
+  tablosu + "Doğrulanmış Uzman Ağımız" bloğu EN/DE'de Türkçe kalıyordu —
+  kök neden önceki bir `makemessages` turunda msgmerge'ün bu msgid'leri
+  **fuzzy** işaretleyip yanlış/alakasız eski çevirilerle eşlemesi (fuzzy
+  girdiler `msgfmt` tarafından derlenmiyor, kaynak Türkçe metne düşüyor) —
+  9 msgid (EN+DE) elle düzeltildi, fuzzy bayrakları temizlendi. **Bu
+  sayfaya özgü olmayabilir — site genelinde fuzzy taraması ayrı bir
+  denetim turu olarak ayrıca ele alınmalı (henüz yapılmadı).** (4) Madde
+  1'in düzeltmesi isim tekrarına yol açmıştı ("Bünyamin Keleş ... Bunyamin
+  Keles") — adres metninden isim kaldırıldı, "operated by" cümlesinin
+  EN/DE çevirisi de 7 Kasım'daki diyakritiksiz "Bunyamin Keles" kuralına
+  getirildi. Aynı oturumda ayrıca **navbar aktif renk tutarsızlığı**
+  giderildi (Analizler/Pazaryeri/Proje Talebi/Kurumsal'da hiç `is-active`
+  yoktu, Topluluk/Eğitim'deki desenle eşitlendi). Migration yok,
+  `forum/tests.py` 110/110 yeşil, merge öncesi online-kullanıcı kontrolü
+  iki kez de boş çıktı.
+
 - [x] **(7 Kasım 2026 TAMAMLANDI) Footer'daki "ziyaretçi" sayacı gerçek dışı
   büyük görünüyordu (404.991) — kullanıcı sordu.** Kök neden: `forum/
   middleware.py` `VisitorCounterMiddleware`'in kendi docstring'i bile
