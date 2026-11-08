@@ -8120,7 +8120,7 @@ msgstr ""
 
 #: forum/templates/forum/home_intl.html:202
 msgid "İhtiyacınızı anlatan bir ilan açın, uzmanlarımızdan teklif alın."
-msgstr ""
+msgstr "Post a listing describing your need, get offers from our experts."
 
 #: forum/templates/forum/home_intl.html:224
 msgid "Neler Teslim Ediyoruz?"
