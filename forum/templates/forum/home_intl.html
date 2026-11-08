@@ -212,6 +212,47 @@
 {% endif %}
 
 <!-- =====================================================
+     UZMAN ARAYAN PROJELER (intl vitrin) — home.html:701 ile aynı desen
+     ===================================================== -->
+{% if features.market_intl and showcase_jobs %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="ax-section-card">
+                    <div class="ax-section-card__header" style="color: #fbbf24;">
+                        <i class="bi bi-stars"></i>
+                        <span>{% trans "Uzman Arayan Projeler" %}</span>
+                        <a href="{% url 'job_list' %}" class="ms-auto ax-section-card__more">{% trans "Tümünü Gör →" %}</a>
+                    </div>
+                    <div class="ax-section-card__body">
+                        <div class="d-flex flex-column gap-3">
+                            {% for job in showcase_jobs %}
+                            <div class="p-3 border border-warning border-opacity-25 rounded-3 position-relative bg-dark bg-opacity-25 job-card-hover">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0 text-white text-truncate" style="max-width: 80%;">
+                                        <a href="{% url 'job_detail' pk=job.pk %}" class="text-white text-decoration-none stretched-link">{{ job.title }}</a>
+                                    </h6>
+                                    {% if job.is_featured %}<span class="ax-badge ax-badge--warning-solid" style="font-size: 0.65rem;">{% trans "VİTRİN" %}</span>{% endif %}
+                                </div>
+                                <p class="small text-muted mb-3">{{ job.description|truncatechars:90 }}</p>
+                                <div class="d-flex justify-content-between align-items-center small">
+                                    <span class="text-secondary"><i class="bi bi-clock"></i> {% blocktrans with time=job.created_at|timesince %}{{ time }} önce{% endblocktrans %}</span>
+                                    <span class="fw-bold" style="color: var(--ax-accent-warning);">{% blocktrans with amount=job.budget_max|floatformat:0 %}€{{ amount }}'ye kadar{% endblocktrans %}</span>
+                                    {% if job.p_count %}<span class="text-secondary ms-3"><i class="bi bi-people"></i> {% blocktrans with count=job.p_count %}{{ count }} Teklif{% endblocktrans %}</span>{% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- =====================================================
      TESLİMATLAR
      ===================================================== -->
 <section class="py-5">

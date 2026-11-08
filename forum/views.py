@@ -308,23 +308,29 @@ def home(request):
     # Vitrin İlanları (Öne Çıkanlar) - Süresi dolmamış olanlar. Vitrin ücretli
     # ürün olduğundan sayısı ne olursa olsun (eşiksiz) gösterilir. Vitrin < 3
     # ise kalan slotlar organik (vitrinsiz, en yeni açık) ilanlarla 3'e
-    # tamamlanır — vitrin >= 3 olduğunda organik ilan eklenmez.
-    showcase_jobs = list(FreelanceJob.objects.filter(
-        status='open',
-        is_featured=True,
-        featured_until__gte=timezone.now()  # Vitrin süresi dolmamış
-    ).select_related('owner', 'category').annotate(
-        p_count=Count('proposals', distinct=True)
-    ).order_by('-created_at')[:4])
-
-    organic_fill_count = 3 - len(showcase_jobs)
-    if organic_fill_count > 0:
-        showcase_jobs += list(FreelanceJob.objects.filter(
+    # tamamlanır — vitrin >= 3 olduğunda organik ilan eklenmez. Kapsam
+    # (TR/intl) aktif arayüz diline göre ayrılır — TR vitrine intl ilan
+    # (veya tersi) sızmasın (8 Kasım 2026).
+    home_scope = 'tr' if request.LANGUAGE_CODE == 'tr' else 'intl'
+    if home_scope == 'intl' and not site_settings.feature_market_intl:
+        showcase_jobs = []
+    else:
+        showcase_jobs = list(FreelanceJob.in_market_scope(home_scope).filter(
             status='open',
-            is_featured=False,
+            is_featured=True,
+            featured_until__gte=timezone.now()  # Vitrin süresi dolmamış
         ).select_related('owner', 'category').annotate(
             p_count=Count('proposals', distinct=True)
-        ).order_by('-created_at')[:organic_fill_count])
+        ).order_by('-created_at')[:4])
+
+        organic_fill_count = 3 - len(showcase_jobs)
+        if organic_fill_count > 0:
+            showcase_jobs += list(FreelanceJob.in_market_scope(home_scope).filter(
+                status='open',
+                is_featured=False,
+            ).select_related('owner', 'category').annotate(
+                p_count=Count('proposals', distinct=True)
+            ).order_by('-created_at')[:organic_fill_count])
 
     # Bağış Katmanları
     donation_tiers = DonationTier.objects.filter(is_active=True).order_by('min_amount')
@@ -720,7 +726,7 @@ def accept_proposal(request, pk, proposal_id):
         message=(
             f'Tebrikler {proposal.expert.username}!\n\n'
             f'"{job.title}" ilanına verdiğiniz teklif kabul edildi.\n\n'
-            f'Teklif Tutarı: {proposal.price} TL\n'
+            f'Teklif Tutarı: {proposal.price} {"TL" if job.language == "tr" else "€"}\n'
             f'Süre: {proposal.duration}\n\n'
             f'İlanı görüntülemek için: {site}/market/job/{job.pk}/'
         )
@@ -878,7 +884,7 @@ def job_detail(request, pk):
 
         if is_expert and not user_proposal and job.status == 'open':
             if request.method == 'POST':
-                proposal_form = ProposalForm(request.POST)
+                proposal_form = ProposalForm(request.POST, scope=job_scope(job))
                 if proposal_form.is_valid():
                     proposal = proposal_form.save(commit=False)
                     proposal.job = job
@@ -902,7 +908,7 @@ def job_detail(request, pk):
                         message=(
                             f'"{job.title}" ilanınıza yeni bir teklif geldi!\n\n'
                             f'Teklif Veren: {request.user.username}\n'
-                            f'Teklif Tutarı: {proposal.price} TL\n'
+                            f'Teklif Tutarı: {proposal.price} {"TL" if job.language == "tr" else "€"}\n'
                             f'Süre: {proposal.duration}\n\n'
                             f'Ön Yazı:\n{proposal.message[:500]}\n\n'
                             f'Teklifi değerlendirmek için: {site}/market/job/{job.pk}/'
@@ -914,7 +920,7 @@ def job_detail(request, pk):
                     messages.success(request, gettext('Teklifiniz başarıyla gönderildi!'))
                     return redirect('job_detail', pk=pk)
             else:
-                proposal_form = ProposalForm()
+                proposal_form = ProposalForm(scope=job_scope(job))
 
     is_liked = False
     is_saved = False

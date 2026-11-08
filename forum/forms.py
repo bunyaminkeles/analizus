@@ -220,3 +220,10 @@ class ProposalForm(forms.ModelForm):
             'duration': gettext_lazy('Tahmini Süre'),
             'message': gettext_lazy('Ön Yazı'),
         }
+
+    def __init__(self, *args, **kwargs):
+        scope = kwargs.pop('scope', 'tr')
+        super().__init__(*args, **kwargs)
+        if scope == 'intl':
+            self.fields['price'].label = gettext_lazy('Teklif Tutarı (€)')
+            self.fields['price'].widget.attrs['placeholder'] = gettext_lazy('Teklifiniz (€)')
