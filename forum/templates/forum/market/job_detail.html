@@ -33,7 +33,7 @@
   "employmentType": "CONTRACTOR",
   "baseSalary": {
     "@type": "MonetaryAmount",
-    "currency": "TRY",
+    "currency": "{% if job.language == 'tr' %}TRY{% else %}EUR{% endif %}",
     "value": {
       "@type": "QuantitativeValue",
       "maxValue": {{ job.budget_max }},
@@ -137,7 +137,7 @@
                     <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary border-opacity-25">
                         <div class="d-flex justify-content-between align-items-center {% if job.expected_duration %}mb-2{% endif %}">
                             <span class="text-muted">{% trans "Bütçe:" %}</span>
-                            <span class="text-success fw-bold fs-5">{% blocktrans with amount=job.budget_max|floatformat:0 %}₺{{ amount }}'ye kadar{% endblocktrans %}</span>
+                            <span class="text-success fw-bold fs-5">{% if job.language == 'tr' %}{% blocktrans with amount=job.budget_max|floatformat:0 %}₺{{ amount }}'ye kadar{% endblocktrans %}{% else %}{% blocktrans with amount=job.budget_max|floatformat:0 %}€{{ amount }}'ye kadar{% endblocktrans %}{% endif %}</span>
                         </div>
                         {% if job.expected_duration %}
                         <div class="d-flex justify-content-between align-items-center">
@@ -211,7 +211,7 @@
                         </div>
                         <p class="text-light small mb-2 mt-2">{{ proposal.message }}</p>
                         <div class="d-flex justify-content-between align-items-center mt-2">
-                            <div class="text-success fw-bold">₺{{ proposal.price }} <span class="text-muted fw-normal ms-2">({{ proposal.duration }})</span></div>
+                            <div class="text-success fw-bold">{% if job.language == 'tr' %}₺{% else %}€{% endif %}{{ proposal.price }} <span class="text-muted fw-normal ms-2">({{ proposal.duration }})</span></div>
                             <div class="d-flex align-items-center gap-2">
                                 <a href="{% url 'send_message' username=proposal.expert.username %}" class="btn btn-sm btn-outline-light">{% trans "Mesaj At" %}</a>
                                 {% if job.status == 'open' and proposal.status == 'pending' and request.user == job.owner %}
@@ -306,7 +306,7 @@
                             <small class="text-muted" style="font-size: 0.75rem;">{% blocktrans with time=sjob.created_at|timesince %}{{ time }} önce{% endblocktrans %} · {{ sjob.owner.username }}</small>
                         </div>
                         <div class="text-end">
-                            <span class="text-success fw-bold small">{% blocktrans with amount=sjob.budget_max|floatformat:0 %}₺{{ amount }}'ye kadar{% endblocktrans %}</span>
+                            <span class="text-success fw-bold small">{% if sjob.language == 'tr' %}{% blocktrans with amount=sjob.budget_max|floatformat:0 %}₺{{ amount }}'ye kadar{% endblocktrans %}{% else %}{% blocktrans with amount=sjob.budget_max|floatformat:0 %}€{{ amount }}'ye kadar{% endblocktrans %}{% endif %}</span>
                         </div>
                     </a>
                     {% endfor %}
@@ -329,7 +329,7 @@
                         <div class="bg-dark bg-opacity-25 p-2 rounded text-start">
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="text-muted small">{% trans "Tutar:" %}</span>
-                                <span class="text-success fw-bold small">₺{{ accepted_proposal.price }}</span>
+                                <span class="text-success fw-bold small">{% if job.language == 'tr' %}₺{% else %}€{% endif %}{{ accepted_proposal.price }}</span>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted small">{% trans "Süre:" %}</span>
@@ -370,7 +370,7 @@
                 {% endif %}
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="text-muted small">{% trans "Tutar:" %}</span>
-                                <span class="text-success fw-bold small">₺{{ user_proposal.price }}</span>
+                                <span class="text-success fw-bold small">{% if job.language == 'tr' %}₺{% else %}€{% endif %}{{ user_proposal.price }}</span>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted small">{% trans "Süre:" %}</span>

@@ -16,9 +16,7 @@ urlpatterns = [
 
     # Profil → urls_i18n.py (TR/EN/DE)
 
-    # Mesajlaşma
-    path('inbox/', views.inbox, name='inbox'),
-    path('send-message/<str:username>/', views.send_message, name='send_message'),
+    # Mesajlaşma (sayfalar → urls_i18n.py, 8 Kasım 2026; API burada kalır)
     path('api/chat/<str:username>/poll/', views.api_chat_poll, name='api_chat_poll'),
     path('api/inbox/poll/', views.api_inbox_poll, name='api_inbox_poll'),
     path('api/message/<int:message_id>/edit/', views.api_edit_message, name='api_edit_message'),
@@ -90,7 +88,7 @@ urlpatterns = [
     path('jobs/<int:pk>/', RedirectView.as_view(pattern_name='job_detail', permanent=True)),
 
     # Freelance Market — market/* path'leri forum/urls_i18n.py'de (çok dilli arayüz)
-    path('my-payments/', views.my_payments, name='my_payments'),
+    # my-payments/ → urls_i18n.py'ye taşındı (8 Kasım 2026)
 
     # API Endpoints (Quiz & Stories)
     path('api/quiz/random/', views.api_get_quiz_question, name='api_get_quiz_question'),
@@ -126,7 +124,6 @@ urlpatterns = [
     path('api/admin-setup/', api_views.admin_create_or_reset, name='admin_setup'),
     path('api/initial-setup/', api_views.run_initial_setup, name='initial_setup'),
 
-    # Referral (Davet) Sistemi
-    path('davet/', views.referral_dashboard, name='referral_dashboard'),
+    # Referral (Davet) Sistemi — davet/ (dashboard) → urls_i18n.py'ye taşındı (8 Kasım 2026)
     path('davet/<str:code>/', views.referral_landing, name='referral_landing'),
 ]

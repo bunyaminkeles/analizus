@@ -551,7 +551,7 @@ def post_job(request):
         return redirect('job_list')
 
     if request.method == 'POST':
-        form = JobPostForm(request.POST)
+        form = JobPostForm(request.POST, scope=scope)
         if form.is_valid():
             job = form.save(commit=False)
             job.owner = request.user
@@ -572,7 +572,7 @@ def post_job(request):
         cat_id = request.GET.get('category', '').strip()
         if cat_id.isdigit() and JobCategory.objects.filter(pk=cat_id, is_active=True).exists():
             initial['category_choice'] = cat_id
-        form = JobPostForm(initial=initial)
+        form = JobPostForm(initial=initial, scope=scope)
     return render(request, 'forum/market/post_job.html', {
         'form': form,
         'job_duration_days': profile.get_job_duration_days(),
@@ -657,8 +657,9 @@ def edit_job(request, pk):
         return redirect('job_detail', pk=pk)
 
     from .forms import JobPostForm
+    job_scope = 'tr' if job.language == 'tr' else 'intl'
     if request.method == 'POST':
-        form = JobPostForm(request.POST, instance=job)
+        form = JobPostForm(request.POST, instance=job, scope=job_scope)
         if form.is_valid():
             updated = form.save(commit=False)
             updated.is_edited = True
@@ -672,7 +673,7 @@ def edit_job(request, pk):
                 messages.success(request, gettext('İlanınız güncellendi. (Düzenleme hakkınız kullanıldı.)'))
             return redirect('job_detail', pk=pk)
     else:
-        form = JobPostForm(instance=job)
+        form = JobPostForm(instance=job, scope=job_scope)
 
     return render(request, 'forum/market/edit_job.html', {'form': form, 'job': job})
 
