@@ -3870,26 +3870,18 @@ msgid "Geniş Uzman Ağı"
 msgstr "Wide Expert Network"
 
 #: forum/templates/forum/about.html:278
-#, fuzzy
-#| msgid "Geniş Uzman Ağı"
 msgid "Doğrulanmış Uzman Ağımız"
-msgstr "Wide Expert Network"
+msgstr "Verified Expert Network"
 
 #: forum/templates/forum/about.html:279
-#, fuzzy
-#| msgid ""
-#| "Farklı disiplinlerden, akademik ve teknik yeterliliği doğrulanmış yüzlerce "
-#| "uzman Analizus'ta size destek olmak için bekliyor."
 msgid ""
 "Farklı disiplinlerden, akademik ve teknik yeterliliği doğrulanmış uzmanlar "
 "Analizus'ta size destek olmak için bekliyor."
 msgstr ""
-"Hundreds of experts from different disciplines, with verified academic and "
-"technical qualifications, are ready to help you on Analizus."
+"Experts from different disciplines, with verified academic and technical "
+"qualifications, are ready to support you on Analizus."
 
 #: forum/templates/forum/about.html:281
-#, fuzzy
-#| msgid "Dizindeki Uzmanları İncele"
 msgid "Uzman Dizinini İncele"
 msgstr "Browse the Expert Directory"
 
@@ -4537,7 +4529,7 @@ msgstr "Your Message"
 
 #: forum/templates/forum/contact.html:90
 msgid "KVKK Aydınlatma Metni'ni"
-msgstr "KVKK Privacy Notice"
+msgstr "GDPR/KVKK Privacy Notice"
 
 #: forum/templates/forum/contact.html:90
 msgid "okudum, kabul ediyorum."
@@ -11769,7 +11761,7 @@ msgstr "Installation"
 
 #: forum/views.py:2178
 msgid "Yok (tarayıcı)"
-msgstr ""
+msgstr "Not required (browser)"
 
 #: forum/views.py:2178
 msgid "Gerekli"
@@ -11780,24 +11772,20 @@ msgid "APA Rapor"
 msgstr "APA Report"
 
 #: forum/views.py:2179
-#, fuzzy
-#| msgid "Otomatik Öneri"
 msgid "Otomatik"
-msgstr "Automatic Recommendation"
+msgstr "Automatic"
 
 #: forum/views.py:2180
 msgid "PDF Çıktı"
 msgstr "PDF Output"
 
 #: forum/views.py:2180
-#, fuzzy
-#| msgid "Hazırlayan:"
 msgid "Hazır"
-msgstr "Prepared by:"
+msgstr "Ready"
 
 #: forum/views.py:2180
 msgid "Manuel"
-msgstr ""
+msgstr "Manual"
 
 #: forum/views.py:2181 istatistik/views.py:31 istatistik/views.py:116
 msgid "Cronbach Alpha"
@@ -11805,15 +11793,13 @@ msgstr "Cronbach's Alpha"
 
 #: forum/views.py:2181 forum/views.py:2182 forum/views.py:2184
 msgid "Var"
-msgstr ""
+msgstr "Yes"
 
 #: forum/views.py:2183
 msgid "Uzman Desteği"
 msgstr "Expert Support"
 
 #: forum/views.py:2183
-#, fuzzy
-#| msgid "Pazaryeri"
 msgid "Pazar yeri"
 msgstr "Marketplace"
 
