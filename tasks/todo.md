@@ -803,6 +803,57 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(8 Kasım 2026, kullanıcı test ederken fark etti) home_intl.html'de "Uzman Arayan Projeler" vitrin bölümü yok — yeni açılan intl ilan ana sayfada görünmüyor, yalnız /market/'te var.**
+  `home()` view'ı (`forum/views.py:312-327`) `showcase_jobs` sorgusunu
+  hesaplayıp context'e koyuyor (`forum/views.py:358`) ve bu context HEM
+  `home.html` HEM `home_intl.html` için aynı (`forum/views.py:360-362`,
+  `feature_intl_consulting_home` açıkken EN/DE'de `home_intl.html` seçiliyor).
+  Ama `showcase_jobs` bölümü yalnız `home.html:701`'de
+  `{% if showcase_jobs and LANGUAGE_CODE == 'tr' %}` ile render ediliyor —
+  `home_intl.html`'de hiç karşılığı yok. **Düzeltme yönü (henüz
+  uygulanmadı, kullanıcı onayı bekliyor):** (1) `showcase_jobs` sorgusu
+  şu an `language` filtresiz (TR+intl karışık gelebilir) — intl için ayrı
+  filtrelenmeli (`FreelanceJob.in_market_scope('intl')` ile, tıpkı
+  `job_list`'teki gibi); (2) `home_intl.html`'e `home.html:701-745`
+  deseniyle aynı vitrin bölümü eklenmeli, bu oturumda kararlaştırılan €
+  para birimiyle; (3) `feature_market_intl` flag'i kapalıyken bu bölüm
+  hiç gösterilmemeli (sayı sıfır/pazaryeri zaten 404 iken boş vitrin
+  göstermenin anlamı yok) — flag go-live'ı ile birlikte ele alınmalı,
+  bkz. aşağıdaki go-live maddesi.
+
+- [x] **(8 Kasım 2026 TAMAMLANDI) Intl pazaryerinde TRY/₺ görünüyordu — job.language
+  bazlı € para birimine çevrildi.** Kullanıcı ekran görüntüsüyle bildirdi:
+  `post_job` formunda "Budget (TRY)" etiketi ve ilan kartlarında "up to ₺50"
+  — intl ilanlar için hâlâ TL sembolüydü. `forum/forms.py` `JobPostForm`'a
+  `scope` kwarg'ı eklendi (`scope='intl'` iken etiket "Bütçe (€)"/placeholder
+  değişir); `forum/views.py` `post_job`/`edit_job` scope'u forma geçiyor.
+  `job_detail.html` (6 yer), `job_list.html` (2 yer), `my_jobs.html` (1 yer)
+  artık `job.language == 'tr'` kontrolüyle ₺/€ seçiyor; JSON-LD
+  `baseSalary.currency` de TRY/EUR oldu. Gerçek kur çevrimi YOK — sayı
+  aynen kalıyor, yalnız sembol değişiyor (kullanıcı onayladı). `makemessages`
+  sonrası 2 fuzzy girdi (`Bütçe (€)`, `€%(amount)s'ye kadar`) bulunup
+  elle düzeltildi — msgmerge eski ₺ çevirisini yanlışlıkla devretmişti
+  ([[feedback_i18n_fuzzy_matching]]). 110/110 pytest yeşil, migration yok,
+  main'e push+deploy edildi.
+- [x] **(8 Kasım 2026 TAMAMLANDI) EN/DE kullanıcısı navbar'daki "Ödemelerim/
+  Gelen Kutusu/Arkadaşını Davet Et" veya bir "Mesaj At" linkine tıklayınca
+  TR'ye düşüyordu.** Kullanıcı ekran görüntüsüyle bildirdi: kendi adına
+  tıklayınca `/send-message/<kendi_kullanıcı_adı>/`'na gidip sayfa TR
+  navbar'a döndü. Kök neden: `inbox`, `send-message/<username>/`,
+  `my-payments/`, `davet/` (referral dashboard) route'ları `forum/urls.py`'de
+  **`i18n_patterns` DIŞINDA** tanımlıydı — hiçbir dil öneki alamıyorlardı,
+  EN/DE'den tıklanınca Django dili session/cookie'den değil URL önekinden
+  okuduğu için varsayılan TR'ye düşüyordu. Düzeltme: 4 route `forum/
+  urls_i18n.py`'ye taşındı (TR path'leri değişmedi —
+  `prefix_default_language=False`), `robots.txt`'e 4+4 yeni `/en/`+`/de/`
+  disallow satırı eklendi (aynı özelliğin diğer i18n aksiyon
+  endpoint'lerindeki desen). `reverse()` ile tr/en/de üç dilde de doğru
+  önekle çözümlendiği + gerçek request/response ile `/en/inbox/`'un artık
+  `lang="en"` döndürdüğü doğrulandı. 110/110 pytest yeşil, migration yok,
+  main'e push+deploy edildi. **Not:** `referral_landing` (`davet/<code>/`,
+  dışarıdan paylaşılan davet linki) bilinçli olarak taşınmadı — ziyaretçinin
+  dili önceden bilinmiyor, kapsam dışı.
+
 - [ ] **(8 Kasım 2026) EN/DE intl pazaryeri go-live — tek eksik: flag'i açmak.**
   `/en/market/` 404 şikayeti araştırıldı: özellik 19 Ekim 2026'da tamamen
   kodlanmış/test edilmiş, yalnız `SiteSettings.feature_market_intl` bilinçli

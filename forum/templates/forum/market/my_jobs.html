@@ -76,7 +76,7 @@
                         ">{% if proposal.status == 'accepted' %}{% if proposal.job.status == 'completed' %}{% trans "Tamamlandı" %}{% else %}{% trans "Devam Ediyor" %}{% endif %}{% else %}{{ proposal.get_status_display }}{% endif %}</span>
                     </div>
                     <div class="d-flex justify-content-between small">
-                        <span class="text-muted">{% trans "Teklifim:" %} <span class="text-success">₺{{ proposal.price }}</span></span>
+                        <span class="text-muted">{% trans "Teklifim:" %} <span class="text-success">{% if proposal.job.language == 'tr' %}₺{% else %}€{% endif %}{{ proposal.price }}</span></span>
                         <span class="text-muted">{% blocktrans with time=proposal.created_at|timesince %}{{ time }} önce{% endblocktrans %}</span>
                     </div>
                 </a>

@@ -154,7 +154,11 @@ class JobPostForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        scope = kwargs.pop('scope', 'tr')
         super().__init__(*args, **kwargs)
+        if scope == 'intl':
+            self.fields['budget_max'].label = gettext_lazy('Bütçe (€)')
+            self.fields['budget_max'].widget.attrs['placeholder'] = gettext_lazy('Örn: 50')
         self._categories = {str(c.pk): c for c in JobCategory.objects.filter(is_active=True).order_by('order', 'title')}
         self.fields['category_choice'].choices = (
             [('', gettext('Kategori seçin…'))]

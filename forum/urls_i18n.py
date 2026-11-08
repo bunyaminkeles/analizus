@@ -57,4 +57,12 @@ urlpatterns = [
     # Profil (26 Eylül 2026)
     path('profile/edit/', views.profile_edit, name='profile_edit'),
     path('profile/<str:username>/', views.profile_detail, name='profile_detail'),
+
+    # Mesajlaşma / hesap aksiyonları (forum/urls.py'den taşındı, 8 Kasım 2026:
+    # i18n_patterns dışında olduklarından EN/DE kullanıcısı bu linklere
+    # tıklayınca dil prefix'i kaybolup sayfa TR'ye düşüyordu)
+    path('inbox/', views.inbox, name='inbox'),
+    path('send-message/<str:username>/', views.send_message, name='send_message'),
+    path('my-payments/', views.my_payments, name='my_payments'),
+    path('davet/', views.referral_dashboard, name='referral_dashboard'),
 ]
