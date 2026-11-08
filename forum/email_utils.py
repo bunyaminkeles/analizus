@@ -47,12 +47,13 @@ def send_proposal_notification(proposal):
         return
 
     site = getattr(settings, 'SITE_URL', 'https://www.analizus.com').rstrip('/')
+    currency = 'TL' if job.language == 'tr' else '€'
     with recipient_language(owner):
         subject = gettext("İlanınıza yeni bir teklif geldi: %(title)s") % {'title': job.title}
         message = gettext(
             "Merhaba %(owner)s,\n\n"
             "\"%(title)s\" ilanınıza %(expert)s teklif verdi!\n\n"
-            "Teklif: %(price)s TL\n"
+            "Teklif: %(price)s %(currency)s\n"
             "Süre: %(duration)s\n"
             "Ön Yazı: %(cover)s\n\n"
             "Teklifi görmek ve değerlendirmek için:\n"
@@ -62,7 +63,8 @@ def send_proposal_notification(proposal):
             "Analizus - Araştırma ve Analiz Platformu"
         ) % {
             'owner': owner.username, 'title': job.title, 'expert': proposal.expert.username,
-            'price': proposal.price, 'duration': proposal.duration, 'cover': proposal.message[:300],
+            'price': proposal.price, 'currency': currency, 'duration': proposal.duration,
+            'cover': proposal.message[:300],
             'url': site + reverse('job_detail', args=[job.pk]),
         }
 

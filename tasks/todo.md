@@ -803,23 +803,34 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-- [ ] **(8 Kasım 2026, kullanıcı test ederken fark etti) home_intl.html'de "Uzman Arayan Projeler" vitrin bölümü yok — yeni açılan intl ilan ana sayfada görünmüyor, yalnız /market/'te var.**
-  `home()` view'ı (`forum/views.py:312-327`) `showcase_jobs` sorgusunu
-  hesaplayıp context'e koyuyor (`forum/views.py:358`) ve bu context HEM
-  `home.html` HEM `home_intl.html` için aynı (`forum/views.py:360-362`,
-  `feature_intl_consulting_home` açıkken EN/DE'de `home_intl.html` seçiliyor).
-  Ama `showcase_jobs` bölümü yalnız `home.html:701`'de
-  `{% if showcase_jobs and LANGUAGE_CODE == 'tr' %}` ile render ediliyor —
-  `home_intl.html`'de hiç karşılığı yok. **Düzeltme yönü (henüz
-  uygulanmadı, kullanıcı onayı bekliyor):** (1) `showcase_jobs` sorgusu
-  şu an `language` filtresiz (TR+intl karışık gelebilir) — intl için ayrı
-  filtrelenmeli (`FreelanceJob.in_market_scope('intl')` ile, tıpkı
-  `job_list`'teki gibi); (2) `home_intl.html`'e `home.html:701-745`
-  deseniyle aynı vitrin bölümü eklenmeli, bu oturumda kararlaştırılan €
-  para birimiyle; (3) `feature_market_intl` flag'i kapalıyken bu bölüm
-  hiç gösterilmemeli (sayı sıfır/pazaryeri zaten 404 iken boş vitrin
-  göstermenin anlamı yok) — flag go-live'ı ile birlikte ele alınmalı,
-  bkz. aşağıdaki go-live maddesi.
+- [x] **(8 Kasım 2026 TAMAMLANDI) home_intl.html'de "Uzman Arayan Projeler"
+  vitrin bölümü eklendi.** Kök neden: `home()` view'ı `showcase_jobs`'u
+  `language` filtresiz hesaplayıp hem `home.html` hem `home_intl.html`
+  context'ine koyuyordu, ama bölüm yalnız `home.html:701`'de
+  `LANGUAGE_CODE == 'tr'` ile render ediliyordu. Düzeltme: `forum/
+  views.py` `home()`'a `home_scope` hesaplandı, `showcase_jobs` artık
+  `FreelanceJob.in_market_scope(home_scope)` ile TR/intl ayrı filtreleniyor
+  (`feature_market_intl` kapalıyken intl için boş liste — gereksiz sorgu
+  yok); `home_intl.html`'e `home.html:701-745` ile birebir aynı desende
+  (€ para birimiyle, zaten çevrili mevcut msgid'ler yeniden kullanıldı)
+  yeni bir vitrin bölümü eklendi. 110/110 pytest yeşil, migration yok,
+  main'e push+deploy edildi.
+- [x] **(8 Kasım 2026 TAMAMLANDI) Kalan TRY/TL sızıntıları — "Make an Offer"
+  formu + bildirimler.** Kullanıcı ekran görüntüsüyle bildirdi: intl ilanda
+  teklif verme formu "Offer Amount (TRY)" diyordu (önceki tur yalnız
+  `JobPostForm`'u düzeltmişti, `ProposalForm`'u atlamıştı). `forum/
+  forms.py` `ProposalForm`'a da aynı `scope` kwarg deseni eklendi
+  (`forum/views.py` `job_detail`'de `scope=job_scope(job)` ile çağrılıyor).
+  Ayrıca bulunup düzeltilen 3 yer daha: `accept_proposal`/teklif gönderme
+  bot DM'lerindeki sabit " TL" sonekleri `job.language`'a göre TL/€ oldu;
+  `email_utils.send_proposal_notification` (ilan sahibine giden e-posta)
+  aynı şekilde `%(currency)s` parametreli hale getirildi. **Ayrıca
+  kullanıcı bildirdi:** `job_detail` sayfasındaki "Bu ilan türünde teklif
+  yalnızca Analizus ekibi tarafından verilebilir." mesajı EN/DE'de boş
+  çeviriydi (önceki bir oturumdan kalma, bu turla ilgisiz) — çevrildi.
+  `makemessages` sonrası 4 fuzzy girdi bulunup düzeltildi
+  ([[feedback_i18n_fuzzy_matching]]). 110/110 pytest yeşil, migration yok,
+  main'e push+deploy edildi.
 
 - [x] **(8 Kasım 2026 TAMAMLANDI) Intl pazaryerinde TRY/₺ görünüyordu — job.language
   bazlı € para birimine çevrildi.** Kullanıcı ekran görüntüsüyle bildirdi:
