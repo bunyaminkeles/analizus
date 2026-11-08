@@ -37,12 +37,12 @@
           <p class="mb-0" style="color:#94a3b8;font-size:.75rem;">Yöntem metni otomatik üretilir; bir uzman tarafından incelenmemiştir.</p>
         </div>
         <div class="d-flex gap-2">
-          {% if job.clean_data_xlsx_url %}<a href="{{ job.clean_data_xlsx_url }}" target="_blank" class="btn btn-outline-info btn-sm fw-bold"><i class="bi bi-file-earmark-excel me-1"></i> XLSX</a>{% endif %}
-          {% if job.clean_data_csv_url %}<a href="{{ job.clean_data_csv_url }}" target="_blank" class="btn btn-outline-info btn-sm fw-bold"><i class="bi bi-filetype-csv me-1"></i> CSV</a>{% endif %}
-          {% if job.vosviewer_export_url %}<a href="{{ job.vosviewer_export_url }}" target="_blank" class="btn btn-outline-info btn-sm fw-bold"><i class="bi bi-diagram-3 me-1"></i> VOSviewer (ZIP)</a>{% endif %}
-          {% if job.method_text_url %}<a href="{{ job.method_text_url }}" target="_blank" class="btn btn-outline-info btn-sm fw-bold"><i class="bi bi-file-earmark-text me-1"></i> Yöntem Metni</a>{% endif %}
-          {% if job.prisma_diagram_url %}<a href="{{ job.prisma_diagram_url }}" target="_blank" class="btn btn-outline-info btn-sm fw-bold"><i class="bi bi-diagram-2 me-1"></i> PRISMA Diyagramı</a>{% endif %}
-          {% if job.wos_plaintext_export_url %}<a href="{{ job.wos_plaintext_export_url }}" target="_blank" class="btn btn-outline-info btn-sm fw-bold"><i class="bi bi-file-earmark-code me-1"></i> WoS Plaintext (Biblioshiny)</a>{% endif %}
+          {% if job.clean_data_xlsx_url %}<a href="{{ job.clean_data_xlsx_url }}" target="_blank" class="ax-btn ax-btn--outline-info ax-btn--sm fw-bold"><i class="bi bi-file-earmark-excel me-1"></i> XLSX</a>{% endif %}
+          {% if job.clean_data_csv_url %}<a href="{{ job.clean_data_csv_url }}" target="_blank" class="ax-btn ax-btn--outline-info ax-btn--sm fw-bold"><i class="bi bi-filetype-csv me-1"></i> CSV</a>{% endif %}
+          {% if job.vosviewer_export_url %}<a href="{{ job.vosviewer_export_url }}" target="_blank" class="ax-btn ax-btn--outline-info ax-btn--sm fw-bold"><i class="bi bi-diagram-3 me-1"></i> VOSviewer (ZIP)</a>{% endif %}
+          {% if job.method_text_url %}<a href="{{ job.method_text_url }}" target="_blank" class="ax-btn ax-btn--outline-info ax-btn--sm fw-bold"><i class="bi bi-file-earmark-text me-1"></i> Yöntem Metni</a>{% endif %}
+          {% if job.prisma_diagram_url %}<a href="{{ job.prisma_diagram_url }}" target="_blank" class="ax-btn ax-btn--outline-info ax-btn--sm fw-bold"><i class="bi bi-diagram-2 me-1"></i> PRISMA Diyagramı</a>{% endif %}
+          {% if job.wos_plaintext_export_url %}<a href="{{ job.wos_plaintext_export_url }}" target="_blank" class="ax-btn ax-btn--outline-info ax-btn--sm fw-bold"><i class="bi bi-file-earmark-code me-1"></i> WoS Plaintext (Biblioshiny)</a>{% endif %}
         </div>
       </div>
       {% endif %}
@@ -120,7 +120,7 @@
           <h6 class="text-white mb-1"><i class="bi bi-award me-2" style="color:#fbbf24;"></i>Uzman Paketi</h6>
           <p class="small mb-0" style="color:#94a3b8;">Otomatik raporun ötesinde: verinizin bir uzman tarafından incelenmesi, yöntem/bulgular bölümünün yazılması ve revizyon desteği.</p>
         </div>
-        <a href="{% url 'proje_talebi' %}?source=bibliometrics&amp;type=bibliometric" class="btn btn-outline-warning btn-sm fw-bold text-nowrap">
+        <a href="{% url 'proje_talebi' %}?source=bibliometrics&amp;type=bibliometric" class="ax-btn ax-btn--outline-warning ax-btn--sm fw-bold text-nowrap">
           <i class="bi bi-send me-1"></i> Proje Talebi Bırak
         </a>
       </div>
@@ -133,16 +133,16 @@
           <div class="col-sm-4"><div class="small">Sipariş No</div><div class="text-white fw-bold">#{{ existing_order.id|stringformat:"s"|slice:":8" }}</div></div>
           <div class="col-sm-4"><div class="small">Tutar</div><div class="fw-bold fs-5" style="color:#4ade80;">{{ existing_order.total_price }} TL</div></div>
           <div class="col-sm-4"><div class="small">Durum</div>
-            {% if existing_order.status == 'completed' %}<span class="badge bg-success">Tamamlandı</span>
-            {% elif existing_order.status == 'approved' %}<span class="badge bg-info">Onaylandı</span>
-            {% elif existing_order.status == 'payment_review' %}<span class="badge bg-warning text-dark">Ödeme İnceleniyor</span>
-            {% else %}<span class="badge bg-secondary">Ödeme Bekleniyor</span>{% endif %}
+            {% if existing_order.status == 'completed' %}<span class="ax-badge ax-badge--success">Tamamlandı</span>
+            {% elif existing_order.status == 'approved' %}<span class="ax-badge ax-badge--info">Onaylandı</span>
+            {% elif existing_order.status == 'payment_review' %}<span class="ax-badge ax-badge--warning-solid">Ödeme İnceleniyor</span>
+            {% else %}<span class="ax-badge ax-badge--neutral">Ödeme Bekleniyor</span>{% endif %}
           </div>
         </div>
         {% if existing_order.status == 'completed' %}
-        <div class="alert alert-success mb-0 small"><i class="bi bi-envelope-check me-2"></i>Tam rapor emailinize gönderildi. Gelen kutunuzu kontrol ediniz.</div>
+        <div class="ax-alert ax-alert--success mb-0 small"><i class="bi bi-envelope-check ax-alert__icon"></i><div class="ax-alert__body">Tam rapor emailinize gönderildi. Gelen kutunuzu kontrol ediniz.</div></div>
         {% else %}
-        <div class="alert alert-info mb-0 small"><i class="bi bi-info-circle me-2"></i>Ödemeniz inceleniyor. Onaylandıktan sonra tam rapor emailinize gönderilecek.</div>
+        <div class="ax-alert ax-alert--cyan mb-0 small"><i class="bi bi-info-circle ax-alert__icon"></i><div class="ax-alert__body">Ödemeniz inceleniyor. Onaylandıktan sonra tam rapor emailinize gönderilecek.</div></div>
         {% endif %}
       </div>
 
@@ -163,7 +163,7 @@
       </div>
       {% endif %}
 
-      <a href="{% url 'bibliometrics:landing' %}" class="btn btn-outline-secondary btn-sm">
+      <a href="{% url 'bibliometrics:landing' %}" class="ax-btn ax-btn--ghost ax-btn--sm">
         <i class="bi bi-arrow-left me-1"></i>Bibliometrik Analize Dön
       </a>
 

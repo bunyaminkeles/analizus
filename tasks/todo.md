@@ -5776,12 +5776,18 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
-**Durum (8 Kasım 2026):** Faz 1-2 TAMAMLANDI (Faz 2'nin atladığı
-`donationModal` bu turda kapatıldı). Faz 3 sürüyor — 22 dosya migre edildi
-(19'u 25 Ekim + `onboarding.html` 8 Kasım sabahı ayrı bir oturumda
-bug-fix olarak + `forum_index.html` + `footer.html` bu turda), **45
-dosyada hâlâ gerçek Bootstrap component class'ı var** (bkz. "Güncel
-envanter" altı). Faz 4-5 henüz başlamadı.
+**Durum (8 Kasım 2026, akşam):** Faz 1-2 TAMAMLANDI (Faz 2'nin atladığı
+`donationModal` bu turda kapatıldı). Faz 3 sürüyor — 31 dosya migre edildi
+(19'u 25 Ekim + `onboarding.html` sabah ayrı oturumda bug-fix + bu turda
+`forum_index.html`/`footer.html`/`success_stories.html`/`new_topic.html`*/
+`promote_job_iban.html`*/`how_it_works.html`/`bibliometrics/order.html`/
+4× tarama order.html — *kart yapısı hariç kısmi), **3 dosya bilinçli
+ertelendi** (`my_jobs.html` tab, `studyroom_edit.html` switch,
+`service_promo.html` 7 renkli dinamik buton — hepsi yeni bileşen/renk
+kararı gerektiriyor, detay aşağı "8 Kasım — ertelenen/kısmi dosyalar").
+Yeni base.css eklentileri: `.ax-badge--info` (camgöbeği), `.ax-btn--outline-warning`.
+`bundle.css` yeniden üretildi, `base.html` `?v=0018`. 110/110 forum +
+160/160 bibliometrics pytest yeşil. Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -5843,13 +5849,61 @@ class'ları birlikte tamamlandı, detay yukarı "Faz 2'de atlanmış bir modal")
 ~~`search_results.html`~~ (✅ 25 Ekim), ~~`verification_pending.html`~~
 (✅ 25 Ekim), ~~`my_payments.html`~~ (✅ 25 Ekim), ~~`section_detail.html`~~
 (yetim dosya, kapsam dışı — yukarı bkz.),
-`bibliometrics/order.html`, `my_jobs.html`, `new_topic.html`,
-`studyroom_edit.html`, ~~`category_topics.html`~~ (✅ 25 Ekim),
-~~`_review_section.html`~~ (✅ 25 Ekim),
-`promote_job_iban.html`, `success_stories.html` (modal JS Faz 2'de taşındı,
-component class'ları kaldı), `oaipmh/order.html`, `semanticscholar/order.html`,
-`service_promo.html`, `trdizin/order.html`, `how_it_works.html`,
-~~`onboarding.html`~~ (✅ 8 Kasım, yukarı bkz.), `openalex/order.html`
+~~`bibliometrics/order.html`~~ (✅ 8 Kasım), `my_jobs.html` (⚠️ ertelendi —
+aşağı "8 Kasım — ertelenen/kısmi dosyalar" bkz.),
+~~`new_topic.html`~~ (✅ 8 Kasım, kart yapısı hariç — aşağı bkz.),
+`studyroom_edit.html` (⚠️ ertelendi, aşağı bkz.),
+~~`category_topics.html`~~ (✅ 25 Ekim), ~~`_review_section.html`~~ (✅ 25 Ekim),
+~~`promote_job_iban.html`~~ (✅ 8 Kasım, kart yapısı + paket radio'su hariç —
+aşağı bkz.), ~~`success_stories.html`~~ (✅ 8 Kasım, modal JS zaten Faz 2'de
+taşınmıştı, bu turda component class'ları tamamlandı),
+~~`oaipmh/order.html`~~ ~~`semanticscholar/order.html`~~
+~~`trdizin/order.html`~~ ~~`openalex/order.html`~~ (✅ 8 Kasım, 4'ü birlikte —
+aynı şablon ailesi), `service_promo.html` (⚠️ ertelendi, aşağı bkz.),
+~~`how_it_works.html`~~ (✅ 8 Kasım),
+~~`onboarding.html`~~ (✅ 8 Kasım, yukarı bkz.)
+
+**8 Kasım 2026 — ertelenen/kısmi dosyalar (yeni bileşen kararı gerektiriyor,
+Faz 3'ün "dar kapsam" ilkesiyle şimdilik ertelendi):**
+- **`my_jobs.html`** — Bootstrap `nav-tabs`/`tab-pane`/`data-bs-toggle="tab"`
+  kullanıyor (sekme/tab bileşeni). `.ax-tab` hiç inşa edilmedi (Faz 1'de
+  `.ax-alert`/`.ax-modal`/`.ax-dropdown`/form yapıldı, tab hiç yapılmadı) —
+  modal/dropdown gibi kendi JS controller'ı gereken yeni bir bileşen,
+  basit rename değil. Dosyadaki diğer class'lar (badge, btn-outline-secondary)
+  da bu yüzden dokunulmadı (tab yapısıyla iç içe).
+- **`studyroom_edit.html`** — `is_public` toggle'ı Bootstrap'ın
+  `form-switch` + `form-check-input` ikilisine dayanıyor (pill şeklinde
+  switch görünümü, CSS seçicisi tam `form-check-input` class adını arıyor).
+  `.ax-form-check-input` düz kare checkbox tanımlıyor — rename edilirse
+  switch görünümü tamamen kaybolur (gerçek görsel regresyon, kabul edilebilir
+  "küçük sapma" değil). Küçük bir `.ax-form-switch` CSS eklentisi gerekiyor
+  (JS gerekmez, saf CSS) — sıradaki oturumda yapılabilir.
+- **`promote_job_iban.html`** — `card`/`card-header`/`card-body` yapısı VE
+  paket seçim radio'su (`form-check`/`form-check-input`, Bootstrap'ın
+  absolute-position checkbox yerleşimine dayanıyor) atlandı; dosyadaki geri
+  kalan her şey (alert, form-control×2, 3 buton) migre edildi.
+- **`new_topic.html`** — "terminal" temalı `card`/`card-header`/`card-body`
+  (üstte trafik ışığı noktalı başlık çubuğu) atlandı — `ax-card`'ın kendi
+  24px padding'i başlık çubuğunu kart kenarından içeri çekip "kenar kenara"
+  görünümünü bozar. Alert + 2 buton migre edildi.
+- **`service_promo.html`** — 18 analiz aracının promo/landing sayfalarında
+  paylaşılan ortak şablon, `btn btn-{{ promo_color }}` deseniyle DİNAMİK
+  renk kullanıyor (`forum/views.py` dışındaki ~15 view dosyasında
+  `promo_color` değerleri: primary/info/warning/success/danger/**purple**/
+  **teal** — en az 7 farklı renk). `purple`/`teal` için ax- karşılığı hiç
+  yok, iki yeni kalıcı accent rengi eklemek gerekir — bu şablon 18 aracı
+  aynı anda etkilediği için büyük blast radius'lu bir tasarım kararı,
+  kullanıcı onayı olmadan yapılmadı.
+
+**Ortak not (card-header/card-body genel kuralı, bu turda keşfedildi):**
+`ax-card` tek düz div + kendi 24px padding'i varsayıyor; Bootstrap'ın ayrı
+arka plana/padding'e sahip `card-header` + `card-body` ikilisiyle birleşince
+ya padding iki katına çıkıyor ya da başlık çubuğu kenardan içeri çekiliyor.
+Tek `card`(+opsiyonel tek `card-body`, header YOK) kullanan dosyalarda güvenli
+(bkz. `donation_success.html`/`service_detail.html` emsali, `how_it_works.html`/
+`success_stories.html` bu turda aynı şekilde migre edildi); `card-header`
+olan dosyalarda önce `.ax-card__header`/`.ax-card__body` alt bileşenleri
+tasarlanmalı — henüz yapılmadı, sıradaki Faz 3 öncesi alt görev.
 
 **Orta (10-20):** `_studyroom_card.html`, `proje_talebi.html`,
 `studyroom_list.html`, `templates/base.html` (11 — ayrı, dikkatli ele
