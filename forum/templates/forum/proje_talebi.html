@@ -90,7 +90,7 @@
 
   <!-- Başlık -->
   <div class="text-center mb-5">
-    <span class="badge mb-3 px-3 py-2" style="background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3);font-size:.78rem;letter-spacing:.04em;">{% trans "KURUMSAL ANALİZ HİZMETİ" %}</span>
+    <span class="ax-badge mb-3 px-3 py-2" style="background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3);font-size:.78rem;letter-spacing:.04em;">{% trans "KURUMSAL ANALİZ HİZMETİ" %}</span>
     <h1 class="fw-bold text-white mb-3" style="font-size:clamp(1.6rem,4vw,2.4rem);">{% trans "Projenizi Anlatın, Size Uygun Uzmanı Bulalım" %}</h1>
     <p class="text-white-50 mx-auto" style="max-width:560px;font-size:1rem;line-height:1.7;">
       {% trans "Şirketinizin verisinden stratejik içgörüler elde edin. Talebinizi iletmeniz yeterli — uzman analistlerle eşleştirip ücretsiz ön değerlendirme sunuyoruz." %}
@@ -134,7 +134,7 @@
 
   {% if messages %}
   {% for msg in messages %}
-  <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} mb-4" role="alert">
+  <div class="ax-alert {% if msg.tags == 'success' %}ax-alert--success{% else %}ax-alert--danger{% endif %} mb-4" role="alert">
     {{ msg }}
   </div>
   {% endfor %}
@@ -155,11 +155,11 @@
           <div class="row g-3 mb-3">
             <div class="col-sm-6">
               <label class="form-label text-white-50 small">{% trans "Ad Soyad" %} <span class="text-danger">*</span></label>
-              <input type="text" name="name" class="form-control" placeholder="{% trans "Örn: Ayşe Kaya" %}" required>
+              <input type="text" name="name" class="ax-form-control" placeholder="{% trans "Örn: Ayşe Kaya" %}" required>
             </div>
             <div class="col-sm-6">
               <label class="form-label text-white-50 small">{% trans "E-posta" %} <span class="text-danger">*</span></label>
-              <input type="email" name="email" class="form-control" placeholder="{% trans "ayse@sirket.com" context "e-posta örneği" %}" required>
+              <input type="email" name="email" class="ax-form-control" placeholder="{% trans "ayse@sirket.com" context "e-posta örneği" %}" required>
             </div>
           </div>
 
@@ -167,12 +167,12 @@
 
           <div class="mb-3">
             <label class="form-label text-white-50 small">{% trans "Kişi / Şirket / Kurum" %}</label>
-            <input type="text" name="company" class="form-control" placeholder="{% trans "Adınız, şirket veya kurum adı (isteğe bağlı)" %}">
+            <input type="text" name="company" class="ax-form-control" placeholder="{% trans "Adınız, şirket veya kurum adı (isteğe bağlı)" %}">
           </div>
 
           <div class="mb-3">
             <label class="form-label text-white-50 small">{% trans "Analiz Türü" %} <span class="text-danger">*</span></label>
-            <select name="analysis_type" class="form-select" required>
+            <select name="analysis_type" class="ax-form-select" required>
               <option value="">{% trans "Seçiniz…" %}</option>
               <option value="literature"{% if source == 'yoktez' or source == 'trdizin' %} selected{% endif %}>{% trans "Tez / Makale Veri İndirme" %}</option>
               <option value="visualization"{% if source == 'tableau' %} selected{% endif %}>{% trans "Veri Görselleştirme" %}</option>
@@ -190,14 +190,14 @@
 
           <div class="mb-3">
             <label class="form-label text-white-50 small">{% trans "Proje Açıklaması" %} <span class="text-danger">*</span></label>
-            <textarea name="description" rows="5" class="form-control"
+            <textarea name="description" rows="5" class="ax-form-control"
               placeholder="{% trans "Hedeflerinizi, elinizde bulunan veriyi ve beklentilerinizi kısaca anlatın." %}" required></textarea>
           </div>
 
           <div class="row g-3 mb-4">
             <div class="col-sm-6">
               <label class="form-label text-white-50 small">{% trans "Veri Boyutu" %} <span class="text-danger">*</span></label>
-              <select name="data_size" class="form-select" required>
+              <select name="data_size" class="ax-form-select" required>
                 <option value="">{% trans "Seçiniz…" %}</option>
                 <option value="small">{% trans "1.000 satırdan az" %}</option>
                 <option value="medium">{% trans "1.000 – 100.000 satır" %}</option>
@@ -207,7 +207,7 @@
             </div>
             <div class="col-sm-6">
               <label class="form-label text-white-50 small">{% trans "Süre Beklentisi" %} <span class="text-danger">*</span></label>
-              <select name="timeline" class="form-select" required>
+              <select name="timeline" class="ax-form-select" required>
                 <option value="">{% trans "Seçiniz…" %}</option>
                 <option value="urgent">{% trans "1 hafta içinde" %}</option>
                 <option value="short">{% trans "1 ay içinde" %}</option>
@@ -219,7 +219,7 @@
           <div class="row g-3 mb-4">
             <div class="col-sm-6">
               <label class="form-label text-white-50 small">{% trans "Projenizin Aşaması" %} <span class="text-danger">*</span></label>
-              <select name="stage" class="form-select" required>
+              <select name="stage" class="ax-form-select" required>
                 <option value="">{% trans "Seçiniz…" %}</option>
                 <option value="planning">{% trans "Planlama aşamasındayım" %}</option>
                 <option value="data_collected">{% trans "Verim toplandı, analiz bekliyor" %}</option>
@@ -229,7 +229,7 @@
             </div>
             <div class="col-sm-6">
               <label class="form-label text-white-50 small">{% trans "Hedef Teslim Tarihi" %} <span class="text-white-50" style="font-weight:400;">({% trans "isteğe bağlı" %})</span></label>
-              <input type="date" name="deadline" class="form-control">
+              <input type="date" name="deadline" class="ax-form-control">
             </div>
           </div>
 
@@ -257,7 +257,7 @@
           {% for item in recent_completed %}
           <div class="d-flex align-items-center justify-content-between p-2 rounded-2" style="background:rgba(255,255,255,.04);">
             <span class="text-white-50 small">{{ item.category }}</span>
-            <span class="badge" style="background:rgba(34,197,94,.15);color:#4ade80;font-size:.72rem;">{{ item.duration }}</span>
+            <span class="ax-badge" style="background:rgba(34,197,94,.15);color:#4ade80;font-size:.72rem;">{{ item.duration }}</span>
           </div>
           {% endfor %}
         </div>

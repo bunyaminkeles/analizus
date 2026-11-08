@@ -50,21 +50,21 @@
 
   <!-- Filtreler -->
   <div class="d-flex flex-wrap gap-2 mb-4">
-    <a href="?durum=active" class="btn btn-sm {% if status_filter == 'active' %}btn-warning{% else %}btn-outline-secondary text-white-50{% endif %}">Aktif</a>
-    <a href="?durum=archived" class="btn btn-sm {% if status_filter == 'archived' %}btn-secondary{% else %}btn-outline-secondary text-white-50{% endif %}">Arşiv</a>
+    <a href="?durum=active" class="ax-btn ax-btn--sm {% if status_filter == 'active' %}ax-btn--warning{% else %}ax-btn--ghost text-white-50{% endif %}">Aktif</a>
+    <a href="?durum=archived" class="ax-btn ax-btn--sm {% if status_filter == 'archived' %}ax-btn--neutral{% else %}ax-btn--ghost text-white-50{% endif %}">Arşiv</a>
     {% if request.user.is_staff %}
-    <a href="?durum=all" class="btn btn-sm {% if status_filter == 'all' %}btn-danger{% else %}btn-outline-secondary text-white-50{% endif %}">Tümü (Admin)</a>
+    <a href="?durum=all" class="ax-btn ax-btn--sm {% if status_filter == 'all' %}ax-btn--danger{% else %}ax-btn--ghost text-white-50{% endif %}">Tümü (Admin)</a>
     {% endif %}
     {% if categories %}
     <div class="vr opacity-25 mx-1"></div>
     {% for cat in categories %}
     <a href="?durum={{ status_filter }}&kategori={{ cat.slug }}"
-       class="btn btn-sm {% if selected_category == cat.slug %}btn-outline-warning{% else %}btn-outline-secondary text-white-50{% endif %}">
+       class="ax-btn ax-btn--sm {% if selected_category == cat.slug %}ax-btn--outline-warning{% else %}ax-btn--ghost text-white-50{% endif %}">
       {{ cat.title }}
     </a>
     {% endfor %}
     {% if selected_category %}
-    <a href="?durum={{ status_filter }}" class="btn btn-sm btn-outline-secondary text-white-50">
+    <a href="?durum={{ status_filter }}" class="ax-btn ax-btn--sm ax-btn--ghost text-white-50">
       <i class="bi bi-x"></i> Temizle
     </a>
     {% endif %}
@@ -73,12 +73,12 @@
     <div class="vr opacity-25 mx-1"></div>
     {% for value, label in room_types %}
     <a href="?durum={{ status_filter }}{% if selected_category %}&kategori={{ selected_category }}{% endif %}&tip={{ value }}"
-       class="btn btn-sm {% if selected_type == value %}btn-outline-warning{% else %}btn-outline-secondary text-white-50{% endif %}">
+       class="ax-btn ax-btn--sm {% if selected_type == value %}ax-btn--outline-warning{% else %}ax-btn--ghost text-white-50{% endif %}">
       {{ label }}
     </a>
     {% endfor %}
     {% if selected_type %}
-    <a href="?durum={{ status_filter }}{% if selected_category %}&kategori={{ selected_category }}{% endif %}" class="btn btn-sm btn-outline-secondary text-white-50">
+    <a href="?durum={{ status_filter }}{% if selected_category %}&kategori={{ selected_category }}{% endif %}" class="ax-btn ax-btn--sm ax-btn--ghost text-white-50">
       <i class="bi bi-x"></i> Temizle
     </a>
     {% endif %}
@@ -102,11 +102,11 @@
     {% elif recent_archived %}
     <p class="text-white-50 mb-3">Şu an aktif oda yok — geçmiş odalara göz at veya kendi odanı aç.</p>
     <div class="d-flex gap-2 justify-content-center flex-wrap">
-      <a href="?durum=archived" class="btn btn-outline-secondary btn-sm">
+      <a href="?durum=archived" class="ax-btn ax-btn--ghost ax-btn--sm">
         <i class="bi bi-archive me-1"></i>Geçmiş Odalara Göz At
       </a>
       {% if can_create %}
-      <a href="{% url 'studyroom_create' %}" class="btn btn-warning btn-sm fw-semibold">
+      <a href="{% url 'studyroom_create' %}" class="ax-btn ax-btn--warning ax-btn--sm fw-semibold">
         <i class="bi bi-plus-circle me-1"></i>Oda Aç
       </a>
       {% endif %}
@@ -114,7 +114,7 @@
     {% else %}
     <p class="text-white-50 mb-3">Henüz aktif çalışma odası yok.</p>
     {% if can_create %}
-    <a href="{% url 'studyroom_create' %}" class="btn btn-warning btn-sm fw-semibold">
+    <a href="{% url 'studyroom_create' %}" class="ax-btn ax-btn--warning ax-btn--sm fw-semibold">
       <i class="bi bi-plus-circle me-1"></i>İlk Odayı Sen Aç
     </a>
     {% else %}
@@ -141,7 +141,7 @@
 
   <!-- Şartlar özeti -->
   {% if not can_create and request.user.is_authenticated %}
-  <div class="card border-secondary mt-4 p-3" style="background:#1a1a2e;">
+  <div class="ax-card border-secondary mt-4 p-3" style="background:#1a1a2e;">
     <h6 class="text-white fw-semibold mb-2"><i class="bi bi-info-circle me-2 text-info"></i>Oda Açma Koşulları</h6>
     <ul class="text-white-50 small mb-0">
       <li>E-posta doğrulaması yapılmış olmalı</li>

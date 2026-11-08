@@ -378,6 +378,18 @@
     color: #1e293b;
 }
 
+.ax-btn--neutral {
+    /* Bootstrap'ın solid gri bg-secondary butonuna karşılık — ax-badge--neutral
+       ile aynı token formülü (seçili/aktif ama vurgusuz durum göstergesi). */
+    background-color: var(--ax-bg-tertiary);
+    color: var(--ax-text-primary);
+    border-color: var(--ax-border-default);
+}
+.ax-btn--neutral:hover {
+    background-color: var(--ax-border-default);
+    border-color: var(--ax-border-hover);
+}
+
 .ax-btn--sm {
     padding: var(--ax-space-1) var(--ax-space-3);
     font-size: var(--ax-text-xs);

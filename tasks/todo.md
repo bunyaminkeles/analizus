@@ -5776,18 +5776,21 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
-**Durum (8 Kasım 2026, akşam):** Faz 1-2 TAMAMLANDI (Faz 2'nin atladığı
-`donationModal` bu turda kapatıldı). Faz 3 sürüyor — 31 dosya migre edildi
-(19'u 25 Ekim + `onboarding.html` sabah ayrı oturumda bug-fix + bu turda
+**Durum (8 Kasım 2026, gece):** Faz 1-2 TAMAMLANDI (Faz 2'nin atladığı
+`donationModal` bu turda kapatıldı). Faz 3 sürüyor — 34 dosya migre edildi
+(19'u 25 Ekim + `onboarding.html` sabah ayrı oturumda bug-fix + akşam turunda
 `forum_index.html`/`footer.html`/`success_stories.html`/`new_topic.html`*/
 `promote_job_iban.html`*/`how_it_works.html`/`bibliometrics/order.html`/
-4× tarama order.html — *kart yapısı hariç kısmi), **3 dosya bilinçli
-ertelendi** (`my_jobs.html` tab, `studyroom_edit.html` switch,
-`service_promo.html` 7 renkli dinamik buton — hepsi yeni bileşen/renk
-kararı gerektiriyor, detay aşağı "8 Kasım — ertelenen/kısmi dosyalar").
-Yeni base.css eklentileri: `.ax-badge--info` (camgöbeği), `.ax-btn--outline-warning`.
-`bundle.css` yeniden üretildi, `base.html` `?v=0018`. 110/110 forum +
-160/160 bibliometrics pytest yeşil. Faz 4-5 henüz başlamadı.
+4× tarama order.html + gece turunda `referral_dashboard.html`/
+`proje_talebi.html`/`studyroom_list.html` — *kart yapısı hariç kısmi),
+**4 dosya bilinçli ertelendi** (`my_jobs.html` tab, `studyroom_edit.html`
+switch, `service_promo.html` 7 renkli dinamik buton, `_studyroom_card.html`
+card+card-footer — hepsi yeni bileşen/renk kararı gerektiriyor, detay aşağı
+"8 Kasım — ertelenen/kısmi dosyalar").
+Yeni base.css eklentileri: `.ax-badge--info` (camgöbeği), `.ax-btn--outline-warning`,
+`.ax-btn--neutral` (solid gri `btn-secondary` karşılığı, `ax-badge--neutral`
+ile aynı token formülü). `bundle.css` yeniden üretildi, `base.html` `?v=0019`.
+110/110 forum + 160/160 bibliometrics pytest yeşil. Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -5905,10 +5908,34 @@ Tek `card`(+opsiyonel tek `card-body`, header YOK) kullanan dosyalarda güvenli
 olan dosyalarda önce `.ax-card__header`/`.ax-card__body` alt bileşenleri
 tasarlanmalı — henüz yapılmadı, sıradaki Faz 3 öncesi alt görev.
 
-**Orta (10-20):** `_studyroom_card.html`, `proje_talebi.html`,
-`studyroom_list.html`, `templates/base.html` (11 — ayrı, dikkatli ele
+**Orta (10-20):** `_studyroom_card.html` (⚠️ ertelendi — `card`+`card-body`+
+`card-footer` 3 parçalı, `ax-card`'ın henüz `__footer` alt bileşeni yok +
+`h-100`/flex-grow davranışı `card-body`'nin Bootstrap flex:1 özelliğine
+bağlı, basit birleştirme footer'ı alta sabitleme davranışını bozar — yeni
+bileşen kararı gerektiriyor, `my_jobs.html`/`studyroom_edit.html` ile aynı
+kategori),
+~~`studyroom_list.html`~~ (✅ 8 Kasım — filtre pill butonları (Aktif/Arşiv/
+Tümü/kategori/tip, 13 adet) `ax-btn`'e taşındı; `btn-secondary` (solid gri
+"aktif" göstergesi) için `ax-btn` ailesinde karşılık yoktu — `ax-badge--neutral`
+ile aynı token formülüyle yeni `.ax-btn--neutral` eklendi (`base.css`),
+`bundle.css` yeniden üretildi (`?v=0019`); tek `card` (header/footer yok,
+güvenli desen) → `ax-card`; `_studyroom_card.html` include'u (ertelenen
+dosya) dokunulmadı. 3 filtre durumunda (`durum=active/archived/all`) canlı
+HTML div dengesi + `ax-btn--neutral` render'ı doğrulandı, 110/110 pytest
+yeşil),
+`templates/base.html` (11 — ayrı, dikkatli ele
 alınmalı), `blog_detail.html`, `studyroom_create.html`,
-`referral_dashboard.html`, `ai_assistant.html`, çoğu istatistik aracı
+~~`referral_dashboard.html`~~ (✅ 8 Kasım — 4× `card`+`card-body` tek
+`ax-card`'a indirgendi, `form-control`→`ax-form-control`, `btn-info`→
+`ax-btn--info`, 6× `badge`→`ax-badge` + varyant; `input-group`/`table-dark`
+kapsam dışı; 110/110 pytest, canlı HTML div dengesi doğrulandı),
+~~`proje_talebi.html`~~ (✅ 8 Kasım — `alert`→`ax-alert`+varyant, 2×`badge`→
+`ax-badge`, 5×`form-control`→`ax-form-control`, 4×`form-select`→
+`ax-form-select`; `accordion`/`data-bs-toggle="collapse"` kapsam dışı
+bırakıldı — `.ax-collapse` henüz inşa edilmedi, `my_jobs.html` tab'ıyla aynı
+kategori; `form-label` diğer migre dosyalarla aynı şekilde dokunulmadı;
+110/110 pytest, canlı HTML div dengesi + sınıf sayımı doğrulandı),
+`ai_assistant.html`, çoğu istatistik aracı
 (`lineer_regresyon`, `lojistik_regresyon`, `kruskal_wallis`,
 `mann_whitney`, `karar_agaci`, `ki_kare`, `svm`, `orneklem`),
 `tableau_dashboard.html`, `oaipmh/landing.html`, `trdizin/landing.html`,
