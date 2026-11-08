@@ -17,7 +17,7 @@
   </div>
 
   {% if errors %}
-  <div class="alert alert-danger border-0 mb-4" style="background:rgba(220,53,69,.15);">
+  <div class="ax-alert ax-alert--danger border-0 mb-4" style="background:rgba(220,53,69,.15);">
     <ul class="mb-0 small ps-3">
       {% for e in errors %}<li>{{ e }}</li>{% endfor %}
     </ul>
@@ -27,12 +27,12 @@
   <form method="post" id="create-form">
     {% csrf_token %}
 
-    <div class="card border-secondary mb-3 p-3" style="background:#16213e;">
+    <div class="ax-card border-secondary mb-3 p-3" style="background:#16213e;">
       <h6 class="text-white fw-semibold mb-3">Oda Bilgileri</h6>
 
       <div class="mb-3">
         <label class="form-label text-white-50 small">Başlık <span class="text-danger">*</span></label>
-        <input type="text" name="title" class="form-control bg-dark text-white border-secondary"
+        <input type="text" name="title" class="ax-form-control bg-dark text-white border-secondary"
                placeholder="Örn: SEM ile Yapısal Eşitlik Modelleri — Bahar 2026"
                value="{{ post.title|default:'' }}" minlength="10" maxlength="200" required>
         <div class="form-text text-white-50">En az 10 karakter. Dönem veya yılı eklemek odayı tanımlamayı kolaylaştırır.</div>
@@ -40,7 +40,7 @@
 
       <div class="mb-3">
         <label class="form-label text-white-50 small">Oda Tipi <span class="text-danger">*</span></label>
-        <select name="room_type" class="form-select bg-dark text-white border-secondary" required>
+        <select name="room_type" class="ax-form-select bg-dark text-white border-secondary" required>
           {% for value, label in room_types %}
           <option value="{{ value }}" {% if post.room_type == value or not post and value == 'study' %}selected{% endif %}>{{ label }}</option>
           {% endfor %}
@@ -50,7 +50,7 @@
 
       <div class="mb-3">
         <label class="form-label text-white-50 small">Açıklama <span class="text-danger">*</span></label>
-        <textarea name="description" class="form-control bg-dark text-white border-secondary auto-grow" rows="3"
+        <textarea name="description" class="ax-form-control bg-dark text-white border-secondary auto-grow" rows="3"
                   placeholder="Bu oda ne için? Kimler katılabilir? Nasıl bir çalışma yürütülecek?"
                   minlength="50" maxlength="1000" required style="overflow-y:hidden;resize:none;">{{ post.description|default:'' }}</textarea>
         <div class="form-text text-white-50">En az 50 karakter.</div>
@@ -58,14 +58,14 @@
 
       <div class="mb-3">
         <label class="form-label text-white-50 small">Hedef <span class="text-danger">*</span></label>
-        <textarea name="goal" class="form-control bg-dark text-white border-secondary auto-grow" rows="2"
+        <textarea name="goal" class="ax-form-control bg-dark text-white border-secondary auto-grow" rows="2"
                   placeholder="Örn: Dönem sonuna kadar 3 makale inceleyip SEM modelini uygulamak"
                   minlength="20" maxlength="500" required style="overflow-y:hidden;resize:none;">{{ post.goal|default:'' }}</textarea>
       </div>
 
       <div class="mb-3">
         <label class="form-label text-white-50 small">Oda Kurucusu Olarak Kısa Tanıtım <span class="text-white-50">(opsiyonel)</span></label>
-        <textarea name="creator_bio" class="form-control bg-dark text-white border-secondary" rows="2"
+        <textarea name="creator_bio" class="ax-form-control bg-dark text-white border-secondary" rows="2"
                   placeholder="Örn: Doktora öğrencisiyim, SEM konusunda 2 yıldır çalışıyorum. Bu odayla hem paylaşmak hem de öğrenmek istiyorum."
                   maxlength="300">{{ post.creator_bio|default:'' }}</textarea>
         <div class="form-text text-white-50">Odaya katılmak isteyenler sizi tanıyabilsin.</div>
@@ -77,7 +77,7 @@
       <div class="row g-3">
         <div class="col-sm-6">
           <label class="form-label text-white-50 small">İlgili Kategori</label>
-          <select name="category" class="form-select bg-dark text-white border-secondary">
+          <select name="category" class="ax-form-select bg-dark text-white border-secondary">
             <option value="">— Seçiniz —</option>
             {% for cat in categories %}
             <option value="{{ cat.id }}" {% if post.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.title }}</option>
@@ -87,20 +87,20 @@
         </div>
         <div class="col-sm-6">
           <label class="form-label text-white-50 small">Bitiş Tarihi <span class="text-danger">*</span></label>
-          <input type="date" name="ends_at" class="form-control bg-dark text-white border-secondary"
+          <input type="date" name="ends_at" class="ax-form-control bg-dark text-white border-secondary"
                  value="{{ post.ends_at|default:default_end }}"
                  min="{{ min_end }}" max="{{ max_end }}" required>
           <div class="form-text text-white-50">En az {{ STUDYROOM_MIN_DAYS }} gün, en fazla {{ STUDYROOM_MAX_DAYS }} gün (3 ay).</div>
         </div>
         <div class="col-sm-6">
           <label class="form-label text-white-50 small">Maksimum Üye</label>
-          <input type="number" name="max_members" class="form-control bg-dark text-white border-secondary"
+          <input type="number" name="max_members" class="ax-form-control bg-dark text-white border-secondary"
                  value="{{ post.max_members|default:20 }}" min="5" max="200">
           <div class="form-text text-white-50">Varsayılan: 20</div>
         </div>
         <div class="col-sm-6 d-flex align-items-end pb-1">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="is_public" value="1" id="is_public"
+            <input class="ax-form-check-input" type="checkbox" name="is_public" value="1" id="is_public"
                    {% if not post or post.is_public != '0' %}checked{% endif %}>
             <label class="form-check-label text-white-50 small" for="is_public">Herkese açık oda</label>
           </div>
@@ -109,7 +109,7 @@
     </div>
 
     <!-- Şartname -->
-    <div class="card border-warning border-opacity-50 mb-4 p-3" style="background:#16213e;">
+    <div class="ax-card border-warning border-opacity-50 mb-4 p-3" style="background:#16213e;">
       <h6 class="text-warning fw-semibold mb-3">
         <i class="bi bi-file-earmark-text me-2"></i>Çalışma Odası Şartnamesi
       </h6>
@@ -118,7 +118,7 @@
       </div>
       <div class="border-top border-secondary pt-3">
         <div class="form-check">
-          <input class="form-check-input border-warning" type="checkbox" name="terms_agreed" value="1"
+          <input class="ax-form-check-input border-warning" type="checkbox" name="terms_agreed" value="1"
                  id="terms_agreed" required>
           <label class="form-check-label text-white fw-semibold small" for="terms_agreed">
             Yukarıdaki şartnameyi okudum, anladım ve tüm maddelerini kabul ediyorum.
@@ -128,17 +128,17 @@
     </div>
 
     <!-- Bilgi notu -->
-    <div class="alert border-secondary small text-white-50 mb-4" style="background:rgba(255,255,255,0.03);">
+    <div class="ax-alert border-secondary small text-white-50 mb-4" style="background:rgba(255,255,255,0.03);">
       <i class="bi bi-info-circle me-2 text-info"></i>
       Oda talebiniz oluşturulduktan sonra admin incelemesine alınacak. Onay genellikle 24 saat içinde gerçekleşir.
       Onaylanan oda bitiş tarihinde otomatik olarak arşive alınır.
     </div>
 
     <div class="d-flex gap-2">
-      <button type="submit" class="btn btn-warning fw-semibold px-4">
+      <button type="submit" class="ax-btn ax-btn--warning fw-semibold px-4">
         <i class="bi bi-send me-2"></i>Odayı Oluştur
       </button>
-      <a href="{% url 'studyroom_list' %}" class="btn btn-outline-secondary">İptal</a>
+      <a href="{% url 'studyroom_list' %}" class="ax-btn ax-btn--ghost">İptal</a>
     </div>
   </form>
 

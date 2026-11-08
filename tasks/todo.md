@@ -803,6 +803,35 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(8 Kasım 2026, kullanıcı ekran görüntüsüyle bildirdi — AYRI İŞ, henüz
+  başlanmadı) `proje_talebi.html` "Son Tamamlanan Analizler" kutusu gerçek
+  kategori adı yerine hep jenerik "Veri Analizi" gösteriyor.** Canlıda 4
+  kayıt da "Veri Analizi" + "X ayda tamamlandı" olarak görünüyor; kullanıcı
+  burada pazaryerindeki gerçek kategori adlarının (ör. ilan formundaki
+  "AMOS (Path analizi)", "Bibliometrik Analiz", "Makine öğrenmesi
+  modellemesi" gibi — bkz. ikinci ekran görüntüsü, `/market/new/` kategori
+  listesi) gösterilmesini istiyor.
+  **Kod yeri:** `forum/views.py` `proje_talebi()` view'ı (~satır 2429-2452),
+  `recent_completed` listesi — `FreelanceJob.objects.filter(status=
+  'completed').select_related('category').order_by('-updated_at')[:4]`;
+  her kayıt için `'category': job.category.localized_title if job.category
+  else gettext('Veri Analizi')`. Şablon: `forum/templates/forum/
+  proje_talebi.html` ~satır 251-268.
+  **Kök neden hipotezi (doğrulanmadı, inceleme gerekiyor):** `FreelanceJob.
+  category` nullable (`on_delete=models.SET_NULL`); `JobPostForm.save()`
+  (`forum/forms.py:197-203`) ilan sahibi kategori olarak "Diğer" seçtiğinde
+  `job.category = None` yazıyor (serbest metin tutulmuyor, tamamen
+  kayboluyor). Son tamamlanan 4 ilanın gerçekten "Diğer" kategorisiyle mi
+  açıldığı yoksa başka bir nedenle (ör. kategori sonradan silinip SET_NULL
+  tetiklendiği) mi kategori kaybettiği production DB'de doğrulanmalı.
+  **Çözüm yönü (karar verilmedi, iş başlayınca değerlendirilecek):** (a)
+  vitrin sorgusunu yalnızca gerçek kategorisi olan tamamlanmış ilanları
+  seçecek şekilde filtrelemek (jenerik metin hiç gösterilmesin) ve/veya (b)
+  "Diğer" seçiminde serbest metnin kaybolmaması için ayrı bir alan
+  eklemek. Aynı jenerik metnin 4 kez tekrarlanması ziyaretçiye
+  uydurma/sahte içerik izlenimi verebilir — [[feedback_no_exaggeration]]
+  kapsamına giriyor.
+
 - [x] **(8 Kasım 2026 TAMAMLANDI) Kullanıcı ekran görüntüleriyle `/hakkimizda/`
   sayfasında 4 ayrı EN/DE bulgusu bildirdi, hepsi aynı oturumda düzeltildi
   (2 merge, main'de canlı).** (1) EN/DE'de adres hâlâ Keçiören/Ankara
@@ -5777,19 +5806,23 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
 **Durum (8 Kasım 2026, gece):** Faz 1-2 TAMAMLANDI (Faz 2'nin atladığı
-`donationModal` bu turda kapatıldı). Faz 3 sürüyor — 34 dosya migre edildi
+`donationModal` bu turda kapatıldı). Faz 3 sürüyor — 38 dosya migre edildi
 (19'u 25 Ekim + `onboarding.html` sabah ayrı oturumda bug-fix + akşam turunda
 `forum_index.html`/`footer.html`/`success_stories.html`/`new_topic.html`*/
 `promote_job_iban.html`*/`how_it_works.html`/`bibliometrics/order.html`/
 4× tarama order.html + gece turunda `referral_dashboard.html`/
-`proje_talebi.html`/`studyroom_list.html` — *kart yapısı hariç kısmi),
-**4 dosya bilinçli ertelendi** (`my_jobs.html` tab, `studyroom_edit.html`
+`proje_talebi.html`/`studyroom_list.html`/`blog_detail.html`*/
+`studyroom_create.html`/`ai_assistant.html`* — *kart yapısı hariç kısmi),
+**5 dosya bilinçli ertelendi** (`my_jobs.html` tab, `studyroom_edit.html`
 switch, `service_promo.html` 7 renkli dinamik buton, `_studyroom_card.html`
-card+card-footer — hepsi yeni bileşen/renk kararı gerektiriyor, detay aşağı
-"8 Kasım — ertelenen/kısmi dosyalar").
+card+card-footer, `blog_detail.html`/`ai_assistant.html` içindeki toplam 3
+`card`+görsel/`card-header` örneği — hepsi yeni bileşen/renk kararı
+gerektiriyor, detay aşağı "8 Kasım — ertelenen/kısmi dosyalar").
 Yeni base.css eklentileri: `.ax-badge--info` (camgöbeği), `.ax-btn--outline-warning`,
 `.ax-btn--neutral` (solid gri `btn-secondary` karşılığı, `ax-badge--neutral`
-ile aynı token formülü). `bundle.css` yeniden üretildi, `base.html` `?v=0019`.
+ile aynı token formülü), `.ax-btn--outline-danger` (`ax-btn--outline-warning`
+ile aynı formül, blog beğeni butonu için). `bundle.css` yeniden üretildi,
+`base.html` `?v=0020`.
 110/110 forum + 160/160 bibliometrics pytest yeşil. Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
@@ -5924,7 +5957,26 @@ dosya) dokunulmadı. 3 filtre durumunda (`durum=active/archived/all`) canlı
 HTML div dengesi + `ax-btn--neutral` render'ı doğrulandı, 110/110 pytest
 yeşil),
 `templates/base.html` (11 — ayrı, dikkatli ele
-alınmalı), `blog_detail.html`, `studyroom_create.html`,
+alınmalı),
+~~`blog_detail.html`~~ (✅ 8 Kasım — `badge` (kategori rozeti)→`ax-badge`,
+beğeni butonu `btn-danger`/`btn-outline-danger`→`ax-btn--danger`/
+`ax-btn--outline-danger` (yeni varyant, `ax-btn--outline-warning` ile aynı
+formül; JS `toggleLike()`'daki `classList` çağrıları da güncellendi —
+unutulsaydı beğeni animasyonu kırılırdı), 2× sosyal paylaşım + profil +
+"Tüm Yazılar" butonları `ax-btn--outline-info`/`ax-btn--ghost`'a taşındı;
+**2× `card`+`card-img-top`+`card-body` (ana yazı kartı + ilgili yazı kartı)
+ertelendi** — kapak görseli üstte tam genişlik, `ax-card`'ın kendi
+padding'i resmi içeri çeker (card-header'la aynı kategori sorun, henüz
+`ax-card` için medya/görsel alt bileşeni yok); `card-title`, breadcrumb
+dokunulmadı (takip edilen envanterde yok); 110/110 pytest, canlı HTML div
+dengesi doğrulandı),
+~~`studyroom_create.html`~~ (✅ 8 Kasım — 2× tek `card` (header/footer yok)
+→ `ax-card`, `alert`/`alert-danger`→`ax-alert`/`ax-alert--danger`, nötr
+bilgi kutusu düz `ax-alert` (varyantsız), 8× `form-control`/`form-select`→
+ax- karşılığı, 2× `form-check-input`→`ax-form-check-input` (yalnız input,
+`form-check` sarmalayıcı/`form-check-label` diğer migre dosyalarla aynı
+şekilde dokunulmadı), 2 buton `ax-btn--warning`/`ax-btn--ghost`; 110/110
+pytest, canlı HTML div dengesi doğrulandı),
 ~~`referral_dashboard.html`~~ (✅ 8 Kasım — 4× `card`+`card-body` tek
 `ax-card`'a indirgendi, `form-control`→`ax-form-control`, `btn-info`→
 `ax-btn--info`, 6× `badge`→`ax-badge` + varyant; `input-group`/`table-dark`
@@ -5935,7 +5987,16 @@ kapsam dışı; 110/110 pytest, canlı HTML div dengesi doğrulandı),
 bırakıldı — `.ax-collapse` henüz inşa edilmedi, `my_jobs.html` tab'ıyla aynı
 kategori; `form-label` diğer migre dosyalarla aynı şekilde dokunulmadı;
 110/110 pytest, canlı HTML div dengesi + sınıf sayımı doğrulandı),
-`ai_assistant.html`, çoğu istatistik aracı
+~~`ai_assistant.html`~~ (✅ 8 Kasım — 3× tek `card`+`card-body` (header yok)
+tek `ax-card`'a indirgendi, `alert-warning`→`ax-alert--warning`, dinamik
+3-durumlu rozet (`bg-success/warning/danger`)→`ax-badge--success/warning/
+danger`, 4 buton `ax-btn--info/--warning/--sm` ailesine taşındı; **"AI
+Yanıtı" kartı (`card-header`+`card-body`) ertelendi** — hem card-header
+alt bileşen eksikliği hem de JS'in (`el.closest('.card')`) bu kartı tam
+olarak `.card` sınıfından bulması nedeniyle dokunulmadı; `progress`/
+`progress-bar` takip edilen envanterde değil, dokunulmadı; 110/110 pytest,
+canlı HTML div dengesi doğrulandı),
+çoğu istatistik aracı
 (`lineer_regresyon`, `lojistik_regresyon`, `kruskal_wallis`,
 `mann_whitney`, `karar_agaci`, `ki_kare`, `svm`, `orneklem`),
 `tableau_dashboard.html`, `oaipmh/landing.html`, `trdizin/landing.html`,
