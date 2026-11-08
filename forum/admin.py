@@ -1232,13 +1232,49 @@ class StudyRoomAdmin(GroupTabsMixin, ModelAdmin):
 
     @admin.action(description='✅ Seçili odaları onayla (aktifleştir)')
     def approve_rooms(self, request, queryset):
-        updated = queryset.filter(status='pending').update(status='active', reviewed_by=request.user)
-        self.message_user(request, f'{updated} oda aktifleştirildi.')
+        bot_user = User.objects.filter(username='AnalizBot').first() or request.user
+        site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+        count = 0
+        for room in queryset.filter(status='pending').select_related('creator'):
+            room.status = 'active'
+            room.reviewed_by = request.user
+            room.save()
+            try:
+                PrivateMessage.objects.create(
+                    sender=bot_user,
+                    receiver=room.creator,
+                    message=(
+                        f'✅ "{room.title}" başlıklı çalışma odanız onaylandı ve artık aktif!\n\n'
+                        f'Odanızı görüntülemek için: {site}/odalar/{room.slug}/'
+                    )
+                )
+            except Exception:
+                logger.exception('Oda onay DM bildirimi gönderilemedi (room_id=%s)', room.id)
+            count += 1
+        self.message_user(request, f'{count} oda aktifleştirildi.')
 
     @admin.action(description='❌ Seçili odaları reddet')
     def reject_rooms(self, request, queryset):
-        updated = queryset.filter(status='pending').update(status='rejected', reviewed_by=request.user)
-        self.message_user(request, f'{updated} oda reddedildi.')
+        bot_user = User.objects.filter(username='AnalizBot').first() or request.user
+        count = 0
+        for room in queryset.filter(status='pending').select_related('creator'):
+            room.status = 'rejected'
+            room.reviewed_by = request.user
+            room.save()
+            try:
+                PrivateMessage.objects.create(
+                    sender=bot_user,
+                    receiver=room.creator,
+                    message=(
+                        f'Merhaba {room.creator.username},\n\n'
+                        f'"{room.title}" başlıklı çalışma odası talebiniz incelendi ancak '
+                        f'onaylanmadı. Sorularınız için bizimle iletişime geçebilirsiniz.'
+                    )
+                )
+            except Exception:
+                logger.exception('Oda ret DM bildirimi gönderilemedi (room_id=%s)', room.id)
+            count += 1
+        self.message_user(request, f'{count} oda reddedildi.')
 
     @admin.action(description='📄 Mesaj dökümünü PDF olarak dışa aktar (adli talep) — yalnızca superuser')
     def export_room_messages(self, request, queryset):
