@@ -126,7 +126,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
       <div class="nav-card">
         <h2 class="nav-title">{% if selected_user %}En Çok Ziyaret — {{ selected_user.username }}{% else %}En Çok Ziyaret Edilen Sayfalar{% endif %}</h2>
-        <canvas id="topPagesChart"></canvas>
+        <div id="topPagesChartWrap"><canvas id="topPagesChart"></canvas></div>
       </div>
       <div class="nav-card">
         <h2 class="nav-title">{% if selected_user %}Günlük Trend — {{ selected_user.username }}{% else %}Günlük Ziyaret Trendi{% endif %}</h2>
@@ -308,6 +308,9 @@ document.addEventListener('DOMContentLoaded', function() {
     rendered = true;
 
     if (topPagesRaw.length) {
+      // Bölüm etiketleri dar ekranda autoSkip ile atlanıyordu (Chart.js varsayılanı) —
+      // her etiketin sığacağı kadar yükseklik verilip autoSkip kapatıldı.
+      document.getElementById('topPagesChartWrap').style.height = Math.max(220, topPagesRaw.length * 32) + 'px';
       new Chart(document.getElementById('topPagesChart'), {
         type: 'bar',
         data: {
@@ -317,8 +320,9 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         options: {
           indexAxis: 'y',
+          maintainAspectRatio: false,
           plugins: { legend: { display: false } },
-          scales: { x: scaleOpts, y: { ...scaleOpts, ticks: { ...scaleOpts.ticks, font: { size: 11 } } } },
+          scales: { x: scaleOpts, y: { ...scaleOpts, ticks: { ...scaleOpts.ticks, font: { size: 11 }, autoSkip: false } } },
         },
       });
     } else {
