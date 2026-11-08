@@ -821,11 +821,16 @@ maddelerde.
   1'in düzeltmesi isim tekrarına yol açmıştı ("Bünyamin Keleş ... Bunyamin
   Keles") — adres metninden isim kaldırıldı, "operated by" cümlesinin
   EN/DE çevirisi de 7 Kasım'daki diyakritiksiz "Bunyamin Keles" kuralına
-  getirildi. Aynı oturumda ayrıca **navbar aktif renk tutarsızlığı**
-  giderildi (Analizler/Pazaryeri/Proje Talebi/Kurumsal'da hiç `is-active`
-  yoktu, Topluluk/Eğitim'deki desenle eşitlendi). Migration yok,
+  getirildi. (5) **Sonradan bulunan 5. bulgu:** "Doğrulanmış Uzman Ağımız"
+  butonu `/uzmanlar/`'a (`uzman_dizini`) gidiyordu — bu URL bilinçli
+  olarak `i18n_patterns` dışında (TR-only, EN/DE karşılığı henüz yok),
+  EN/DE ziyaretçi tıklayınca sayfa sessizce TR'ye düşüyordu. Kullanıcı
+  kararıyla EN/DE'de buton artık `proje_talebi`'ne yönleniyor. Aynı
+  oturumda ayrıca **navbar aktif renk tutarsızlığı** giderildi
+  (Analizler/Pazaryeri/Proje Talebi/Kurumsal'da hiç `is-active` yoktu,
+  Topluluk/Eğitim'deki desenle eşitlendi). Migration yok,
   `forum/tests.py` 110/110 yeşil, merge öncesi online-kullanıcı kontrolü
-  iki kez de boş çıktı.
+  her seferinde boş çıktı.
 
 - [x] **(7 Kasım 2026 TAMAMLANDI) Footer'daki "ziyaretçi" sayacı gerçek dışı
   büyük görünüyordu (404.991) — kullanıcı sordu.** Kök neden: `forum/
@@ -1038,10 +1043,13 @@ maddelerde.
   muafiyetini bypass edemiyor). `forum/tests.py` 104/104 geçti, Django test
   Client ile atomic-rollback senaryosuyla manuel doğrulandı. Plan:
   `/home/bunyamin/.claude/plans/swift-yawning-perlis.md`.
-  - [ ] **Ertelendi — ayrı görev:** `topic_detail` view'ında `login_required`
+  - [x] **(8 Kasım 2026 TAMAMLANDI)** `topic_detail` view'ında `login_required`
     yok; teorik olarak anonim kullanıcı yorum POST edebilir (`created_by`
-    `AnonymousUser` olursa FK hatasıyla 500 riski). Bu turun kapsamı dışında
-    bırakıldı, ayrı onayla ele alınmalı.
+    `AnonymousUser` olursa FK hatasıyla 500 riski). GET (okuma) herkese
+    açık kalmalı olduğu için view'a değil, yalnız POST dalının başına
+    `is_authenticated` kontrolü eklendi (`login`'e `?next=` ile
+    yönlendiriyor). Django test client ile anon POST → 302 /login/,
+    anon GET → 200 (değişmedi) doğrulandı.
 
 - [x] **(28 Ekim 2026 bulundu, 7 Kasım 2026 TAMAMLANDI) Admin Dashboard —
   rakamların tutarlılığı ve metinlerle örtüşmesi incelendi.** Salt-okunur
@@ -2298,15 +2306,18 @@ başlıklar (Bootstrap Kaldırma Migrasyonu'na bağlı, ayrı iş).
   önceliklendireceğini seçtikten sonra değişecek dosyalar listelenip onay
   alınacak, sonra tek tek uygulanacak.
 
-- [ ] **(22 Ekim 2026) `onboarding.html` ax- tasarım sistemine aykırı:**
-  Bootstrap UI bileşenleri (`card`, `btn btn-primary/outline-secondary/
-  success/link`, `text-muted`, `text-danger`) doğrudan kullanılıyor
-  (olması gereken `ax-` prefix'li sınıflar) + CSS bloğunda hardcode hex
-  renkler (`#f0f0ff`, `#6366f1`, `#eef2ff`, `#4f46e5`, `#1e293b`,
-  `var(--text-main, #e2e8f0)` fallback'i) `var(--ax-*)` değişkeni yerine
-  yazılmış. Düzeltme: dosyayı ax sistemine taşımadan önce mevcut `ax-`
-  sınıf/değişken karşılıklarını (`bundle.css`) kontrol et, JS'teki
-  `.segment-card`/`.selected` davranışını bozma.
+- [x] **(22 Ekim 2026 bulundu, 8 Kasım 2026 TAMAMLANDI) `onboarding.html` ax-
+  tasarım sistemine aykırıydı:** Bootstrap UI bileşenleri (`card`, `btn
+  btn-primary/outline-secondary/success/link`, `text-muted`,
+  `text-danger`) `ax-card`/`ax-btn--primary/ghost/success`/`ax-text-
+  muted/danger`'a taşındı; CSS bloğundaki hardcode hex renkler
+  (`#f0f0ff`, `#6366f1`, `#eef2ff`, `#4f46e5`, `#1e293b`, `var(--text-
+  main, #e2e8f0)` fallback'i) profiles.css'teki "selected chip" deseniyle
+  aynı `color-mix(var(--ax-accent-primary))` formülüne getirildi.
+  Grid/utility sınıfları (d-flex/gap/rounded/fw-*) diğer migre edilmiş
+  araç sayfalarıyla aynı sınırda kapsam dışı bırakıldı. `.segment-card`/
+  `.selected` JS davranışı değişmedi, force_login ile GET+POST
+  doğrulandı, `forum/tests.py` 110/110 yeşil.
 
 - [ ] **(22 Ekim 2026) Güvenlik taraması — bulgular (CVE-2026-109618/109619
   PHP duyurusu vesilesiyle istendi; proje PHP değil, Django — sunucuda PHP
@@ -3135,10 +3146,14 @@ başlıklar (Bootstrap Kaldırma Migrasyonu'na bağlı, ayrı iş).
   Exception` ile sessizce yutuluyor; admin dashboard'daki "Dizin Tezleri"
   (oaipmh) bu ay/toplam sayaçları (`oaipmh_month`/`oaipmh_total`) bu yüzden
   her zaman 0 görünüyor. Kapsam dışı tutuldu (ayrı görev olarak düzeltilmeli).
-- [ ] **(15 Ekim 2026)** `semanticscholar/admin.py` diğer 5 tarama aracından
-  farklı olarak Unfold değil düz Django `ModelAdmin` kullanıyor, ayrıca
-  `get_query_summary` sütunu yok (sadece ham `status/total_results/created_at`
-  görünüyor) — görsel/işlevsel tutarsızlık, ayrı görev olarak ele alınmalı.
+- [x] **(15 Ekim 2026 bulundu, 8 Kasım 2026 TAMAMLANDI)** `semanticscholar/
+  admin.py` diğer 5 tarama aracından farklı olarak Unfold değil düz Django
+  `ModelAdmin` kullanıyordu, `get_query_summary` sütunu yoktu —
+  `pubmed/admin.py` deseni örnek alınarak `unfold.admin.ModelAdmin` +
+  `get_query_summary()` sütununa getirildi (SemanticOrder admin'i de
+  görsel tutarlılık için aynı şekilde güncellendi, işlevsel değişiklik
+  yok). `manage.py check` temiz, force_login ile iki admin sayfası da
+  200 döndü.
 - [x] **TAMAMLANDI (16 Ekim 2026) — OAI-PMH "0 sonuç" yanlış sınıflandırma düzeltmesi +
   44 yeni üniversite + admin sidebar sadeleştirmesi, `main`'de canlı (3 ayrı merge).**
   `oaipmh/services/scraper.py`'deki `browse_university()` bağlantı/sunucu hatalarını
@@ -3684,8 +3699,8 @@ başlıklar (Bootstrap Kaldırma Migrasyonu'na bağlı, ayrı iş).
 - [x] **YAPILDI (2 Ekim 2026, kullanıcı): 6 pasiften 5'i silindi (189'un virgüllü adı, C++, Java, Javascript, Google SEO hizmetleri); "Web sayfası tasarımı" pasif bırakıldı (kullanıcı kararı)** Eski kullanıcı yazımı pasif `JobCategory` kayıtları — sil / aktifleştir (kullanıcı, admin)
 - [ ] Aktif iş kategorilerinin çoğunda tanıtım metni (`intro`) boş → Uzman Dizini `?cat=` sayfaları noindex (ör. Faktör analizi, R ile veri analizi, Tez danışmanlığı, Yapay zekâ modelleme, Zaman serisi). SEO Faz 3 ile birlikte metin hazırlanabilir (canlı admin; abartısız)
 - [x] **YAPILDI YERELDE (2 Ekim 2026, commit yok): Davranış Analizi** — Sayfa Ziyaretleri / Ziyaret Özetleri listesinde kullanıcı adı → Navigasyon Grafiği `?user=` kişi analizi (özet kartları, bölüm + günlük grafik, son 5 gün navigasyon akışı / oturumlar, sık geçişler; ilk 20'de olmayan da açılır); "Ziyaret Özetleri" menüden kalktı; görünmeyen kart başlıkları + yanlış "Son 7 Gün" etiketi düzeltildi; testler analytics 4 + forum 82 = 86/86; Playwright masaüstü/mobil (test verisiyle) OK
-- [ ] Ölü kod: `PageViewSummaryAdmin.summary_chart_view` + `templates/admin/analytics/summary_chart.html` artık linklenmiyor — silinebilir (karar)
-- [ ] Navigasyon Grafiği mobilde "En Çok Ziyaret" yatay grafiğinde bazı bölüm etiketleri atlanıyor (Chart.js autoSkip; önceden de vardı; admin mobil, düşük öncelik)
+- [x] **(8 Kasım 2026 TAMAMLANDI)** Ölü kod: `PageViewSummaryAdmin.summary_chart_view` + `get_urls()` ("grafik/" route) + `templates/admin/analytics/summary_chart.html` silindi (işlevi "Navigasyon Grafiği" sekmesine taşınmıştı, hiçbir yerden linklenmiyordu); kullanılmayan `Max` importu da kaldırıldı. `manage.py check` temiz, force_login ile changelist 200, forum/tests.py 110/110 yeşil.
+- [x] **(8 Kasım 2026 TAMAMLANDI)** Navigasyon Grafiği mobilde "En Çok Ziyaret" yatay grafiğinde bazı bölüm etiketleri atlanıyordu (Chart.js autoSkip) — her etiketin sığacağı kadar dinamik konteyner yüksekliği + `maintainAspectRatio:false` + `autoSkip:false` ile düzeltildi (chart.html + behavior_analysis.html'de aynı kod iki kez vardı, ikisi de güncellendi).
 - [x] **DÜZELTİLDİ (2 Ekim 2026: kutuya `color: var(--ax-text-primary)`)** İlan formu (post_job.html) mavi bilgi kutusunun ilk satırı ("…X gün aktif kalacaktır") koyu zeminde okunmuyor
 - [x] **DÜZELTİLDİ (2 Ekim 2026: `background-size: var(--ax-space-3) var(--ax-space-2)`, bundle yeniden üretildi, v=0008)** `.ax-form-select` (base.css) `background-size` yok → ok simgesi kutuyu kaplıyor (pubmed landing kullanıyor)
 - [ ] Render'da profil fotoğrafı yüklenmiyor (alt metin görünüyor) — kalıcı disk/medya; canlıda da var mı kontrol

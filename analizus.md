@@ -3082,9 +3082,31 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   tutarsızlığı** giderildi: yalnız Topluluk/Eğitim menü öğelerinde
   `is-active` rengi vardı, Analizler/Pazaryeri/Proje Talebi/Kurumsal'da
   hiç yoktu — 4 öğeye aynı `request.path` kontrolü eklendi.
+  5. **(Ayrıca aynı oturumda, 5. bulgu) Uzman Ağı butonu EN/DE'de TR-only
+     sayfaya düşüyordu:** `/uzmanlar/` (`uzman_dizini`) bilinçli olarak
+     `i18n_patterns` dışında tanımlı (trdizin/yoktez gibi "kapsam dışı,
+     Türkiye'ye özgü" — EN/DE karşılığı/"Verified uzman vitrini" henüz
+     yapılmadı). `about.html`'deki "Doğrulanmış Uzman Ağımız" butonu
+     hiç dil kontrolü olmadan bu linke gidiyordu; kullanıcı kararıyla
+     EN/DE'de buton artık `proje_talebi`'ne yönleniyor (TR davranışı
+     değişmedi), yeni msgid "Proje Talebinde Bulun" eklendi.
+  Devamında aynı oturumda `tasks/todo.md`'deki başka açık maddeler de
+  sırayla bitirildi: `topic_detail` view'ında eksik `login_required`
+  (anonim POST → 500 riski, yalnız POST dalına kontrol eklendi, GET
+  herkese açık kaldı); `semanticscholar/admin.py` diğer 5 tarama aracıyla
+  aynı Unfold + `get_query_summary` desenine getirildi;
+  `onboarding.html`'deki ham Bootstrap bileşenleri (card/btn/text-muted/
+  text-danger) + hardcode hex renkler ax- sistemine taşındı (22 Ekim
+  bulgusu); ölü kod `PageViewSummaryAdmin.summary_chart_view` +
+  `templates/admin/analytics/summary_chart.html` silindi (işlevi
+  "Navigasyon Grafiği" sekmesine taşınmıştı); "En Çok Ziyaret Edilen
+  Sayfalar" yatay grafiğinde Chart.js'in mobilde bazı bölüm etiketlerini
+  atlaması (`autoSkip`) dinamik konteyner yüksekliği + `autoSkip:false`
+  ile düzeltildi (chart.html + behavior_analysis.html'de aynı kod iki
+  kez vardı, ikisi de düzeltildi).
   Migration yok, `forum/tests.py` 110/110 yeşil her turda. Merge öncesi
   production online-kullanıcı kontrolü (`Profile.last_seen`, 300 sn,
-  staff hariç) iki kez de yapıldı, liste boştu.
+  staff hariç) her merge'den önce yapıldı, hepsinde liste boştu.
 
 - **7 Kasım 2026 — `tasks/todo.md` "AÇIK İŞLER" süpürme turu: 8 bulgu
   düzeltildi, 2 madde zaten çözülmüş çıktı, hepsi `main`'de canlı.**
