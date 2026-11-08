@@ -4200,11 +4200,33 @@ def studyroom_create(request):
                 except Exception:
                     pass
 
+                # Admin'lere AnalizBot'tan DM bildirimi (dashboard açmadan haber verir)
+                try:
+                    bot_user = User.objects.get(username='AnalizBot')
+                except User.DoesNotExist:
+                    bot_user = request.user
+                try:
+                    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+                    for admin_user in User.objects.filter(is_staff=True):
+                        PrivateMessage.objects.create(
+                            sender=bot_user,
+                            receiver=admin_user,
+                            message=(
+                                f'🔔 Yeni çalışma odası onay talebi\n\n'
+                                f'{request.user.username} tarafından "{room.title}" başlıklı yeni bir '
+                                f'çalışma odası oluşturuldu ve onayınızı bekliyor.\n\n'
+                                f'Hedef: {room.goal}\n\n'
+                                f'İncelemek için: {site}/admin/forum/studyroom/{room.id}/change/'
+                            )
+                        )
+                except Exception:
+                    logger.exception('Oda onay talebi admin DM bildirimi gönderilemedi (room_id=%s)', room.id)
+
             if initial_status == 'active':
                 messages.success(request, 'Çalışma odanız başarıyla açıldı!')
                 return redirect('studyroom_detail', slug=room.slug)
             else:
-                messages.success(request, 'Çalışma odanız oluşturuldu. Admin onayı bekleniyor.')
+                messages.warning(request, 'Çalışma odanız oluşturuldu ve admin onayı bekliyor. Onaylandığında size bildirim mesajı gönderilecek.')
                 return redirect('studyroom_list')
 
         categories = Category.objects.all().order_by('title')
