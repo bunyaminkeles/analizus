@@ -3046,6 +3046,46 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **8 Kasım 2026 — Kullanıcı ekran görüntüleriyle `/hakkimizda/` (about.html)
+  sayfasında art arda 4 EN/DE bulgusu bildirdi, hepsi aynı oturumda
+  düzeltilip main'de canlıya alındı (2 ayrı merge).**
+  1. **Adres hatası:** EN/DE'de footer/contact.html'deki TR/EN-DE adres
+     ayrım deseni (7 Kasım turu) `about.html`'e hiç uygulanmamıştı —
+     sayfa EN/DE'de de Keçiören/Ankara adresini gösteriyordu. Aynı
+     `{% if LANGUAGE_CODE == 'tr' %}` deseniyle düzeltildi.
+  2. **KVKK checkbox etiketi çıplak görünüyordu:** `/iletisim/` formundaki
+     onay kutusu EN/DE'de yalnızca "KVKK Privacy Notice"/"KVKK-
+     Datenschutzhinweis" diyordu — KVKK Türkiye'ye özgü bir kısaltma,
+     uluslararası kullanıcı tanımaz. Sitenin zaten kullandığı GDPR/KVKK
+     ikilisi kalıbına çevrildi (kullanıcı onayladı).
+  3. **Fuzzy çeviri kaynaklı Türkçe sızıntısı (kritik, sistemik):**
+     `about.html` karşılaştırma tablosu ("Otomatik"/"Hazır"/"Var"/
+     "Manuel"/"Yok (tarayıcı)"/"Pazar yeri") ve "Doğrulanmış Uzman
+     Ağımız" bloğu EN/DE'de Türkçe kalıyordu. Kök neden: önceki bir
+     `makemessages` turunda msgmerge bu msgid'leri **fuzzy** işaretleyip
+     yanlış/alakasız eski çevirilerle eşlemiş (ör. "Hazır"→"Prepared
+     by:", başka bir msgid'den sızmış) — fuzzy bayraklı girdiler
+     `msgfmt` tarafından derlenmediği için kaynak Türkçe metne
+     düşüyordu. 9 msgid (EN+DE) elle doğru çeviriyle düzeltildi, fuzzy
+     bayrakları temizlendi. **Ders:** fuzzy taraması tek bu sayfaya
+     özgü değil — site genelinde başka sayfalarda da benzer sessiz
+     sızıntılar olabilir, ayrı bir denetim turu gerekebilir (bkz.
+     [[feedback_i18n_fuzzy_matching]]).
+  4. **İsim iki kez yazılıyordu:** madde 1'in düzeltmesi EN/DE adres
+     metnine "Bunyamin Keles — " öneki eklemişti, ama hemen üstündeki
+     "operated by" cümlesi zaten ismi veriyordu (üstelik o cümlenin
+     EN/DE çevirisi hâlâ Türkçe diyakritikli "Bünyamin Keleş"
+     kullanıyordu — 7 Kasım'daki footer düzeltmesiyle tutarsız).
+     Adres metninden isim tekrarı kaldırıldı, cümle çevirisi
+     diyakritiksiz "Bunyamin Keles"e getirildi.
+  Ayrıca aynı oturumda kullanıcı isteğiyle **navbar aktif renk
+  tutarsızlığı** giderildi: yalnız Topluluk/Eğitim menü öğelerinde
+  `is-active` rengi vardı, Analizler/Pazaryeri/Proje Talebi/Kurumsal'da
+  hiç yoktu — 4 öğeye aynı `request.path` kontrolü eklendi.
+  Migration yok, `forum/tests.py` 110/110 yeşil her turda. Merge öncesi
+  production online-kullanıcı kontrolü (`Profile.last_seen`, 300 sn,
+  staff hariç) iki kez de yapıldı, liste boştu.
+
 - **7 Kasım 2026 — `tasks/todo.md` "AÇIK İŞLER" süpürme turu: 8 bulgu
   düzeltildi, 2 madde zaten çözülmüş çıktı, hepsi `main`'de canlı.**
   Kullanıcı "todo ve açık işleri kontrol et" ile başlattı, sırayla küçükten
