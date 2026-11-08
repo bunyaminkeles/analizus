@@ -5776,9 +5776,11 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
-**Durum (25 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 19 dosya
-migre edildi, **48 dosyada hâlâ gerçek Bootstrap component class'ı var**
-(bkz. "Güncel envanter" altı). Faz 4-5 henüz başlamadı.
+**Durum (8 Kasım 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 21 dosya
+migre edildi (19'u 25 Ekim + `onboarding.html` 8 Kasım sabahı ayrı bir
+oturumda bug-fix olarak + `forum_index.html` bu turda), **46 dosyada hâlâ
+gerçek Bootstrap component class'ı var** (bkz. "Güncel envanter" altı).
+Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -5828,8 +5830,17 @@ hiç render edilmiyor — `views.section_detail` artık yalnızca
 çağrısında kullanılmıyor. Migrasyon kapsamından çıkarıldı (zaman kaybı,
 dosya hiç kullanıcıya görünmüyor), silinmedi — ayrı bir karar.
 
-**Düşük (~8-19 class, ~16 dosya) — sıradaki adaylar:**
-`forum_index.html`, `footer.html` (partials),
+**Düşük (~8-19 class, ~14 dosya) — sıradaki adaylar:**
+~~`forum_index.html`~~ (✅ 8 Kasım — `btn`→`ax-btn--warning`, 2×`badge`→`ax-badge`,
+1×`badge bg-white bg-opacity-10 text-white-50`→`ax-badge ax-badge--neutral`;
+yeni CSS gerekmedi, 110/110 pytest, geçici `StudyRoom` kaydıyla canlı HTML
+doğrulandı), ~~`onboarding.html`~~ (✅ 8 Kasım sabahı, ayrı oturum — 22 Ekim
+bulgusu bug-fix'i olarak, bkz. commit `3ee71e3`),
+`footer.html` (partials) — **dikkat:** bu dosyadaki `donationModal` Faz 2'de
+atlanmış, hâlâ `data-bs-toggle`/`data-bs-target`/`data-bs-dismiss` +
+`show.bs.modal` JS event kullanıyor (saf class rename değil, `AxModal`'a
+JS davranış taşıması gerekiyor — sitede her sayfada göründüğü için ayrı
+dikkatli bir tur gerekir),
 ~~`edit_job.html`~~ (✅ 25 Ekim), ~~`post_job.html`~~ (✅ 25 Ekim),
 ~~`search_results.html`~~ (✅ 25 Ekim), ~~`verification_pending.html`~~
 (✅ 25 Ekim), ~~`my_payments.html`~~ (✅ 25 Ekim), ~~`section_detail.html`~~
@@ -5840,7 +5851,7 @@ dosya hiç kullanıcıya görünmüyor), silinmedi — ayrı bir karar.
 `promote_job_iban.html`, `success_stories.html` (modal JS Faz 2'de taşındı,
 component class'ları kaldı), `oaipmh/order.html`, `semanticscholar/order.html`,
 `service_promo.html`, `trdizin/order.html`, `how_it_works.html`,
-`onboarding.html`, `openalex/order.html`
+~~`onboarding.html`~~ (✅ 8 Kasım, yukarı bkz.), `openalex/order.html`
 
 **Orta (10-20):** `_studyroom_card.html`, `proje_talebi.html`,
 `studyroom_list.html`, `templates/base.html` (11 — ayrı, dikkatli ele

@@ -20,7 +20,7 @@
         <input id="forumSearch" type="text" class="forum-search-input"
                placeholder="Kategori ara... (ör: SPSS, regresyon, tez)">
       </div>
-      <a href="{% url 'studyroom_create' %}" class="btn btn-warning btn-sm fw-semibold px-3">
+      <a href="{% url 'studyroom_create' %}" class="ax-btn ax-btn--warning ax-btn--sm fw-semibold px-3">
         <i class="bi bi-door-open-fill me-1"></i>Oda Aç
       </a>
     </div>
@@ -49,13 +49,13 @@
             <div class="d-flex justify-content-between align-items-start mb-2">
               <span class="text-white fw-semibold" style="font-size:.85rem;line-height:1.4;">{{ room.title|truncatechars:50 }}</span>
               {% if room.days_remaining <= 7 %}
-              <span class="badge ms-2 flex-shrink-0" style="font-size:.65rem;background:rgba(239,68,68,0.18);color:#fca5a5;">Son {{ room.days_remaining }}g</span>
+              <span class="ax-badge ms-2 flex-shrink-0" style="font-size:.65rem;background:rgba(239,68,68,0.18);color:#fca5a5;">Son {{ room.days_remaining }}g</span>
               {% else %}
-              <span class="badge ms-2 flex-shrink-0" style="font-size:.65rem;background:rgba(16,185,129,0.18);color:#86efac;">{{ room.days_remaining }}g</span>
+              <span class="ax-badge ms-2 flex-shrink-0" style="font-size:.65rem;background:rgba(16,185,129,0.18);color:#86efac;">{{ room.days_remaining }}g</span>
               {% endif %}
             </div>
             {% if room.category %}
-            <div class="mb-2"><span class="badge bg-white bg-opacity-10 text-white-50" style="font-size:.65rem;">{{ room.category.title }}</span></div>
+            <div class="mb-2"><span class="ax-badge ax-badge--neutral" style="font-size:.65rem;">{{ room.category.title }}</span></div>
             {% endif %}
             <div class="d-flex gap-3 text-white-50" style="font-size:.72rem;">
               <span><i class="bi bi-people me-1"></i>{{ room.member_cnt }} üye</span>
