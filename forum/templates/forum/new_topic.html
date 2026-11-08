@@ -84,16 +84,16 @@
                         {% endif %}
                     </div>
 
-                    <div class="alert alert-info d-flex align-items-center bg-transparent border-info text-info" role="alert">
-                        <i class="bi bi-info-circle-fill me-2 fs-4"></i>
-                        <div class="small">
+                    <div class="ax-alert ax-alert--cyan" role="alert">
+                        <i class="bi bi-info-circle-fill ax-alert__icon fs-4"></i>
+                        <div class="ax-alert__body small">
                             <strong>AI İpucu:</strong> Konuyu açtığınızda "AnalizBot" içeriğinizi tarayacak ve otomatik ön değerlendirme yapacaktır.
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-end gap-3 mt-4">
-                        <a href="{% url 'category_topics' category.slug %}" class="btn btn-outline-secondary rounded-pill px-4">İptal</a>
-                        <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                        <a href="{% url 'category_topics' category.slug %}" class="ax-btn ax-btn--ghost rounded-pill px-4">İptal</a>
+                        <button type="submit" class="ax-btn ax-btn--primary rounded-pill px-5 fw-bold shadow-sm">
                             <i class="bi bi-send-fill me-2"></i>Mesajı Paylaş
                         </button>
                     </div>

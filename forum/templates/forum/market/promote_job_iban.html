@@ -11,8 +11,8 @@
                     <h2 class="fw-bold text-warning mb-0"><i class="bi bi-wallet2 me-2"></i>Banka Transferi ile Öne Çıkar</h2>
                 </div>
                 <div class="card-body p-4 p-md-5">
-                    <div class="alert alert-info bg-primary bg-opacity-10 border-primary border-opacity-25 text-white">
-                        <p class="mb-0"><strong>İlan Başlığı:</strong> {{ job.title }}</p>
+                    <div class="ax-alert ax-alert--info">
+                        <div class="ax-alert__body"><p class="mb-0"><strong>İlan Başlığı:</strong> {{ job.title }}</p></div>
                     </div>
 
                     <!-- Paket Seçimi -->
@@ -38,13 +38,13 @@
                     <div class="bg-dark bg-opacity-50 p-4 rounded border border-secondary border-opacity-50 mt-3">
                         <div class="mb-3">
                             <label class="form-label text-white-50 small">Alıcı Adı Soyadı</label>
-                            <input type="text" class="form-control bg-secondary text-white" value="Bünyamin Keleş" readonly>
+                            <input type="text" class="ax-form-control bg-secondary text-white" value="Bünyamin Keleş" readonly>
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-white-50 small">IBAN</label>
                             <div class="input-group">
-                                <input type="text" id="iban" class="form-control bg-secondary text-white" value="TR73 0003 2000 0000 0079 1034 65" readonly>
-                                <button class="btn btn-outline-warning" type="button" onclick="copyToClipboard('#iban')">
+                                <input type="text" id="iban" class="ax-form-control bg-secondary text-white" value="TR73 0003 2000 0000 0079 1034 65" readonly>
+                                <button class="ax-btn ax-btn--outline-warning" type="button" onclick="copyToClipboard('#iban')">
                                     <i class="bi bi-clipboard"></i> Kopyala
                                 </button>
                             </div>
@@ -57,11 +57,11 @@
                         <form method="post" action="{% url 'mark_payment_transferred' pk=job.pk %}" onsubmit="return confirm('Ödemeyi yaptığınızı onaylıyor musunuz?');" id="paymentForm">
                             {% csrf_token %}
                             <input type="hidden" name="package" id="selectedPackage" value="3">
-                            <button type="submit" class="btn btn-success fw-bold px-4 mt-2">
+                            <button type="submit" class="ax-btn ax-btn--success fw-bold px-4 mt-2">
                                 <i class="bi bi-check-circle me-2"></i>Havale Yaptım, Onay Bekliyorum
                             </button>
                         </form>
-                        <a href="{% url 'job_detail' pk=job.pk %}" class="btn btn-outline-light mt-3 btn-sm"><i class="bi bi-arrow-left me-2"></i>İlan Detayına Geri Dön</a>
+                        <a href="{% url 'job_detail' pk=job.pk %}" class="ax-btn ax-btn--outline-light mt-3 ax-btn--sm"><i class="bi bi-arrow-left me-2"></i>İlan Detayına Geri Dön</a>
                     </div>
                 </div>
             </div>

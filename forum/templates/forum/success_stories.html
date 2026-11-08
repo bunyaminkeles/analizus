@@ -20,7 +20,7 @@
             <p class="text-muted mb-0">Akademik zorlukları aşanların ilham veren deneyimleri</p>
         </div>
         {% if user.is_authenticated %}
-        <button class="btn btn-warning rounded-pill px-4 fw-bold" data-ax-toggle="modal" data-ax-target="#shareStoryModal">
+        <button class="ax-btn ax-btn--warning rounded-pill px-4 fw-bold" data-ax-toggle="modal" data-ax-target="#shareStoryModal">
             <i class="bi bi-plus-lg me-1"></i> Hikayeni Paylaş
         </button>
         {% endif %}
@@ -30,11 +30,11 @@
     <div class="row g-4">
         {% for story in stories %}
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-0 shadow-sm" style="background: {% if story.is_featured %}linear-gradient(145deg, #1e293b, #0f172a){% else %}rgba(30, 41, 59, 0.6){% endif %}; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
-                <div class="card-body position-relative p-4">
+            <div class="ax-card h-100" style="background: {% if story.is_featured %}linear-gradient(145deg, #1e293b, #0f172a){% else %}rgba(30, 41, 59, 0.6){% endif %}; border: 1px solid rgba(255, 255, 255, 0.08) !important; padding: 0;">
+                <div class="position-relative p-4">
                     {% if story.is_featured %}
                     <div class="position-absolute top-0 end-0 mt-2 me-2">
-                        <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> Haftanın Seçimi</span>
+                        <span class="ax-badge ax-badge--warning-solid"><i class="bi bi-star-fill"></i> Haftanın Seçimi</span>
                     </div>
                     {% endif %}
 
@@ -74,7 +74,7 @@
                     <!-- Job Badge -->
                     {% if story.job %}
                     <div class="mb-3">
-                        <a href="{% url 'job_detail' pk=story.job.pk %}" class="badge bg-info bg-opacity-25 text-info text-decoration-none">
+                        <a href="{% url 'job_detail' pk=story.job.pk %}" class="ax-badge ax-badge--info text-decoration-none">
                             <i class="bi bi-briefcase me-1"></i>{{ story.job.title|truncatechars:40 }}
                         </a>
                     </div>
@@ -113,9 +113,9 @@
             {% endif %}
             <div class="ax-modal__body">
                 {% if linked_job %}
-                <div class="alert alert-info bg-info bg-opacity-10 border-info border-opacity-25 mb-3">
-                    <i class="bi bi-briefcase me-1"></i>
-                    <strong>{{ linked_job.title }}</strong> ilanı ile ilgili hikayenizi yazıyorsunuz.
+                <div class="ax-alert ax-alert--cyan mb-3">
+                    <i class="bi bi-briefcase ax-alert__icon"></i>
+                    <div class="ax-alert__body"><strong>{{ linked_job.title }}</strong> ilanı ile ilgili hikayenizi yazıyorsunuz.</div>
                 </div>
                 {% endif %}
                 <div class="mb-3">
@@ -136,8 +136,8 @@
                 </div>
             </div>
             <div class="ax-modal__footer">
-                <button type="button" class="btn btn-outline-secondary" data-ax-dismiss="modal">İptal</button>
-                <button type="submit" class="btn btn-warning fw-bold">
+                <button type="button" class="ax-btn ax-btn--ghost" data-ax-dismiss="modal">İptal</button>
+                <button type="submit" class="ax-btn ax-btn--warning fw-bold">
                     <i class="bi bi-send me-1"></i>Hikayeyi Gönder
                 </button>
             </div>

@@ -310,6 +310,16 @@
     border-color: var(--ax-accent-info-hover);
 }
 
+.ax-btn--outline-warning {
+    background-color: transparent;
+    color: var(--ax-accent-warning);
+    border-color: var(--ax-accent-warning);
+}
+.ax-btn--outline-warning:hover {
+    background-color: color-mix(in srgb, var(--ax-accent-warning) 10%, transparent);
+    color: var(--ax-accent-warning);
+}
+
 .ax-btn--outline-light {
     background-color: transparent;
     color: var(--ax-text-primary);
@@ -417,6 +427,11 @@
 .ax-badge--success { background-color: rgba(16,185,129,0.2); color: var(--ax-accent-secondary); }
 .ax-badge--warning { background-color: rgba(245,158,11,0.2); color: var(--ax-accent-warning); }
 .ax-badge--danger  { background-color: rgba(239,68,68,0.2);  color: var(--ax-accent-danger); }
+.ax-badge--info {
+    /* Bootstrap'ın camgöbeği bg-info rozetine karşılık — ax-btn--info/ax-alert--cyan ile aynı renk ailesi */
+    background-color: rgba(6, 182, 212, 0.2);
+    color: var(--ax-accent-info);
+}
 .ax-badge--neutral {
     background-color: var(--ax-bg-tertiary);
     color: var(--ax-text-secondary);
