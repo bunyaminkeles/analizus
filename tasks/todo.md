@@ -831,6 +831,17 @@ maddelerde.
   `makemessages` sonrası 4 fuzzy girdi bulunup düzeltildi
   ([[feedback_i18n_fuzzy_matching]]). 110/110 pytest yeşil, migration yok,
   main'e push+deploy edildi.
+- [x] **(8 Kasım 2026 TAMAMLANDI) Admin'e giden ilan/teklif e-postalarında da
+  "TL" sabitti.** Kullanıcı ekran görüntüsüyle bildirdi: `notify_admin_new_job`,
+  `notify_admin_new_proposal`, `notify_admin_proposal_accepted`
+  (`forum/email_utils.py`) `@_in_admin_language` ile hep Türkçe gönderiliyor
+  (doğru — admin Türkçe okuyor), ama bu bir ÇEVİRİ sorunu değildi: intl
+  ilanda girilen tutar aslında € (form bunu zaten öyle etiketliyor), e-posta
+  ise sabit "TL" yazıyordu — admin'e yanlış para birimi bilgisi gidiyordu.
+  Üçünde de `job.language`'a göre TL/€ seçen bir `currency` değişkeni
+  eklendi (gettext yok, düz Python f-string — admin e-postaları zaten
+  çevrilmiyor, yalnız rakamın birimi düzeltildi). 110/110 pytest yeşil,
+  migration yok, main'e push+deploy edildi.
 
 - [x] **(8 Kasım 2026 TAMAMLANDI) Intl pazaryerinde TRY/₺ görünüyordu — job.language
   bazlı € para birimine çevrildi.** Kullanıcı ekran görüntüsüyle bildirdi:
