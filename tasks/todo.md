@@ -803,6 +803,27 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(8 Kasım 2026) EN/DE intl pazaryeri go-live — tek eksik: flag'i açmak.**
+  `/en/market/` 404 şikayeti araştırıldı: özellik 19 Ekim 2026'da tamamen
+  kodlanmış/test edilmiş, yalnız `SiteSettings.feature_market_intl` bilinçli
+  kapalı tutuluyordu ("go-live kullanıcıya ait" kararı). Bu oturumda: eksik
+  tek EN/DE çevirisi (`home_intl.html` pazaryeri CTA metni) tamamlandı,
+  `.mo` derlendi, 110/110 pytest yeşil, main'e push edildi (deploy oldu).
+  **Flag'i açma işlemi sandbox'ın "Feature Flag Writes" auto-mode kısıtı
+  yüzünden Claude tarafından yapılamadı** — kullanıcı admin panelinden
+  `Site Ayarları → feature_market_intl` kutucuğunu işaretleyip kaydetmeli.
+  Sonrasında `curl -I https://www.analizus.com/en/market/` ve `/de/market/`
+  200 dönmeli, navbar'da EN/DE "Pazaryeri"/"Marketplace"/"Marktplatz" linki
+  görünmeli.
+- [ ] **(8 Kasım 2026, kullanıcı istedi) DM (PrivateMessage) sohbet
+  mesajlarının eskilerinin silinmesi/arşivlenmesi — henüz başlanmadı.**
+  Kapsam netleştirilmeli: otomatik mı (ör. X aydan eski mesajlar), manuel
+  admin aksiyonu mu, kullanıcı kendi mesajını silebilsin mi; AnalizBot
+  bildirimleri (başarı hikayesi daveti, onay/ret DM'leri — bu oturumda
+  oda onayı için de eklendi) dahil mi yoksa yalnız kullanıcı-kullanıcı DM
+  mi; KVKK/veri saklama süresi açısından bir gerekçe var mı. İş kararı
+  gerektirir, başlamadan önce kullanıcıya sorulacak.
+
 - [ ] **(8 Kasım 2026, kullanıcı ekran görüntüsüyle bildirdi — AYRI İŞ, henüz
   başlanmadı) `proje_talebi.html` "Son Tamamlanan Analizler" kutusu gerçek
   kategori adı yerine hep jenerik "Veri Analizi" gösteriyor.** Canlıda 4
@@ -2497,6 +2518,11 @@ başlıklar (Bootstrap Kaldırma Migrasyonu'na bağlı, ayrı iş).
   henüz açılmadı, hiçbir EN/DE kullanıcısına görünmüyor. Migration
   yalnızca lokalde uygulandı; `main`'e push öncesi `scripts/
   yedek_indir.sh --simdi` (kullanıcının kendi bilgisayarında) istenmeli.
+  **(8 Kasım 2026 güncelleme) Go-live hazırlığı tamamlandı:** eksik kalan
+  tek EN/DE çevirisi (`home_intl.html` CTA) çevrildi+derlendi, 110/110
+  pytest yeşil, main'e push+deploy edildi. **Flag hâlâ kapalı** — açık iş
+  listesindeki 8 Kasım maddesine bkz. (Claude bu oturumda flag'i açamadı,
+  sandbox kısıtı).
 
 - [x] **(18 Ekim 2026) Admin dashboard — İlan Onayı tek-tık onay/red.**
   Şikayet: bildirimdeki "Onayla / Reddet →" linki Django'nun standart
