@@ -445,7 +445,7 @@
 
                 <!-- Analizler Dropdown -->
                 <div class="site-nav__dropdown-wrap">
-                    <button class="site-nav__link site-nav__dropdown-btn"
+                    <button class="site-nav__link site-nav__dropdown-btn {% if '/analiz/' in request.path or '/bibliometrics/' in request.path or '/hangi-test/' in request.path or '/ai-asistan/' in request.path or '/tableau-analiz/' in request.path %}is-active{% endif %}"
                             aria-expanded="false" aria-haspopup="true"
                             data-dropdown="analizler">
                         {% trans "Analizler" %}
@@ -476,9 +476,9 @@
 
                 <!-- Pazaryeri: TR ve EN/DE tamamen ayrı iki havuz, ayrı feature flag ile yönetilir -->
                 {% if LANGUAGE_CODE == 'tr' %}{% if features.market %}
-                <a href="{% url 'job_list' %}" class="site-nav__link">{% trans "Pazaryeri" %}</a>
+                <a href="{% url 'job_list' %}" class="site-nav__link {% if '/market/' in request.path %}is-active{% endif %}">{% trans "Pazaryeri" %}</a>
                 {% endif %}{% elif features.market_intl %}
-                <a href="{% url 'job_list' %}" class="site-nav__link">{% trans "Pazaryeri" %}</a>
+                <a href="{% url 'job_list' %}" class="site-nav__link {% if '/market/' in request.path %}is-active{% endif %}">{% trans "Pazaryeri" %}</a>
                 {% endif %}
 
                 <!-- Topluluk Dropdown — yalnız TR: forum/odalar/Arena/blog içeriği Türkçe; EN/DE hedefi proje talebi -->
@@ -504,7 +504,7 @@
                 {% endif %}
 
                 {% comment %}EN/DE hedefi proje talebi → öne çıkan buton; TR görünümü aynı{% endcomment %}
-                <a href="{% url 'proje_talebi' %}?source=nav" class="site-nav__link{% if LANGUAGE_CODE != 'tr' %} site-nav__link--cta{% endif %}">{% trans "Proje Talebi" %}</a>
+                <a href="{% url 'proje_talebi' %}?source=nav" class="site-nav__link{% if LANGUAGE_CODE != 'tr' %} site-nav__link--cta{% endif %}{% if '/proje-talebi/' in request.path %} is-active{% endif %}">{% trans "Proje Talebi" %}</a>
 
                 {% comment %}K6: Eğitimler yalnız TR ve EN'de veriliyor, DE'de yok{% endcomment %}
                 {% if features.training and LANGUAGE_CODE != 'de' %}
@@ -518,7 +518,7 @@
 
                 <!-- Kurumsal Dropdown -->
                 <div class="site-nav__dropdown-wrap">
-                    <button class="site-nav__link site-nav__dropdown-btn"
+                    <button class="site-nav__link site-nav__dropdown-btn {% if '/hakkimizda/' in request.path or '/iletisim/' in request.path or '/ai-cozumler/' in request.path %}is-active{% endif %}"
                             aria-expanded="false" aria-haspopup="true"
                             data-dropdown="kurumsal">
                         {% trans "Kurumsal" %}
