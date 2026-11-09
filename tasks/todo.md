@@ -5925,12 +5925,13 @@ ile aynı formül, blog beğeni butonu için). `bundle.css` yeniden üretildi,
 110/110 forum + 160/160 bibliometrics pytest yeşil. Faz 4-5 henüz başlamadı.
 
 **9 Kasım 2026:** `lineer_regresyon.html` + `lojistik_regresyon.html` +
-`ki_kare.html` + `mann_whitney.html` migre edildi (42 dosyaya çıktı) —
-ikinci dosyada yeni `.ax-btn--outline-success` eklendi (`base.css`, var olan
-outline formülü tekrarı), `bundle.css` yeniden üretildi (`?v=0021`). İlk
-ikisinde `btn btn-link` butonu (Tümünü Seç/Kaldır) ertelendi; sonraki ikisinde
-hiç yoktu. Sırada: `kruskal_wallis`/`karar_agaci`/`svm`/`orneklem` +
-`tableau_dashboard.html` + 3 landing (`oaipmh`/`trdizin`/`yoktez`).
+`ki_kare.html` + `mann_whitney.html` + `karar_agaci.html` migre edildi
+(43 dosyaya çıktı) — `lojistik_regresyon.html`'de yeni `.ax-btn--outline-success`
+eklendi (`base.css`, var olan outline formülü tekrarı), `bundle.css` yeniden
+üretildi (`?v=0021`). `btn btn-link` butonu (Tümünü Seç/Kaldır) 3 dosyada
+ertelendi (ax-btn ailesinde link-stili yok). Sırada: `kruskal_wallis`/`svm`/
+`orneklem` + `tableau_dashboard.html` + 3 landing (`oaipmh`/`trdizin`/
+`yoktez`).
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -6146,9 +6147,17 @@ renk kullanıyordu (`ax-btn--warning` zaten var): 2× tek `card`+`card-body`→
 ('btn-success')` (Kopyala onayı) yine `ax-btn--success`'e güncellendi; yeni
 CSS gerekmedi; 110/110 forum pytest, force_login test client ile canlı HTML
 div dengesi + sınıf sayımı doğrulandı),
+~~`karar_agaci.html`~~ (✅ 9 Kasım — `lineer_regresyon.html` deseni + model
+hiperparametre kontrolleri (`form-range` kapsam dışı, dokunulmadı): 2× tek
+`card`+`card-body`→`ax-card`, `badge`→`ax-badge--neutral`, 3×`alert-danger`/
+1×`alert-warning`→`ax-alert`, 3×`form-select`→`ax-form-select`, 5 buton
+`ax-btn--ghost`/`ax-btn--outline-danger`/`ax-btn--sm` ailesine, JS checkbox
+`form-check-input`→`ax-form-check-input`; "Tümünü Seç/Kaldır" `btn btn-link`
+yine ertelendi; yeni CSS gerekmedi; 110/110 forum pytest, force_login test
+client ile canlı HTML div dengesi + sınıf sayımı doğrulandı),
 geri kalan istatistik araçları
 (`kruskal_wallis`,
-`karar_agaci`, `svm`, `orneklem`),
+`svm`, `orneklem`),
 `tableau_dashboard.html`, `oaipmh/landing.html`, `trdizin/landing.html`,
 `yoktez/landing.html`
 
