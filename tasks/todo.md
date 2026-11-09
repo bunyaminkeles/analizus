@@ -5924,15 +5924,13 @@ ile aynı formül, blog beğeni butonu için). `bundle.css` yeniden üretildi,
 `base.html` `?v=0020`.
 110/110 forum + 160/160 bibliometrics pytest yeşil. Faz 4-5 henüz başlamadı.
 
-**9 Kasım 2026:** `lineer_regresyon.html` + `lojistik_regresyon.html` migre
-edildi (40 dosyaya çıktı) — ikinci dosyada yeni `.ax-btn--outline-success`
-eklendi (`base.css`, var olan outline formülü tekrarı), `bundle.css`
-yeniden üretildi (`?v=0021`). Her iki dosyada da `btn btn-link` butonu
-(Tümünü Seç/Kaldır) ertelendi (yeni varyant kararı gerekiyor — ax-btn
-ailesinde link-stili yok). Sırada:
-`kruskal_wallis`/`mann_whitney`/`karar_agaci`/`ki_kare`/
-`svm`/`orneklem` + `tableau_dashboard.html` + 3 landing (`oaipmh`/`trdizin`/
-`yoktez`).
+**9 Kasım 2026:** `lineer_regresyon.html` + `lojistik_regresyon.html` +
+`ki_kare.html` migre edildi (41 dosyaya çıktı) — ikinci dosyada yeni
+`.ax-btn--outline-success` eklendi (`base.css`, var olan outline formülü
+tekrarı), `bundle.css` yeniden üretildi (`?v=0021`). İlk ikisinde `btn
+btn-link` butonu (Tümünü Seç/Kaldır) ertelendi; `ki_kare.html`'de hiç yoktu.
+Sırada: `kruskal_wallis`/`mann_whitney`/`karar_agaci`/`svm`/`orneklem` +
+`tableau_dashboard.html` + 3 landing (`oaipmh`/`trdizin`/`yoktez`).
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -6129,9 +6127,20 @@ ile aynı formül, `--ax-accent-secondary` token'ı — Kopyala butonu
 yeniden üretildi (`?v=0021`); "Tümünü Seç/Kaldır" `btn btn-link` yine
 ertelendi (aynı sebep); 110/110 forum pytest + force_login test client ile
 canlı HTML div dengesi + sınıf sayımı doğrulandı),
+~~`ki_kare.html`~~ (✅ 9 Kasım — bu dosyada `form-check`/`btn-link` hiç yoktu,
+en sade örnek: 2× tek `card`+`card-body`→`ax-card`, `badge`→`ax-badge--neutral`,
+3×`alert-danger`/1×`alert-warning`→`ax-alert--danger`/`--warning` (var olan
+varyant), 2×`form-select`→`ax-form-select`, 7 buton `ax-btn--ghost`/
+`ax-btn--outline-light`/`ax-btn--sm` ailesine (`ax-btn--outline-light` zaten
+vardı, yeni CSS gerekmedi); **JS'teki `classList.add/remove('btn-success')`
+(Kopyala onay animasyonu) `ax-btn--success`'e güncellendi** — güncellenmeseydi
+Bootstrap'ın `.btn-success` rengi CDN hâlâ yüklü olduğu için görünmeye devam
+ederdi ama `ax-btn--ghost` ile çakışıp tutarsız olurdu (blog_detail.html'deki
+`toggleLike()` emsaliyle aynı ders); 110/110 forum pytest, force_login test
+client ile canlı HTML div dengesi + sınıf sayımı doğrulandı),
 geri kalan istatistik araçları
 (`kruskal_wallis`,
-`mann_whitney`, `karar_agaci`, `ki_kare`, `svm`, `orneklem`),
+`mann_whitney`, `karar_agaci`, `svm`, `orneklem`),
 `tableau_dashboard.html`, `oaipmh/landing.html`, `trdizin/landing.html`,
 `yoktez/landing.html`
 
