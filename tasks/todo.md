@@ -5935,8 +5935,10 @@ kayboluyordu) eklendi, `bundle.css` yeniden üretildi (`?v=0023`). `btn
 btn-link` butonu (Tümünü Seç/Kaldır) 4 dosyada ertelendi.
 `tableau_dashboard.html` (47. dosya) kısmi migre edildi — 4× `card`+
 `card-body` (sekme araç çubukları) + içindeki butonlar `nav-tabs`'a kenetli
-görünüm nedeniyle ertelendi, yeni CSS gerekmedi. Sırada: 3 landing
-(`oaipmh`/`trdizin`/`yoktez`).
+görünüm nedeniyle ertelendi, yeni CSS gerekmedi.
+`oaipmh/landing.html` (48. dosya) kısmi migre edildi — 2 kart safe-merge,
+2 card-header'lı kart ertelendi, yeni CSS gerekmedi. Sırada: `trdizin`/
+`yoktez` landing.
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -6209,7 +6211,18 @@ rounded-bottom border-top-0` ile sekme şeridine "kenetli" görünüyor —
 `ax-card`'ın kendi gradient arka planı + box-shadow + hover'da `translateY(-5px)`
 kaldırma efekti bu kenetli görünümü bozar ve statik bir araç çubuğunu yanlışlıkla
 tıklanabilir kart gibi gösterir; 110/110 forum pytest, oturumsuz canlı HTML'de
-sınıf sayımı doğrulandı), `oaipmh/landing.html`, `trdizin/landing.html`,
+sınıf sayımı doğrulandı),
+~~`oaipmh/landing.html`~~ (✅ 9 Kasım, kısmi — tarama ailesinin ortak yapısı:
+2× tek `card`+`card-body` (header yok, ana başlık kutusu + durum/yükleniyor
+kutusu) → `ax-card`, 2× `alert-warning` (varyantsız e-posta doğrulama uyarısı
++ arama hata kutusu) → `ax-alert`, 1 buton (İptal Et) → `ax-btn--outline-
+danger`/`--sm`; **2× `card`+`card-header`+`card-body` ("Üniversitenin Tüm
+Tezleri" formu + "Sonuçlar" paneli, 3 iç buton dahil) ertelendi** —
+card-header alt bileşeni hâlâ yok, aynı kategori; `card-title`/`card-text`
+(salt margin utility, görsel kimlik taşımıyor) kasıtlı dokunulmadı; giriş
+gerektiriyor (anonim → `service_promo.html`), force_login test client ile
+doğrulandı, 110/110 forum pytest yeşil, yeni CSS gerekmedi),
+`trdizin/landing.html`,
 `yoktez/landing.html`
 
 **Ağır (20-48) — en sona bırakılacak:** `semanticscholar/landing.html` (21),
