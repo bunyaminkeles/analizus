@@ -3046,6 +3046,29 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **9 Kasım 2026 — Bootstrap Kaldırma Faz 3, "Düşük" + "Orta" gruplarının
+  TAMAMI bitirildi (10 dosya, 41→50).** İstatistik araçlarının **20/20'si**
+  artık ax- tasarım sisteminde: `lineer_regresyon`/`lojistik_regresyon`/
+  `ki_kare`/`mann_whitney`/`karar_agaci`/`kruskal_wallis`/`svm`/`orneklem`
+  — hepsi aynı ortak desen (tek `card`+`card-body`→`ax-card`, `badge`→
+  `ax-badge--neutral`, `alert-*`→`ax-alert`, `form-select`/`form-control`→
+  ax karşılığı, butonlar `ax-btn` ailesi). Ayrıca `tableau_dashboard.html`/
+  `oaipmh`/`yoktez`/`trdizin` landing sayfaları kısmi migre edildi (nav-tabs'a
+  kenetli veya `card-header`'lı bölümler ertelendi — henüz `.ax-card__header`/
+  `.ax-tab` alt bileşenleri yok). Yeni CSS (var olan formüllerin tekrarı,
+  yeni renk icat edilmedi): `.ax-btn--outline-success`, `.ax-alert--neutral`,
+  `.ax-btn.active` (Bootstrap'ın jenerik basılı/seçili görünümü karşılığı —
+  `orneklem.html`'deki preset butonlarının "hangisi seçili" göstergesi
+  `btn` sınıfı kaldırılınca kayboluyordu, bu CSS olmadan gerçek fonksiyonel
+  regresyon olurdu). **Ders:** JS'teki `classList.add/remove('btn-success')`/
+  `'btn-{renk}'`/`'form-check-input'` gibi literal Bootstrap sınıf
+  referansları da template rename'iyle birlikte güncellenmeli — unutulursa
+  sessiz görsel/fonksiyonel regresyon olur (şablon rename'i tek başına
+  yetmiyor). `bundle.css` üç kez yeniden üretildi (`?v=0021`→`?v=0023`).
+  Her dosyada force_login test client ile canlı HTML div dengesi + sınıf
+  sayımı doğrulandı, 110/110 forum pytest yeşil. Kalan tek grup: "Ağır
+  (20-48 class)" — 9 dosya, detay `tasks/todo.md`.
+
 - **8 Kasım 2026 — Kullanıcı ekran görüntüleriyle `/hakkimizda/` (about.html)
   sayfasında art arda 4 EN/DE bulgusu bildirdi, hepsi aynı oturumda
   düzeltilip main'de canlıya alındı (2 ayrı merge).**

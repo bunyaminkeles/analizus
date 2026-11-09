@@ -17,7 +17,7 @@
     </div>
     {% if user.is_authenticated %}
     <div class="col-auto">
-      <span class="badge bg-secondary fs-6">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
+      <span class="ax-badge ax-badge--neutral fs-6">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
     </div>
     {% endif %}
   </div>
@@ -25,8 +25,7 @@
   <div class="row g-4">
 
     <div class="col-lg-5">
-      <div class="card border-secondary" style="background-color:#1a1a2e;">
-        <div class="card-body p-4">
+      <div class="ax-card border-secondary p-4" style="background-color:#1a1a2e;">
 
           <div id="step-upload">
             <h5 class="text-white fw-semibold mb-3">
@@ -40,11 +39,11 @@
               <p class="text-white-50 small mb-0" id="file-name">{% blocktrans with mb=max_upload_mb %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}</p>
             </div>
             <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
-            <button id="preview-btn" class="btn w-100 fw-semibold disabled" disabled
+            <button id="preview-btn" class="ax-btn w-100 fw-semibold disabled" disabled
                     style="background:#7c3aed;color:#fff;border:none;">
               <i class="bi bi-arrow-right-circle me-2"></i>{% trans "Sütunları Getir" %}
             </button>
-            <div id="upload-error" class="alert alert-danger mt-3 d-none small"></div>
+            <div id="upload-error" class="ax-alert ax-alert--danger mt-3 d-none small"></div>
           </div>
 
           <div id="step-config" class="d-none">
@@ -52,7 +51,7 @@
               <h5 class="text-white fw-semibold mb-0">
                 <i class="bi bi-list-check me-2" style="color:#a78bfa;"></i>{% trans "Sütun Seçimi" %}
               </h5>
-              <button class="btn btn-sm btn-outline-secondary" onclick="resetToUpload()">
+              <button class="ax-btn ax-btn--ghost ax-btn--sm" onclick="resetToUpload()">
                 <i class="bi bi-arrow-left me-1"></i>{% trans "Geri" %}
               </button>
             </div>
@@ -60,26 +59,24 @@
 
             <div class="mb-2">
               <label class="text-white-50 small mb-1 d-block">{% trans "1. Değişken (kategorik)" %}</label>
-              <select id="col1-sel" class="form-select form-select-sm bg-dark text-white border-secondary"></select>
+              <select id="col1-sel" class="ax-form-select form-select-sm bg-dark text-white border-secondary"></select>
             </div>
             <div class="mb-3">
               <label class="text-white-50 small mb-1 d-block">{% trans "2. Değişken (kategorik)" %}</label>
-              <select id="col2-sel" class="form-select form-select-sm bg-dark text-white border-secondary"></select>
+              <select id="col2-sel" class="ax-form-select form-select-sm bg-dark text-white border-secondary"></select>
             </div>
 
-            <button id="run-btn" class="btn w-100 fw-semibold" style="background:#7c3aed;color:#fff;border:none;">
+            <button id="run-btn" class="ax-btn w-100 fw-semibold" style="background:#7c3aed;color:#fff;border:none;">
               <i class="bi bi-play-circle-fill me-2"></i>{% trans "Analizi Başlat" %}
             </button>
-            <div id="run-error" class="alert alert-danger mt-3 d-none small"></div>
+            <div id="run-error" class="ax-alert ax-alert--danger mt-3 d-none small"></div>
           </div>
 
-        </div>
       </div>
     </div>
 
     <div class="col-lg-7">
-      <div class="card border-secondary h-100" style="background-color:#16213e;">
-        <div class="card-body p-4">
+      <div class="ax-card border-secondary h-100 p-4" style="background-color:#16213e;">
 
           <div id="panel-idle">
             <h5 class="text-white-50 fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
@@ -97,11 +94,11 @@
           </div>
 
           <div id="panel-error" class="d-none">
-            <div class="alert alert-danger">
+            <div class="ax-alert ax-alert--danger">
               <i class="bi bi-exclamation-triangle-fill me-2"></i>
               <span id="panel-error-msg"></span>
             </div>
-            <button class="btn btn-outline-light btn-sm" onclick="resetToUpload()">{% trans "Tekrar Dene" %}</button>
+            <button class="ax-btn ax-btn--outline-light ax-btn--sm" onclick="resetToUpload()">{% trans "Tekrar Dene" %}</button>
           </div>
 
           <div id="panel-done" class="d-none">
@@ -135,7 +132,7 @@
               <p class="small mb-0 fw-semibold text-white" id="res-sig-text">—</p>
             </div>
 
-            <div id="res-low-exp-warning" class="alert alert-warning small d-none mb-3">
+            <div id="res-low-exp-warning" class="ax-alert ax-alert--warning small d-none mb-3">
               <i class="bi bi-exclamation-triangle-fill me-2"></i>
               <span id="res-low-exp-text"></span>
             </div>
@@ -167,20 +164,19 @@
 
               {% include "partials/_s3_retention_notice.html" %}
               <div class="d-flex gap-2">
-                <a id="pdf-btn" href="#" target="_blank" class="btn btn-sm fw-semibold" style="background:#7c3aed;color:#fff;">
+                <a id="pdf-btn" href="#" target="_blank" class="ax-btn ax-btn--sm fw-semibold" style="background:#7c3aed;color:#fff;">
                   <i class="bi bi-file-earmark-pdf-fill me-1"></i>{% trans "PDF İndir" %}
                 </a>
-                <button class="btn btn-sm btn-outline-secondary" onclick="copyApa(this)">
+                <button class="ax-btn ax-btn--ghost ax-btn--sm" onclick="copyApa(this)">
                   <i class="bi bi-clipboard me-1"></i>{% trans "Kopyala" %}
                 </button>
-                <button class="btn btn-sm btn-outline-light" onclick="resetToUpload()">
+                <button class="ax-btn ax-btn--outline-light ax-btn--sm" onclick="resetToUpload()">
                   <i class="bi bi-plus-circle me-1"></i>{% trans "Yeni" %}
                 </button>
               </div>
             </div>
           </div>
 
-        </div>
       </div>
     </div>
   </div>
@@ -410,8 +406,8 @@ function copyApa(btn) {
     copyText += '\n\n' + document.getElementById('ai-yorum-text').textContent;
   }
   navigator.clipboard.writeText(copyText).then(() => {
-    const orig = btn.innerHTML; btn.innerHTML = '<i class="bi bi-check me-1"></i>' + T.s9; btn.classList.add('btn-success');
-    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('btn-success'); }, 2000);
+    const orig = btn.innerHTML; btn.innerHTML = '<i class="bi bi-check me-1"></i>' + T.s9; btn.classList.add('ax-btn--success');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('ax-btn--success'); }, 2000);
   });
 }
 

@@ -21,18 +21,17 @@
 
     {# ── Sol: Parametre formu ── #}
     <div class="col-lg-5">
-      <div class="card border-secondary h-100" style="background-color:#1a1a2e;">
-        <div class="card-body p-4">
+      <div class="ax-card border-secondary h-100 p-4" style="background-color:#1a1a2e;">
           <h5 class="text-white fw-semibold mb-3">
             <i class="bi bi-sliders me-2 text-warning"></i>{% trans "Parametreler" %}
           </h5>
 
           {# Mod seçimi: A Priori (örneklem hesapla) / Post-hoc (güç hesapla) #}
           <div class="d-flex gap-2 mb-2">
-            <button type="button" id="mode-a-priori" class="btn btn-sm btn-warning flex-fill mode-btn active" data-mode="a_priori">
+            <button type="button" id="mode-a-priori" class="ax-btn ax-btn--warning ax-btn--sm flex-fill mode-btn active" data-mode="a_priori">
               {% trans "Örneklem Hesapla" %}
             </button>
-            <button type="button" id="mode-post-hoc" class="btn btn-sm btn-outline-secondary flex-fill mode-btn" data-mode="post_hoc">
+            <button type="button" id="mode-post-hoc" class="ax-btn ax-btn--ghost ax-btn--sm flex-fill mode-btn" data-mode="post_hoc">
               {% trans "Güç Hesapla (Post-hoc)" %}
             </button>
           </div>
@@ -42,7 +41,7 @@
           {# Test tipi #}
           <div class="mb-3">
             <label class="text-white-50 small fw-semibold mb-2 d-block">{% trans "Test Tipi" %}</label>
-            <select id="test-type" class="form-select form-select-sm bg-dark text-white border-secondary">
+            <select id="test-type" class="ax-form-select form-select-sm bg-dark text-white border-secondary">
               <option value="ttest_independent">{% trans "Bağımsız Örneklem t-Testi" %}</option>
               <option value="ttest_paired">{% trans "Bağımlı Örneklem t-Testi (Eşleştirilmiş)" %}</option>
               <option value="anova">{% trans "Tek Yönlü ANOVA" %}</option>
@@ -55,7 +54,7 @@
             <label class="text-white-50 small fw-semibold mb-1 d-block">
               {% trans "Grup Sayısı (k)" %} <span class="text-white-50 fw-normal">{% trans "— ANOVA için" %}</span>
             </label>
-            <input type="number" id="groups" class="form-control form-control-sm bg-dark text-white border-secondary"
+            <input type="number" id="groups" class="ax-form-control form-control-sm bg-dark text-white border-secondary"
                    value="3" min="2" max="20" step="1">
           </div>
 
@@ -66,11 +65,11 @@
               <span id="effect-label" class="text-warning fw-normal">(Cohen's d)</span>
             </label>
             <div class="d-flex gap-2 mb-2">
-              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.2">{% trans "Küçük" %}</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.5">{% trans "Orta" context "etki büyüklüğü" %}</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.8">{% trans "Büyük" %}</button>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm effect-preset" data-val="0.2">{% trans "Küçük" %}</button>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm effect-preset" data-val="0.5">{% trans "Orta" context "etki büyüklüğü" %}</button>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm effect-preset" data-val="0.8">{% trans "Büyük" %}</button>
             </div>
-            <input type="number" id="effect-size" class="form-control form-control-sm bg-dark text-white border-secondary"
+            <input type="number" id="effect-size" class="ax-form-control form-control-sm bg-dark text-white border-secondary"
                    value="0.5" min="0.01" max="2" step="0.01">
             <p id="effect-desc" class="text-white-50 small mt-1 mb-0">{% trans "Orta düzey etki — sosyal bilimler araştırmalarında en yaygın kullanılan değer." %}</p>
           </div>
@@ -81,11 +80,11 @@
               {% trans "Anlamlılık Düzeyi (α)" %}
             </label>
             <div class="d-flex gap-2 mb-2">
-              <button type="button" class="btn btn-sm btn-outline-secondary alpha-preset active" data-val="0.05">0.05</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary alpha-preset" data-val="0.01">0.01</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary alpha-preset" data-val="0.10">0.10</button>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm alpha-preset active" data-val="0.05">0.05</button>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm alpha-preset" data-val="0.01">0.01</button>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm alpha-preset" data-val="0.10">0.10</button>
             </div>
-            <input type="number" id="alpha" class="form-control form-control-sm bg-dark text-white border-secondary"
+            <input type="number" id="alpha" class="ax-form-control form-control-sm bg-dark text-white border-secondary"
                    value="0.05" min="0.001" max="0.20" step="0.001">
           </div>
 
@@ -95,11 +94,11 @@
               {% trans "İstatistiksel Güç (1−β)" %}
             </label>
             <div class="d-flex gap-2 mb-2">
-              <button type="button" class="btn btn-sm btn-outline-secondary power-preset active" data-val="0.80">0.80</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary power-preset" data-val="0.90">0.90</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary power-preset" data-val="0.95">0.95</button>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm power-preset active" data-val="0.80">0.80</button>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm power-preset" data-val="0.90">0.90</button>
+              <button type="button" class="ax-btn ax-btn--ghost ax-btn--sm power-preset" data-val="0.95">0.95</button>
             </div>
-            <input type="number" id="power" class="form-control form-control-sm bg-dark text-white border-secondary"
+            <input type="number" id="power" class="ax-form-control form-control-sm bg-dark text-white border-secondary"
                    value="0.80" min="0.50" max="0.99" step="0.01">
           </div>
 
@@ -109,22 +108,20 @@
               {% trans "Elde Edilmiş Örneklem Büyüklüğü (n)" %}
               <span class="text-white-50 fw-normal" id="n-hint">— {% trans "grup başına" %}</span>
             </label>
-            <input type="number" id="n-input" class="form-control form-control-sm bg-dark text-white border-secondary"
+            <input type="number" id="n-input" class="ax-form-control form-control-sm bg-dark text-white border-secondary"
                    value="30" min="2" max="100000" step="1">
           </div>
 
-          <button id="calc-btn" class="btn btn-warning w-100 fw-semibold">
+          <button id="calc-btn" class="ax-btn ax-btn--warning w-100 fw-semibold">
             <i class="bi bi-calculator me-2"></i><span id="calc-btn-label">{% trans "Hesapla" %}</span>
           </button>
-          <div id="calc-error" class="alert alert-danger mt-3 d-none small"></div>
-        </div>
+          <div id="calc-error" class="ax-alert ax-alert--danger mt-3 d-none small"></div>
       </div>
     </div>
 
     {# ── Sağ: Sonuç paneli ── #}
     <div class="col-lg-7">
-      <div class="card border-secondary h-100" style="background-color:#16213e;">
-        <div class="card-body p-4">
+      <div class="ax-card border-secondary h-100 p-4" style="background-color:#16213e;">
 
           {# Boş durum #}
           <div id="result-idle">
@@ -188,13 +185,12 @@
             <div class="rounded-3 p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
               <p class="text-white-50 small mb-2 fw-semibold">{% trans "APA Formatında Raporlama" %}</p>
               <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
-              <button class="btn btn-sm btn-outline-secondary" onclick="copyApa(this)" style="font-size:0.75rem;">
+              <button class="ax-btn ax-btn--ghost ax-btn--sm" onclick="copyApa(this)" style="font-size:0.75rem;">
                 <i class="bi bi-clipboard me-1"></i>{% trans "Kopyala" %}
               </button>
             </div>
           </div>
 
-        </div>
       </div>
     </div>
   </div>
@@ -312,8 +308,8 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
     currentMode = this.dataset.mode;
     document.querySelectorAll('.mode-btn').forEach(b => {
       b.classList.toggle('active', b === this);
-      b.classList.toggle('btn-warning', b === this);
-      b.classList.toggle('btn-outline-secondary', b !== this);
+      b.classList.toggle('ax-btn--warning', b === this);
+      b.classList.toggle('ax-btn--ghost', b !== this);
     });
     const isPostHoc = currentMode === 'post_hoc';
     document.getElementById('mode-desc-a-priori').classList.toggle('d-none', isPostHoc);
@@ -427,12 +423,12 @@ function copyApa(btn) {
   navigator.clipboard.writeText(text).then(() => {
     const orig = btn.innerHTML;
     btn.innerHTML = '<i class="bi bi-check me-1"></i>' + T.s12;
-    btn.classList.add('btn-success');
-    btn.classList.remove('btn-outline-secondary');
+    btn.classList.add('ax-btn--success');
+    btn.classList.remove('ax-btn--ghost');
     setTimeout(() => {
       btn.innerHTML = orig;
-      btn.classList.remove('btn-success');
-      btn.classList.add('btn-outline-secondary');
+      btn.classList.remove('ax-btn--success');
+      btn.classList.add('ax-btn--ghost');
     }, 2000);
   });
 }

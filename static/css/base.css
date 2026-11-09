@@ -340,6 +340,17 @@
     color: var(--ax-accent-danger);
 }
 
+.ax-btn--outline-success {
+    /* Bootstrap'ın btn-outline-success karşılığı — ax-btn--outline-danger ile aynı formül */
+    background-color: transparent;
+    color: var(--ax-accent-secondary);
+    border-color: var(--ax-accent-secondary);
+}
+.ax-btn--outline-success:hover {
+    background-color: color-mix(in srgb, var(--ax-accent-secondary) 10%, transparent);
+    color: var(--ax-accent-secondary);
+}
+
 .ax-btn--danger {
     background-color: var(--ax-accent-danger);
     color: #ffffff;
@@ -408,6 +419,15 @@
 .ax-btn--lg {
     padding: var(--ax-space-3) var(--ax-space-8);
     font-size: var(--ax-text-base);
+}
+
+/* Bootstrap'ın jenerik `.btn.active` basılı/seçili görünümüne karşılık —
+   renk değiştirmeden aynı varyant içinde "seçili" durumu göstermek için
+   (ör. preset buton grupları). Yeni renk icat etmeden var olan nötr
+   token'lar tekrarlanır. */
+.ax-btn.active {
+    background-color: var(--ax-bg-tertiary);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
 /* -------------------------------------------------------------
@@ -551,6 +571,12 @@
        adına rağmen mor/primary renkli, cyan için ayrı varyant gerekiyor. */
     background-color: rgba(6, 182, 212, 0.1);
     border-color: var(--ax-accent-info);
+}
+.ax-alert--neutral {
+    /* Bootstrap'ın alert-secondary karşılığı — ax-badge--neutral/ax-btn--neutral
+       ile aynı nötr token formülü (vurgusuz bilgi kutusu). */
+    background-color: var(--ax-bg-tertiary);
+    border-color: var(--ax-border-default);
 }
 
 /* İçindeki link, varsayılan tarayıcı/Bootstrap mavisi yerine kutunun kendi

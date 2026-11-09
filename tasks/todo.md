@@ -5924,6 +5924,32 @@ ile aynı formül, blog beğeni butonu için). `bundle.css` yeniden üretildi,
 `base.html` `?v=0020`.
 110/110 forum + 160/160 bibliometrics pytest yeşil. Faz 4-5 henüz başlamadı.
 
+**9 Kasım 2026:** `lineer_regresyon.html` + `lojistik_regresyon.html` +
+`ki_kare.html` + `mann_whitney.html` + `karar_agaci.html` +
+`kruskal_wallis.html` + `svm.html` + `orneklem.html` migre edildi
+(**istatistik araçlarının TAMAMI — 46 dosyaya çıktı**) — `lojistik_regresyon
+.html`'de `.ax-btn--outline-success`, `svm.html`'de `.ax-alert--neutral`,
+`orneklem.html`'de `.ax-btn.active` (Bootstrap'ın jenerik basılı/seçili
+görünümü karşılığı — preset butonlarının "hangisi seçili" göstergesi
+kayboluyordu) eklendi, `bundle.css` yeniden üretildi (`?v=0023`). `btn
+btn-link` butonu (Tümünü Seç/Kaldır) 4 dosyada ertelendi.
+`tableau_dashboard.html` (47. dosya) kısmi migre edildi — 4× `card`+
+`card-body` (sekme araç çubukları) + içindeki butonlar `nav-tabs`'a kenetli
+görünüm nedeniyle ertelendi, yeni CSS gerekmedi.
+`oaipmh/landing.html` (48. dosya) kısmi migre edildi — 2 kart safe-merge,
+2 card-header'lı kart ertelendi, yeni CSS gerekmedi.
+`yoktez/landing.html` (49. dosya) kısmi migre edildi — aynı desen, 3
+card-header'lı kart ertelendi.
+`trdizin/landing.html` (50. dosya) kısmi migre edildi — aynı desen, 2
+card-header'lı kart (JS query-builder dahil) ertelendi.
+
+**"Orta" grup TAMAMEN BİTTİ.** Sırada yalnız "Ağır (20-48)" grubu kaldı:
+`semanticscholar/landing.html`(21)/`makaleanaliz/results.html`(22)/
+`tezanaliz/results.html`(22)/`tezanaliz/landing.html`(24)/
+`send_message.html`(26)/`uzman_dizini.html`(26)/`openalex/landing.html`(27)/
+`bibliometrics/landing.html`(29)/`studyroom_detail.html`(36)/
+`market/job_detail.html`(48 — en ağır).
+
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
 ediyor — Lighthouse'un "kullanılmayan CSS 111 KiB / kullanılmayan JS 164 KiB"
@@ -6095,11 +6121,133 @@ alt bileşen eksikliği hem de JS'in (`el.closest('.card')`) bu kartı tam
 olarak `.card` sınıfından bulması nedeniyle dokunulmadı; `progress`/
 `progress-bar` takip edilen envanterde değil, dokunulmadı; 110/110 pytest,
 canlı HTML div dengesi doğrulandı),
-çoğu istatistik aracı
-(`lineer_regresyon`, `lojistik_regresyon`, `kruskal_wallis`,
-`mann_whitney`, `karar_agaci`, `ki_kare`, `svm`, `orneklem`),
-`tableau_dashboard.html`, `oaipmh/landing.html`, `trdizin/landing.html`,
-`yoktez/landing.html`
+~~`lineer_regresyon.html`~~ (✅ 9 Kasım — 2× tek `card`+`card-body` (header/
+footer yok) tek `ax-card`'a indirgendi (sol panel yükleme + sağ panel
+sonuçlar), `badge bg-secondary`→`ax-badge ax-badge--neutral`, 3×`alert-danger`→
+`ax-alert--danger`, `form-select`→`ax-form-select` (`form-select-sm` Bootstrap
+modifier'ının ax- karşılığı yok, zararsız kaldı), 6 buton `ax-btn--ghost`/
+`ax-btn--outline-danger`/`ax-btn--outline-primary` + `ax-btn--sm` ailesine
+taşındı, JS'teki dinamik checkbox `form-check-input`→`ax-form-check-input`
+(`form-check`/`form-check-label` diğer migre dosyalarla aynı şekilde
+dokunulmadı); **"Tümünü Seç/Kaldır" `btn btn-link` butonu ertelendi** — ax-btn
+ailesinde link-stili bir varyant yok, yeni bileşen kararı gerektiriyor; yeni
+CSS gerekmedi, canlı HTML (force_login test client) div dengesi + sınıf
+sayımı doğrulandı — istatistik app'inde gerçek pytest testi yok
+(`istatistik/tests.py` 3 satır boş)),
+~~`lojistik_regresyon.html`~~ (✅ 9 Kasım — `lineer_regresyon.html` ile birebir
+aynı desen: 2× tek `card`+`card-body`→`ax-card`, `badge`→`ax-badge--neutral`,
+3×`alert-danger`→`ax-alert--danger`, 2×`form-select`→`ax-form-select` (dep-col
++ hedef kategori), JS checkbox `form-check-input`→`ax-form-check-input`,
+5 buton `ax-btn--ghost`/`ax-btn--outline-danger`/`ax-btn--sm` ailesine;
+**yeni `.ax-btn--outline-success` eklendi** (`base.css`, `ax-btn--outline-danger`
+ile aynı formül, `--ax-accent-secondary` token'ı — Kopyala butonu
+`btn-outline-success` kullanıyordu, önceki dosyada hiç yoktu), `bundle.css`
+yeniden üretildi (`?v=0021`); "Tümünü Seç/Kaldır" `btn btn-link` yine
+ertelendi (aynı sebep); 110/110 forum pytest + force_login test client ile
+canlı HTML div dengesi + sınıf sayımı doğrulandı),
+~~`ki_kare.html`~~ (✅ 9 Kasım — bu dosyada `form-check`/`btn-link` hiç yoktu,
+en sade örnek: 2× tek `card`+`card-body`→`ax-card`, `badge`→`ax-badge--neutral`,
+3×`alert-danger`/1×`alert-warning`→`ax-alert--danger`/`--warning` (var olan
+varyant), 2×`form-select`→`ax-form-select`, 7 buton `ax-btn--ghost`/
+`ax-btn--outline-light`/`ax-btn--sm` ailesine (`ax-btn--outline-light` zaten
+vardı, yeni CSS gerekmedi); **JS'teki `classList.add/remove('btn-success')`
+(Kopyala onay animasyonu) `ax-btn--success`'e güncellendi** — güncellenmeseydi
+Bootstrap'ın `.btn-success` rengi CDN hâlâ yüklü olduğu için görünmeye devam
+ederdi ama `ax-btn--ghost` ile çakışıp tutarsız olurdu (blog_detail.html'deki
+`toggleLike()` emsaliyle aynı ders); 110/110 forum pytest, force_login test
+client ile canlı HTML div dengesi + sınıf sayımı doğrulandı),
+~~`mann_whitney.html`~~ (✅ 9 Kasım — aynı desen, bu sefer `btn-warning` solid
+renk kullanıyordu (`ax-btn--warning` zaten var): 2× tek `card`+`card-body`→
+`ax-card`, `badge`→`ax-badge--neutral`, 3×`alert-danger`→`ax-alert--danger`,
+2×`form-select`→`ax-form-select`, 7 buton `ax-btn--warning`/`ax-btn--ghost`/
+`ax-btn--outline-light`/`ax-btn--sm` ailesine; JS'teki `classList.add/remove
+('btn-success')` (Kopyala onayı) yine `ax-btn--success`'e güncellendi; yeni
+CSS gerekmedi; 110/110 forum pytest, force_login test client ile canlı HTML
+div dengesi + sınıf sayımı doğrulandı),
+~~`karar_agaci.html`~~ (✅ 9 Kasım — `lineer_regresyon.html` deseni + model
+hiperparametre kontrolleri (`form-range` kapsam dışı, dokunulmadı): 2× tek
+`card`+`card-body`→`ax-card`, `badge`→`ax-badge--neutral`, 3×`alert-danger`/
+1×`alert-warning`→`ax-alert`, 3×`form-select`→`ax-form-select`, 5 buton
+`ax-btn--ghost`/`ax-btn--outline-danger`/`ax-btn--sm` ailesine, JS checkbox
+`form-check-input`→`ax-form-check-input`; "Tümünü Seç/Kaldır" `btn btn-link`
+yine ertelendi; yeni CSS gerekmedi; 110/110 forum pytest, force_login test
+client ile canlı HTML div dengesi + sınıf sayımı doğrulandı),
+~~`kruskal_wallis.html`~~ (✅ 9 Kasım — `ki_kare.html` deseni, solid `btn-info`
+(`ax-btn--info` zaten var): 2× tek `card`+`card-body`→`ax-card`, `badge`→
+`ax-badge--neutral`, 2×`alert-danger`/1×`alert-warning`→`ax-alert`,
+2×`form-select`→`ax-form-select`, 7 buton `ax-btn--info`/`ax-btn--ghost`/
+`ax-btn--outline-light`/`ax-btn--sm` ailesine; JS `classList.add/remove
+('btn-success')` yine `ax-btn--success`'e güncellendi; yeni CSS gerekmedi;
+110/110 forum pytest, force_login test client ile canlı HTML div dengesi +
+sınıf sayımı doğrulandı),
+~~`svm.html`~~ (✅ 9 Kasım — `lineer_regresyon.html`/`karar_agaci.html` deseni
++ model hiperparametreleri (`form-range` kapsam dışı): 2× tek `card`+
+`card-body`→`ax-card`, `badge`→`ax-badge--neutral`, 2×`alert-danger`/
+1×`alert-warning`→`ax-alert`, 3×`form-select`→`ax-form-select`, JS checkbox
+`form-check-input`→`ax-form-check-input`, 5 buton `ax-btn--ghost`/
+`ax-btn--outline-danger`/`ax-btn--sm` ailesine; **yeni `.ax-alert--neutral`
+eklendi** (`base.css`, Bootstrap'ın `alert-secondary` karşılığı —
+`ax-badge--neutral`/`ax-btn--neutral` ile aynı nötr token formülü, bu dosyada
+ilk kez karşılaşıldı), `bundle.css` yeniden üretildi (`?v=0022`); "Tümünü
+Seç/Kaldır" `btn btn-link` yine ertelendi; 110/110 forum pytest, force_login
+test client ile canlı HTML div dengesi + sınıf sayımı doğrulandı),
+~~`orneklem.html`~~ (✅ 9 Kasım — en büyüğü (59 class), tek dosya upload
+akışı yok (G*Power benzeri eşzamanlı hesaplayıcı, anonime de açık): 2× tek
+`card`+`card-body`→`ax-card`, 1×`form-select`→`ax-form-select`,
+5×`form-control`→`ax-form-control`, 1×`alert-danger`→`ax-alert--danger`,
+13 buton `ax-btn` ailesine; **yeni `.ax-btn.active` eklendi** (`base.css`) —
+mod/alfa/güç preset butonları Bootstrap'ın jenerik `.btn.active` basılı
+görünümüne (generic pressed box-shadow, renk değişmeden) dayanıyordu, `btn`
+sınıfı kaldırılınca bu seçici artık eşleşmeyip "hangi preset seçili"
+görsel ipucu tamamen kaybolurdu (gerçek fonksiyonel regresyon, kozmetik
+sapma değil) — `ax-badge--neutral` ile aynı nötr token + hafif inset shadow
+formülüyle çözüldü; **JS'teki `classList.toggle('btn-warning'/'btn-outline-
+secondary', ...)` (mode-btn tam renk değişimi) ve `classList.add/remove
+('btn-success'/'btn-outline-secondary')` (Kopyala onayı) `ax-btn--warning`/
+`ax-btn--ghost`/`ax-btn--success`'e güncellendi** (JS mantığı değişmedi,
+yalnız sınıf isimleri); `bundle.css` yeniden üretildi (`?v=0023`); 110/110
+forum pytest, hem anonim hem force_login test client ile canlı HTML div
+dengesi + sınıf sayımı doğrulandı — **istatistik araçlarının TAMAMI migre
+edildi (20/20)**),
+~~`tableau_dashboard.html`~~ (✅ 9 Kasım, kısmi — 1×`alert`→`ax-alert`
+(hiç varyant yoktu, renk tamamen `border-warning`/`bg-dark` utility'lerinden
++ inline stilden geliyordu, sade taşındı), 1×`badge`→`ax-badge` (tamamen
+inline renkli, varyantsız), 2×`btn`→`ax-btn` (ikisi de serbest, kart içinde
+değil); **4× `card`+`card-body` (her Tableau sekmesinin "tam ekranda aç"
+araç çubuğu) + içindeki 4× `btn btn-sm btn-outline-secondary` ertelendi** —
+Bootstrap `nav-tabs`/`tab-pane`/`data-bs-toggle="tab"` (my_jobs.html'deki
+`.ax-tab` eksikliğiyle aynı kategori, kapsam dışı) hemen üstünde, `rounded-0
+rounded-bottom border-top-0` ile sekme şeridine "kenetli" görünüyor —
+`ax-card`'ın kendi gradient arka planı + box-shadow + hover'da `translateY(-5px)`
+kaldırma efekti bu kenetli görünümü bozar ve statik bir araç çubuğunu yanlışlıkla
+tıklanabilir kart gibi gösterir; 110/110 forum pytest, oturumsuz canlı HTML'de
+sınıf sayımı doğrulandı),
+~~`oaipmh/landing.html`~~ (✅ 9 Kasım, kısmi — tarama ailesinin ortak yapısı:
+2× tek `card`+`card-body` (header yok, ana başlık kutusu + durum/yükleniyor
+kutusu) → `ax-card`, 2× `alert-warning` (varyantsız e-posta doğrulama uyarısı
++ arama hata kutusu) → `ax-alert`, 1 buton (İptal Et) → `ax-btn--outline-
+danger`/`--sm`; **2× `card`+`card-header`+`card-body` ("Üniversitenin Tüm
+Tezleri" formu + "Sonuçlar" paneli, 3 iç buton dahil) ertelendi** —
+card-header alt bileşeni hâlâ yok, aynı kategori; `card-title`/`card-text`
+(salt margin utility, görsel kimlik taşımıyor) kasıtlı dokunulmadı; giriş
+gerektiriyor (anonim → `service_promo.html`), force_login test client ile
+doğrulandı, 110/110 forum pytest yeşil, yeni CSS gerekmedi),
+~~`trdizin/landing.html`~~ (✅ 9 Kasım, kısmi — oaipmh/yoktez ile birebir aynı
+desen, `feature_trdizin` flag'i lokalde kapalı (404) — test sırasında
+`SiteSettings` geçici `transaction.atomic()` rollback içinde açılarak
+doğrulandı; 2× card-header'lı kart (Arama Kriterleri formu — JS'in dinamik
+ürettiği `.form-select`/`.form-control`/`btn-danger` query-builder satırları
+dahil + Sonuçlar paneli) ertelendi, 2 güvenli kart + 4 alert migre edildi,
+1 buton (İptal) → `ax-btn--outline-danger`/`--sm`; 110/110 forum pytest
+yeşil, yeni CSS gerekmedi — **49→50. dosya, bu turun son adayı tamamlandı**),
+~~`yoktez/landing.html`~~ (✅ 9 Kasım, kısmi — oaipmh ile birebir aynı desen,
+bu kez 3× card-header'lı kart (arama kriterleri formu + "Son Aramalarım"
+geçmiş listesi + sonuçlar paneli) ertelendi, 2 güvenli kart (ana başlık +
+yükleniyor durumu) → `ax-card`, 5× `alert-danger`/`alert-warning`/
+`alert-info` (hepsi varyantsız/tek renk, mevcut varyantlar yeterli) →
+`ax-alert`, 1 buton (İptal) → `ax-btn--outline-danger`/`--sm`; giriş +
+e-posta doğrulama gerektiriyor, force_login + `Profile(email_verified=True)`
+ile doğrulandı, 110/110 forum pytest yeşil, yeni CSS gerekmedi)
 
 **Ağır (20-48) — en sona bırakılacak:** `semanticscholar/landing.html` (21),
 `makaleanaliz/results.html` (22), `tezanaliz/results.html` (22),
