@@ -421,6 +421,15 @@
     font-size: var(--ax-text-base);
 }
 
+/* Bootstrap'ın jenerik `.btn.active` basılı/seçili görünümüne karşılık —
+   renk değiştirmeden aynı varyant içinde "seçili" durumu göstermek için
+   (ör. preset buton grupları). Yeni renk icat etmeden var olan nötr
+   token'lar tekrarlanır. */
+.ax-btn.active {
+    background-color: var(--ax-bg-tertiary);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
 /* -------------------------------------------------------------
    4. CARD COMPONENT — Bootstrap .card ile çakışmaz
    ------------------------------------------------------------- */

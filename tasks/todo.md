@@ -5926,13 +5926,14 @@ ile aynı formül, blog beğeni butonu için). `bundle.css` yeniden üretildi,
 
 **9 Kasım 2026:** `lineer_regresyon.html` + `lojistik_regresyon.html` +
 `ki_kare.html` + `mann_whitney.html` + `karar_agaci.html` +
-`kruskal_wallis.html` + `svm.html` migre edildi (45 dosyaya çıktı) —
-`lojistik_regresyon.html`'de yeni `.ax-btn--outline-success`, `svm.html`'de
-yeni `.ax-alert--neutral` eklendi (`base.css`, ikisi de var olan formüllerin
-tekrarı), `bundle.css` yeniden üretildi (`?v=0022`). `btn btn-link` butonu
-(Tümünü Seç/Kaldır) 4 dosyada ertelendi (ax-btn ailesinde link-stili yok).
-Sırada: `orneklem` + `tableau_dashboard.html` + 3 landing (`oaipmh`/`trdizin`/
-`yoktez`).
+`kruskal_wallis.html` + `svm.html` + `orneklem.html` migre edildi
+(**istatistik araçlarının TAMAMI — 46 dosyaya çıktı**) — `lojistik_regresyon
+.html`'de `.ax-btn--outline-success`, `svm.html`'de `.ax-alert--neutral`,
+`orneklem.html`'de `.ax-btn.active` (Bootstrap'ın jenerik basılı/seçili
+görünümü karşılığı — preset butonlarının "hangisi seçili" göstergesi
+kayboluyordu) eklendi, `bundle.css` yeniden üretildi (`?v=0023`). `btn
+btn-link` butonu (Tümünü Seç/Kaldır) 4 dosyada ertelendi. Sırada:
+`tableau_dashboard.html` + 3 landing (`oaipmh`/`trdizin`/`yoktez`).
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -6175,8 +6176,24 @@ eklendi** (`base.css`, Bootstrap'ın `alert-secondary` karşılığı —
 ilk kez karşılaşıldı), `bundle.css` yeniden üretildi (`?v=0022`); "Tümünü
 Seç/Kaldır" `btn btn-link` yine ertelendi; 110/110 forum pytest, force_login
 test client ile canlı HTML div dengesi + sınıf sayımı doğrulandı),
-geri kalan istatistik araçları
-(`orneklem`),
+~~`orneklem.html`~~ (✅ 9 Kasım — en büyüğü (59 class), tek dosya upload
+akışı yok (G*Power benzeri eşzamanlı hesaplayıcı, anonime de açık): 2× tek
+`card`+`card-body`→`ax-card`, 1×`form-select`→`ax-form-select`,
+5×`form-control`→`ax-form-control`, 1×`alert-danger`→`ax-alert--danger`,
+13 buton `ax-btn` ailesine; **yeni `.ax-btn.active` eklendi** (`base.css`) —
+mod/alfa/güç preset butonları Bootstrap'ın jenerik `.btn.active` basılı
+görünümüne (generic pressed box-shadow, renk değişmeden) dayanıyordu, `btn`
+sınıfı kaldırılınca bu seçici artık eşleşmeyip "hangi preset seçili"
+görsel ipucu tamamen kaybolurdu (gerçek fonksiyonel regresyon, kozmetik
+sapma değil) — `ax-badge--neutral` ile aynı nötr token + hafif inset shadow
+formülüyle çözüldü; **JS'teki `classList.toggle('btn-warning'/'btn-outline-
+secondary', ...)` (mode-btn tam renk değişimi) ve `classList.add/remove
+('btn-success'/'btn-outline-secondary')` (Kopyala onayı) `ax-btn--warning`/
+`ax-btn--ghost`/`ax-btn--success`'e güncellendi** (JS mantığı değişmedi,
+yalnız sınıf isimleri); `bundle.css` yeniden üretildi (`?v=0023`); 110/110
+forum pytest, hem anonim hem force_login test client ile canlı HTML div
+dengesi + sınıf sayımı doğrulandı — **istatistik araçlarının TAMAMI migre
+edildi (20/20)**),
 `tableau_dashboard.html`, `oaipmh/landing.html`, `trdizin/landing.html`,
 `yoktez/landing.html`
 
