@@ -563,6 +563,12 @@
     background-color: rgba(6, 182, 212, 0.1);
     border-color: var(--ax-accent-info);
 }
+.ax-alert--neutral {
+    /* Bootstrap'ın alert-secondary karşılığı — ax-badge--neutral/ax-btn--neutral
+       ile aynı nötr token formülü (vurgusuz bilgi kutusu). */
+    background-color: var(--ax-bg-tertiary);
+    border-color: var(--ax-border-default);
+}
 
 /* İçindeki link, varsayılan tarayıcı/Bootstrap mavisi yerine kutunun kendi
    vurgu rengini alır (ör. yeşil ax-alert--success içinde mavi link çakışması). */
