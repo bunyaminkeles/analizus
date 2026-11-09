@@ -79,7 +79,7 @@ class DizinSearchJobProxyAdmin(GroupTabsMixin, ModelAdmin):
     group_tabs_list = GROUP1_TABS
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('id', 'user', 'get_query_summary', 'status', 'total_results', 'created_at')
+    list_display = ('id', 'user', 'get_query_summary', 'status', 'total_results', 'get_lucene_query_short', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('user__username', 'lucene_query')
     readonly_fields = ('id', 'created_at', 'completed_at', 'demo_results', 'all_results', 'demo_file_url', 'all_results_file_url')
@@ -87,6 +87,10 @@ class DizinSearchJobProxyAdmin(GroupTabsMixin, ModelAdmin):
     def get_query_summary(self, obj):
         return obj.get_query_summary()
     get_query_summary.short_description = "Sorgu Özeti"
+
+    def get_lucene_query_short(self, obj):
+        return (obj.lucene_query[:80] + '…') if len(obj.lucene_query) > 80 else obj.lucene_query
+    get_lucene_query_short.short_description = "Lucene Sorgusu"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

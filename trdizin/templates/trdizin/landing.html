@@ -49,6 +49,10 @@
                     <form id="dizin-form" method="post">
                         {% csrf_token %}
                         {{ form.query_parts_json }}
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Bir kutuya birden fazla kelime yazarsanız (örn. "finansal okuryazarlık"), bu kelimelerin TÜMÜNÜN aynı yayında geçmesi aranır — tam ifade olarak değil. Birden fazla kriter eklediğinizde <strong>OR</strong> farklı konuları ayrı ayrı arar; <strong>AND</strong> seçerseniz yalnızca o kriterlerin HEPSİNİN birlikte geçtiği (genelde çok daha az) sonuçlar gelir.
+                        </p>
                         <div id="query-builder"></div>
 
                         <div id="query-preview" class="query-preview mt-3" style="display:none;">
@@ -392,7 +396,7 @@ function createRule(isFirst = false) {
     if (!isFirst) {
         const sel = document.createElement('select');
         sel.className = 'form-select bg-dark text-white border-secondary operator-select';
-        sel.innerHTML = '<option value="AND">AND</option><option value="OR">OR</option>';
+        sel.innerHTML = '<option value="OR" selected>OR</option><option value="AND">AND</option>';
         sel.addEventListener('change', updateQueryPreview);
         operatorCol.appendChild(sel);
     }
