@@ -79,17 +79,19 @@ class DizinSearchJob(MonthlyToolLimitMixin, models.Model):
         self.save(update_fields=['status', 'error_message', 'completed_at'])
 
     def get_query_summary(self):
-        """Sorgu parçalarının kısa özeti"""
-        parts = []
-        for p in self.query_parts:
-            field_labels = {
-                'title': 'Başlık', 'abstract': 'Özet', 'author': 'Yazar',
-                'keyword': 'Anahtar Kelime', 'journal': 'Dergi', 'institution': 'Kurum',
-                'doi': 'DOI', 'year': 'Yıl', 'language': 'Dil',
-            }
+        """Sorgu parçalarının kısa özeti (operatör dahil — AND/OR teşhisi için)"""
+        field_labels = {
+            'title': 'Başlık', 'abstract': 'Özet', 'author': 'Yazar',
+            'keyword': 'Anahtar Kelime', 'journal': 'Dergi', 'institution': 'Kurum',
+            'doi': 'DOI', 'year': 'Yıl', 'language': 'Dil',
+        }
+        out = ''
+        for i, p in enumerate(self.query_parts):
             label = field_labels.get(p.get('field', ''), p.get('field', ''))
-            parts.append(f"{label}: {p.get('value', '')}")
-        return ' | '.join(parts)
+            if i > 0:
+                out += f" {p.get('operator') or 'AND'} "
+            out += f"{label}: {p.get('value', '')}"
+        return out
 
 
 class DizinOrder(models.Model):

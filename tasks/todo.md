@@ -803,6 +803,59 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(9 Kasım 2026 TAMAMLANDI) TR Dizin: çoklu kriter AND/OR belirsizliği 0 sonuca
+  yol açıyordu.** Kullanıcı admin ekran görüntüsüyle bildirdi: "Anahtar Kelime: kripto
+  varlık | Anahtar Kelime: finansal okuryazarlık" sorgusu 0 sonuç dönmüştü. TR Dizin
+  API'sine canlı sorgu atılarak doğrulandı — bug değil: ayrı ayrı 47 ve 102 sonuç,
+  satırlar arası varsayılan **AND** ile 0, **OR** ile 1334. Kök neden: `trdizin/
+  templates/trdizin/landing.html` query-builder'ında operatör dropdown'ının ilk/
+  varsayılan seçeneği AND'ti, kullanıcıya bu davranış hiç açıklanmıyordu; ayrıca
+  tek hücreye yazılan çok kelimeli ifadeler (`trdizin/services/scraper.py:101-109`)
+  tam öbek değil, kelime kelime AND'leniyordu. Düzeltme: dropdown varsayılanı OR
+  yapıldı, formun üstüne bu AND/OR + kelime-AND davranışını açıklayan bir yardım
+  metni eklendi (`landing.html`), admin'de `get_query_summary()` artık operatörü de
+  gösteriyor (`trdizin/models.py`) ve ham `lucene_query` listede görünür hale geldi
+  (`oaipmh/admin.py` — Dizin admin'i orada kayıtlı). Migration yok, `manage.py check`
+  + template derleme testi temiz. **Not:** lokal dev DB'de `feature_trdizin=False`
+  olduğu için formu tarayıcıda uçtan uca test edemedim (bu bayrak bu turla ilgisiz,
+  dokunulmadı).
+- [x] **(9 Kasım 2026 TAMAMLANDI) TR Dizin dışındaki tarama araçlarında da benzer/daha
+  ciddi AND/OR belirsizlikleri bulunup düzeltildi:**
+  - **openalex** (en ciddi bulgu): `openalex/templates/openalex/landing.html:271-276`'da
+    kullanıcıya AND/OR seçtiriliyordu ama `openalex/services/scraper.py.
+    build_api_params()` (42-107) bu seçimi **hiç okumuyordu** — seçim tamamen kozmetikti
+    (backend'de her zaman AND `filter=`, keyword'ler hep tek `search=` string'inde
+    birleşiyor). Düzeltme: API gerçekten OR'u desteklemediği için seçici kaldırılıp
+    salt-AND, devre dışı bir göstergeye çevrildi (`disabled`, tek `AND` seçeneği,
+    `title` ile açıklama), form üstüne gerçek davranışı anlatan bir not eklendi.
+  - **semanticscholar**: aynı desen — `landing.html:395-400`'de AND/OR seçici vardı,
+    `services/scraper.py.build_query()` (44-73) SS API'sinin tek `query` parametresi
+    aldığını belirtip (docstring 48-49) seçimi hiç kullanmıyordu. Aynı düzeltme
+    (seçici devre dışı + açıklayıcı not) uygulandı.
+  - **pubmed**: operatör seçici yoktu (zaten yanıltıcı seçim sunmuyordu) ama
+    `services/scraper.py.build_term()` (60-94) çok kelimeli değerleri tırnaksız
+    kelime kelime AND'liyordu (satır 85-91), bu hiçbir yerde açıklanmıyordu —
+    mevcut `pm-hint` metnine bu davranış eklendi.
+  - **yoktez**: farklı sınıfta bir belirsizlik — `services/scraper.py.
+    _determine_query()` (86-100), YÖK Tez arşivinin **kendisi** aynı anda yalnızca
+    tek alanda arama kabul ettiği için (teknik kısıt, bug değil) kullanıcı hem
+    "Tez Adı" hem "Özet/Metin" doldurursa yalnız `tez_ad` kullanılıp `metin`
+    sessizce yok sayılıyordu; şablonda bu öncelik hiç açıklanmıyordu. "Özet/Metin"
+    alanının altına bu kısıtı ve önceliği açıklayan bir not eklendi.
+  - **oaipmh**: risk yok/düşük, dokunulmadı (dinamik kriter yok, alan birleşimi
+    zaten AND olarak belgeli, substring/phrase eşleşmesi doğru çalışıyor).
+  - Dosyalar: `openalex/templates/openalex/landing.html`,
+    `semanticscholar/templates/semanticscholar/landing.html`,
+    `pubmed/templates/pubmed/landing.html`, `yoktez/templates/yoktez/landing.html`.
+    openalex/semanticscholar/pubmed i18n kapsamında olduğu için yeni/değişen 5 msgid
+    EN+DE `locale/` dosyalarına elle çevrilip `compilemessages` hatasız çalıştırıldı
+    (yoktez/trdizin Türkiye'ye özgü, i18n kapsamı dışı — hardcoded TR metin, mevcut
+    desenle tutarlı). **Ders:** `{% trans "...\"iç tırnak\"..." %}` kalıbı
+    `makemessages`'ta msgid'i kaçış karakterinde ortadan kesiyor (xgettext bug'ı) —
+    iç tırnak geçen metinlerde dış sınırlayıcıyı tek tırnağa (`{% trans '...' %}`)
+    çevirmek gerekiyor. Migration yok, `manage.py check` + tüm şablonlar derleme
+    testinden geçti; lokal `feature_trdizin=False` olduğu için formları tarayıcıda
+    uçtan uca test edemedim.
 - [x] **(8 Kasım 2026 TAMAMLANDI) home_intl.html'de "Uzman Arayan Projeler"
   vitrin bölümü eklendi.** Kök neden: `home()` view'ı `showcase_jobs`'u
   `language` filtresiz hesaplayıp hem `home.html` hem `home_intl.html`

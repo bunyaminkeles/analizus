@@ -52,6 +52,10 @@
                     <form id="semantic-form" method="post">
                         {% csrf_token %}
                         {{ form.query_parts_json }}
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-info-circle me-1"></i>
+                            {% blocktrans %}Semantic Scholar API, birden fazla kriter arasında AND/OR ayrımını desteklemiyor — eklediğiniz tüm kriterler tek bir genel arama ifadesinde birleştirilip ilgililiğe göre sıralanır.{% endblocktrans %}
+                        </p>
                         <div id="query-builder"></div>
 
                         <div id="query-preview" class="query-preview mt-3" style="display:none;">
@@ -397,8 +401,9 @@ function createRule(isFirst = false) {
     if (!isFirst) {
         const sel = document.createElement('select');
         sel.className = 'form-select bg-dark text-white border-secondary operator-select';
-        sel.innerHTML = '<option value="AND">AND</option><option value="OR">OR</option>';
-        sel.addEventListener('change', updateQueryPreview);
+        sel.disabled = true;
+        sel.title = '{% trans "Semantic Scholar API, kriterler arasında ayrı bir operatör desteklemiyor." %}';
+        sel.innerHTML = '<option value="AND">AND</option>';
         operatorCol.appendChild(sel);
     }
 
