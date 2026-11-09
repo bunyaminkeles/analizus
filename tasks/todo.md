@@ -5932,8 +5932,11 @@ ile aynı formül, blog beğeni butonu için). `bundle.css` yeniden üretildi,
 `orneklem.html`'de `.ax-btn.active` (Bootstrap'ın jenerik basılı/seçili
 görünümü karşılığı — preset butonlarının "hangisi seçili" göstergesi
 kayboluyordu) eklendi, `bundle.css` yeniden üretildi (`?v=0023`). `btn
-btn-link` butonu (Tümünü Seç/Kaldır) 4 dosyada ertelendi. Sırada:
-`tableau_dashboard.html` + 3 landing (`oaipmh`/`trdizin`/`yoktez`).
+btn-link` butonu (Tümünü Seç/Kaldır) 4 dosyada ertelendi.
+`tableau_dashboard.html` (47. dosya) kısmi migre edildi — 4× `card`+
+`card-body` (sekme araç çubukları) + içindeki butonlar `nav-tabs`'a kenetli
+görünüm nedeniyle ertelendi, yeni CSS gerekmedi. Sırada: 3 landing
+(`oaipmh`/`trdizin`/`yoktez`).
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -6194,7 +6197,19 @@ yalnız sınıf isimleri); `bundle.css` yeniden üretildi (`?v=0023`); 110/110
 forum pytest, hem anonim hem force_login test client ile canlı HTML div
 dengesi + sınıf sayımı doğrulandı — **istatistik araçlarının TAMAMI migre
 edildi (20/20)**),
-`tableau_dashboard.html`, `oaipmh/landing.html`, `trdizin/landing.html`,
+~~`tableau_dashboard.html`~~ (✅ 9 Kasım, kısmi — 1×`alert`→`ax-alert`
+(hiç varyant yoktu, renk tamamen `border-warning`/`bg-dark` utility'lerinden
++ inline stilden geliyordu, sade taşındı), 1×`badge`→`ax-badge` (tamamen
+inline renkli, varyantsız), 2×`btn`→`ax-btn` (ikisi de serbest, kart içinde
+değil); **4× `card`+`card-body` (her Tableau sekmesinin "tam ekranda aç"
+araç çubuğu) + içindeki 4× `btn btn-sm btn-outline-secondary` ertelendi** —
+Bootstrap `nav-tabs`/`tab-pane`/`data-bs-toggle="tab"` (my_jobs.html'deki
+`.ax-tab` eksikliğiyle aynı kategori, kapsam dışı) hemen üstünde, `rounded-0
+rounded-bottom border-top-0` ile sekme şeridine "kenetli" görünüyor —
+`ax-card`'ın kendi gradient arka planı + box-shadow + hover'da `translateY(-5px)`
+kaldırma efekti bu kenetli görünümü bozar ve statik bir araç çubuğunu yanlışlıkla
+tıklanabilir kart gibi gösterir; 110/110 forum pytest, oturumsuz canlı HTML'de
+sınıf sayımı doğrulandı), `oaipmh/landing.html`, `trdizin/landing.html`,
 `yoktez/landing.html`
 
 **Ağır (20-48) — en sona bırakılacak:** `semanticscholar/landing.html` (21),
