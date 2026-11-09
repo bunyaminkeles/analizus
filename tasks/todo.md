@@ -5939,7 +5939,16 @@ görünüm nedeniyle ertelendi, yeni CSS gerekmedi.
 `oaipmh/landing.html` (48. dosya) kısmi migre edildi — 2 kart safe-merge,
 2 card-header'lı kart ertelendi, yeni CSS gerekmedi.
 `yoktez/landing.html` (49. dosya) kısmi migre edildi — aynı desen, 3
-card-header'lı kart ertelendi. Sırada: `trdizin/landing.html`.
+card-header'lı kart ertelendi.
+`trdizin/landing.html` (50. dosya) kısmi migre edildi — aynı desen, 2
+card-header'lı kart (JS query-builder dahil) ertelendi.
+
+**"Orta" grup TAMAMEN BİTTİ.** Sırada yalnız "Ağır (20-48)" grubu kaldı:
+`semanticscholar/landing.html`(21)/`makaleanaliz/results.html`(22)/
+`tezanaliz/results.html`(22)/`tezanaliz/landing.html`(24)/
+`send_message.html`(26)/`uzman_dizini.html`(26)/`openalex/landing.html`(27)/
+`bibliometrics/landing.html`(29)/`studyroom_detail.html`(36)/
+`market/job_detail.html`(48 — en ağır).
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -6223,7 +6232,14 @@ card-header alt bileşeni hâlâ yok, aynı kategori; `card-title`/`card-text`
 (salt margin utility, görsel kimlik taşımıyor) kasıtlı dokunulmadı; giriş
 gerektiriyor (anonim → `service_promo.html`), force_login test client ile
 doğrulandı, 110/110 forum pytest yeşil, yeni CSS gerekmedi),
-`trdizin/landing.html`,
+~~`trdizin/landing.html`~~ (✅ 9 Kasım, kısmi — oaipmh/yoktez ile birebir aynı
+desen, `feature_trdizin` flag'i lokalde kapalı (404) — test sırasında
+`SiteSettings` geçici `transaction.atomic()` rollback içinde açılarak
+doğrulandı; 2× card-header'lı kart (Arama Kriterleri formu — JS'in dinamik
+ürettiği `.form-select`/`.form-control`/`btn-danger` query-builder satırları
+dahil + Sonuçlar paneli) ertelendi, 2 güvenli kart + 4 alert migre edildi,
+1 buton (İptal) → `ax-btn--outline-danger`/`--sm`; 110/110 forum pytest
+yeşil, yeni CSS gerekmedi — **49→50. dosya, bu turun son adayı tamamlandı**),
 ~~`yoktez/landing.html`~~ (✅ 9 Kasım, kısmi — oaipmh ile birebir aynı desen,
 bu kez 3× card-header'lı kart (arama kriterleri formu + "Son Aramalarım"
 geçmiş listesi + sonuçlar paneli) ertelendi, 2 güvenli kart (ana başlık +
