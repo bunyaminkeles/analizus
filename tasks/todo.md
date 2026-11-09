@@ -5924,10 +5924,13 @@ ile aynı formül, blog beğeni butonu için). `bundle.css` yeniden üretildi,
 `base.html` `?v=0020`.
 110/110 forum + 160/160 bibliometrics pytest yeşil. Faz 4-5 henüz başlamadı.
 
-**9 Kasım 2026:** `lineer_regresyon.html` migre edildi (39 dosyaya çıktı) —
-yeni CSS gerekmedi, var olan formüller yeniden kullanıldı; `btn btn-link`
-butonu (Tümünü Seç/Kaldır) ertelendi (yeni varyant kararı gerekiyor). Sırada:
-`lojistik_regresyon`/`kruskal_wallis`/`mann_whitney`/`karar_agaci`/`ki_kare`/
+**9 Kasım 2026:** `lineer_regresyon.html` + `lojistik_regresyon.html` migre
+edildi (40 dosyaya çıktı) — ikinci dosyada yeni `.ax-btn--outline-success`
+eklendi (`base.css`, var olan outline formülü tekrarı), `bundle.css`
+yeniden üretildi (`?v=0021`). Her iki dosyada da `btn btn-link` butonu
+(Tümünü Seç/Kaldır) ertelendi (yeni varyant kararı gerekiyor — ax-btn
+ailesinde link-stili yok). Sırada:
+`kruskal_wallis`/`mann_whitney`/`karar_agaci`/`ki_kare`/
 `svm`/`orneklem` + `tableau_dashboard.html` + 3 landing (`oaipmh`/`trdizin`/
 `yoktez`).
 
@@ -6115,8 +6118,19 @@ ailesinde link-stili bir varyant yok, yeni bileşen kararı gerektiriyor; yeni
 CSS gerekmedi, canlı HTML (force_login test client) div dengesi + sınıf
 sayımı doğrulandı — istatistik app'inde gerçek pytest testi yok
 (`istatistik/tests.py` 3 satır boş)),
+~~`lojistik_regresyon.html`~~ (✅ 9 Kasım — `lineer_regresyon.html` ile birebir
+aynı desen: 2× tek `card`+`card-body`→`ax-card`, `badge`→`ax-badge--neutral`,
+3×`alert-danger`→`ax-alert--danger`, 2×`form-select`→`ax-form-select` (dep-col
++ hedef kategori), JS checkbox `form-check-input`→`ax-form-check-input`,
+5 buton `ax-btn--ghost`/`ax-btn--outline-danger`/`ax-btn--sm` ailesine;
+**yeni `.ax-btn--outline-success` eklendi** (`base.css`, `ax-btn--outline-danger`
+ile aynı formül, `--ax-accent-secondary` token'ı — Kopyala butonu
+`btn-outline-success` kullanıyordu, önceki dosyada hiç yoktu), `bundle.css`
+yeniden üretildi (`?v=0021`); "Tümünü Seç/Kaldır" `btn btn-link` yine
+ertelendi (aynı sebep); 110/110 forum pytest + force_login test client ile
+canlı HTML div dengesi + sınıf sayımı doğrulandı),
 geri kalan istatistik araçları
-(`lojistik_regresyon`, `kruskal_wallis`,
+(`kruskal_wallis`,
 `mann_whitney`, `karar_agaci`, `ki_kare`, `svm`, `orneklem`),
 `tableau_dashboard.html`, `oaipmh/landing.html`, `trdizin/landing.html`,
 `yoktez/landing.html`
