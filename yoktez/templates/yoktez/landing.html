@@ -14,8 +14,7 @@
     <div class="row">
         <div class="col-lg-8 offset-lg-2">
 
-            <div class="card bg-dark border-secondary text-white mb-4">
-                <div class="card-body d-flex justify-content-between align-items-start">
+            <div class="ax-card bg-dark border-secondary text-white mb-4 d-flex justify-content-between align-items-start">
                     <div>
                         <h1 class="card-title h3 mb-2">
                             <i class="bi bi-mortarboard-fill me-2 text-success"></i>YÖK Tez Arama ve Toplu Tez Tarama
@@ -27,15 +26,14 @@
                             Bu ay <strong>{{ daily_limit }}</strong> ücretsiz arama hakkınız var — Kalan ücretsiz hakkınız: <strong>{{ remaining }}</strong>
                         </p>
                     </div>
-                </div>
             </div>
 
             {% if error %}
-            <div class="alert alert-danger">{{ error }}</div>
+            <div class="ax-alert ax-alert--danger">{{ error }}</div>
             {% endif %}
 
             {% if job_expired %}
-            <div class="alert alert-warning">
+            <div class="ax-alert ax-alert--warning">
                 <i class="bi bi-clock-history me-2"></i>
                 Bu e-posta/bildirimdeki arama sonucuna artık erişilemiyor — 3 günlük erişim süresi doldu ve sonuçlar
                 otomatik olarak silindi. Aşağıdan yeni bir arama yapabilirsiniz.
@@ -43,7 +41,7 @@
             {% endif %}
 
             {% if not request.user.profile.email_verified %}
-            <div class="alert alert-warning">
+            <div class="ax-alert ax-alert--warning">
                 <i class="bi bi-envelope-exclamation me-2"></i>
                 Bu aracı kullanabilmek için e-posta adresinizi doğrulamanız gerekmektedir.
             </div>
@@ -107,24 +105,22 @@
             </div>
             {% endif %}
 
-            <div id="search-error-box" class="alert alert-warning mb-3" style="display:none;"></div>
+            <div id="search-error-box" class="ax-alert ax-alert--warning mb-3" style="display:none;"></div>
 
             <!-- Devam eden tarama banner -->
-            <div id="resume-banner" style="display:none;" class="alert alert-info mb-3">
+            <div id="resume-banner" style="display:none;" class="ax-alert ax-alert--info mb-3">
                 <i class="bi bi-arrow-repeat me-2"></i>
                 Devam eden bir tarama var. Sonuçlar hazır olduğunda burada görünecek.
             </div>
 
             <!-- Yükleniyor -->
             <div id="status-area" style="display:none;" class="mb-3">
-                <div class="card bg-dark border-secondary text-white">
-                    <div class="card-body text-center py-4">
+                <div class="ax-card bg-dark border-secondary text-white text-center py-4">
                         <div class="spinner-border text-warning mb-3" role="status"></div>
                         <p id="status-msg" class="mb-2">YÖK Tez sunucusundan veri çekiliyor, lütfen bekleyin...</p>
-                        <button id="cancel-btn" class="btn btn-sm btn-outline-danger" onclick="cancelJob()">
+                        <button id="cancel-btn" class="ax-btn ax-btn--outline-danger ax-btn--sm" onclick="cancelJob()">
                             <i class="bi bi-x-circle me-1"></i>İptal
                         </button>
-                    </div>
                 </div>
             </div>
 

@@ -5937,8 +5937,9 @@ btn-link` butonu (Tümünü Seç/Kaldır) 4 dosyada ertelendi.
 `card-body` (sekme araç çubukları) + içindeki butonlar `nav-tabs`'a kenetli
 görünüm nedeniyle ertelendi, yeni CSS gerekmedi.
 `oaipmh/landing.html` (48. dosya) kısmi migre edildi — 2 kart safe-merge,
-2 card-header'lı kart ertelendi, yeni CSS gerekmedi. Sırada: `trdizin`/
-`yoktez` landing.
+2 card-header'lı kart ertelendi, yeni CSS gerekmedi.
+`yoktez/landing.html` (49. dosya) kısmi migre edildi — aynı desen, 3
+card-header'lı kart ertelendi. Sırada: `trdizin/landing.html`.
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -6223,7 +6224,14 @@ card-header alt bileşeni hâlâ yok, aynı kategori; `card-title`/`card-text`
 gerektiriyor (anonim → `service_promo.html`), force_login test client ile
 doğrulandı, 110/110 forum pytest yeşil, yeni CSS gerekmedi),
 `trdizin/landing.html`,
-`yoktez/landing.html`
+~~`yoktez/landing.html`~~ (✅ 9 Kasım, kısmi — oaipmh ile birebir aynı desen,
+bu kez 3× card-header'lı kart (arama kriterleri formu + "Son Aramalarım"
+geçmiş listesi + sonuçlar paneli) ertelendi, 2 güvenli kart (ana başlık +
+yükleniyor durumu) → `ax-card`, 5× `alert-danger`/`alert-warning`/
+`alert-info` (hepsi varyantsız/tek renk, mevcut varyantlar yeterli) →
+`ax-alert`, 1 buton (İptal) → `ax-btn--outline-danger`/`--sm`; giriş +
+e-posta doğrulama gerektiriyor, force_login + `Profile(email_verified=True)`
+ile doğrulandı, 110/110 forum pytest yeşil, yeni CSS gerekmedi)
 
 **Ağır (20-48) — en sona bırakılacak:** `semanticscholar/landing.html` (21),
 `makaleanaliz/results.html` (22), `tezanaliz/results.html` (22),
