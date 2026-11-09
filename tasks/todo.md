@@ -5924,6 +5924,13 @@ ile aynı formül, blog beğeni butonu için). `bundle.css` yeniden üretildi,
 `base.html` `?v=0020`.
 110/110 forum + 160/160 bibliometrics pytest yeşil. Faz 4-5 henüz başlamadı.
 
+**9 Kasım 2026:** `lineer_regresyon.html` migre edildi (39 dosyaya çıktı) —
+yeni CSS gerekmedi, var olan formüller yeniden kullanıldı; `btn btn-link`
+butonu (Tümünü Seç/Kaldır) ertelendi (yeni varyant kararı gerekiyor). Sırada:
+`lojistik_regresyon`/`kruskal_wallis`/`mann_whitney`/`karar_agaci`/`ki_kare`/
+`svm`/`orneklem` + `tableau_dashboard.html` + 3 landing (`oaipmh`/`trdizin`/
+`yoktez`).
+
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
 ediyor — Lighthouse'un "kullanılmayan CSS 111 KiB / kullanılmayan JS 164 KiB"
@@ -6095,8 +6102,21 @@ alt bileşen eksikliği hem de JS'in (`el.closest('.card')`) bu kartı tam
 olarak `.card` sınıfından bulması nedeniyle dokunulmadı; `progress`/
 `progress-bar` takip edilen envanterde değil, dokunulmadı; 110/110 pytest,
 canlı HTML div dengesi doğrulandı),
-çoğu istatistik aracı
-(`lineer_regresyon`, `lojistik_regresyon`, `kruskal_wallis`,
+~~`lineer_regresyon.html`~~ (✅ 9 Kasım — 2× tek `card`+`card-body` (header/
+footer yok) tek `ax-card`'a indirgendi (sol panel yükleme + sağ panel
+sonuçlar), `badge bg-secondary`→`ax-badge ax-badge--neutral`, 3×`alert-danger`→
+`ax-alert--danger`, `form-select`→`ax-form-select` (`form-select-sm` Bootstrap
+modifier'ının ax- karşılığı yok, zararsız kaldı), 6 buton `ax-btn--ghost`/
+`ax-btn--outline-danger`/`ax-btn--outline-primary` + `ax-btn--sm` ailesine
+taşındı, JS'teki dinamik checkbox `form-check-input`→`ax-form-check-input`
+(`form-check`/`form-check-label` diğer migre dosyalarla aynı şekilde
+dokunulmadı); **"Tümünü Seç/Kaldır" `btn btn-link` butonu ertelendi** — ax-btn
+ailesinde link-stili bir varyant yok, yeni bileşen kararı gerektiriyor; yeni
+CSS gerekmedi, canlı HTML (force_login test client) div dengesi + sınıf
+sayımı doğrulandı — istatistik app'inde gerçek pytest testi yok
+(`istatistik/tests.py` 3 satır boş)),
+geri kalan istatistik araçları
+(`lojistik_regresyon`, `kruskal_wallis`,
 `mann_whitney`, `karar_agaci`, `ki_kare`, `svm`, `orneklem`),
 `tableau_dashboard.html`, `oaipmh/landing.html`, `trdizin/landing.html`,
 `yoktez/landing.html`
