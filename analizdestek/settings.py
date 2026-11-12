@@ -646,6 +646,8 @@ ALLOWED_ATTACHMENT_TYPES = [
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     'text/csv',
     'text/plain',
+    'application/zip',
+    'application/x-zip-compressed',
 ]
 
 # --- SESSION AYARLARI ---
