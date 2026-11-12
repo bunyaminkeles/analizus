@@ -803,6 +803,47 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(12 Kasım 2026, YARIN SABAH İLK İŞ BURADAN DEVAM) Bağış/Premium reset bug'ı +
+  Pazar işi "tamamlandı" sayacı takılması — kök neden bulundu, kısmen düzeltildi, kalan
+  adımlar aşağıda.**
+  - **Bulgu 1 — Premium kaybı:** Kullanıcı (user_id=762, `240401005@`/okul e-postası,
+    `karanfilincinaz@hotmail.com` ile aynı kişiye ait görünen ikinci bir hesabı — user_id
+    761 — de var, karıştırılmasın) bağış yapmış (`Donation id=5`, `completed`,
+    `premium_days_granted=90`, `grant_premium()` bir kere tam çalışmış) ama `Profile.
+    account_type`/`premium_expires_at`/`premium_tier` sonradan sıfırlanmış bulundu. Kök
+    neden: `forum/views.py` içinde 4 yerde (`profile_edit`, `verify_email`,
+    `profile_detail` POST `verify_phone`/`verify_linkedin`, `admin_verify_linkedin`)
+    profil nesnesi erken çekilip tek alan değiştirilip **`update_fields` vermeden** tam
+    `profile.save()` yapılıyordu — bu, aradaki zaman diliminde başka bir yerin (ör.
+    `grant_premium()`) yazdığı alanları eski/bellekteki değerle sessizce üzerine yazıyor
+    ("lost update"). **Kod düzeltmesi YAPILDI** (4 nokta `update_fields` ile sınırlandı,
+    `forum/views.py`) **ama henüz commit edilmedi** (dev branch, working tree'de).
+    **Production'da kullanıcıya (762) manuel 180 gün premium verildi ve doğrulandı**
+    (`account_type=Premium`, bitiş 2027-05-11, `is_premium=True`).
+  - **Açık soru (henüz araştırılmadı):** Aynı `Donation` kaydında `completed_at` alanı da
+    `None` görünüyor (status `completed` olmasına rağmen) — aynı sınıftan ("stale save")
+    ayrı bir anomali olabilir, kaynağı bulunmadı.
+  - **Bulgu 2 — "Tamamlanan Proje" sayacı artmıyor:** `FreelanceJob.status` yalnızca
+    `JobReview.save()` içindeki mantıkla (iki taraf da onaylı review bırakınca)
+    `completed` oluyor. Django admin'deki **toplu** "Seçili değerlendirmeleri onayla"
+    aksiyonu (`forum/admin.py` → `JobReviewAdmin.approve_reviews`) `queryset.update()`
+    kullanıyordu — bu `save()`'i tetiklemediği için iş tamamlama mantığı hiç çalışmıyordu.
+    **Kod düzeltmesi YAPILDI** (`approve_reviews` artık kayıt kayıt `.save()` yapıyor,
+    `forum/admin.py`) **ama henüz commit edilmedi**.
+  - **Canlı örnek doğrulandı, DÜZELTİLMEDİ:** İş #186 (referans `2026/0046`, "Veri
+    analizi + ai", owner_id=726) production'da `status=in_progress` ama 2 onaylı review
+    var (review #65, #66, ikisi de `is_approved=True`, 11 Kasım 2026) — tam da bu bug'ın
+    kurbanı. **Sabah ilk iş:** bu işi elle `completed` yap (ve/veya job'u yeniden
+    save ettirerek `JobReview.save()`'i tetikleyecek bir yol dene).
+  - **Sabah ilk iş — yapılacaklar listesi:**
+    1. İş #186'yı production'da `completed` yap.
+    2. Benzer şekilde takılı kalmış başka iş var mı diye production'da tara: `FreelanceJob.
+       objects.filter(status='in_progress').annotate(approved_review_count=Count('reviews',
+       filter=Q(reviews__is_approved=True)))` → `approved_review_count>=2` olanlar, varsa
+       hepsini `completed` yap.
+    3. `forum/views.py` + `forum/admin.py`'deki düzeltmeleri gözden geçirip commit et (dev
+       branch'te, henüz commit edilmedi — kullanıcı onayı olmadan push/merge yapılmadı).
+    4. `Donation.completed_at` neden `None` kaldığı sorusu istenirse ayrıca araştırılabilir.
 - [x] **(9 Kasım 2026 TAMAMLANDI) TR Dizin: çoklu kriter AND/OR belirsizliği 0 sonuca
   yol açıyordu.** Kullanıcı admin ekran görüntüsüyle bildirdi: "Anahtar Kelime: kripto
   varlık | Anahtar Kelime: finansal okuryazarlık" sorgusu 0 sonuç dönmüştü. TR Dizin

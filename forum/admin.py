@@ -792,8 +792,12 @@ class JobReviewAdmin(ModelAdmin):
     actions = ['approve_reviews']
 
     def approve_reviews(self, request, queryset):
-        queryset.update(is_approved=True)
-        self.message_user(request, f'{queryset.count()} değerlendirme onaylandı.')
+        count = 0
+        for review in queryset.exclude(is_approved=True):
+            review.is_approved = True
+            review.save()
+            count += 1
+        self.message_user(request, f'{count} değerlendirme onaylandı.')
     approve_reviews.short_description = "Seçili değerlendirmeleri onayla"
 
 
