@@ -819,9 +819,19 @@ maddelerde.
     ile sınırlandı, `forum/views.py`; dev branch'te, henüz push/merge edilmedi).
     **Production'da kullanıcıya (762) manuel 180 gün premium verildi ve doğrulandı**
     (`account_type=Premium`, bitiş 2027-05-11, `is_premium=True`).
-  - **Açık soru (henüz araştırılmadı):** Aynı `Donation` kaydında `completed_at` alanı da
-    `None` görünüyor (status `completed` olmasına rağmen) — aynı sınıftan ("stale save")
-    ayrı bir anomali olabilir, kaynağı bulunmadı.
+  - **Açık soru — ÇÖZÜLDÜ (12 Kasım 2026):** Aynı `Donation` kaydında `completed_at`
+    alanı da `None` görünüyordu. Kök neden bu bug'dan FARKLI, daha basit: alanı otomatik
+    dolduran sinyal (`forum/signals.py` `capture_old_donation_status`) ancak **2 Ekim
+    2026**'da eklendi (commit `0dd1ef0`); o tarihten önce `DonationAdmin`'de
+    `completed_at` hep `readonly_fields`'taydı ve tek tamamlama yolu admin formunda
+    `status` dropdown'ını elle "Tamamlandı" yapıp kaydetmekti — bu akışta alanı dolduran
+    hiçbir kod yoktu. `Donation id=5` (düşük PK, kesin o tarihten önceki bir kayıt) işte
+    bu eski akışla tamamlanmış, bir daha hiç kaydedilmediği için `None` kalmış (bugünkü
+    sinyal yeni kayıtları doğru dolduruyor, sorun yalnız geçmiş veriydi). **Düzeltme:**
+    production'da tek seferlik veri düzeltmesi yapıldı — `Donation.objects.filter(
+    status='completed', completed_at__isnull=True).update(completed_at=F('created_at'))`
+    → **1 kayıt** güncellendi (beklenen tam olarak id=5). Kod değişikliği gerekmedi,
+    migration yok.
   - **Bulgu 2 — "Tamamlanan Proje" sayacı artmıyor:** `FreelanceJob.status` yalnızca
     `JobReview.save()` içindeki mantıkla (iki taraf da onaylı review bırakınca)
     `completed` oluyor. Django admin'deki **toplu** "Seçili değerlendirmeleri onayla"
@@ -837,9 +847,8 @@ maddelerde.
     bekleyen tekliflerin reddi — normal akıştaki gibi tetiklendi). Production'da tarama
     yapıldı, başka takılı kalmış iş bulunmadı (`approved_review_count>=2` filtresiyle
     1 sonuç — bu iş — çıktı, şimdi 0).
-  - **Kalan açık iş:** `Donation.completed_at` neden `None` kaldığı sorusu henüz
-    araştırılmadı, istenirse ayrıca bakılabilir. Kod düzeltmeleri dev branch'te commit
-    edildi (`c` bkz. git log) — **push/merge yalnız kullanıcı isteyince** yapılacak.
+  - **Kalan açık iş yok** (tüm maddeler çözüldü). Kod düzeltmeleri dev branch'te commit
+    edildi (bkz. git log) — **push/merge yalnız kullanıcı isteyince** yapılacak.
 - [x] **(9 Kasım 2026 TAMAMLANDI) TR Dizin: çoklu kriter AND/OR belirsizliği 0 sonuca
   yol açıyordu.** Kullanıcı admin ekran görüntüsüyle bildirdi: "Anahtar Kelime: kripto
   varlık | Anahtar Kelime: finansal okuryazarlık" sorgusu 0 sonuç dönmüştü. TR Dizin
@@ -966,7 +975,8 @@ maddelerde.
   dışarıdan paylaşılan davet linki) bilinçli olarak taşınmadı — ziyaretçinin
   dili önceden bilinmiyor, kapsam dışı.
 
-- [ ] **(8 Kasım 2026) EN/DE intl pazaryeri go-live — tek eksik: flag'i açmak.**
+- [x] **(8 Kasım 2026, 12 Kasım 2026 flag açılıp doğrulandı TAMAMLANDI) EN/DE intl
+  pazaryeri go-live.**
   `/en/market/` 404 şikayeti araştırıldı: özellik 19 Ekim 2026'da tamamen
   kodlanmış/test edilmiş, yalnız `SiteSettings.feature_market_intl` bilinçli
   kapalı tutuluyordu ("go-live kullanıcıya ait" kararı). Bu oturumda: eksik
@@ -977,7 +987,9 @@ maddelerde.
   `Site Ayarları → feature_market_intl` kutucuğunu işaretleyip kaydetmeli.
   Sonrasında `curl -I https://www.analizus.com/en/market/` ve `/de/market/`
   200 dönmeli, navbar'da EN/DE "Pazaryeri"/"Marketplace"/"Marktplatz" linki
-  görünmeli.
+  görünmeli. **Doğrulandı (12 Kasım 2026):** kullanıcı flag'i açtı, canlıda
+  `/en/market/` ve `/de/market/` artık ikisi de 200 dönüyor ve sayfa
+  içeriğinde "Marketplace" metni gerçekten görünüyor (boş/soft-404 değil).
 - [ ] **(8 Kasım 2026, kullanıcı istedi) DM (PrivateMessage) sohbet
   mesajlarının eskilerinin silinmesi/arşivlenmesi — henüz başlanmadı.**
   Kapsam netleştirilmeli: otomatik mı (ör. X aydan eski mesajlar), manuel
