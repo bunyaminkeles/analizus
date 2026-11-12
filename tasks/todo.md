@@ -803,6 +803,43 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(12 Kasım 2026 TAMAMLANDI) Bağış/Premium reset bug'ı + Pazar işi "tamamlandı"
+  sayacı takılması — kök neden bulundu, düzeltildi.**
+  - **Bulgu 1 — Premium kaybı:** Kullanıcı (user_id=762, `240401005@`/okul e-postası,
+    `karanfilincinaz@hotmail.com` ile aynı kişiye ait görünen ikinci bir hesabı — user_id
+    761 — de var, karıştırılmasın) bağış yapmış (`Donation id=5`, `completed`,
+    `premium_days_granted=90`, `grant_premium()` bir kere tam çalışmış) ama `Profile.
+    account_type`/`premium_expires_at`/`premium_tier` sonradan sıfırlanmış bulundu. Kök
+    neden: `forum/views.py` içinde 4 yerde (`profile_edit`, `verify_email`,
+    `profile_detail` POST `verify_phone`/`verify_linkedin`, `admin_verify_linkedin`)
+    profil nesnesi erken çekilip tek alan değiştirilip **`update_fields` vermeden** tam
+    `profile.save()` yapılıyordu — bu, aradaki zaman diliminde başka bir yerin (ör.
+    `grant_premium()`) yazdığı alanları eski/bellekteki değerle sessizce üzerine yazıyor
+    ("lost update"). **Kod düzeltmesi YAPILDI ve commit edildi** (4 nokta `update_fields`
+    ile sınırlandı, `forum/views.py`; dev branch'te, henüz push/merge edilmedi).
+    **Production'da kullanıcıya (762) manuel 180 gün premium verildi ve doğrulandı**
+    (`account_type=Premium`, bitiş 2027-05-11, `is_premium=True`).
+  - **Açık soru (henüz araştırılmadı):** Aynı `Donation` kaydında `completed_at` alanı da
+    `None` görünüyor (status `completed` olmasına rağmen) — aynı sınıftan ("stale save")
+    ayrı bir anomali olabilir, kaynağı bulunmadı.
+  - **Bulgu 2 — "Tamamlanan Proje" sayacı artmıyor:** `FreelanceJob.status` yalnızca
+    `JobReview.save()` içindeki mantıkla (iki taraf da onaylı review bırakınca)
+    `completed` oluyor. Django admin'deki **toplu** "Seçili değerlendirmeleri onayla"
+    aksiyonu (`forum/admin.py` → `JobReviewAdmin.approve_reviews`) `queryset.update()`
+    kullanıyordu — bu `save()`'i tetiklemediği için iş tamamlama mantığı hiç çalışmıyordu.
+    **Kod düzeltmesi YAPILDI ve commit edildi** (`approve_reviews` artık kayıt kayıt
+    `.save()` yapıyor, `forum/admin.py`; dev branch'te, henüz push/merge edilmedi).
+  - **Canlı örnek düzeltildi:** İş #186 (referans `2026/0046`, "Veri analizi + ai",
+    owner_id=726) production'da `status=in_progress` idi ama 2 onaylı review'u vardı
+    (review #65, #66, ikisi de `is_approved=True`, 11 Kasım 2026) — tam da bu bug'ın
+    kurbanıydı. 12 Kasım 2026'da elle `status='completed'` yapılıp `.save()` ile
+    kaydedildi (ilgili sinyaller — başarı hikayesi DM'i, admin bilgilendirme e-postası,
+    bekleyen tekliflerin reddi — normal akıştaki gibi tetiklendi). Production'da tarama
+    yapıldı, başka takılı kalmış iş bulunmadı (`approved_review_count>=2` filtresiyle
+    1 sonuç — bu iş — çıktı, şimdi 0).
+  - **Kalan açık iş:** `Donation.completed_at` neden `None` kaldığı sorusu henüz
+    araştırılmadı, istenirse ayrıca bakılabilir. Kod düzeltmeleri dev branch'te commit
+    edildi (`c` bkz. git log) — **push/merge yalnız kullanıcı isteyince** yapılacak.
 - [x] **(9 Kasım 2026 TAMAMLANDI) TR Dizin: çoklu kriter AND/OR belirsizliği 0 sonuca
   yol açıyordu.** Kullanıcı admin ekran görüntüsüyle bildirdi: "Anahtar Kelime: kripto
   varlık | Anahtar Kelime: finansal okuryazarlık" sorgusu 0 sonuç dönmüştü. TR Dizin

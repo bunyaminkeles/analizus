@@ -1554,7 +1554,7 @@ def profile_edit(request):
         profile.linkedin = linkedin
         if linkedin and 'linkedin.com' in linkedin:
             profile.linkedin_verified = True
-            profile.save()
+            profile.save(update_fields=['linkedin', 'linkedin_verified'])
             _check_and_award_trust_badge(request, user)
         else:
             profile.linkedin_verified = False
@@ -1606,7 +1606,14 @@ def profile_edit(request):
         selected_skills = request.POST.getlist('skills')
 
         try:
-            profile.save()
+            profile.save(update_fields=[
+                'title', 'bio', 'location',
+                'university', 'department', 'academic_title',
+                'website', 'linkedin', 'linkedin_verified', 'twitter', 'github', 'orcid', 'google_scholar',
+                'phone_number', 'phone_verified', 'avatar',
+                'email_on_reply', 'email_on_private_message', 'marketing_email_consent',
+                'is_public', 'show_email',
+            ])
         except Exception as e:
             # Kayıt başarısızsa kullanıcıya başarı mesajı gösterme (ör. avatar S3 yüklemesi)
             logger.error(f"Profile save error: {type(e).__name__}: {e}", exc_info=True)
@@ -1979,7 +1986,7 @@ def profile_detail(request, username):
                     profile_user.profile.phone_number = clean_number
                     # Simülasyon: Gerçek SMS entegrasyonu olmadığı için direkt onaylıyoruz
                     profile_user.profile.phone_verified = True
-                    profile_user.profile.save()
+                    profile_user.profile.save(update_fields=['phone_number', 'phone_verified'])
                     _check_and_award_trust_badge(request, profile_user)
                     messages.success(request, gettext('Telefon numaranız başarıyla kaydedildi.'))
                 else:
@@ -1990,7 +1997,7 @@ def profile_detail(request, username):
                 if 'linkedin.com' in linkedin_url:
                     profile_user.profile.linkedin = linkedin_url
                     profile_user.profile.linkedin_verified = True
-                    profile_user.profile.save()
+                    profile_user.profile.save(update_fields=['linkedin', 'linkedin_verified'])
                     _check_and_award_trust_badge(request, profile_user)
                     messages.success(request, gettext('LinkedIn hesabınız başarıyla doğrulandı.'))
                 else:
@@ -2984,7 +2991,7 @@ def verify_email(request, token):
     user = verification.user
     profile, _ = Profile.objects.get_or_create(user=user)
     profile.email_verified = True
-    profile.save()
+    profile.save(update_fields=['email_verified'])
 
     # Rozet kontrolü
     _check_and_award_trust_badge(request, user)
@@ -3063,8 +3070,8 @@ def admin_verify_linkedin(request, user_id):
     profile = user_to_verify.profile
     
     profile.linkedin_verified = True
-    profile.save()
-    
+    profile.save(update_fields=['linkedin_verified'])
+
     # Check for trust badge
     _check_and_award_trust_badge(request, user_to_verify)
     
