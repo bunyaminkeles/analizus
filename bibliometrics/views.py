@@ -68,6 +68,12 @@ def bibliometrics_landing(request):
                 {'img': 'img/biblio-ornek-lotka.webp', 'caption': gettext('Yazar Üretkenlik Dağılımı (Lotka Kanunu)'), 'width': 707, 'height': 641},
             ],
             'seo_guide': TARAMA_SEO_CONTENT.get('bibliometrics'),
+            # B4-4: gerçek OpenAlex verisiyle üretilmiş İngilizce örnek tam rapor —
+            # yalnız EN/DE'de gösterilir (TR'de zaten ücretsiz tam rapor/sipariş akışı var).
+            'promo_sample_report_url': (
+                '' if get_language() == 'tr' else
+                'https://analizus-files.s3.eu-north-1.amazonaws.com/bibliometrics/examples/sample_report_en.pdf'
+            ),
         })
     user = request.user
 

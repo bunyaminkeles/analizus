@@ -87,6 +87,13 @@
         {% endfor %}
       </div>
       <p class="ax-biblio-examples__note text-center"><em>{% trans "Bu grafikler aracın gerçek çıktısıdır — sizin verinizle aynı kalitede üretilir." %}</em></p>
+      {% if promo_sample_report_url %}
+      <p class="text-center mt-3">
+        <a href="{{ promo_sample_report_url }}" target="_blank" rel="noopener" class="ax-btn ax-btn--outline-primary fw-semibold px-4 py-2">
+          <i class="bi bi-file-earmark-pdf me-2"></i>{% trans "Örnek Tam Raporu İndirin (PDF)" %}
+        </a>
+      </p>
+      {% endif %}
     </div>
   </div>
   {% endif %}
