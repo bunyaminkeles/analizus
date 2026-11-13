@@ -1,6 +1,6 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~4848 satır; offset'ler 13 Kasım 2026'da doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~4878 satır; offset'ler 13 Kasım 2026'da doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
@@ -15,8 +15,8 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~4848 satır; offset
 | §20–23 | 1911 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları, bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği, `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"), pazar akışı (pending → open), session, cron |
 | §24–25 | 2075 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
 | §26 | 2162 | Sık yapılan hatalar ve çözümleri — konuya göre 11 alt başlığa gruplandı (Sunucu/Docker/Deploy, Veritabanı/Migration, S3/Depolama, E-posta, Çeviri, CSS/Frontend/JS, AI Asistan, Admin Paneli, Tarama/Analiz Araçları, Güvenlik/Bot, Genel Süreç) |
-| §27 | 2343 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 13 Kasım 2026 — (1) Çalışma Odaları ZIP dosya eki desteği (`ALLOWED_ATTACHMENT_TYPES` + template), (2) `Donation.completed_at=None` kök nedeni bulunup production'da 1 kayıt tek seferlik düzeltildi (kaynak: alanı dolduran sinyal 2 Ekim 2026'da eklenmiş, öncesindeki admin-formu tamamlamaları hiç doldurmuyordu), (3) EN/DE intl pazaryeri go-live flag'i kullanıcı tarafından açılıp canlıda doğrulandı — üçü de `--no-ff` ile `main`'e merge+push edildi, deploy `success`. Bir önceki tur: 9 Kasım 2026 Bootstrap Kaldırma Faz 3 "Düşük"+"Orta" grupları (10 dosya) TAMAMLANDI**) |
-| §28 | 4734 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §27 | 2343 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 13 Kasım 2026 — (1) Çalışma Odaları ZIP dosya eki desteği, (2) `Donation.completed_at=None` kök nedeni bulunup production'da 1 kayıt tek seferlik düzeltildi, (3) EN/DE intl pazaryeri go-live flag'i açılıp doğrulandı, (4) `proje_talebi.html` "Son Tamamlanan Analizler" kutusundaki jenerik "Veri Analizi" fallback'i kaldırılıp yalnız gerçek kategoriler gösterilecek şekilde düzeltildi, (5) Bibliometri Grup B4 — B4-4: gerçek OpenAlex verisiyle EN örnek tam rapor üretilip production S3'e yüklendi, EN/DE sayfasına indirme linki eklendi (bu arada `tasks/todo.md`'deki bayat "Grup A devam ediyor" notu da güncellendi — Grup A+B aslında B4-3'e kadar çoktan bitmişti) — tümü iki ayrı `--no-ff` merge ile `main`'e alındı, deploy `success`. Bir önceki tur: 9 Kasım 2026 Bootstrap Kaldırma Faz 3 "Düşük"+"Orta" grupları (10 dosya) TAMAMLANDI**) |
+| §28 | 4764 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
