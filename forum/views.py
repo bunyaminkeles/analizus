@@ -2450,7 +2450,7 @@ def proje_talebi(request):
 
     recent_jobs_qs = (
         FreelanceJob.objects
-        .filter(status='completed')
+        .filter(status='completed', category__isnull=False)
         .select_related('category')
         .order_by('-updated_at')[:4]
     )
@@ -2467,7 +2467,7 @@ def proje_talebi(request):
             months = days // 30
             duration = ngettext('%(n)s ayda tamamlandı', '%(n)s ayda tamamlandı', months) % {'n': months}
         recent_completed.append({
-            'category': job.category.localized_title if job.category else gettext('Veri Analizi'),
+            'category': job.category.localized_title,
             'duration': duration,
         })
 
