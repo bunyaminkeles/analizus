@@ -2189,6 +2189,7 @@ with connection.cursor() as c:
 | Yeni bir `ANTHROPIC_API_KEY`/`anthropic` paketi + `feature_ai_summary` flag'i main'e deploy edildi ama canlıda özellik hâlâ çalışmıyor (hatasız, sessizce) | Üç ayrı eksik aynı anda çıktı (11 Ekim 2026): (1) `requirements.txt`'e `anthropic` eklenip merge edildi ama GitHub Actions `restart` yaptığı için image hiç rebuild olmadı → `ModuleNotFoundError: No module named 'anthropic'` (ama `claude_service.py` bunu `except Exception` ile yutuyor, kullanıcıya hata göstermiyor — sadece AI kutusu hiç çıkmıyor); çözüm `docker compose up -d --build web`. (2) `ANTHROPIC_API_KEY` production `.env`'de hiç yoktu (kod `.env`'e yeni bir satır eklenmesini bekliyordu, kimse eklememişti) → `echo 'ANTHROPIC_API_KEY=...' >> /app/.env` + yine `--build`. (3) `feature_ai_summary` flag'i admin'den açılmadan sessizce kapalı kalıyor. **Kural:** yeni bir AI/API sağlayıcı entegrasyonu deploy edilince üçünü de (env var + image rebuild + flag) tek tek SSH'dan doğrula — `docker compose exec web python -c "import X"` + `grep KEY .env` + admin shell'den flag kontrolü. |
 | `dev`'de (Render) AI özelliği çalışıyor ama `main`'de (Hetzner) çalışmıyor, ya da tam tersi | Render ve Hetzner **tamamen bağımsız ortamlar** — Render `.env` dosyasını hiç okumaz, env var'lar Render'ın kendi web dashboard'undan ("Environment" sekmesi) ayrıca girilmeli; muhtemelen ayrı bir Postgres de kullandıklarından `SiteSettings` flag'leri (ör. `feature_ai_summary`) de her ortamda AYRI AYRI admin panelinden açılmalı — biri açıldı diye diğeri otomatik açılmaz (11 Ekim 2026). |
 | Render (`analizus-dev`) "exceeded its memory limit" ile saatlerce/günlerce sonra OOM restart yiyor, kod/trafikte belirgin bir sıçrama yok | Hetzner `root` crontab'ındaki harici bakım cron'ları (`cleanup-session-datasets`, `cleanup-pageviews`, `cleanup-s3`, `cleanup-attachments` — `forum/urls.py` `api/cron/*`) yalnızca `https://www.analizus.com`'u hedefliyor; Render **tamamen ayrı bir URL/ortam** olduğundan bu cron'lar oraya hiç gitmiyor. RAM'de session/TTL'e dayalı bir temizliğin (ör. `istatistik/services/job_runner.py`'deki `_session_datasets`) SADECE bu harici cron'a bağlı olması, tek process (Daphne) uzun süre ayakta kaldıkça dict'in sınırsız büyümesine ve OOM'a yol açar (16 Ekim 2026). **Kural:** session/TTL'li bir RAM deposu eklerken temizliği yalnızca harici crona bırakma — `save_*`/`store_*` gibi yazma noktasına fırsatçı bir `cleanup_expired_*()` çağrısı da ekle (her ortamda, cron kurulu olsun olmasın çalışır); ayrıca yeni bir `api/cron/*` endpoint'i eklenince onu hem Hetzner'e HEM Render'a (ayrı bir zamanlayıcıyla, ayrı `CRON_SECRET_KEY` ile) bağlamayı unutma. |
+| Docker dışında (host'ta, conda/venv `runserver` ile) dosya yükleme testi `PermissionError: [Errno 13] Permission denied: '.../media/<alt_klasör>'` ile patlıyor | `media/` klasörü (ve içindeki `avatars/` gibi alt klasörler) daha önce Docker container'ı (içeride root olarak çalışır) tarafından oluşturulmuş → `root:root` sahipli, 755. Host'ta uid 1000 ile çalışan bağımsız bir `runserver` süreci bu klasörün altına YENİ bir alt klasör (ör. ilk kez kullanılan `studyrooms/`) oluşturamıyor — `migrations/` klasörünün root sahipli kalması bug'ıyla (§26 "Veritabanı/Migration") aynı kök neden sınıfı, farklı dizin. **Çözüm:** `sudo chown -R 1000:1000 media/` (13 Kasım 2026). |
 
 ### Veritabanı / Migration
 
@@ -3045,6 +3046,43 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 #### Geçmiş Turlar (Kronoloji)
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
+
+- **13 Kasım 2026 — 3 ayrı küçük iş, main'de canlı:**
+  1. **Çalışma Odaları — ZIP dosya eki desteği.** `ALLOWED_ATTACHMENT_TYPES`'a
+     (`analizdestek/settings.py`) `application/zip` + `application/x-zip-
+     compressed` eklendi; `studyroom_detail.html`'deki dosya seçici `accept`
+     özniteliği ve yardım metni güncellendi. Bu sabit DM ekleriyle
+     (`send_message.html`) paylaşıldığı için zip artık orada da backend'de
+     kabul ediliyor (DM'in kendi `accept` listesine dokunulmadı). Boyut
+     sınırı (5 MB, tek dosya) değişmedi — kullanıcının "çoklu dosya" isteği,
+     model/migration gerektiren büyük bir refactor yerine "ZIP yeterli"
+     kararıyla kapsamı küçültüldü. Migration yok, `manage.py check` temiz.
+  2. **Donation.completed_at=None anomalisi — kök neden bulundu + tek
+     seferlik veri düzeltmesi.** Alanı otomatik dolduran sinyal
+     (`forum/signals.py` `capture_old_donation_status`) ancak 2 Ekim 2026'da
+     eklenmişti (commit `0dd1ef0`); o tarihten önce `DonationAdmin`'de
+     `completed_at` hep `readonly_fields`'taydı ve tek tamamlama yolu admin
+     formunda `status`'u elle "Tamamlandı" yapıp kaydetmekti — bu akış alanı
+     hiç doldurmuyordu. `Donation id=5` (düşük PK, o tarihten önceki bir
+     kayıt) işte bu eski akışla tamamlanmış, bir daha hiç kaydedilmediği
+     için `None` kalmış. Production'da `Donation.objects.filter(status=
+     'completed', completed_at__isnull=True).update(completed_at=
+     F('created_at'))` ile düzeltildi — **1 kayıt** güncellendi (beklenen
+     tam olarak id=5). Kod değişikliği gerekmedi.
+  3. **EN/DE intl pazaryeri go-live — doğrulandı.** 8 Kasım'da kodu
+     tamamlanmış, yalnız `SiteSettings.feature_market_intl` flag'i açılması
+     bekleniyordu (flag yazma işlemi sandbox kısıtı yüzünden Claude
+     tarafından yapılamıyor). Kullanıcı flag'i admin panelinden açtı;
+     `curl` ile `/en/market/` ve `/de/market/` artık ikisi de 200 dönüyor
+     ve sayfa içeriğinde "Marketplace" metni gerçekten görünüyor doğrulandı.
+  **Yan bulgu (local dev):** `media/` klasörü Docker tarafından (root
+  olarak) oluşturulduğu için host'ta bağımsız `runserver` ile test ederken
+  `PermissionError` çıktı — `sudo chown -R 1000:1000 media/` ile düzeltildi,
+  §26'ya yeni satır eklendi (`migrations/` klasörü root-sahipli bug'ıyla
+  aynı kök neden sınıfı). `dev`→`main` `--no-ff` merge + push edildi,
+  GitHub Actions deploy `success`. Merge öncesi zorunlu online-kullanıcı
+  kontrolünde 2 staff-olmayan kullanıcı (`joseph`, `figenaldi`) aktifti —
+  kullanıcı onayıyla yine de devam edildi.
 
 - **9 Kasım 2026 — Bootstrap Kaldırma Faz 3, "Düşük" + "Orta" gruplarının
   TAMAMI bitirildi (10 dosya, 41→50).** İstatistik araçlarının **20/20'si**

@@ -723,17 +723,36 @@ açık iş hâlâ bekliyor (bu Grup B/B4 turunda ele alınmadı, kullanıcı kar
        tarafından kullanılıyor. OpenAlex/PubMed akışında form yok (tek tıkla
        JSON API) → arayüz/profil diline düşüyor, bu da planın "migration'sız
        alternatif"ine zaten karşılık geliyor.
-     - [ ] **B4-4 (EN örnek tam rapor, gerçek veri) — kullanıcı onayı alındı,
-       henüz BAŞLANMADI, yeni oturum buradan devam etsin.** Plan: nötr/
-       evrensel bir konuda ("iklim değişikliği" gibi) gerçek bir OpenAlex
-       sorgusu çalıştırılıp (mevcut `openalex` scraper/parser akışıyla,
-       gerçek kullanıcı akışının birebir aynısı) tam rapor üretilecek,
-       production S3'e sabit bir path'e (7 günlük cleanup cron'un
-       kapsamadığı yeni bir prefix, ör. `bibliometrics/examples/`)
-       yüklenecek, EN/DE bibliometri sayfasına indirme linki eklenecek.
-       Rapor İngilizce üretilecek (iki dil sayfasında da aynı dosya,
-       buton metni çevrilecek). Gerçek OpenAlex API çağrısı + production
-       S3 yazma işlemi içerir.
+     - [x] **(13 Kasım 2026 TAMAMLANDI) B4-4 (EN örnek tam rapor, gerçek
+       veri).** Tek seferlik betik (`scripts/_b4_4_sample_report.py`, iş
+       bitince silindi) gerçek bir OpenAlex sorgusu ("climate change",
+       mevcut `OpenAlexScraper`/`parser.parse_openalex_json` akışıyla,
+       gerçek kullanıcı akışının birebir aynısı) çalıştırdı: 300 ham kayıt
+       → 298 net kayıt (1 tekrar + 1 başlıksız elendi) → 17 analiz üretildi
+       (9 atlandı — bu, saf OpenAlex kaynaklı işlerde `enrich_records_with_
+       openalex`'in yalnız PubMed için çalışması nedeniyle **üretimdeki
+       gerçek davranışla birebir aynı**, betiğe özgü bir eksiklik değil).
+       İngilizce tam PDF (`translation.override('en')`, 3.1 MB) **production
+       S3'e** sabit path'e yüklendi: `bibliometrics/examples/
+       sample_report_en.pdf` (7 günlük `cleanup_expired_bibliometrics_s3_
+       files` bu prefix'i kapsamıyor, kontrol edildi — değişiklik gerekmedi).
+       Hiçbir DB kaydı (AlexSearchJob/BibliometricJob) oluşturulmadı/
+       değiştirilmedi.
+       **EN/DE bibliometri sayfasına link eklendi:** `bibliometrics/
+       views.py` `bibliometrics_landing()` (giriş yapmamış kullanıcı dalı)
+       → yeni `promo_sample_report_url` context anahtarı (`get_language()
+       == 'tr'` ise boş — TR zaten ücretsiz tam rapor/sipariş akışına
+       sahip, örnek linke ihtiyacı yok). `templates/service_promo.html`
+       "Örnek Rapor Çıktıları" galerisinin altına koşullu buton eklendi.
+       Yeni msgid ("Örnek Tam Raporu İndirin (PDF)") `makemessages` ile
+       bulunup `polib` ile elle doğru çevrildi (yine fuzzy yanlış eşleşme
+       — "Tam Raporu İndir"e eşleşmişti, kelime "örnek"/"PDF" kaybolmuştu),
+       `compilemessages` hatasız. **Doğrulama (oturumsuz `curl`, lokal):**
+       `/en/bibliometrics/` → link + "Download a Full Sample..." var;
+       `/de/bibliometrics/` → link + "Beispiel-Vollbericht..." var;
+       `/bibliometrics/` (TR) → link YOK (doğru). `bibliometrics/tests.py`
+       regresyonsuz geçti. dev branch'te commit edilecek, henüz push/merge
+       edilmedi.
      - [ ] **B4-5 (SEO: EN/DE SSS çevirisi) — kapsam kullanıcıyla yeniden
        değerlendirilecek (30 Ekim 2026).** Kullanıcı önce "yalnız
        uluslararası araçlar" (openalex/semanticscholar/bibliometrics;
@@ -999,34 +1018,20 @@ maddelerde.
   mi; KVKK/veri saklama süresi açısından bir gerekçe var mı. İş kararı
   gerektirir, başlamadan önce kullanıcıya sorulacak.
 
-- [ ] **(8 Kasım 2026, kullanıcı ekran görüntüsüyle bildirdi — AYRI İŞ, henüz
-  başlanmadı) `proje_talebi.html` "Son Tamamlanan Analizler" kutusu gerçek
-  kategori adı yerine hep jenerik "Veri Analizi" gösteriyor.** Canlıda 4
-  kayıt da "Veri Analizi" + "X ayda tamamlandı" olarak görünüyor; kullanıcı
-  burada pazaryerindeki gerçek kategori adlarının (ör. ilan formundaki
-  "AMOS (Path analizi)", "Bibliometrik Analiz", "Makine öğrenmesi
-  modellemesi" gibi — bkz. ikinci ekran görüntüsü, `/market/new/` kategori
-  listesi) gösterilmesini istiyor.
-  **Kod yeri:** `forum/views.py` `proje_talebi()` view'ı (~satır 2429-2452),
-  `recent_completed` listesi — `FreelanceJob.objects.filter(status=
-  'completed').select_related('category').order_by('-updated_at')[:4]`;
-  her kayıt için `'category': job.category.localized_title if job.category
-  else gettext('Veri Analizi')`. Şablon: `forum/templates/forum/
-  proje_talebi.html` ~satır 251-268.
-  **Kök neden hipotezi (doğrulanmadı, inceleme gerekiyor):** `FreelanceJob.
-  category` nullable (`on_delete=models.SET_NULL`); `JobPostForm.save()`
-  (`forum/forms.py:197-203`) ilan sahibi kategori olarak "Diğer" seçtiğinde
-  `job.category = None` yazıyor (serbest metin tutulmuyor, tamamen
-  kayboluyor). Son tamamlanan 4 ilanın gerçekten "Diğer" kategorisiyle mi
-  açıldığı yoksa başka bir nedenle (ör. kategori sonradan silinip SET_NULL
-  tetiklendiği) mi kategori kaybettiği production DB'de doğrulanmalı.
-  **Çözüm yönü (karar verilmedi, iş başlayınca değerlendirilecek):** (a)
-  vitrin sorgusunu yalnızca gerçek kategorisi olan tamamlanmış ilanları
-  seçecek şekilde filtrelemek (jenerik metin hiç gösterilmesin) ve/veya (b)
-  "Diğer" seçiminde serbest metnin kaybolmaması için ayrı bir alan
-  eklemek. Aynı jenerik metnin 4 kez tekrarlanması ziyaretçiye
-  uydurma/sahte içerik izlenimi verebilir — [[feedback_no_exaggeration]]
-  kapsamına giriyor.
+- [x] **(13 Kasım 2026 TAMAMLANDI) `proje_talebi.html` "Son Tamamlanan
+  Analizler" kutusu gerçek kategori adı yerine hep jenerik "Veri Analizi"
+  gösteriyordu.** Kök neden doğrulandı: `FreelanceJob.category` nullable
+  (`SET_NULL`); ilan formunda "Diğer" seçilince `job.category = None`
+  oluyor, view bu durumda hardcoded `gettext('Veri Analizi')` fallback'i
+  kullanıyordu — aynı jenerik metnin 4 kez tekrarlanması sahte/uydurma
+  içerik izlenimi veriyordu ([[feedback_no_exaggeration]]). **Düzeltme:**
+  `forum/views.py` `proje_talebi()` — `recent_jobs_qs` artık `category__
+  isnull=False` ile filtreleniyor (kategorisiz ilanlar kutuda hiç
+  görünmüyor), fallback metin kaldırıldı, her kayıt gerçek `JobCategory.
+  localized_title` gösteriyor. Şablon zaten `{% if recent_completed %}`
+  ile boş listede kutuyu gizliyor, ayrıca dokunmaya gerek kalmadı.
+  Migration yok, `test_proje_talebi_*` (7/7) yeşil. dev branch'te commit
+  edildi, henüz push/merge edilmedi.
 
 - [x] **(8 Kasım 2026 TAMAMLANDI) Kullanıcı ekran görüntüleriyle `/hakkimizda/`
   sayfasında 4 ayrı EN/DE bulgusu bildirdi, hepsi aynı oturumda düzeltildi
