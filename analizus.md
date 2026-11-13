@@ -3083,6 +3083,36 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
   GitHub Actions deploy `success`. Merge öncesi zorunlu online-kullanıcı
   kontrolünde 2 staff-olmayan kullanıcı (`joseph`, `figenaldi`) aktifti —
   kullanıcı onayıyla yine de devam edildi.
+  4. **`proje_talebi.html` "Son Tamamlanan Analizler" kutusu jenerik "Veri
+     Analizi" gösteriyordu.** Kök neden: `FreelanceJob.category` nullable
+     (ilan formunda "Diğer" seçilince `None` oluyor), view bu durumda
+     hardcoded `gettext('Veri Analizi')` fallback'i kullanıyordu — aynı
+     metnin 4 kez tekrarı sahte/uydurma içerik izlenimi veriyordu.
+     Düzeltme: `forum/views.py` `proje_talebi()` — sorgu artık `category__
+     isnull=False` ile filtreleniyor, fallback kaldırıldı, yalnız gerçek
+     `JobCategory.localized_title`'a sahip işler listeleniyor. Migration
+     yok, `test_proje_talebi_*` (7/7) yeşil.
+  5. **Bibliometri Grup B4 — B4-4 (EN örnek tam rapor) tamamlandı.** Tek
+     seferlik betikle gerçek bir OpenAlex sorgusu ("climate change", mevcut
+     `OpenAlexScraper`/`parser.parse_openalex_json` akışıyla) çalıştırıldı:
+     298 net kayıt, 17 analiz (9'u saf OpenAlex kaynağında zaten beklenen
+     şekilde atlandı — `enrich_records_with_openalex` yalnız PubMed için
+     çalışıyor). İngilizce tam PDF (3.1 MB) production S3'e sabit path'e
+     yüklendi: `bibliometrics/examples/sample_report_en.pdf` (7 günlük
+     cleanup cron bu prefix'i kapsamıyor). Hiçbir DB kaydı oluşturulmadı.
+     `bibliometrics_landing()`'e yeni `promo_sample_report_url` context
+     anahtarı (TR'de boş), `templates/service_promo.html`'e koşullu
+     indirme butonu eklendi. **Ayrıca fark edildi:** `tasks/todo.md`'deki
+     "Bibliometri Grup A hata düzeltmeleri (devam)" maddesi aylardır bayat
+     kalmıştı — gerçekte Grup A (A1-A9) VE Grup B'nin neredeyse tamamı
+     (B1-B4-3) çoktan `main`'de canlıydı, yalnız todo.md'nin o eski bölümü
+     güncellenmemişti; düzeltilip B4-4 ile işaretlendi.
+     `bibliometrics/tests.py` 160/160 geçti, EN/DE çeviri eklendi.
+  **İkinci merge (aynı gün, ayrı tur):** `dev`→`main` `--no-ff` merge +
+  push, GitHub Actions deploy `success`; canlıda `curl` ile EN/DE'de
+  indirme linkinin var, TR'de yok olduğu doğrulandı. Merge öncesi zorunlu
+  kontrolde 1 staff-olmayan kullanıcı (`figenaldi`) aktifti — kullanıcı
+  onayıyla devam edildi.
 
 - **9 Kasım 2026 — Bootstrap Kaldırma Faz 3, "Düşük" + "Orta" gruplarının
   TAMAMI bitirildi (10 dosya, 41→50).** İstatistik araçlarının **20/20'si**
