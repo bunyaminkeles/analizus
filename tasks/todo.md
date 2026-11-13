@@ -999,34 +999,20 @@ maddelerde.
   mi; KVKK/veri saklama süresi açısından bir gerekçe var mı. İş kararı
   gerektirir, başlamadan önce kullanıcıya sorulacak.
 
-- [ ] **(8 Kasım 2026, kullanıcı ekran görüntüsüyle bildirdi — AYRI İŞ, henüz
-  başlanmadı) `proje_talebi.html` "Son Tamamlanan Analizler" kutusu gerçek
-  kategori adı yerine hep jenerik "Veri Analizi" gösteriyor.** Canlıda 4
-  kayıt da "Veri Analizi" + "X ayda tamamlandı" olarak görünüyor; kullanıcı
-  burada pazaryerindeki gerçek kategori adlarının (ör. ilan formundaki
-  "AMOS (Path analizi)", "Bibliometrik Analiz", "Makine öğrenmesi
-  modellemesi" gibi — bkz. ikinci ekran görüntüsü, `/market/new/` kategori
-  listesi) gösterilmesini istiyor.
-  **Kod yeri:** `forum/views.py` `proje_talebi()` view'ı (~satır 2429-2452),
-  `recent_completed` listesi — `FreelanceJob.objects.filter(status=
-  'completed').select_related('category').order_by('-updated_at')[:4]`;
-  her kayıt için `'category': job.category.localized_title if job.category
-  else gettext('Veri Analizi')`. Şablon: `forum/templates/forum/
-  proje_talebi.html` ~satır 251-268.
-  **Kök neden hipotezi (doğrulanmadı, inceleme gerekiyor):** `FreelanceJob.
-  category` nullable (`on_delete=models.SET_NULL`); `JobPostForm.save()`
-  (`forum/forms.py:197-203`) ilan sahibi kategori olarak "Diğer" seçtiğinde
-  `job.category = None` yazıyor (serbest metin tutulmuyor, tamamen
-  kayboluyor). Son tamamlanan 4 ilanın gerçekten "Diğer" kategorisiyle mi
-  açıldığı yoksa başka bir nedenle (ör. kategori sonradan silinip SET_NULL
-  tetiklendiği) mi kategori kaybettiği production DB'de doğrulanmalı.
-  **Çözüm yönü (karar verilmedi, iş başlayınca değerlendirilecek):** (a)
-  vitrin sorgusunu yalnızca gerçek kategorisi olan tamamlanmış ilanları
-  seçecek şekilde filtrelemek (jenerik metin hiç gösterilmesin) ve/veya (b)
-  "Diğer" seçiminde serbest metnin kaybolmaması için ayrı bir alan
-  eklemek. Aynı jenerik metnin 4 kez tekrarlanması ziyaretçiye
-  uydurma/sahte içerik izlenimi verebilir — [[feedback_no_exaggeration]]
-  kapsamına giriyor.
+- [x] **(13 Kasım 2026 TAMAMLANDI) `proje_talebi.html` "Son Tamamlanan
+  Analizler" kutusu gerçek kategori adı yerine hep jenerik "Veri Analizi"
+  gösteriyordu.** Kök neden doğrulandı: `FreelanceJob.category` nullable
+  (`SET_NULL`); ilan formunda "Diğer" seçilince `job.category = None`
+  oluyor, view bu durumda hardcoded `gettext('Veri Analizi')` fallback'i
+  kullanıyordu — aynı jenerik metnin 4 kez tekrarlanması sahte/uydurma
+  içerik izlenimi veriyordu ([[feedback_no_exaggeration]]). **Düzeltme:**
+  `forum/views.py` `proje_talebi()` — `recent_jobs_qs` artık `category__
+  isnull=False` ile filtreleniyor (kategorisiz ilanlar kutuda hiç
+  görünmüyor), fallback metin kaldırıldı, her kayıt gerçek `JobCategory.
+  localized_title` gösteriyor. Şablon zaten `{% if recent_completed %}`
+  ile boş listede kutuyu gizliyor, ayrıca dokunmaya gerek kalmadı.
+  Migration yok, `test_proje_talebi_*` (7/7) yeşil. dev branch'te commit
+  edildi, henüz push/merge edilmedi.
 
 - [x] **(8 Kasım 2026 TAMAMLANDI) Kullanıcı ekran görüntüleriyle `/hakkimizda/`
   sayfasında 4 ayrı EN/DE bulgusu bildirdi, hepsi aynı oturumda düzeltildi
