@@ -1442,8 +1442,6 @@ msgid "Sayfa {page} / {total}"
 msgstr "Page {page} / {total}"
 
 #: bibliometrics/services/pdf_builder.py:155
-#, fuzzy
-#| msgid "Analizus - Akademik Veri Üssü"
 msgid "Akademik Veri Üssü"
 msgstr "Analizus - Academic Data Hub"
 
@@ -3352,8 +3350,6 @@ msgid "Platform Dışına Yönlendirme"
 msgstr ""
 
 #: forum/models.py:2171
-#, fuzzy
-#| msgid "Uygunsuz dil veya içerik"
 msgid "Uygunsuz İçerik"
 msgstr "Inappropriate language or content"
 
@@ -3556,16 +3552,11 @@ msgid "Analizus - Doğrulanmış Akademisyen Rozeti Kazandınız!"
 msgstr "Analizus - You Earned the Verified Academic Badge!"
 
 #: forum/services/email_service.py:139
-#, fuzzy, python-format
-#| msgid "Teklifi Yönet: %(username)s"
+#, python-format
 msgid "Tebrikler %(username)s!"
-msgstr "Manage Offer: %(username)s"
+msgstr "Congratulations, %(username)s!"
 
 #: forum/services/email_service.py:140
-#, fuzzy
-#| msgid ""
-#| "Tebrikler %(username)s! EDU mail ile giriş yaptığınız için Doğrulanmış "
-#| "Akademisyen rozeti kazandınız. 3 gün teklif verme hakkınız var."
 msgid ""
 "EDU uzantılı mail adresiniz ile giriş yaptığınız için <strong>Doğrulanmış "
 "Akademisyen</strong> rozeti kazandınız!"
@@ -3579,10 +3570,8 @@ msgid "Ayrıca <strong>3 gün boyunca teklif verme hakkına</strong> sahipsiniz.
 msgstr ""
 
 #: forum/services/email_service.py:142
-#, fuzzy
-#| msgid "Çalışma Odaları"
 msgid "İyi çalışmalar,"
-msgstr "Study Rooms"
+msgstr "Best regards,"
 
 #: forum/services/email_service.py:142
 #: forum/templates/forum/emails/support_payment_details.html:147
@@ -7419,26 +7408,18 @@ msgid "Onaylayın, raporunuzu teslim alın"
 msgstr "Approve and receive your report"
 
 #: forum/templates/forum/home.html:473
-#, fuzzy
-#| msgid ""
-#| "SPSS, R, Python veya alan uzmanlığınızı gerçek projelere dönüştürün. "
-#| "Komisyonsuz çalışın, itibarınızı büyütün."
 msgid ""
 "SPSS, R, Python veya alan uzmanlığınızı gerçek projelere dönüştürün. "
 "Platform proje ücretine hiç dokunmaz — kazancınızın tamamı size kalır."
-msgstr ""
-"Turn your SPSS, R, Python, or domain expertise into real projects. Work "
-"commission-free and grow your reputation."
+msgstr "Turn your SPSS, R, Python, or domain expertise into real projects. The platform never touches your project fee — you keep 100% of your earnings."
 
 #: forum/templates/forum/home.html:475
 msgid "Sıfır komisyon — kazancınızın tamamı size kalır"
 msgstr ""
 
 #: forum/templates/forum/home.html:476
-#, fuzzy
-#| msgid "Sadece alanınıza uygun projeler"
 msgid "Sadece alanınıza uygun projelere teklif verin"
-msgstr "Projects that match your field only"
+msgstr "Only bid on projects that match your field"
 
 #: forum/templates/forum/home.html:477
 msgid "Tamamlanan işler ve yıldızlı değerlendirmeyle itibarınızı kanıtlayın"
@@ -7454,8 +7435,6 @@ msgid "%(open_jobs_count)s açık proje şu an teklif bekliyor"
 msgstr ""
 
 #: forum/templates/forum/home.html:495
-#, fuzzy
-#| msgid "İstatistik Arenası'nda puan kazan →"
 msgid "İstatistik Arenası'nda puan kazan, teklif verme hakkını erken aç →"
 msgstr "Earn points in the Statistics Arena →"
 
@@ -11723,8 +11702,6 @@ msgid "Analizus hesabınızı silmek için aşağıdaki butona tıklayın."
 msgstr ""
 
 #: forum/views.py:2100
-#, fuzzy
-#| msgid "Hesabı Kalıcı Olarak Sil"
 msgid "Hesabımı Kalıcı Olarak Sil"
 msgstr "Delete Account Permanently"
 
@@ -13515,8 +13492,6 @@ msgstr ""
 "Process/Hayes output."
 
 #: istatistik/seo_content.py:806
-#, fuzzy
-#| msgid "Aracılık Analizi (Mediation)"
 msgid "Aracılık Analizi"
 msgstr "Mediation Analysis"
 
@@ -14458,13 +14433,6 @@ msgid ""
 msgstr ""
 
 #: istatistik/seo_content.py:1429
-#, fuzzy
-#| msgid ""
-#| "Aracı (M) ve bağımlı (Y) değişkenler sürekli/sayısal olmalıdır. Bağımsız "
-#| "değişken (X) sayısal veya iki kategorili olabilir. Değişkenler arasında "
-#| "teorik/zamansal bir nedensellik sırası (X→M→Y) varsayılır — analiz bunu "
-#| "veriden kanıtlamaz, araştırmacı tasarımla gerekçelendirmelidir. Örneklem "
-#| "büyüklüğü arttıkça bootstrap güven aralığı daha kararlı tahmin üretir."
 msgid ""
 "Aracı değişkenler (M) ve bağımlı değişken (Y) sürekli/sayısal olmalıdır. "
 "Bağımsız değişken (X) sayısal veya iki kategorili olabilir. Aracı "
@@ -14472,56 +14440,27 @@ msgid ""
 "(çoklu bağlantı). Değişkenler arasında teorik/zamansal bir nedensellik "
 "sırası (X→M→Y) varsayılır — analiz bunu veriden kanıtlamaz, araştırmacı "
 "tasarımla gerekçelendirmelidir."
-msgstr ""
-"The mediator (M) and dependent (Y) variables must be continuous/numeric. The"
-" independent variable (X) can be numeric or two-category. A "
-"theoretical/temporal causal order (X→M→Y) between the variables is assumed —"
-" the analysis does not prove this from the data; the researcher must justify"
-" it through design. As sample size increases, the bootstrap confidence "
-"interval produces a more stable estimate."
+msgstr "The mediator variables (M) and the dependent variable (Y) must be continuous/numeric. The independent variable (X) can be numeric or two-category. The mediator variables should not be too highly correlated with each other (multicollinearity). A theoretical/temporal causal order (X→M→Y) between the variables is assumed — the analysis does not prove this from the data; the researcher must justify it through design."
 
 #: istatistik/seo_content.py:1437
-#, fuzzy
-#| msgid ""
-#| "Dolaylı etki (a×b): X'in M üzerinden Y'ye ilettiği etki. Bootstrap %95 güven"
-#| " aralığı sıfırı kapsamıyorsa anlamlıdır. Direkt etki (c'): M kontrol "
-#| "edildiğinde X'in Y üzerinde kalan doğrudan etkisi. c' anlamlıysa kısmi "
-#| "aracılık, anlamlı değilse tam aracılık söz konusudur. Sobel testi: Dolaylı "
-#| "etkinin anlamlılığına dair klasik/ek bir doğrulama sağlar."
 msgid ""
 "Her aracı için dolaylı etki (a×b): X'in o aracı üzerinden Y'ye ilettiği "
 "etki; bootstrap %95 güven aralığı sıfırı kapsamıyorsa anlamlıdır. Toplam "
 "dolaylı etki (Σ a×b): Tüm aracıların birleşik etkisi. Direkt etki (c'): Tüm "
 "aracılar kontrol edildiğinde X'in Y üzerinde kalan doğrudan etkisi. c' "
 "anlamlıysa kısmi aracılık, anlamlı değilse tam aracılık söz konusudur."
-msgstr ""
-"Indirect effect (a×b): the effect X transmits to Y through M. It is "
-"significant if the bootstrap 95% CI does not include zero. Direct effect "
-"(c'): the remaining direct effect of X on Y after controlling for M. If c' "
-"is significant, this indicates partial mediation; if not, full mediation. "
-"Sobel test: provides a classic/additional check on the significance of the "
-"indirect effect."
+msgstr "Indirect effect per mediator (a×b): the effect X transmits to Y through that mediator; significant if the bootstrap 95% CI does not include zero. Total indirect effect (Σ a×b): the combined effect of all mediators. Direct effect (c'): the remaining direct effect of X on Y after controlling for all mediators. If c' is significant, this indicates partial mediation; if not, full mediation."
 
 #: istatistik/seo_content.py:1445
-#, fuzzy
-#| msgid ""
-#| "İş deneyiminin (M), eğitim düzeyi (X) ile gelir (Y) arasındaki ilişkide "
-#| "kısmi aracılık rolü üstlendiği bulunmuştur; dolaylı etki a×b = .18, "
-#| "bootstrap %95 GA [.07, .31]."
 msgid ""
 "İş deneyimi (M1) ve sosyal sermaye (M2), eğitim düzeyi (X) ile gelir (Y) "
 "arasındaki ilişkide kısmi aracılık rolü üstlenmiştir; toplam dolaylı etki Σ "
 "a×b = .24, bootstrap %95 GA [.12, .38]."
-msgstr ""
-"Work experience (M) was found to partially mediate the relationship between "
-"education level (X) and income (Y); indirect effect a×b = .18, bootstrap 95%"
-" CI [.07, .31]."
+msgstr "Work experience (M1) and social capital (M2) were found to partially mediate the relationship between education level (X) and income (Y); total indirect effect Σ a×b = .24, bootstrap 95% CI [.12, .38]."
 
 #: istatistik/seo_content.py:1451
-#, fuzzy
-#| msgid "Aracılık (Mediation) Analizi Nedir?"
 msgid "Path Analizi ile Aracılık (Mediation) Analizi arasındaki fark nedir?"
-msgstr "What Is Mediation Analysis?"
+msgstr "What is the difference between Path Analysis and Mediation Analysis?"
 
 #: istatistik/seo_content.py:1452
 msgid ""
@@ -19318,10 +19257,8 @@ msgid "Bu işi uzmana bırak"
 msgstr "Leave it to an expert"
 
 #: istatistik/templates/istatistik/analiz_hub.html:69
-#, fuzzy
-#| msgid "Uzman Olarak Katıl"
 msgid "Uzmana yaptır"
-msgstr "Join as an Expert"
+msgstr "Have an Expert Do It"
 
 #: istatistik/templates/istatistik/analiz_hub.html:89
 #: templates/tarama_hub.html:65
@@ -19334,27 +19271,16 @@ msgid "Başla — Ücretsiz"
 msgstr "Get Started — Free"
 
 #: istatistik/templates/istatistik/analiz_hub.html:100
-#, fuzzy
-#| msgid ""
-#| "Bu analizi kendiniz yapmak yerine uzmanına bırakmak ister misiniz?"
 msgid "Bu analizleri kendiniz yapmak yerine uzmanına bırakmak ister misiniz?"
 msgstr ""
 "Would you rather leave this analysis to an expert instead of doing it "
 "yourself?"
 
 #: istatistik/templates/istatistik/analiz_hub.html:103
-#, fuzzy
-#| msgid ""
-#| "Verilerinizi gönderin, uzman analistlerimiz <strong "
-#| "style=\"color:#f1f5f9;\">%(tool_title)s</strong> analizini sizin adınıza "
-#| "gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın."
 msgid ""
 "Verilerinizi gönderin, uzman analistlerimiz sizin adınıza analizi "
 "gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın."
-msgstr ""
-"Send us your data, and our expert analysts will perform and report the "
-"<strong style=\"color:#f1f5f9;\">%(tool_title)s</strong> analysis on your "
-"behalf. Start with a free initial assessment."
+msgstr "Send us your data, and our expert analysts will perform and report the analysis on your behalf. Start with a free initial assessment."
 
 #: istatistik/templates/istatistik/anova.html:5
 msgid "Tek Yönlü ANOVA (Tukey Yaklaşımı, Bonferroni Post-Hoc)"
@@ -23270,26 +23196,20 @@ msgid "ROC Eğrisi / Tanısal Tarama"
 msgstr ""
 
 #: istatistik/views.py:55
-#, fuzzy
-#| msgid "İstatistik Analizi"
 msgid "Basit Path Analizi"
-msgstr "Statistical Analysis"
+msgstr "Simple Path Analysis"
 
 #: istatistik/views.py:57
 msgid "Makine Öğrenmesi"
 msgstr "Machine Learning"
 
 #: istatistik/views.py:70
-#, fuzzy
-#| msgid "Nicel Analiz Desteği"
 msgid "Nicel Analiz"
-msgstr "Quantitative Analysis Support"
+msgstr "Quantitative Analysis"
 
 #: istatistik/views.py:71
-#, fuzzy
-#| msgid "Veri Bilimi"
 msgid "Veri Bilimi ve Yapay Zeka"
-msgstr "Data Science"
+msgstr "Data Science and AI"
 
 #: istatistik/views.py:95
 msgid "CSV veya Excel dosyanızı yükleyin."
@@ -24099,17 +24019,10 @@ msgid ""
 msgstr ""
 
 #: istatistik/views.py:865
-#, fuzzy
-#| msgid ""
-#| "Dolaylı etkinin (a×b) anlamlılığı 5000 yeniden örneklemeli bootstrap %95 GA "
-#| "ile test edilir — Hayes/Process yöntemiyle aynı mantık."
 msgid ""
 "Her aracının ve toplam dolaylı etkinin anlamlılığı 5000 yeniden örneklemeli "
 "bootstrap %95 GA ile test edilir."
-msgstr ""
-"The significance of the indirect effect (a×b) is tested with a "
-"5,000-resample bootstrap 95% CI — the same logic as the Hayes/Process "
-"method."
+msgstr "The significance of each mediator's indirect effect and the total indirect effect is tested with a 5,000-resample bootstrap 95% CI."
 
 #: istatistik/views.py:866
 msgid ""
@@ -24118,16 +24031,10 @@ msgid ""
 msgstr ""
 
 #: istatistik/views.py:867
-#, fuzzy
-#| msgid ""
-#| "Katsayılar, basit eğimler tablosu ve APA formatında raporlama cümlesi PDF "
-#| "olarak indirilir."
 msgid ""
 "Yol katsayıları tablosu ve APA formatında raporlama cümlesi PDF olarak "
 "indirilir."
-msgstr ""
-"The coefficients, the simple slopes table, and an APA-formatted reporting "
-"sentence can be downloaded as a PDF."
+msgstr "The path coefficients table and an APA-formatted reporting sentence can be downloaded as a PDF."
 
 #: istatistik/views.py:893
 msgid ""
@@ -24288,10 +24195,8 @@ msgstr ""
 "profile table."
 
 #: istatistik/views.py:997
-#, fuzzy
-#| msgid "Yöntem"
 msgid "İki Yöntem"
-msgstr "Method"
+msgstr "Two Methods"
 
 #: istatistik/views.py:997
 msgid ""
@@ -24302,10 +24207,8 @@ msgstr ""
 "methods."
 
 #: istatistik/views.py:998
-#, fuzzy
-#| msgid "Otomatik Öneri"
 msgid "Otomatik k Seçimi"
-msgstr "Automatic Recommendation"
+msgstr "Automatic k Selection"
 
 #: istatistik/views.py:998
 msgid ""
@@ -24322,16 +24225,10 @@ msgstr ""
 "The size of each cluster and the variable averages are reported in a table."
 
 #: istatistik/views.py:1000
-#, fuzzy
-#| msgid ""
-#| "Tam/kısmi aracılık sonucu ve APA formatında raporlama cümlesi PDF olarak "
-#| "indirilir."
 msgid ""
 "Diyagnostik grafik, dağılım grafiği ve APA formatında raporlama cümlesi PDF "
 "olarak indirilir."
-msgstr ""
-"The full/partial mediation result and an APA-formatted reporting sentence "
-"can be downloaded as a PDF."
+msgstr "The diagnostic chart, scatter plot, and an APA-formatted reporting sentence can be downloaded as a PDF."
 
 #: istatistik/views.py:1026
 msgid ""
