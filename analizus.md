@@ -3033,7 +3033,7 @@ with connection.cursor() as c:
 - Admin analytics dashboard — navigasyon takibi tamamlandı; gelişmiş kullanıcı segmentasyonu/funnel analizi eklenebilir
 - **Semantic Scholar → Bibliometrik Analiz entegrasyonu** — kullanıcı kararı (27 Eylül 2026): eklenecek. OpenAlex köprüsü (`/bibliometrics/from-openalex/<id>/` → `parse_openalex_json`) örnek alınır; S2 veri yapısı uygun; `BibliometricJob`'a S2 FK → **migration gerekir**. Bibliometri EN/DE işinin (b) adımı.
 - ~~Gamification genişletmesi~~ → Referral sistemi tamamlandı (temmuz 2026)
-- **Bootstrap CDN kaldırma** (temmuz 2026 — devam ediyor, kademeli migration) — Lighthouse'ta "kullanılmayan CSS" (111 KiB) + "kullanılmayan JS" (164 KiB) bulgusunun kaynağı. **Faz 1** (tamamlandı): eksik `ax-` bileşenleri (`.ax-alert`, `.ax-modal`, `.ax-dropdown`, `.ax-form-control`/`select`/`check`) `base.css`'e eklendi. **Faz 2** (tamamlandı): `static/js/ax-modal.js` + `ax-dropdown.js` vanilla controller'ları eklendi; `base.html` (4 modal: search/quiz/profile/story) + `success_stories.html` (1 modal) `.ax-modal` yapısına taşındı, `bootstrap.Modal` JS çağrıları kaldırıldı. **Faz 3** (sürüyor — 12 Ekim 2026 durumu: 12 dosya migre edildi, 55 dosyada ~760 component class kaldı;
+- **Bootstrap CDN kaldırma** (temmuz 2026 — devam ediyor, kademeli migration) — Lighthouse'ta "kullanılmayan CSS" (111 KiB) + "kullanılmayan JS" (164 KiB) bulgusunun kaynağı. **Faz 1** (tamamlandı): eksik `ax-` bileşenleri (`.ax-alert`, `.ax-modal`, `.ax-dropdown`, `.ax-form-control`/`select`/`check`) `base.css`'e eklendi. **Faz 2** (tamamlandı): `static/js/ax-modal.js` + `ax-dropdown.js` vanilla controller'ları eklendi; `base.html` (4 modal: search/quiz/profile/story) + `success_stories.html` (1 modal) `.ax-modal` yapısına taşındı, `bootstrap.Modal` JS çağrıları kaldırıldı. **Faz 3** — "Düşük"+"Orta" gruplar (50 dosya) TAMAMLANDI (9 Kasım 2026); kalan "Ağır (20-48 class)" grup 10 dosya, **14 Kasım 2026'da başlandı: 2/10 tamamlandı** (`semanticscholar/landing.html`, `makaleanaliz/results.html` — ikisi de main'de canlı, kalan 8 dosya için detay/sıra `tasks/todo.md`'de). (12 Ekim 2026 durumu: 12 dosya migre edildi, 55 dosyada ~760 component class kaldı;
 21 Ekim 2026 CLS turunda yeniden teyit edildi — `btn` 464, `card` 184, `badge` 150, `accordion` 146,
 `form-control` 49 kez hâlâ kullanılıyor, bu yüzden `bootstrap.min.css`'i ana sayfadaki "%92 kullanılmıyor"
 bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kırılma riski var). **Bulgu:** component class'lardan (btn/card/badge/modal) bağımsız olarak Bootstrap **utility** class'ları (`d-flex`, `text-*`, `fw-*`, `mb-*`/`py-*`/`px-*`, `gap-*`, `rounded-*`, `shadow-*`, `bg-*`, `border-*`) hâlâ neredeyse her template'te yaygın — bunlar CLAUDE.md'nin "yalnızca grid" kuralına da aykırı ve Faz 4'te (CDN kaldırma) ayrıca migrate edilmeleri gerekiyor, henüz envanteri çıkarılmadı. Detaylı dosya bazlı ilerleme ve bulgular: `tasks/todo.md`.
@@ -3046,7 +3046,25 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
-- **14 Kasım 2026 — "Bilinen, düzeltilmemiş bug" listesindeki 3 madde ele alındı, main'de canlı
+- **14 Kasım 2026, akşam — Bootstrap Kaldırma "Ağır" grup başladı (2/10), main'de canlı
+  (merge `2215065`, deploy `success`):** `semanticscholar/landing.html` ve `makaleanaliz/results.html`
+  ax- tasarım sistemine taşındı — Faz 3'ün "Düşük"+"Orta" gruplarında (50 dosya) oturan desen aynen
+  tekrarlandı: card-header/footer/img-top içeren kartlar ERTELENDİ (ve içlerindeki tüm
+  buton/alert/badge/form elemanları da dokunulmadan bırakıldı — bu oturumda netleşen ek kural:
+  ertelenen kartın içeriği de bütün olarak ertelenir, karışık Bootstrap/ax- render'dan kaçınmak için),
+  header/footer/img-top'suz kartlar `ax-card`'a birleştirildi. **Yeni eşleşmeler doğrulandı:**
+  `badge bg-warning text-dark` → `ax-badge--warning-solid` (base.css'teki yorum zaten bu formülün
+  kaynağının bu desen olduğunu belirtiyordu); JS'in `className = 'alert alert-danger'` ile çalışma
+  zamanında ürettiği hata kutusu da statik eşdeğeriyle birlikte `ax-alert--danger`'a güncellendi (yoksa
+  sayfa yarı Bootstrap yarı ax- render ederdi). `completed`/`failed`/`pending` iş durumları ayrı ayrı
+  force_login + `Profile(email_verified=True)` ile doğrulandı, 110/110 forum pytest yeşil, yeni CSS
+  gerekmedi. Migration yok. Merge öncesi production'da aktif kullanıcı (`figenaldi`) tespit edildi,
+  kullanıcıya bildirilip onay alınarak devam edildi. Kalan 8 dosya: `tezanaliz/results.html`(22),
+  `tezanaliz/landing.html`(24), `send_message.html`(26), `uzman_dizini.html`(26),
+  `openalex/landing.html`(27), `bibliometrics/landing.html`(29), `studyroom_detail.html`(36),
+  `market/job_detail.html`(48 — en ağır).
+
+- **14 Kasım 2026, sabah — "Bilinen, düzeltilmemiş bug" listesindeki 3 madde ele alındı, main'de canlı
   (merge `17f7efd`, deploy `success`):**
   1. **Tanımsız `--ax-color-primary` token'ı — DÜZELTİLDİ.** Gerçek konum CLAUDE.md'deki eski not
      (`home.html:45,48`) değil çıktı — o satırlar zaten doğruydu. Asıl kullanım `hero.css:365,429` ve
