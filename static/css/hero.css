@@ -362,7 +362,7 @@
     font-size: var(--ax-text-sm);
 }
 .ax-hero__kazima-bar a {
-    color: var(--ax-color-primary);
+    color: var(--ax-accent-primary);
     text-decoration: none;
     font-weight: var(--ax-font-medium);
     transition: color var(--ax-transition-fast);
@@ -426,7 +426,7 @@
 }
 
 .ax-below-doors__corporate a:hover {
-    color: var(--ax-color-primary);
+    color: var(--ax-accent-primary);
 }
 
 /* EN/DE birincil çağrı: proje talebi (27 Eylül 2026) */

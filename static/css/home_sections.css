@@ -1295,7 +1295,7 @@ a.ax-stat-pill:hover {
 .ax-counter-strip__suffix {
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--ax-color-primary);
+    color: var(--ax-accent-primary);
 }
 
 .ax-counter-strip__label {
@@ -1535,7 +1535,7 @@ a.ax-stat-pill:hover {
     margin-top: var(--ax-space-3, 12px);
     font-size: var(--ax-text-sm);
     font-weight: 500;
-    color: var(--ax-color-primary);
+    color: var(--ax-accent-primary);
     text-decoration: none;
     transition: color var(--ax-transition-fast);
 }
