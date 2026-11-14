@@ -6356,8 +6356,28 @@ yükleniyor durumu) → `ax-card`, 5× `alert-danger`/`alert-warning`/
 e-posta doğrulama gerektiriyor, force_login + `Profile(email_verified=True)`
 ile doğrulandı, 110/110 forum pytest yeşil, yeni CSS gerekmedi)
 
-**Ağır (20-48) — en sona bırakılacak:** `semanticscholar/landing.html` (21),
-`makaleanaliz/results.html` (22), `tezanaliz/results.html` (22),
+**Ağır (20-48) — en sona bırakılacak:** ~~`semanticscholar/landing.html`~~
+(✅ 14 Kasım, kısmi — tarama ailesi deseniyle birebir aynı: 1× card-header'lı
+kart (Arama Kriterleri formu, JS'in dinamik ürettiği query-builder
+form-select/form-control/btn-danger satırları dahil) + 1× card-header'lı
+Sonuçlar paneli (email-sent-alert + 3 indirme/gönderme butonu + JS'in ürettiği
+OA PDF badge'i dahil) ertelendi; 2 güvenli kart → `ax-card`, 4 alert
+(`alert-danger`/`alert-warning`×2/`alert-info`→`ax-alert--cyan`) → `ax-alert`,
+1 özel renkli badge (CrossRef rozeti, inline stil korunarak) → `ax-badge`,
+1 buton (İptal) → `ax-btn--outline-danger`/`--sm`; giriş + e-posta doğrulama
+gerektiriyor, force_login + `Profile(email_verified=True)` ile doğrulandı,
+110/110 forum pytest yeşil, yeni CSS gerekmedi),
+~~`makaleanaliz/results.html`~~ (✅ 14 Kasım, kısmi — 6 güvenli kart
+(başlık, yükleniyor, PDF-hazır, 3× istatistik kutusu) `ax-card`'a taşındı;
+2× card-header'lı kart (Analizler Listesi + Benzer Makaleler tablosu, ikincisi
+tablo içi 2 badge + progress bar dahil) ertelendi; 1 badge
+(`bg-warning text-dark` → `ax-badge--warning-solid`, base.css'teki yorum
+zaten bu eşleşmeyi doğruluyordu), 1 statik + 1 JS'in dinamik ürettiği
+(`errDiv.className`) `alert-danger` → `ax-alert--danger`, 1 buton (PDF İndir)
+→ `ax-btn--primary`; `completed`/`failed`/`pending` üç job durumu da
+force_login + `Profile(email_verified=True)` ile ayrı ayrı doğrulandı,
+110/110 forum pytest yeşil, yeni CSS gerekmedi),
+`tezanaliz/results.html` (22),
 `tezanaliz/landing.html` (24), `send_message.html` (26),
 `uzman_dizini.html` (26), `openalex/landing.html` (27),
 `bibliometrics/landing.html` (29), `studyroom_detail.html` (36),

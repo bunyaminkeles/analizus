@@ -861,15 +861,14 @@ listeden karşılığını kullan (`--ax-surface`→`--ax-bg-tertiary`, `--ax-bo
 `--ax-border-default`, `--ax-text`→`--ax-text-primary`, `--ax-muted`→
 `--ax-text-secondary`, `--ax-primary`→`--ax-accent-primary`).
 
-**Yeni bulunan, henüz DÜZELTİLMEMİŞ bir örnek daha (12 Ekim 2026, anasayfa UX
-kontrol turu):** `--ax-color-primary` de global olarak tanımlı değil (yalnız
-`hangi_test.html` kendi sayfa-içi `:root`'unda tanımlıyor, ana sayfada yok).
-`forum/templates/forum/home.html:45,48` (`.ax-hero__personal-badge`,
-`.ax-hero__personal-link:hover`) bunu kullanıyor — geçersiz `var()` referansı
-inherited metin rengine düşüyor, muhtemelen görsel olarak fark edilmiyor ama
-kasıtlı renk uygulanmıyor. Bu tur kapsamında DOKUNULMADI (ayrı görevdeki
-`.ax-hero__secondary-cta a:hover` için aynı hataya düşülmeden doğru token
-`--ax-accent-primary` kullanıldı); düzeltme: `tasks/todo.md`'de açık madde.
+~~Yeni bulunan, henüz DÜZELTİLMEMİŞ bir örnek daha (12 Ekim 2026, anasayfa UX
+kontrol turu): `--ax-color-primary`...~~ → DÜZELTİLDİ (14 Kasım 2026). `--ax-color-primary`
+global olarak tanımlı değildi (yalnız `hangi_test.html` kendi sayfa-içi `:root`'unda
+tanımlıyor). 12 Ekim'de bulunduğu `home.html:45,48` o zamandan beri düzeltilmişti (satırlar
+artık `--ax-accent-primary-light` kullanıyor) ama not güncellenmemişti; aynı hata zamanla
+başka yere taşınmış/çoğalmış çıktı — gerçek kullanım `static/css/hero.css:365,429` ve
+`static/css/home_sections.css:1298,1538`'deydi (home.html'in yüklediği dosyalar). 4 satırda
+`var(--ax-color-primary)` → `var(--ax-accent-primary)` (aynı değer, `#6366f1`).
 
 ### Bootstrap'te Eksik Renk Utility Class'ları (`style.css`)
 Bootstrap `text-teal` / `text-purple` / `btn-teal` / `btn-purple` sınıflarını tanımlamaz.
@@ -3046,6 +3045,34 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 #### Geçmiş Turlar (Kronoloji)
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
+
+- **14 Kasım 2026 — "Bilinen, düzeltilmemiş bug" listesindeki 3 madde ele alındı, main'de canlı
+  (merge `17f7efd`, deploy `success`):**
+  1. **Tanımsız `--ax-color-primary` token'ı — DÜZELTİLDİ.** Gerçek konum CLAUDE.md'deki eski not
+     (`home.html:45,48`) değil çıktı — o satırlar zaten doğruydu. Asıl kullanım `hero.css:365,429` ve
+     `home_sections.css:1298,1538`'de (home.html'in yüklediği dosyalar) — 4 satırda
+     `var(--ax-color-primary)` → `var(--ax-accent-primary)` (aynı değer, `#6366f1`; 25 Ekim'deki
+     `--ax-primary` bulgusuyla aynı desen). `home.html`/`home_intl.html`'de cache-busting versiyonu
+     artırıldı.
+  2. **GSC 404/hreflang kök nedeni — zaten düzeltilmiş çıktı.** Kod 7 Kasım 2026'da (`7a2452e`)
+     düzeltilmişti, yukarıdaki not bayat kalmıştı — güncellendi, kod değişikliği gerekmedi.
+  3. **Site genelinde fuzzy çeviri taraması — yapıldı.** EN+DE `django.po`'da 25 fuzzy girdi bulundu
+     (ilk kaba grep 29 dedi, dikkatli ayrıştırmada 25 çıktı). **Kritik bulgu:** fuzzy girdi `msgfmt`
+     tarafından `.mo`'ya hiç derlenmiyor — içeriği doğru olsa bile 25'i de EN/DE'de Türkçe gösteriyordu
+     (derlenmiş `.mo` ikili olarak kontrol edilip doğrulandı). 7'si zaten doğru çeviri içeriyordu (yalnız
+     bayrak temizlendi), 18'i gerçekten yanlış/bayat çıktı — en ciddileri: EDU rozet e-postası başlığı
+     "Tebrikler %(username)s!" → "Manage Offer: %(username)s" diyordu (alakasız metin sızmış); e-posta
+     imzası "İyi çalışmalar," → "Study Rooms" diyordu; "Uzmana yaptır" butonu → "Join as an Expert"
+     diyordu (anlam tam ters — buton uzmana iş yaptırma CTA'sı, uzman olarak katılma değil); Path Analizi
+     SSS sorusu çok-aracılı güncellemeden önceki eski tek-aracılı cevabı gösteriyordu. Kalan 14'ü Path
+     Analizi/Kümeleme sayfalarındaki PDF/varsayım/APA örneği metinleri (statsmodels çoklu-aracı
+     güncellemesinden kalma) ve birkaç kısa menü/başlık etiketiydi. 18 girdi EN+DE için yeniden
+     çevrildi, 25'inin tamamının fuzzy bayrağı temizlendi, `.mo` derlendi. **Kapsam dışı bırakıldı:**
+     4 obsolete (`#~`) fuzzy girdi (MANOVA/arama ipucu metinleri, zaten ölü/derlenmiyor, ayrı eski
+     envanterin parçası).
+  - Migration yok, 270/270 pytest yeşil. Dosyalar: `static/css/hero.css`, `static/css/home_sections.css`,
+    `forum/templates/forum/home.html`, `forum/templates/forum/home_intl.html`,
+    `locale/en+de/LC_MESSAGES/django.po(.mo)`, `analizus.md`.
 
 - **13 Kasım 2026 — 3 ayrı küçük iş, main'de canlı:**
   1. **Çalışma Odaları — ZIP dosya eki desteği.** `ALLOWED_ATTACHMENT_TYPES`'a
