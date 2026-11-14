@@ -10,46 +10,42 @@
         <div class="col-lg-10 offset-lg-1">
 
             <!-- Başlık -->
-            <div class="card bg-dark border-secondary text-white mb-4">
-                <div class="card-body">
-                    <h1 class="card-title h3 mb-2">
-                        <i class="bi bi-bar-chart-line me-2 text-primary"></i>{% trans "TR Dizin Makale Analizi" %}
-                    </h1>
-                    <p class="text-muted mb-1">
-                        {% trans "Sorgu:" %} <strong>{{ job.get_query_summary }}</strong>
-                    </p>
-                    {% if job.status == 'completed' %}
-                    <p class="text-muted small mb-0">
-                        {% blocktrans count counter=job.total_records %}{{ counter }} makale analiz edildi{% plural %}{{ counter }} makale analiz edildi{% endblocktrans %}
-                        {% if job.completed_at %}· {{ job.completed_at|date:"d.m.Y H:i" }}{% endif %}
-                    </p>
-                    {% endif %}
-                </div>
+            <div class="ax-card bg-dark border-secondary text-white mb-4">
+                <h1 class="card-title h3 mb-2">
+                    <i class="bi bi-bar-chart-line me-2 text-primary"></i>{% trans "TR Dizin Makale Analizi" %}
+                </h1>
+                <p class="text-muted mb-1">
+                    {% trans "Sorgu:" %} <strong>{{ job.get_query_summary }}</strong>
+                </p>
+                {% if job.status == 'completed' %}
+                <p class="text-muted small mb-0">
+                    {% blocktrans count counter=job.total_records %}{{ counter }} makale analiz edildi{% plural %}{{ counter }} makale analiz edildi{% endblocktrans %}
+                    {% if job.completed_at %}· {{ job.completed_at|date:"d.m.Y H:i" }}{% endif %}
+                </p>
+                {% endif %}
             </div>
 
             <!-- Yükleniyor -->
             <div id="loading-area" {% if job.status == 'completed' or job.status == 'failed' %}style="display:none;"{% endif %}>
-                <div class="card bg-dark border-secondary text-white mb-4">
-                    <div class="card-body text-center py-5">
-                        <div class="spinner-border text-primary mb-3" role="status"></div>
-                        <h5 class="mb-2">{% trans "Analiz Devam Ediyor" %}</h5>
-                        <p class="text-muted mb-0">
-                            {% trans "TR Dizin verileri işleniyor, analizler hesaplanıyor..." %}<br>
-                            <small>{% trans "Bu işlem birkaç dakika sürebilir. Sayfayı kapatabilirsiniz — sonuçlar email ile de gönderilecektir." %}</small>
-                        </p>
-                        <div id="queue-info" class="mt-3" style="display:none;">
-                            <span class="badge bg-warning text-dark fs-6 px-3 py-2">
-                                <i class="bi bi-hourglass-split me-1"></i>
-                                <span id="queue-pos-text">{% trans "Kuyrukta bekliyorsunuz" %}</span>
-                            </span>
-                        </div>
+                <div class="ax-card bg-dark border-secondary text-white mb-4 text-center py-5">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <h5 class="mb-2">{% trans "Analiz Devam Ediyor" %}</h5>
+                    <p class="text-muted mb-0">
+                        {% trans "TR Dizin verileri işleniyor, analizler hesaplanıyor..." %}<br>
+                        <small>{% trans "Bu işlem birkaç dakika sürebilir. Sayfayı kapatabilirsiniz — sonuçlar email ile de gönderilecektir." %}</small>
+                    </p>
+                    <div id="queue-info" class="mt-3" style="display:none;">
+                        <span class="ax-badge ax-badge--warning-solid fs-6 px-3 py-2">
+                            <i class="bi bi-hourglass-split me-1"></i>
+                            <span id="queue-pos-text">{% trans "Kuyrukta bekliyorsunuz" %}</span>
+                        </span>
                     </div>
                 </div>
             </div>
 
             <!-- Hata -->
             {% if job.status == 'failed' %}
-            <div class="alert alert-danger">
+            <div class="ax-alert ax-alert--danger">
                 <i class="bi bi-exclamation-triangle me-2"></i>
                 <strong>{% trans "Analiz başarısız:" %}</strong> {{ job.error_message }}
             </div>
@@ -60,16 +56,14 @@
 
                 <!-- PDF İndir -->
                 {% if job.pdf_url %}
-                <div class="card bg-dark border-primary text-white mb-4">
-                    <div class="card-body d-flex align-items-center justify-content-between">
-                        <div>
-                            <h5 class="mb-1"><i class="bi bi-file-earmark-pdf me-2 text-primary"></i>{% trans "PDF Rapor Hazır" %}</h5>
-                            <p class="text-muted small mb-0">{% blocktrans with count=job.total_records %}{{ count }} makale · 7 analiz grafik içeriyor{% endblocktrans %}</p>
-                        </div>
-                        <a href="{{ job.pdf_url }}" target="_blank" class="btn btn-primary">
-                            <i class="bi bi-download me-1"></i>{% trans "PDF İndir" %}
-                        </a>
+                <div class="ax-card bg-dark border-primary text-white mb-4 d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5 class="mb-1"><i class="bi bi-file-earmark-pdf me-2 text-primary"></i>{% trans "PDF Rapor Hazır" %}</h5>
+                        <p class="text-muted small mb-0">{% blocktrans with count=job.total_records %}{{ count }} makale · 7 analiz grafik içeriyor{% endblocktrans %}</p>
                     </div>
+                    <a href="{{ job.pdf_url }}" target="_blank" class="ax-btn ax-btn--primary">
+                        <i class="bi bi-download me-1"></i>{% trans "PDF İndir" %}
+                    </a>
                 </div>
                 {% include "partials/_s3_retention_notice.html" %}
                 {% endif %}
@@ -77,27 +71,21 @@
                 <!-- Analiz Özeti -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-4">
-                        <div class="card bg-dark border-secondary text-white h-100">
-                            <div class="card-body text-center">
-                                <div class="display-6 text-primary fw-bold">{{ job.total_records }}</div>
-                                <div class="text-muted small">{% trans "Analiz Edilen Makale" %}</div>
-                            </div>
+                        <div class="ax-card bg-dark border-secondary text-white h-100 text-center">
+                            <div class="display-6 text-primary fw-bold">{{ job.total_records }}</div>
+                            <div class="text-muted small">{% trans "Analiz Edilen Makale" %}</div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card bg-dark border-secondary text-white h-100">
-                            <div class="card-body text-center">
-                                <div class="display-6 text-info fw-bold">7</div>
-                                <div class="text-muted small">{% trans "Analiz Türü" %}</div>
-                            </div>
+                        <div class="ax-card bg-dark border-secondary text-white h-100 text-center">
+                            <div class="display-6 text-info fw-bold">7</div>
+                            <div class="text-muted small">{% trans "Analiz Türü" %}</div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card bg-dark border-secondary text-white h-100">
-                            <div class="card-body text-center">
-                                <div class="display-6 text-warning fw-bold">{{ similar|length }}</div>
-                                <div class="text-muted small">{% trans "Benzer Makale Bulundu" %}</div>
-                            </div>
+                        <div class="ax-card bg-dark border-secondary text-white h-100 text-center">
+                            <div class="display-6 text-warning fw-bold">{{ similar|length }}</div>
+                            <div class="text-muted small">{% trans "Benzer Makale Bulundu" %}</div>
                         </div>
                     </div>
                 </div>
@@ -192,7 +180,7 @@ let pollTimer = null;
 function showError(msg) {
     document.getElementById('loading-area').style.display = 'none';
     const errDiv = document.createElement('div');
-    errDiv.className = 'alert alert-danger';
+    errDiv.className = 'ax-alert ax-alert--danger';
     errDiv.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i><strong>{% trans "Analiz başarısız:" %}</strong> ' + msg;
     document.querySelector('.col-lg-10').insertBefore(errDiv, document.getElementById('loading-area'));
 }
