@@ -619,23 +619,23 @@ def close_job(request, pk):
         messages.success(request, gettext('Onay bekleyen ilanınız geri çekildi.'))
     elif job.status == 'open':
         # Bekleyen teklif sahiplerine DM gönder
+        from .i18n_utils import recipient_language
         pending_proposals = job.proposals.filter(status='pending').select_related('expert')
         try:
             bot_user = User.objects.get(username='AnalizBot')
         except User.DoesNotExist:
             bot_user = request.user
+        site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
 
         for proposal in pending_proposals:
-            PrivateMessage.objects.create(
-                sender=bot_user,
-                receiver=proposal.expert,
-                message=(
-                    f'Merhaba {proposal.expert.username},\n\n'
-                    f'Teklif verdiğiniz "{job.title}" ilanı ilan sahibi tarafından yayından kaldırıldı. '
-                    f'Teklifiniz otomatik olarak iptal edilmiştir.\n\n'
-                    f'Diğer ilanları incelemek için: {getattr(settings, "SITE_URL", "https://www.analizus.com")}/market/'
-                )
-            )
+            with recipient_language(proposal.expert):
+                msg = gettext(
+                    'Merhaba {name},\n\n'
+                    'Teklif verdiğiniz "{job_title}" ilanı ilan sahibi tarafından yayından kaldırıldı. '
+                    'Teklifiniz otomatik olarak iptal edilmiştir.\n\n'
+                    'Diğer ilanları incelemek için: {url}'
+                ).format(name=proposal.expert.username, job_title=job.title, url=f"{site}{reverse('job_list')}")
+            PrivateMessage.objects.create(sender=bot_user, receiver=proposal.expert, message=msg)
 
         job.status = 'cancelled'
         job.save()
@@ -712,6 +712,7 @@ def accept_proposal(request, pk, proposal_id):
     job.save()
 
     # AnalizBot'tan inbox bildirimleri gönder
+    from .i18n_utils import recipient_language
     try:
         bot_user = User.objects.get(username='AnalizBot')
     except User.DoesNotExist:
@@ -720,30 +721,30 @@ def accept_proposal(request, pk, proposal_id):
     site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
 
     # Kabul edilen teklifçiye bildirim
-    PrivateMessage.objects.create(
-        sender=bot_user,
-        receiver=proposal.expert,
-        message=(
-            f'Tebrikler {proposal.expert.username}!\n\n'
-            f'"{job.title}" ilanına verdiğiniz teklif kabul edildi.\n\n'
-            f'Teklif Tutarı: {proposal.price} {"TL" if job.language == "tr" else "€"}\n'
-            f'Süre: {proposal.duration}\n\n'
-            f'İlanı görüntülemek için: {site}/market/job/{job.pk}/'
+    with recipient_language(proposal.expert):
+        accepted_msg = gettext(
+            'Tebrikler {name}!\n\n'
+            '"{job_title}" ilanına verdiğiniz teklif kabul edildi.\n\n'
+            'Teklif Tutarı: {price} {currency}\n'
+            'Süre: {duration}\n\n'
+            'İlanı görüntülemek için: {url}'
+        ).format(
+            name=proposal.expert.username, job_title=job.title,
+            price=proposal.price, currency=('TL' if job.language == 'tr' else '€'),
+            duration=proposal.duration, url=f"{site}{reverse('job_detail', kwargs={'pk': job.pk})}",
         )
-    )
+    PrivateMessage.objects.create(sender=bot_user, receiver=proposal.expert, message=accepted_msg)
 
     # Reddedilen teklifçilere bildirim
     for rp in rejected_proposals:
-        PrivateMessage.objects.create(
-            sender=bot_user,
-            receiver=rp.expert,
-            message=(
-                f'Merhaba {rp.expert.username},\n\n'
-                f'"{job.title}" ilanına verdiğiniz teklif değerlendirildi, '
-                f'ancak bu sefer başka bir uzman tercih edildi.\n\n'
-                f'Diğer açık ilanlar için: {site}/market/'
-            )
-        )
+        with recipient_language(rp.expert):
+            rejected_msg = gettext(
+                'Merhaba {name},\n\n'
+                '"{job_title}" ilanına verdiğiniz teklif değerlendirildi, '
+                'ancak bu sefer başka bir uzman tercih edildi.\n\n'
+                'Diğer açık ilanlar için: {url}'
+            ).format(name=rp.expert.username, job_title=job.title, url=f"{site}{reverse('job_list')}")
+        PrivateMessage.objects.create(sender=bot_user, receiver=rp.expert, message=rejected_msg)
 
     messages.success(request, gettext('%(username)s kullanıcısının teklifi kabul edildi. İlan askıya alındı.') % {'username': proposal.expert.username})
     return redirect('job_detail', pk=pk)
@@ -897,23 +898,27 @@ def job_detail(request, pk):
                     # İlan sahibinin inbox'ına teklif bildirimi düşür
                     # (email send_proposal_notification tarafından zaten gönderildi, _skip_email=True)
                     # AnalizBot'tan gönder: gerçek kullanıcı-kullanıcı sohbetine karışmasın (accept_proposal ile aynı desen)
+                    from .i18n_utils import recipient_language
                     site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
                     try:
                         bot_user = User.objects.get(username='AnalizBot')
                     except User.DoesNotExist:
                         bot_user = request.user
-                    _pm = PrivateMessage(
-                        sender=bot_user,
-                        receiver=job.owner,
-                        message=(
-                            f'"{job.title}" ilanınıza yeni bir teklif geldi!\n\n'
-                            f'Teklif Veren: {request.user.username}\n'
-                            f'Teklif Tutarı: {proposal.price} {"TL" if job.language == "tr" else "€"}\n'
-                            f'Süre: {proposal.duration}\n\n'
-                            f'Ön Yazı:\n{proposal.message[:500]}\n\n'
-                            f'Teklifi değerlendirmek için: {site}/market/job/{job.pk}/'
+                    with recipient_language(job.owner):
+                        _msg = gettext(
+                            '"{job_title}" ilanınıza yeni bir teklif geldi!\n\n'
+                            'Teklif Veren: {bidder}\n'
+                            'Teklif Tutarı: {price} {currency}\n'
+                            'Süre: {duration}\n\n'
+                            'Ön Yazı:\n{cover_letter}\n\n'
+                            'Teklifi değerlendirmek için: {url}'
+                        ).format(
+                            job_title=job.title, bidder=request.user.username,
+                            price=proposal.price, currency=('TL' if job.language == 'tr' else '€'),
+                            duration=proposal.duration, cover_letter=proposal.message[:500],
+                            url=f"{site}{reverse('job_detail', kwargs={'pk': job.pk})}",
                         )
-                    )
+                    _pm = PrivateMessage(sender=bot_user, receiver=job.owner, message=_msg)
                     _pm._skip_email = True
                     _pm.save()
 
@@ -1006,6 +1011,7 @@ def add_job_review(request, pk):
         comment=comment
     )
 
+    from .i18n_utils import recipient_language
     try:
         bot_user = User.objects.get(username='AnalizBot')
     except User.DoesNotExist:
@@ -1014,31 +1020,31 @@ def add_job_review(request, pk):
 
     # Değerlendirilen kişiye bildirim: "X seni değerlendirdi"
     stars = '⭐' * int(rating)
-    PrivateMessage.objects.create(
-        sender=bot_user,
-        receiver=reviewed_user,
-        message=(
-            f'Merhaba {reviewed_user.username},\n\n'
-            f'"{job.title}" projesi için {request.user.username} sizi değerlendirdi.\n\n'
-            f'Puan: {stars} ({rating}/5)'
-            + (f'\nYorum: {comment}' if comment else '')
-        )
-    )
+    with recipient_language(reviewed_user):
+        review_msg = gettext(
+            'Merhaba {name},\n\n'
+            '"{job_title}" projesi için {reviewer} sizi değerlendirdi.\n\n'
+            'Puan: {stars} ({rating}/5)'
+        ).format(name=reviewed_user.username, job_title=job.title, reviewer=request.user.username, stars=stars, rating=rating)
+        if comment:
+            review_msg += '\n' + gettext('Yorum: {comment}').format(comment=comment)
+    PrivateMessage.objects.create(sender=bot_user, receiver=reviewed_user, message=review_msg)
 
     # Karşı taraf henüz değerlendirme yapmadıysa "sen de yap" bildirimi
     other_party = accepted_proposal.expert if is_owner else job.owner
     other_has_reviewed = job.reviews.filter(reviewer=other_party).exists()
     if not other_has_reviewed:
-        PrivateMessage.objects.create(
-            sender=bot_user,
-            receiver=other_party,
-            message=(
-                f'Merhaba {other_party.username},\n\n'
-                f'"{job.title}" projesi için {request.user.username} değerlendirmesini tamamladı.\n\n'
-                f'Projenin kapatılabilmesi için sizin de değerlendirme yapmanız gerekmektedir.\n\n'
-                f'Değerlendirme yapmak için: {site}/market/job/{job.pk}/'
+        with recipient_language(other_party):
+            other_msg = gettext(
+                'Merhaba {name},\n\n'
+                '"{job_title}" projesi için {reviewer} değerlendirmesini tamamladı.\n\n'
+                'Projenin kapatılabilmesi için sizin de değerlendirme yapmanız gerekmektedir.\n\n'
+                'Değerlendirme yapmak için: {url}'
+            ).format(
+                name=other_party.username, job_title=job.title, reviewer=request.user.username,
+                url=f"{site}{reverse('job_detail', kwargs={'pk': job.pk})}",
             )
-        )
+        PrivateMessage.objects.create(sender=bot_user, receiver=other_party, message=other_msg)
 
     messages.success(request, gettext('Değerlendirmeniz gönderildi. Admin onayından sonra yayınlanacak.'))
     return redirect('job_detail', pk=pk)
@@ -3101,18 +3107,17 @@ def dashboard_approve_review(request, pk):
     review.is_approved = True
     review.save()
 
+    from .i18n_utils import recipient_language
     try:
         bot_user = User.objects.get(username='AnalizBot')
     except User.DoesNotExist:
         bot_user = request.user
-    PrivateMessage.objects.create(
-        sender=bot_user,
-        receiver=review.reviewer,
-        message=(
-            f'Merhaba {review.reviewer.username},\n\n'
-            f'"{review.job.title}" projesi için yaptığınız değerlendirme onaylandı ve yayınlandı.'
-        )
-    )
+    with recipient_language(review.reviewer):
+        approve_msg = gettext(
+            'Merhaba {name},\n\n'
+            '"{job_title}" projesi için yaptığınız değerlendirme onaylandı ve yayınlandı.'
+        ).format(name=review.reviewer.username, job_title=review.job.title)
+    PrivateMessage.objects.create(sender=bot_user, receiver=review.reviewer, message=approve_msg)
 
     messages.success(request, f"{review.reviewer.username} değerlendirmesi onaylandı.")
     return redirect(request.META.get('HTTP_REFERER', reverse('admin:index')))
