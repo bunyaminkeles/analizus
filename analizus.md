@@ -3046,6 +3046,32 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **18 Kasım 2026 — Bibliometri CSV hata mesajı iyileştirmesi + AnalizBot pazaryeri bildirimleri
+  i18n/link düzeltmesi, main'de canlı (iki ayrı merge):** Kullanıcı admin panelinde başarısız
+  bir bibliometri işi (`Frontiers_225.csv`, 0 kayıt) fark etti. Kök neden: `_parse_generic_csv`
+  (`bibliometrics/services/parser.py`) başlık sütununu yalnızca `title`/`başlık`/`ti` ile
+  birebir eşleştiriyor, "Article Title" gibi varyasyonları tanımıyor; eşleşme olmayınca tüm
+  satırlar başlıksız sayılıp elendi, `job_runner.py` da genel "format desteklenmiyor" mesajı
+  veriyordu. **Düzeltme:** parser artık dosyadaki gerçek sütun adlarını `stats['csv_headers']`'a
+  kaydediyor, `job_runner.py` kayıt bulunamazsa bu sütunları ve desteklenen formatları birlikte
+  gösteren dinamik bir mesaj üretiyor (TR/EN/DE). Orijinal dosya hiçbir zaman S3'e yüklenmediği
+  (yalnız bellekte, iş bitince kayboluyor) için gerçek sütun adları yalnızca bu şekilde geri
+  gösterilebiliyor. Doğrulama: sentetik CSV ile üç dilde canlı mesaj + `bibliometrics/tests.py`
+  160/160. Aynı incelemede **AnalizBot pazaryeri bildirimlerinin** (`forum/views.py`, 7 nokta:
+  ilan kaldırma, teklif kabul/red, yeni teklif, değerlendirme bildirimleri) hep sabit Türkçe
+  f-string olduğu ve linklerin (`{site}/market/job/{pk}/`) i18n dil önekini (`/en/`, `/de/`)
+  hiç almadığı (404) bulundu — ekran görüntüsünde "ilanınıza yeni bir teklif geldi" bildirimi
+  EN arayüzde Türkçe metin + kırık linkle görülmüştü. **Düzeltme:** her 7 nokta
+  `recipient_language(alıcı)` içinde `gettext()` ile üretilecek, link `reverse('job_detail'/
+  'job_list')` ile doğru önekle kurulacak şekilde yeniden yazıldı; EN/DE çevirileri eklendi.
+  Doğrulama: gerçek senaryo üç dilde canlı test edildi (EN→`/en/market/job/194/`,
+  DE→`/de/market/job/194/`), `forum/tests.py` 110/110. Ayrı bir bulgu olarak **
+  `profile_detail.html`'deki iki ilan linkinin** (`:445`, `:498`) EN/DE'de hâlâ tıklanamaz
+  olduğu da tespit edildi (18 Ekim 2026'da `285003d` ile EN/DE pazaryeri kapalıyken bilerek
+  eklenmiş bir guard, 13 Kasım'daki EN/DE go-live'da kaldırılmayı unutulmuş) — kullanıcı
+  bilinçli olarak "dokunulmasın" dedi, düzeltilmedi (bkz. `tasks/todo.md` AÇIK İŞLER).
+  Her iki merge öncesi de production online-kullanıcı kontrolü yapıldı; ikinci merge'de aktif
+  (`ben`, `user`) kullanıcı vardı, kullanıcıdan onay alınarak devam edildi.
 - **14 Kasım 2026, akşam — Bootstrap Kaldırma "Ağır" grup başladı (2/10), main'de canlı
   (merge `2215065`, deploy `success`):** `semanticscholar/landing.html` ve `makaleanaliz/results.html`
   ax- tasarım sistemine taşındı — Faz 3'ün "Düşük"+"Orta" gruplarında (50 dosya) oturan desen aynen

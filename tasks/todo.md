@@ -822,6 +822,18 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(18 Kasım 2026) Profil sayfası "İlanlar" sekmesinde EN/DE'de ilan linki tıklanamaz** —
+  `forum/templates/forum/profile_detail.html:445,498` — `<a {% if LANGUAGE_CODE == 'tr' %}
+  href="..."{% endif %}>` guard'ı 18 Ekim 2026'da (commit `285003d`) EN/DE pazaryeri henüz
+  kapalıyken bilerek eklenmiş; 13 Kasım 2026'da EN/DE pazaryeri canlıya alınırken bu guard
+  kaldırılmayı unutulmuş — artık gereksiz, linkler EN/DE'de hâlâ kilitli. Kullanıcı 18 Kasım
+  2026'da bilerek "tıklanamaz kalsın" dedi — bilinçli iş kararı, düzeltilmedi; ileride gündeme
+  gelirse buradan devam edilebilir.
+- [ ] **(18 Kasım 2026) `admin_manage_proposal` (forum/views.py:780-816) teklif silme/reddetme
+  bildirimi hâlâ sabit Türkçe** — aynı turda düzeltilen 7 AnalizBot bildirimine dahil edilmedi:
+  gönderen admin'in kendisi (bot değil) ve mesaj `reason_map` sabit TR metinleri + admin'in
+  serbest metni (`custom_reason`) içeriyor — otomatik çeviri için ayrı tasarım kararı gerekir
+  (ör. sabit sebep seçenekleri çevrilsin, `custom_reason` çevrilmeden mi kalsın?).
 - [x] **(12 Kasım 2026 TAMAMLANDI) Bağış/Premium reset bug'ı + Pazar işi "tamamlandı"
   sayacı takılması — kök neden bulundu, düzeltildi.**
   - **Bulgu 1 — Premium kaybı:** Kullanıcı (user_id=762, `240401005@`/okul e-postası,

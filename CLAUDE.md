@@ -1,6 +1,6 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~4923 satır; offset'ler 14 Kasım 2026 akşamında doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~4949 satır; offset'ler 18 Kasım 2026'da doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
@@ -15,8 +15,8 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~4923 satır; offset
 | §20–23 | 1911 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları, bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği, `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"), pazar akışı (pending → open), session, cron |
 | §24–25 | 2075 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
 | §26 | 2162 | Sık yapılan hatalar ve çözümleri — konuya göre 11 alt başlığa gruplandı (Sunucu/Docker/Deploy, Veritabanı/Migration, S3/Depolama, E-posta, Çeviri, CSS/Frontend/JS, AI Asistan, Admin Paneli, Tarama/Analiz Araçları, Güvenlik/Bot, Genel Süreç) |
-| §27 | 2342 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 14 Kasım 2026 akşamı — Bootstrap Kaldırma "Ağır" grubu başladı, 2/10 dosya (`semanticscholar/landing.html`, `makaleanaliz/results.html`) ax- sistemine taşındı, main'e alındı, deploy `success`; merge öncesi production'da aktif kullanıcı tespit edilip onay alınarak devam edildi. Bir önceki tur: 14 Kasım 2026 sabahı — "Bilinen, düzeltilmemiş bug" listesindeki 3 madde ele alındı (tanımsız `--ax-color-primary` token'ı, GSC 404/hreflang notu güncellemesi, EN/DE 25 fuzzy çeviri girdisi). Daha önceki tur: 13 Kasım 2026 — Çalışma Odaları ZIP eki + `Donation.completed_at` tek seferlik düzeltme + EN/DE intl pazaryeri go-live + proje_talebi kategori düzeltmesi + Bibliometri B4-4**) |
-| §28 | 4809 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §27 | 2342 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 18 Kasım 2026 — bibliometri CSV hata mesajı iyileştirmesi (gerçek sütun adları TR/EN/DE'de gösteriliyor) + AnalizBot pazaryeri bildirimlerinde (7 nokta) dil/link düzeltmesi (`recipient_language`+`reverse`), ikisi de main'e alındı, deploy `success`; `profile_detail.html`'deki EN/DE'de tıklanamaz ilan linki tespit edildi ama kullanıcı kararıyla düzeltilmedi (bkz. `tasks/todo.md` AÇIK İŞLER). Bir önceki tur: 14 Kasım 2026 akşamı — Bootstrap Kaldırma "Ağır" grubu başladı, 2/10 dosya (`semanticscholar/landing.html`, `makaleanaliz/results.html`) ax- sistemine taşındı. Daha önceki tur: 14 Kasım 2026 sabahı — "Bilinen, düzeltilmemiş bug" listesindeki 3 madde ele alındı (tanımsız `--ax-color-primary` token'ı, GSC 404/hreflang notu güncellemesi, EN/DE 25 fuzzy çeviri girdisi)**) |
+| §28 | 4835 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
