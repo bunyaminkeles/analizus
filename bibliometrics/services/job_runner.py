@@ -177,7 +177,17 @@ def _execute_job_body(job_id: str) -> None:
         records = _deduplicate_and_filter(all_records, stats) if len(contents) > 1 else all_records
 
         if not records:
-            job.mark_failed(gettext('Dosyadan kayıt okunamadı. Format desteklenmiyor olabilir.'))
+            headers = stats.get('csv_headers')
+            if headers:
+                job.mark_failed(
+                    gettext(
+                        "Dosyanız desteklenen formatlardan hiçbirine (Scopus CSV, Web of "
+                        "Science Tab-Delimited, BibTeX, OpenAlex export) uymuyor — sistem bir "
+                        "'Başlık' sütunu bulamadı. Dosyanızdaki sütunlar: {columns}."
+                    ).format(columns=', '.join(headers))
+                )
+            else:
+                job.mark_failed(gettext('Dosyadan kayıt okunamadı. Format desteklenmiyor olabilir.'))
             return
 
         from bibliometrics.services.enrichment import enrich_records_with_openalex
