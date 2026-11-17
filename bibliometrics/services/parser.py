@@ -111,7 +111,7 @@ def parse_file(content: str, fmt: str = None, stats: dict = None) -> tuple[list[
     elif fmt == 'pubmed_txt':
         records = parse_pubmed_txt(content, stats)
     else:
-        records = _parse_generic_csv(content)
+        records = _parse_generic_csv(content, stats)
         fmt = 'csv_auto'
 
     records = _deduplicate_and_filter(records, stats)
@@ -488,7 +488,7 @@ def _parse_openalex_csv(content: str) -> list[dict]:
 
 # ─────────────────────────── Genel CSV ───────────────────────────
 
-def _parse_generic_csv(content: str) -> list[dict]:
+def _parse_generic_csv(content: str, stats: dict = None) -> list[dict]:
     """Bilinmeyen CSV: sütun adlarını eşleştirmeye çalış."""
     import csv
 
@@ -496,6 +496,10 @@ def _parse_generic_csv(content: str) -> list[dict]:
     delimiter = '\t' if '\t' in content.split('\n')[0] else ','
     records = []
     reader = csv.DictReader(io.StringIO(content), delimiter=delimiter)
+    if stats is not None:
+        # Hiç kayıt okunamazsa (ör. 'title' sütunu tanınmadıysa) hata mesajında
+        # kullanıcıya dosyasındaki gerçek sütun adlarını gösterebilmek için saklanır.
+        stats['csv_headers'] = [h.strip() for h in (reader.fieldnames or []) if h and h.strip()]
 
     COL_MAP = {
         'title': ['title', 'başlık', 'ti'],
